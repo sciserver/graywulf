@@ -25,6 +25,7 @@ namespace Jhu.Graywulf.Registry
 #endif
 
         private bool isValid;
+        private Guid lockOwner;
 
         // TODO: move these to entity search
         private bool showHidden;
@@ -37,6 +38,8 @@ namespace Jhu.Graywulf.Registry
 
         private SqlConnection databaseConnection;
         private SqlTransaction databaseTransaction;
+
+        private EntityCache entityCache;
 
         private EntityReference<Cluster> clusterReference;
         private EntityReference<Domain> domainReference;
@@ -51,7 +54,13 @@ namespace Jhu.Graywulf.Registry
         {
             get { return isValid; }
         }
-        
+
+        public Guid LockOwner
+        {
+            get { return lockOwner; }
+            set { lockOwner = value; }
+        }
+
         /// <summary>
         /// Gets or sets the value determining whether search functions will return entities
         /// flagged as hidden.
@@ -94,6 +103,11 @@ namespace Jhu.Graywulf.Registry
         {
             get { return this; }
             set { throw new InvalidOperationException(); }
+        }
+
+        internal EntityCache EntityCache
+        {
+            get { return entityCache; }
         }
 
         /// <summary>
@@ -159,7 +173,7 @@ namespace Jhu.Graywulf.Registry
 
         public User User
         {
-            get { return userReference.Value;  }
+            get { return userReference.Value; }
         }
 
         public EntityReference<JobInstance> JobReference
@@ -186,7 +200,7 @@ namespace Jhu.Graywulf.Registry
         {
             InitializeMembers();
         }
-        
+
         #endregion
         #region Initializer Functions
 
@@ -196,6 +210,7 @@ namespace Jhu.Graywulf.Registry
         private void InitializeMembers()
         {
             this.isValid = true;
+            this.lockOwner = Guid.Empty;
 
             this.showHidden = false;
             this.showDeleted = false;
@@ -206,6 +221,8 @@ namespace Jhu.Graywulf.Registry
 
             this.databaseConnection = null;
             this.databaseTransaction = null;
+
+            this.entityCache = new EntityCache();
 
             this.clusterReference = new EntityReference<Cluster>(this);
             this.domainReference = new EntityReference<Domain>(this);
@@ -260,6 +277,9 @@ namespace Jhu.Graywulf.Registry
             {
                 CloseConnection();
             }
+
+            this.entityCache.Dispose();
+            this.entityCache = null;
 
             isValid = false;
         }

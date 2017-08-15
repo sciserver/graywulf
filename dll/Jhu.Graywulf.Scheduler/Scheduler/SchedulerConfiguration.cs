@@ -4,90 +4,59 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Configuration;
-using System.Runtime.Serialization;
-using System.Data;
+using System.ComponentModel;
 using System.Data.SqlClient;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.ServiceModel;
 
 namespace Jhu.Graywulf.Scheduler
 {
     public class SchedulerConfiguration : ConfigurationSection
     {
-        #region Static declarations
-
-        private static ConfigurationPropertyCollection properties;
-
-        private static readonly ConfigurationProperty propPollingInterval = new ConfigurationProperty(
-            "pollingInterval", typeof(TimeSpan), new TimeSpan(0, 0, 5), ConfigurationPropertyOptions.None);
-
-        private static readonly ConfigurationProperty propAppDomainIdle = new ConfigurationProperty(
-            "appDomainIdle", typeof(TimeSpan), new TimeSpan(0, 5, 0), ConfigurationPropertyOptions.None);
-
-        private static readonly ConfigurationProperty propAppDomainShutdownTimeout = new ConfigurationProperty(
-            "appDomainShutdownTimeout", typeof(TimeSpan), new TimeSpan(0, 0, 30), ConfigurationPropertyOptions.None);
-
-        private static readonly ConfigurationProperty propCancelTimeout = new ConfigurationProperty(
-            "cancelTimeout", typeof(TimeSpan), new TimeSpan(0, 1, 30), ConfigurationPropertyOptions.None);
-
-        private static readonly ConfigurationProperty propPersistenceConnectionString = new ConfigurationProperty(
-            "persistenceConnectionString", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
-
-        private static readonly ConfigurationProperty propPersistTimeout = new ConfigurationProperty(
-            "persistTimeout", typeof(TimeSpan), new TimeSpan(0, 1, 30), ConfigurationPropertyOptions.None);
-
-        static SchedulerConfiguration()
-        {
-            properties = new ConfigurationPropertyCollection();
-
-            properties.Add(propPollingInterval);
-            properties.Add(propAppDomainIdle);
-            properties.Add(propAppDomainShutdownTimeout);
-            properties.Add(propCancelTimeout);
-            properties.Add(propPersistTimeout);
-        }
-
-        #endregion
-
         [ConfigurationProperty("pollingInterval")]
+        [DefaultValue("00:00:05")]
         public TimeSpan PollingInterval
         {
-            get { return (TimeSpan)base[propPollingInterval]; }
-            set { base[propPollingInterval] = value; }
+            get { return (TimeSpan)base["pollingInterval"]; }
+            set { base["pollingInterval"] = value; }
         }
 
         [ConfigurationProperty("appDomainIdle")]
+        [DefaultValue("00:20:00")]
         public TimeSpan AppDomainIdle
         {
-            get { return (TimeSpan)base[propAppDomainIdle]; }
-            set { base[propAppDomainIdle] = value; }
+            get { return (TimeSpan)base["appDomainIdle"]; }
+            set { base["appDomainIdle"] = value; }
         }
-
-        [ConfigurationProperty("appDomainShutdownTimeout")]
-        public TimeSpan AppDomainShutdownTimeout
-        {
-            get { return (TimeSpan)base[propAppDomainShutdownTimeout]; }
-            set { base[propAppDomainShutdownTimeout] = value; }
-        }
-
+        
         [ConfigurationProperty("cancelTimeout")]
+        [DefaultValue("00:02:00")]
         public TimeSpan CancelTimeout
         {
-            get { return (TimeSpan)base[propCancelTimeout]; }
-            set { base[propCancelTimeout] = value; }
+            get { return (TimeSpan)base["cancelTimeout"]; }
+            set { base["cancelTimeout"] = value; }
         }
 
         [ConfigurationProperty("persistenceConnectionString")]
         public string PersistenceConnectionString
         {
-            get { return (string)base[propPersistenceConnectionString]; }
-            set { base[propPersistenceConnectionString] = value; }
+            get { return (string)base["persistenceConnectionString"]; }
+            set { base["persistenceConnectionString"] = value; }
         }
 
         [ConfigurationProperty("persistTimeout")]
+        [DefaultValue("00:02:00")]
         public TimeSpan PersistTimeout
         {
-            get { return (TimeSpan)base[propPersistTimeout]; }
-            set { base[propPersistTimeout] = value; }
+            get { return (TimeSpan)base["persistTimeout"]; }
+            set { base["persistTimeout"] = value; }
+        }
+
+        [ConfigurationProperty("endpoint")]
+        public TcpEndpointConfiguration Endpoint
+        {
+            get { return (TcpEndpointConfiguration)base["endpoint"]; }
+            set { base["endpoint"] = value; }
         }
 
         // --

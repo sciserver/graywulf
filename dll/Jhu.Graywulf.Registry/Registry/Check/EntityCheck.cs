@@ -26,16 +26,14 @@ namespace Jhu.Graywulf.Registry.Check
             this.Name = name;
         }
 
-        public override void Execute(TextWriter output)
+        protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
-            output.WriteLine(
-                "Testing registry entry: {0}",
-                Name);
+            yield return ReportInfo("Testing registry entry: {0}", Name);
 
             var ef = new EntityFactory(Context);
             var e = ef.LoadEntity(Name);
 
-            output.WriteLine("Entry retrieved: {0}", e.Guid);
+            yield return ReportSuccess("Entry retrieved: {0}", e.Guid);
         }
     }
 }

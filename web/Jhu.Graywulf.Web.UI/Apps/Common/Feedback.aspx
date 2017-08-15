@@ -73,7 +73,7 @@
     <jgwuc:Form runat="server" ID="SuccessForm" Visible="false" SkinID="FeedbackSent">
         <formtemplate>
             <p>
-                You feedback has been successfully sent.</p>
+                Your feedback has been successfully sent.</p>
         </formtemplate>
         <buttonstemplate>
             <asp:Button ID="Back" runat="server" Text="Back" OnCommand="Back_Click" CssClass="FormButton"

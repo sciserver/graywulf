@@ -54,16 +54,15 @@ namespace Jhu.Graywulf.Web.Admin
 
         private void LoadItem()
         {
-            item = new T();
-            item.RegistryContext = RegistryContext;
-
             if (Request.QueryString["guid"] != null)
             {
-                item.Guid = new Guid(Request.QueryString["guid"]);
-                item.Load();
+                var ef = new EntityFactory(RegistryContext);
+                item = ef.LoadEntity<T>(new Guid(Request.QueryString["guid"]));
             }
             else
             {
+                item = new T();
+                item.RegistryContext = RegistryContext;
                 item.ParentReference.Guid = new Guid(Request.QueryString["parentGuid"]);
             }
 

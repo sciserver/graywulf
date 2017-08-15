@@ -6,6 +6,7 @@ using System.Threading;
 using System.Security;
 using System.ServiceModel;
 using System.Configuration;
+using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.RemoteService
@@ -31,12 +32,12 @@ namespace Jhu.Graywulf.RemoteService
 
         public override bool IsCanceled
         {
-            [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return base.IsCanceled; }
         }
-
-        [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation]
+        
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation(Constants.DefaultRole)]
         public override void Execute()
         {
             // Modify remote service to do check access when called from service only
@@ -44,20 +45,20 @@ namespace Jhu.Graywulf.RemoteService
             base.Execute();
         }
 
-        [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation]
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation(Constants.DefaultRole)]
         public override void BeginExecute()
         {
             base.BeginExecute();
         }
 
-        [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
         public override void EndExecute()
         {
             base.EndExecute();
         }
 
-        [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
         public override void Cancel()
         {
             base.Cancel();

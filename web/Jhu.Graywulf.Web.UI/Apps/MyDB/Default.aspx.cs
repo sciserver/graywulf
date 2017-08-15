@@ -41,13 +41,22 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         private void UpdateUsage(DatasetBase userdb)
         {
-            
-            var used = (double)userdb.Statistics.UsedSpace / userdb.Statistics.DataSpace;
-            var free = 1 - used;
+            double used, free;
 
-            DataSpace.Text = Util.ByteSizeFormatter.Format(userdb.Statistics.DataSpace);
+            if (userdb.Statistics.DataSpace < 0)
+            {
+                used = 0;
+                free = 1;
+            }
+            else
+            {
+                used = (double)userdb.Statistics.UsedSpace / userdb.Statistics.DataSpace;
+                free = 1 - used;
+            }
+            
+            DataSpace.Text = userdb.Statistics.DataSpace < 0 ? "unlimited" : Util.ByteSizeFormatter.Format(userdb.Statistics.DataSpace);
             UsedSpace.Text = Util.ByteSizeFormatter.Format(userdb.Statistics.UsedSpace);
-            LogSpace.Text = Util.ByteSizeFormatter.Format(userdb.Statistics.LogSpace);
+            LogSpace.Text = userdb.Statistics.LogSpace < 0 ? "unlimited" : Util.ByteSizeFormatter.Format(userdb.Statistics.LogSpace);
 
             if (used == 0)
             {

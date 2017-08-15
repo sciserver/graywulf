@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Logging
                 Client = "127.0.0.1",
                 Server = Environment.MachineName,
                 ContextGuid = Guid.Empty,
-                DateTime = DateTime.Now,
+                DateTime = DateTime.UtcNow,
                 ExecutionStatus = ExecutionStatus.Closed,
                 JobGuid = guid,
                 JobName = "job_name",
@@ -62,7 +62,7 @@ namespace Jhu.Graywulf.Logging
             e.Client = "127.0.0.1";
             e.Server = Environment.MachineName;
             e.ContextGuid = Guid.Empty;
-            e.DateTime = DateTime.Now;
+            e.DateTime = DateTime.UtcNow;
             e.ExecutionStatus = ExecutionStatus.Closed;
             e.JobGuid = guid;
             e.JobName = "job_name";

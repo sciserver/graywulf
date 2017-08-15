@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.Common;
 using System.ServiceModel;
 using Jhu.Graywulf.Components;
+using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.Format;

@@ -137,6 +137,18 @@ namespace Jhu.Graywulf.Web.Security
         }
 
         /// <summary>
+        /// When implemented in derived classes, this function removes any tokens from a
+        /// URI that corresponds to the authentication method. Override to remove any
+        /// authentication tokens conveyed in urls.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public virtual string RemoveUrlTokens(string url)
+        {
+            return url;
+        }
+
+        /// <summary>
         /// When implemented in derived classes, this function redirects the web browser
         /// to the authentication page associated with the authenticator. This is typically
         /// an OpenID provider.

@@ -60,6 +60,7 @@
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.DurableInstancing" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -71,6 +72,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduler\AppDomainHost.cs" />
     <Compile Include="Scheduler\Cluster.cs" />
+    <Compile Include="Scheduler\Constants.cs" />
     <Compile Include="Scheduler\DatabaseDefinition.cs" />
     <Compile Include="Scheduler\DatabaseInstance.cs" />
     <Compile Include="Scheduler\Enum.cs" />
@@ -80,16 +82,21 @@
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Scheduler\IScheduler.cs" />
+    <Compile Include="Scheduler\ISchedulerControl.cs" />
     <Compile Include="Scheduler\Job.cs" />
+    <Compile Include="Scheduler\JobWorkflowEvent.cs" />
     <Compile Include="Scheduler\JobTrackingParticipant.cs" />
     <Compile Include="Scheduler\Machine.cs" />
     <Compile Include="Scheduler\MachineRole.cs" />
     <Compile Include="Scheduler\Queue.cs" />
     <Compile Include="Scheduler\QueueManager.cs" />
     <Compile Include="Scheduler\RegistryObject.cs" />
+    <Compile Include="Scheduler\SchedulerCheck.cs" />
     <Compile Include="Scheduler\Scheduler.cs" />
     <Compile Include="Scheduler\SchedulerConfiguration.cs" />
+    <Compile Include="Scheduler\SchedulerControl.cs" />
     <Compile Include="Scheduler\SchedulerException.cs" />
+    <Compile Include="Scheduler\SchedulerDebugOptions.cs" />
     <Compile Include="Scheduler\SchedulerWorkflowApplicationHost.cs" />
     <Compile Include="Scheduler\ServerInstance.cs" />
     <Compile Include="Scheduler\StandaloneWorkflowApplicationHost.cs" />
@@ -122,6 +129,10 @@
     <ProjectReference Include="..\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
       <Project>{57392da3-e280-48ee-80c8-64e09fd8afb5}</Project>
       <Name>Jhu.Graywulf.Activities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.ServiceModel\Jhu.Graywulf.ServiceModel.csproj">
+      <Project>{aa744162-dfa0-46bc-be03-20d50dd77806}</Project>
+      <Name>Jhu.Graywulf.ServiceModel</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

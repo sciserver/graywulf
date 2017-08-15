@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 using System.Runtime.Serialization;
 using System.ServiceModel.Description;
 
-namespace Jhu.Graywulf.RemoteService
+namespace Jhu.Graywulf.ServiceModel
 {
     public class NetDataContractSerializerOperationBehavior : DataContractSerializerOperationBehavior
     {

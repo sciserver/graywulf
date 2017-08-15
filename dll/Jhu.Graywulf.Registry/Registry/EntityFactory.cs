@@ -82,22 +82,22 @@ namespace Jhu.Graywulf.Registry
         public EntityFactory(RegistryContext context)
             : base(context)
         {
-            
+
         }
 
         #endregion
-        
+
         #region Entity Search Functions
 
         /// <summary>
         /// Loads all entities of a given type.
         /// </summary>
-        /// <typeparam name="ItemType">Type of the entities to load.</typeparam>
+        /// <typeparam name="T">Type of the entities to load.</typeparam>
         /// <returns>An IEnumerable interface to the loaded objects.</returns>
-        public IEnumerable<ItemType> FindAll<ItemType>()
-            where ItemType : Entity, new()
+        public IEnumerable<T> FindAll<T>()
+            where T : Entity, new()
         {
-            var type = new ItemType().EntityType;
+            var type = Constants.EntityTypeMap[typeof(T)];
 
             var sql = @"
 WITH q AS
@@ -116,26 +116,14 @@ ORDER BY rn
 
             sql = String.Format(sql, type);
 
-            using (var cmd = RegistryContext.CreateTextCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
-                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
-                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
-                cmd.Parameters.Add("@From", SqlDbType.Int).Value = DBNull.Value;
-                cmd.Parameters.Add("@Max", SqlDbType.Int).Value = DBNull.Value;
+            var cmd = RegistryContext.CreateTextCommand(sql);
+            cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+            cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
+            cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
+            cmd.Parameters.Add("@From", SqlDbType.Int).Value = DBNull.Value;
+            cmd.Parameters.Add("@Max", SqlDbType.Int).Value = DBNull.Value;
 
-                using (var dr = cmd.ExecuteReader())
-                {
-                    while (dr.Read())
-                    {
-                        ItemType item = new ItemType();
-                        item.RegistryContext = RegistryContext;
-                        item.LoadFromDataReader(dr);
-                        yield return item;
-                    }
-                    dr.Close();
-                }
-            }
+            return new EntityCommandEnumerator<T>(RegistryContext, cmd, true);
         }
 
         public IEnumerable<T> FindChildren<T>(Entity parent)
@@ -159,55 +147,30 @@ ORDER BY Number
 
             sql = String.Format(sql, childrentype);
 
-            using (var cmd = RegistryContext.CreateTextCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
-                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
-                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
-                cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
+            var cmd = RegistryContext.CreateTextCommand(sql);
+            cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+            cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
+            cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
+            cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
 
-                using (var dr = cmd.ExecuteReader())
-                {
-                    while (dr.Read())
-                    {
-                        T item = new T();
-                        item.RegistryContext = RegistryContext;
-                        item.Parent = parent;
-                        item.LoadFromDataReader(dr);
-                        yield return item;
-                    }
-                    dr.Close();
-                }
-            }
+            return new EntityCommandEnumerator<T>(RegistryContext, cmd, true);
         }
 
         public IEnumerable<Entity> FindReferencing(Entity e)
         {
             var sql = @"spFindReferencingEntity";
 
-            using (var cmd = RegistryContext.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
-                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
-                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
-                cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = e.Guid;
+            var cmd = RegistryContext.CreateStoredProcedureCommand(sql);
+            cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+            cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
+            cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
+            cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = e.Guid;
 
-                using (var dr = cmd.ExecuteReader())
-                {
-                    while (dr.Read())
-                    {
-                        Entity item = new Entity();
-                        item.RegistryContext = RegistryContext;
-                        item.LoadFromDataReader(dr);
-                        yield return item;
-                    }
-                    dr.Close();
-                }
-            }
+            return new EntityCommandEnumerator<Entity>(RegistryContext, cmd, false);
         }
 
-        public IEnumerable<ItemType> FindConnection<ItemType>(Entity parent, Entity to, int? referenceType)
-            where ItemType : Entity, new()
+        public IEnumerable<T> FindConnection<T>(Entity parent, Entity to, int? referenceType)
+            where T : Entity, new()
         {
             var sql = @"
 WITH q AS
@@ -226,31 +189,18 @@ WITH q AS
 SELECT q.* FROM q
 ORDER BY Number";
 
-            var childrentype = new ItemType().EntityType;
+            var childrentype = Constants.EntityTypeMap[typeof(T)];
             sql = String.Format(sql, childrentype);
 
-            using (var cmd = RegistryContext.CreateTextCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
-                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
-                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
-                cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
-                cmd.Parameters.Add("@EntityGuidTo", SqlDbType.UniqueIdentifier).Value = to.Guid;
-                cmd.Parameters.Add("@ReferenceType", SqlDbType.Int).Value = referenceType.HasValue ? (object)referenceType.Value : DBNull.Value;
+            var cmd = RegistryContext.CreateTextCommand(sql);
+            cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+            cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
+            cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
+            cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
+            cmd.Parameters.Add("@EntityGuidTo", SqlDbType.UniqueIdentifier).Value = to.Guid;
+            cmd.Parameters.Add("@ReferenceType", SqlDbType.Int).Value = referenceType.HasValue ? (object)referenceType.Value : DBNull.Value;
 
-                using (var dr = cmd.ExecuteReader())
-                {
-                    while (dr.Read())
-                    {
-                        ItemType item = new ItemType();
-                        item.RegistryContext = RegistryContext;
-                        item.Parent = parent;
-                        item.LoadFromDataReader(dr);
-                        yield return item;
-                    }
-                    dr.Close();
-                }
-            }
+            return new EntityCommandEnumerator<T>(RegistryContext, cmd, true);
         }
 
         #endregion
@@ -267,54 +217,95 @@ ORDER BY Number";
         public IEnumerable<T> LoadEntities<T>(IEnumerable<Guid> guids)
             where T : Entity, new()
         {
+            var entityType = Constants.EntityTypeMap[typeof(T)];
+
             foreach (var guid in guids)
             {
-                yield return LoadEntity<T>(guid);
+                yield return (T)LoadEntity(entityType, guid);
             }
         }
 
-        /// <summary>
-        /// Loads a strongly typed entity by Guid.
-        /// </summary>
-        /// <param name="guid"></param>
-        /// <returns></returns>
         public Entity LoadEntity(Guid guid)
         {
-            Entity e = new Entity(RegistryContext);
-            e.Guid = guid;
-            e.Load();
+            EntityType entityType;
 
-            return LoadStronglyTypedEntity(e.EntityType, guid);
+            var sql = @"
+SELECT Entity.EntityType
+FROM Entity
+WHERE Entity.Guid = @Guid
+";
+
+            using (var cmd = RegistryContext.CreateTextCommand(sql))
+            {
+                cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = guid;
+
+                entityType = (EntityType)(Int32)cmd.ExecuteScalar();
+            }
+
+            return LoadEntity(entityType, guid);
         }
 
-        /// <summary>
-        /// Loads an entity identified by its GUID.
-        /// </summary>
-        /// <param name="guid">GUID of the entity to be loaded.</param>
-        /// <returns>The strongly typed entity.</returns>
-        /// <remarks>
-        /// The returned object is
-        /// strongly type to the entity type and not simply an <see cref="Entity"/> class.
-        /// </remarks>
+        private SqlCommand GetLoadEntityCommand(EntityType entityType, Guid guid)
+        {
+            var sql = @"
+SELECT Entity.*, [{0}].*, ROW_NUMBER () OVER ( ORDER BY Entity.Number ) AS rn
+FROM Entity
+INNER JOIN [{0}] ON [{0}].EntityGuid = Entity.Guid
+WHERE Entity.Guid = @Guid
+";
+
+            sql = String.Format(sql, entityType);
+
+            var cmd = RegistryContext.CreateTextCommand(sql);
+            cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+            cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = guid;
+
+            return cmd;
+        }
+
         public T LoadEntity<T>(Guid guid)
             where T : Entity, new()
         {
             if (typeof(T) == typeof(Entity))
             {
-                var e = new Entity(RegistryContext);
-                e.Guid = guid;
-                e.Load();
-
-                return (T)LoadStronglyTypedEntity(e.EntityType, guid);
+                return (T)LoadEntity(guid);
             }
             else
             {
-                var e = new T();
-                e.RegistryContext = RegistryContext;
-                e.Guid = guid;
-                e.Load();
+                var entityType = Constants.EntityTypeMap[typeof(T)];
+                return (T)LoadEntity(entityType, guid);
+            }
+        }
 
+        private Entity LoadEntity(EntityType entityType, Guid guid)
+        {
+            // This is somewhat slower due to reflection
+
+            Entity e;
+
+            if (RegistryContext.EntityCache.TryGet(guid, out e))
+            {
                 return e;
+            }
+            else
+            {
+                var classtype = Constants.EntityTypeMap[entityType];
+                using (var cmd = GetLoadEntityCommand(entityType, guid))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (!reader.Read())
+                        {
+                            throw Error.EntityNotFound(guid);
+                        }
+
+                        var entity = (Entity)Activator.CreateInstance(classtype);
+                        entity.RegistryContext = RegistryContext;
+                        entity.LoadFromDataReader(reader);
+                        RegistryContext.EntityCache.Add(entity);
+                        return entity;
+                    }
+                }
             }
         }
 
@@ -362,53 +353,45 @@ ORDER BY Number";
             return (T)LoadEntity(Constants.EntityTypeMap[typeof(T)], nameParts);
         }
 
-        private Entity LoadStronglyTypedEntity(EntityType entityType, Guid guid)
-        {
-            // Figure out class name from the entity type
-            var classname = "Jhu.Graywulf.Registry." + entityType.ToString();
-
-            // Create the strongly typed class and load the entity again
-            var classtype = Type.GetType(classname);
-
-            var e = (Entity)classtype.GetConstructor(new Type[] { typeof(RegistryContext) }).Invoke(new object[] { RegistryContext });
-            e.Guid = guid;
-            e.Load();
-
-            return e;
-        }
-
         private Entity LoadEntityByNameParts(EntityType entityType, string[] nameParts)
         {
-            var sql = @"spFindEntity_byName";
+            Guid guid;
+            Entity entity;
+            var fqn = CombineName(entityType, nameParts);
 
-            var npdt = new DataTable();
-            npdt.Columns.Add("ID", typeof(int));
-            npdt.Columns.Add("Name", typeof(string));
-
-            for (int i = 0; i < nameParts.Length; i++)
+            if (!RegistryContext.EntityCache.TryGet(fqn, out entity))
             {
-                npdt.Rows.Add(i, nameParts[i]);
-            }
+                var sql = @"spGetEntityGuid_byName";
 
-            using (var cmd = RegistryContext.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
-                cmd.Parameters.Add("@EntityType", SqlDbType.Int).Value = entityType == EntityType.Unknown ? (object)DBNull.Value : entityType;
-                cmd.Parameters.Add("@NameParts", SqlDbType.Structured).Value = npdt;
+                var npdt = new DataTable();
+                npdt.Columns.Add("ID", typeof(int));
+                npdt.Columns.Add("Name", typeof(string));
 
-                using (var dr = cmd.ExecuteReader())
+                for (int i = 0; i < nameParts.Length; i++)
                 {
-                    if (!dr.Read())
-                    {
-                        throw Error.EntityNotFound(String.Join(Constants.EntityNameSeparator.ToString(), nameParts));
-                    }
-
-                    var e = new Entity(RegistryContext);
-                    e.LoadFromDataReader(dr);
-
-                    return LoadStronglyTypedEntity(e.EntityType, e.Guid);
+                    npdt.Rows.Add(i, nameParts[i]);
                 }
+
+                using (var cmd = RegistryContext.CreateStoredProcedureCommand(sql))
+                {
+                    cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+                    cmd.Parameters.Add("@EntityType", SqlDbType.Int).Value = entityType == EntityType.Unknown ? (object)DBNull.Value : entityType;
+                    cmd.Parameters.Add("@NameParts", SqlDbType.Structured).Value = npdt;
+
+                    guid = (Guid)cmd.ExecuteScalar();
+
+                    // TODO: entity not found?
+                }
+
+                if (!RegistryContext.EntityCache.TryGet(guid, out entity))
+                {
+                    entity = LoadEntity(entityType, guid);
+                }
+
+                entity.SetFullyQualifiedName(fqn);
             }
+
+            return entity;
         }
 
         public bool CheckEntityDuplicate(EntityType entityType, Guid entityGuid, Guid parentEntityGuid, string name)

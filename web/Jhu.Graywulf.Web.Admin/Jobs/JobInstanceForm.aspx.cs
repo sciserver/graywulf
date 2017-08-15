@@ -90,9 +90,8 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
         {
             if (JobDefinition.SelectedValue != Guid.Empty.ToString())
             {
-                JobDefinition jd = new JobDefinition(RegistryContext);
-                jd.Guid = new Guid(JobDefinition.SelectedValue);
-                jd.Load();
+                var ef = new EntityFactory(RegistryContext);
+                var jd = ef.LoadEntity<JobDefinition>(new Guid(JobDefinition.SelectedValue));
 
                 parameters = jd.Parameters;
 
@@ -131,9 +130,8 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
         protected void JobDefinition_SelectedIndexChanged(object sender, EventArgs e)
         {
             //RefreshParametersTable();
-            JobDefinition jd = new JobDefinition(RegistryContext);
-            jd.Guid = new Guid(JobDefinition.SelectedValue);
-            jd.Load();
+            var ef = new EntityFactory(RegistryContext);
+            var jd = ef.LoadEntity<JobDefinition>(new Guid(JobDefinition.SelectedValue));
 
             WorkflowTypeName.Text = jd.WorkflowTypeName;
         }

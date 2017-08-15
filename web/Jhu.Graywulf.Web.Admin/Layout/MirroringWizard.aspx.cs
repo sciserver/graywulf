@@ -31,9 +31,8 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            item = new DatabaseDefinition(RegistryContext);
-            item.Guid = new Guid(Request.QueryString["guid"]);
-            item.Load();
+            var ef = new EntityFactory(RegistryContext);
+            item = ef.LoadEntity<DatabaseDefinition>(new Guid(Request.QueryString["guid"]));
 
             if (!IsPostBack)
             {
@@ -52,14 +51,13 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
         protected void Ok_Click(object sender, EventArgs e)
         {
+            var ef = new EntityFactory(RegistryContext);
             var jf = MirrorDatabaseJobFactory.Create(RegistryContext);
             var dis = new List<DatabaseInstance>();
 
             foreach (var guid in SourceDatabases.SelectedDataKeys)
             {
-                var di = new DatabaseInstance(RegistryContext);
-                di.Guid = new Guid(guid);
-                di.Load();
+                var di = ef.LoadEntity<DatabaseInstance>(new Guid(guid));
                 dis.Add(di);
             }
 
@@ -76,10 +74,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             par.AttachAsReadOnly = AttachAsReadOnly.Checked;
             par.RunCheckDb = RunCheckDb.Checked;
 
-            var q = new QueueInstance(RegistryContext);
-            q.Guid = new Guid(QueueInstance.SelectedValue);
-            q.Load();
-
+            var q = ef.LoadEntity<QueueInstance>(new Guid(QueueInstance.SelectedValue));
             var job = jf.ScheduleAsJob(par, q.GetFullyQualifiedName(), TimeSpan.Zero, "");
             job.Save();
 

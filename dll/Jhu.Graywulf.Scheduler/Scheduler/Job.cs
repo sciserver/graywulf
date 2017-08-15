@@ -8,7 +8,7 @@ namespace Jhu.Graywulf.Scheduler
     /// Represents a running job
     /// </summary>
     [Serializable]
-    internal class Job : JobInfo
+    public class Job : JobInfo
     {
         private int appDomainID;
         private Guid queueGuid;
@@ -109,7 +109,7 @@ namespace Jhu.Graywulf.Scheduler
                 timeout = this.timeout <= queueTimeout ? this.timeout : queueTimeout;
             }
 
-            var runtime = DateTime.Now - timeStarted;
+            var runtime = DateTime.UtcNow - timeStarted;
 
             return runtime > timeout &&
                    timeout != TimeSpan.Zero &&

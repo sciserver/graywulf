@@ -9,6 +9,7 @@ using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry.Check;
 using Jhu.Graywulf.Web.Check;
 using Jhu.Graywulf.RemoteService;
+using Jhu.Graywulf.Scheduler;
 
 namespace Jhu.Graywulf.Web.UI
 {
@@ -23,9 +24,6 @@ namespace Jhu.Graywulf.Web.UI
 
             // Test registry and log databases
             checks.AddRange(Logging.LoggingContext.Current.GetCheckRoutines());
-
-            // TODO: add logging checks
-            //checks.Add(new DatabaseCheck(Jhu.Graywulf.Logging.AppSettings.ConnectionString));
 
             // Test SMTP and target email addresses
             checks.Add(new EmailCheck(RegistryContext.Domain.ShortTitle, RegistryContext.Domain.Email, RegistryContext.Domain.Email));
@@ -56,7 +54,8 @@ namespace Jhu.Graywulf.Web.UI
             // Test remoting service on hosts running SQL Server
             RegisterRemotingServiceChecks(checks);
 
-            // TODO: scheduler test
+            // Test scheduler service on hosts in the Controller machine role
+            RegisterSchedulerServiceChecks(checks);
 
             // These take a long time so only add if not filtered
             if ((Filter & CheckCategory.Service) != 0)
@@ -73,9 +72,7 @@ namespace Jhu.Graywulf.Web.UI
         private void RegisterDllChecks(List<CheckRoutineBase> checks)
         {
             var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin");
-            dir = Path.Combine(dir, Jhu.Graywulf.Components.AppDomainManager.Configuration.AssemblyPath);
-
-            var webassembly = Assembly.GetAssembly(this.GetType());
+            var webassembly = this.GetType().BaseType.Assembly;
             var check = new AssemblyCheck(dir, webassembly);
 
             checks.Add(check);
@@ -98,6 +95,31 @@ namespace Jhu.Graywulf.Web.UI
             foreach (var host in hosts)
             {
                 checks.Add(new RemoteServiceCheck(host));
+            }
+        }
+
+        private void RegisterSchedulerServiceChecks(List<CheckRoutineBase> checks)
+        {
+            var hosts = new HashSet<string>();
+            RegistryContext.Cluster.LoadMachineRoles(false);
+            var mr = RegistryContext.Cluster.MachineRoles[Registry.Constants.ControllerMachineRoleName];
+            mr.LoadMachines(false);
+
+            foreach (var m in mr.Machines.Values)
+            {
+                var host = m.HostName.ResolvedValue;
+
+                if (m.DeploymentState == Registry.DeploymentState.Deployed &&
+                    m.RunningState == Registry.RunningState.Running &&
+                    !hosts.Contains(host))
+                {
+                    hosts.Add(host);
+                }
+            }
+
+            foreach (var host in hosts)
+            {
+                checks.Add(new SchedulerCheck(host));
             }
         }
 

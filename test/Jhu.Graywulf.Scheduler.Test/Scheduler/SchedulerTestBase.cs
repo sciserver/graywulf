@@ -7,8 +7,10 @@ using Jhu.Graywulf.Test;
 
 namespace Jhu.Graywulf.Scheduler
 {
-    public abstract class SchedulerTestBase: TestClassBase
+    public abstract class SchedulerTestBase : TestClassBase
     {
+        protected ServiceTesterToken token;
+
         public static void ClassInitialize()
         {
             using (SchedulerTester.Instance.GetExclusiveToken())
@@ -29,6 +31,38 @@ namespace Jhu.Graywulf.Scheduler
 
                 PurgeTestJobs();
                 StopLogger();
+            }
+        }
+
+        public void TestInitialize(bool layout, int instances)
+        {
+            token = SchedulerTester.Instance.GetExclusiveToken();
+            PurgeTestJobs();
+            var options = new SchedulerDebugOptions()
+            {
+                IsControlServiceEnabled = true,
+                IsLayoutRequired = layout,
+                InstanceCount = instances
+            };
+            SchedulerTester.Instance.EnsureRunning(options);
+        }
+
+        public virtual void TestCleanup()
+        {
+            try
+            {
+                if (SchedulerTester.Instance.IsRunning)
+                {
+                    SchedulerTester.Instance.DrainStop();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                token.Dispose();
             }
         }
     }

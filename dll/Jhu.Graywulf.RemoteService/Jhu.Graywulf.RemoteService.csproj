@@ -54,10 +54,6 @@
     <Compile Include="RemoteService\Constants.cs" />
     <Compile Include="RemoteService\IRemoteService.cs" />
     <Compile Include="RemoteService\IRemoteServiceControl.cs" />
-    <Compile Include="RemoteService\LimitedAccessOperationAttribute.cs" />
-    <Compile Include="RemoteService\LimitedAccessOperationInvoker.cs" />
-    <Compile Include="RemoteService\NetDataContractAttribute.cs" />
-    <Compile Include="RemoteService\NetDataContractSerializerOperationBehavior.cs" />
     <Compile Include="RemoteService\RemoteServiceAttribute.cs" />
     <Compile Include="RemoteService\RemoteServiceBase.cs" />
     <Compile Include="RemoteService\RemoteServiceCheck.cs" />
@@ -94,6 +90,10 @@
     <ProjectReference Include="..\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
       <Project>{fd98fb58-a3e5-4d32-b6d6-3e20609c4d09}</Project>
       <Name>Jhu.Graywulf.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.ServiceModel\Jhu.Graywulf.ServiceModel.csproj">
+      <Project>{aa744162-dfa0-46bc-be03-20d50dd77806}</Project>
+      <Name>Jhu.Graywulf.ServiceModel</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -40,7 +40,6 @@
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -54,21 +53,25 @@
     <Compile Include="Logging\ConsoleLogWriterConfiguration.cs" />
     <Compile Include="Logging\Constants.cs" />
     <Compile Include="Logging\Enum.cs" />
+    <Compile Include="Logging\Error.cs" />
     <Compile Include="Logging\Event.cs" />
     <Compile Include="Logging\EventFilter.cs" />
+    <Compile Include="Logging\ExceptionMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+    </Compile>
     <Compile Include="Logging\FileLogWriterConfiguration.cs" />
     <Compile Include="Logging\FileLogWriter.cs" />
     <Compile Include="Logging\LoggingContext.cs" />
     <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\LoggingException.cs" />
     <Compile Include="Logging\LogWriterBase.cs" />
     <Compile Include="Logging\LogWriterConfigurationBase.cs" />
     <Compile Include="Logging\LogWriterFactory.cs" />
     <Compile Include="Logging\SqlLogWriterConfiguration.cs" />
     <Compile Include="Logging\SqlLogWriter.cs" />
     <Compile Include="Logging\StreamLogWriter.cs" />
-    <Compile Include="Logging\WcfLoggingBehavior.cs" />
-    <Compile Include="Logging\WcfLoggingContext.cs" />
-    <Compile Include="Logging\WcfLoggingOperationInvoker.cs" />
     <Compile Include="Logging\WebEventFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -88,6 +91,12 @@
   <ItemGroup>
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Logging\ExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\build\Jhu.Graywulf.Build.targets" />

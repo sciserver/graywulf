@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Registry
         public const string ClusterAdminUserPassword = "graywulf";
         public const string ControllerMachineRoleName = "Controller";
         public const string ControllerMachineName = "Controller";
+        public const string WebMachineRoleName = "Web";
         public const string NodeMachineRoleName = "Node";
         public const string ServerVersionName = "MSSQL";
         public const string ServerInstanceName = "MSSQL";

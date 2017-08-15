@@ -16,6 +16,7 @@ namespace Jhu.Graywulf.Web.Check
         }
 
         public Uri Uri { get; set; }
+        public string Host { get; set; }
         private HttpStatusCode ExpectedStatus;
 
         public UrlCheck(string uri)
@@ -33,22 +34,37 @@ namespace Jhu.Graywulf.Web.Check
             this.ExpectedStatus = expectedStatus;
         }
 
+        public UrlCheck(string uri, string host, HttpStatusCode expectedStatus)
+        {
+            InitializeMembers();
+
+            this.Uri = new Uri(uri, UriKind.RelativeOrAbsolute);
+            this.Host = host;
+            this.ExpectedStatus = expectedStatus;
+        }
+
         private void InitializeMembers()
         {
             this.Uri = null;
             this.ExpectedStatus = HttpStatusCode.OK;
         }
 
-        public override void Execute(TextWriter output)
+        protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
-            output.WriteLine(
-                "Testing URL {0} expecting HTTP status {1}",
+            yield return ReportInfo(
+                "Testing URL {0}; expecting HTTP status {1}",
                 Uri,
                 (int)ExpectedStatus);
 
             try
             {
-                var req = HttpWebRequest.Create(Uri);
+                var req = (HttpWebRequest)HttpWebRequest.Create(Uri);
+
+                if (!String.IsNullOrWhiteSpace(Host))
+                {
+                    req.Host = Host;
+                }
+
                 var res = req.GetResponse();
 
                 var status = ((HttpWebResponse)res).StatusCode;
@@ -66,7 +82,7 @@ namespace Jhu.Graywulf.Web.Check
                 }
             }
 
-            output.WriteLine("Page retrieved successfully.");
+            yield return ReportSuccess("Page retrieved successfully.");
         }
     }
 }

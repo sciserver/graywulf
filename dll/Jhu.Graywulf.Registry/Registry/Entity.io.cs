@@ -105,8 +105,11 @@ namespace Jhu.Graywulf.Registry
         /// The value of the <see cref="Guid" /> property and the object context must be set.
         /// The <see cref="RegistryContext" /> property must have a value of a valid object context with open database connection.
         /// </remarks>
-        public void Load()
+        private void Load()
         {
+            // TODO: instead of using this, entities should be loaded using
+            // the EntityFactory class which also adds caching support.
+
             var sql = DBHelpers[this.GetType()].SelectQuery;
 
             using (var cmd = RegistryContext.CreateTextCommand(sql))
@@ -243,6 +246,8 @@ namespace Jhu.Graywulf.Registry
 
             isExisting = true;
 
+            RegistryContext.EntityCache.Add(this);
+
             LogDebug();
         }
 
@@ -261,7 +266,7 @@ namespace Jhu.Graywulf.Registry
             if (!forceOverwrite) CheckConcurrency();
 
             // --- Modify record in the Entities table ---
-            this.dateModified = DateTime.Now;
+            this.dateModified = DateTime.UtcNow;
 
             string sql = "spModifyEntity";
 
@@ -287,6 +292,8 @@ namespace Jhu.Graywulf.Registry
                     cmd.ExecuteNonQuery();
                 }
             }
+
+            // TODO: what to do with the cache if the name has changed?
 
             LogDebug();
         }
@@ -404,7 +411,7 @@ namespace Jhu.Graywulf.Registry
 
                 this.concurrencyVersion = BitConverter.ToInt64((byte[])cmd.Parameters["@ConcurrencyVersion"].Value, 0);
                 this.deleted = true;
-                this.dateDeleted = DateTime.Now;
+                this.dateDeleted = DateTime.UtcNow;
                 this.userGuidDeleted = RegistryContext.UserReference.Guid;
             }
 
@@ -428,7 +435,7 @@ namespace Jhu.Graywulf.Registry
             using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 AppendBasicParameters(cmd);
-                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = RegistryContext.JobReference.Guid;
+                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = RegistryContext.LockOwner;
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Value = BitConverter.GetBytes(this.concurrencyVersion);
                 cmd.Parameters.Add("RETVAL", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
 
@@ -600,7 +607,11 @@ namespace Jhu.Graywulf.Registry
         private void ObtainLockRecursively()
         {
             LoadAllChildren(false);
-            foreach (Entity e in EnumerateAllChildren()) e.ObtainLockRecursively();
+
+            foreach (Entity e in EnumerateAllChildren())
+            {
+                e.ObtainLockRecursively();
+            }
 
             CheckConcurrency();
 
@@ -609,13 +620,13 @@ namespace Jhu.Graywulf.Registry
             using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 AppendBasicParameters(cmd);
-                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = RegistryContext.JobReference.Guid;
+                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = RegistryContext.LockOwner;
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Direction = ParameterDirection.Output;
                 cmd.Parameters.Add("RETVAL", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
 
                 cmd.ExecuteNonQuery();
 
-                this.lockOwner = RegistryContext.JobReference.Guid;
+                this.lockOwner = RegistryContext.LockOwner;
                 this.concurrencyVersion = BitConverter.ToInt64((byte[])cmd.Parameters["@ConcurrencyVersion"].Value, 0);
             }
 
@@ -663,7 +674,7 @@ namespace Jhu.Graywulf.Registry
             using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 AppendBasicParameters(cmd);
-                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = RegistryContext.JobReference.Guid;
+                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = RegistryContext.LockOwner; ;
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Direction = ParameterDirection.Output;
                 cmd.Parameters.Add("RETVAL", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
 

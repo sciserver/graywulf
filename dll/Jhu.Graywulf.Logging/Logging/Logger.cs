@@ -84,12 +84,14 @@ namespace Jhu.Graywulf.Logging
         /// Write a single event directly to the writers
         /// </summary>
         /// <param name="e"></param>
-        public void WriteEvent(Event e)
+        internal void WriteEvent(Event e)
         {
             if (this.status != LoggerStatus.Started)
             {
                 throw new InvalidOperationException();  // *** TODO
             }
+
+            e.Validate();
 
             foreach (var writer in writers)
             {

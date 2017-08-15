@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// Exception, if there is any.
         /// </summary>
-        public string ExceptionMessage;
+        public Exception Exception;
 
         public WorkflowApplicationHostEventArgs(WorkflowEventType eventType, Guid instanceId)
         {
@@ -33,11 +33,11 @@ namespace Jhu.Graywulf.Scheduler
             this.InstanceId = instanceId;
         }
 
-        public WorkflowApplicationHostEventArgs(WorkflowEventType eventType, Guid instanceId, string exceptionMessage)
+        public WorkflowApplicationHostEventArgs(WorkflowEventType eventType, Guid instanceId, Exception exception)
         {
             this.EventType = eventType;
             this.InstanceId = instanceId;
-            this.ExceptionMessage = exceptionMessage;
+            this.Exception = exception;
         }
     }
 }

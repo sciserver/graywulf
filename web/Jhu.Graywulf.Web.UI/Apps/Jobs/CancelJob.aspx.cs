@@ -31,9 +31,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
 
             foreach (var guid in guids)
             {
-                var job = new JobInstance(RegistryContext);
-                job.Guid = guid;
-                job.Load();
+                var ef = new EntityFactory(RegistryContext);
+                var job = ef.LoadEntity<JobInstance>(guid);
 
                 if (IsAuthenticatedUser(job.UserGuidOwner))
                 {

@@ -21,22 +21,22 @@ namespace Jhu.Graywulf.Check
             LogWriter = writer;
         }
 
-        public override void Execute(TextWriter output)
+        protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
             var message = String.Format("Testing log writer {0}.", LogWriter.GetType().Name);
-            output.WriteLine(message);
+            yield return ReportInfo(message);
 
             var e = Logging.LoggingContext.Current.CreateEvent(
                 Logging.EventSeverity.Operation,
                 Logging.EventSource.WebUI,
                 message,
-                null,
+                GetType().FullName,
                 null,
                 null);
 
             LogWriter.WriteEvent(e);
 
-            output.WriteLine("Log event written successfully.");
+            yield return ReportSuccess("Log event written successfully.");
         }
     }
 }

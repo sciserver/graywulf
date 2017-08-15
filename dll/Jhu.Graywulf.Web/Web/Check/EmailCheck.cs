@@ -28,16 +28,13 @@ namespace Jhu.Graywulf.Web.Check
             this.ToEmail = toEmail;
         }
 
-        public override void Execute(TextWriter output)
+        protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
             var smtpclient = new SmtpClient();
 
-            output.WriteLine(
-                "Sending e-mail message to {0}",
-                ToEmail);
-
-            output.WriteLine("Delivery method: {0}", smtpclient.DeliveryMethod);
-            output.WriteLine("Server: {0}:{1}", smtpclient.Host, smtpclient.Port);
+            yield return ReportInfo("Sending e-mail message to {0}", ToEmail);
+            yield return ReportInfo("Delivery method: {0}", smtpclient.DeliveryMethod);
+            yield return ReportInfo("Server: {0}:{1}", smtpclient.Host, smtpclient.Port);
 
             var subject = String.Format("{0} test message from {1}", FromName, Environment.MachineName);
             var body = "Test message, please ignore.";
@@ -49,7 +46,7 @@ namespace Jhu.Graywulf.Web.Check
 
             Util.EmailTemplateUtility.SendMessage(msg);
 
-            output.WriteLine("E-mail message sent.");
+            yield return ReportSuccess("E-mail message sent.");
         }
     }
 }

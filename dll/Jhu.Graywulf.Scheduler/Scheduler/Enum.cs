@@ -10,6 +10,8 @@ namespace Jhu.Graywulf.Scheduler
     /// </summary>
     public enum WorkflowEventType
     {
+        Unknown,
+
         /// <summary>
         /// Workflow completed without unhandled exceptions.
         /// </summary>
@@ -42,6 +44,7 @@ namespace Jhu.Graywulf.Scheduler
         Resuming,
         Executing,
         TimedOut,
+        Persisting,
         Persisted,
         Failed,
         Cancelled,

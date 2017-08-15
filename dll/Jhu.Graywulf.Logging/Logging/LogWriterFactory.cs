@@ -26,15 +26,19 @@ namespace Jhu.Graywulf.Logging
                 config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             }
 
+            var res = new List<LogWriterBase>();
             var group = config.GetSectionGroup(Constants.ConfigSectionGroupName);
-            var res = new List<LogWriterBase>(group.Sections.Keys.Count);
 
-            foreach (LogWriterConfigurationBase section in group.Sections)
+            // When called from powershell scripts, config might be null
+            if (group != null)
             {
-                if (section.SectionInformation.IsDeclared && section.IsEnabled)
+                foreach (LogWriterConfigurationBase section in group.Sections)
                 {
-                    var writer = section.CreateLogWriter();
-                    res.Add(writer);
+                    if (section.SectionInformation.IsDeclared && section.IsEnabled)
+                    {
+                        var writer = section.CreateLogWriter();
+                        res.Add(writer);
+                    }
                 }
             }
 

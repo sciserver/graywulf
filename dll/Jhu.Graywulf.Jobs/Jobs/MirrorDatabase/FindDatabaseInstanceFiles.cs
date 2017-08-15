@@ -23,10 +23,8 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
 
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                DatabaseInstance di = new DatabaseInstance(context);
-                di.Guid = databaseinstanceguid;
-                di.Load();
-
+                var ef = new EntityFactory(context);
+                var di = ef.LoadEntity<DatabaseInstance>(databaseinstanceguid);
                 di.LoadFileGroups(false);
 
                 // Files will be sorted by logical volume to allow parallel copies

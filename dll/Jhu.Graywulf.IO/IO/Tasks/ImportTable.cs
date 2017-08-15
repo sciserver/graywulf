@@ -5,10 +5,9 @@ using System.Text;
 using System.IO;
 using System.ServiceModel;
 using Jhu.Graywulf.Components;
+using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
-using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.Format;
-using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.IO.Tasks
 {

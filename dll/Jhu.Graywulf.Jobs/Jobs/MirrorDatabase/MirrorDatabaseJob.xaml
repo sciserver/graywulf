@@ -86,7 +86,7 @@
       <Variable x:TypeArguments="scg:Queue(s:Guid)" Default="[Nothing]" Name="SourceDatabaseQueue" />
       <Variable x:TypeArguments="scg:Queue(s:Guid)" Default="[Nothing]" Name="DestinationDatabaseQueue" />
     </Sequence.Variables>
-    <local:FindSourcesAndDestinations EntityGuid="{x:Null}" DestinationDatabaseInstanceGuids="[Parameters.DestinationDatabaseInstanceGuids]" DestinationDatabaseQueue="[DestinationDatabaseQueue]" sap2010:WorkflowViewState.IdRef="FindSourcesAndDestinations_1" SourceDatabaseInstanceGuids="[Parameters.SourceDatabaseInstanceGuids]" SourceDatabaseQueue="[SourceDatabaseQueue]" JobInfo="[JobInfo]" />
+    <local:FindSourcesAndDestinations EntityGuid="{x:Null}" DestinationDatabaseInstanceGuids="[Parameters.DestinationDatabaseInstanceGuids]" DestinationDatabaseQueue="[DestinationDatabaseQueue]" sap2010:WorkflowViewState.IdRef="FindSourcesAndDestinations_1" JobInfo="[JobInfo]" SourceDatabaseInstanceGuids="[Parameters.SourceDatabaseInstanceGuids]" SourceDatabaseQueue="[SourceDatabaseQueue]" />
     <ParallelForEach x:TypeArguments="s:Guid" DisplayName="ParallelForEach DestinationDatabaseInstance" sap2010:WorkflowViewState.IdRef="ParallelForEach`1_2" Values="[DestinationDatabaseQueue]">
       <ActivityAction x:TypeArguments="s:Guid">
         <ActivityAction.Argument>
@@ -120,9 +120,9 @@
             <x:Reference>__ReferenceID1</x:Reference>
             <x:Reference>__ReferenceID2</x:Reference>
           </Flowchart>
-          <jga1:LockEntity DisplayName="LockSourceDatabase" EntityGuid="[SourceDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="LockEntity_1" JobInfo="[JobInfo]" />
-          <jga1:LockEntity DisplayName="LockDestinationDatabase" EntityGuid="[DestinationDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="LockEntity_2" JobInfo="[JobInfo]" />
-          <local:FindDatabaseInstanceFiles EntityGuid="{x:Null}" sap2010:WorkflowViewState.IdRef="FindDatabaseInstanceFiles_1" SourceDatabaseInstanceFileGuids="[SourceDatabaseInstanceFileGuids]" SourceDatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" JobInfo="[JobInfo]" />
+          <jga1:LockEntity DisplayName="LockSourceDatabase" EntityGuid="[SourceDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="LockEntity_1" JobInfo="[JobInfo]" LockOwner="[JobInfo.JobGuid]" />
+          <jga1:LockEntity DisplayName="LockDestinationDatabase" EntityGuid="[DestinationDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="LockEntity_2" JobInfo="[JobInfo]" LockOwner="[JobInfo.JobGuid]" />
+          <local:FindDatabaseInstanceFiles EntityGuid="{x:Null}" sap2010:WorkflowViewState.IdRef="FindDatabaseInstanceFiles_1" JobInfo="[JobInfo]" SourceDatabaseInstanceFileGuids="[SourceDatabaseInstanceFileGuids]" SourceDatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" />
           <local:DetachDatabase EntityGuid="{x:Null}" DatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" DisplayName="DetachSourceDatabase" sap2010:WorkflowViewState.IdRef="DetachDatabase_1" JobInfo="[JobInfo]" />
           <ParallelForEach x:TypeArguments="s:Guid" DisplayName="ParallelForEach DiskVolume" sap2010:WorkflowViewState.IdRef="ParallelForEach`1_1" Values="[SourceDatabaseInstanceFileGuids.Keys]">
             <ActivityAction x:TypeArguments="s:Guid">
@@ -134,19 +134,19 @@
                   <ActivityAction.Argument>
                     <DelegateInArgument x:TypeArguments="s:Guid" Name="sourceFileGuid" />
                   </ActivityAction.Argument>
-                  <jga:Retry Finally="{x:Null}" JobInfo="[JobInfo]" sap2010:WorkflowViewState.IdRef="Retry_1" MaxRetries="3">
-                    <local:MirrorDatabaseFile EntityGuid="{x:Null}" EntityGuidFrom="{x:Null}" EntityGuidTo="{x:Null}" DestinationDatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" FileCopyDirection="[Jhu.Graywulf.Registry.FileCopyDirection.Push]" sap2010:WorkflowViewState.IdRef="MirrorDatabaseFile_1" SkipExistingFile="[Parameters.SkipExistingFiles]" SourceFileGuid="[sourceFileGuid]" JobInfo="[JobInfo]" />
+                  <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_1" JobInfo="[JobInfo]" MaxRetries="3">
+                    <local:MirrorDatabaseFile EntityGuid="{x:Null}" EntityGuidFrom="{x:Null}" EntityGuidTo="{x:Null}" DestinationDatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" FileCopyDirection="[Jhu.Graywulf.Registry.FileCopyDirection.Push]" sap2010:WorkflowViewState.IdRef="MirrorDatabaseFile_1" JobInfo="[JobInfo]" SkipExistingFile="[Parameters.SkipExistingFiles]" SourceFileGuid="[sourceFileGuid]" />
                   </jga:Retry>
                 </ActivityAction>
               </ForEach>
             </ActivityAction>
           </ParallelForEach>
-          <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_2" MaxRetries="5" JobInfo="[JobInfo]">
+          <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_2" JobInfo="[JobInfo]" MaxRetries="5">
             <local:AttachDatabase EntityGuid="{x:Null}" AttachReadOnly="[Parameters.AttachAsReadOnly]" DatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" DisplayName="AttachSourceDatabase" sap2010:WorkflowViewState.IdRef="AttachDatabase_1" JobInfo="[JobInfo]" />
           </jga:Retry>
-          <jga1:ReleaseEntity DisplayName="ReleaseSourceDatabase" EntityGuid="[SourceDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="ReleaseEntity_1" JobInfo="[JobInfo]" />
+          <jga1:ReleaseEntity DisplayName="ReleaseSourceDatabase" EntityGuid="[SourceDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="ReleaseEntity_1" JobInfo="[JobInfo]" LockOwner="[JobInfo.JobGuid]" />
           <jga:EnqueueItem x:TypeArguments="s:Guid" DisplayName="EnqueueSourceDatabase" sap2010:WorkflowViewState.IdRef="EnqueueItem`1_1" InputQueue="[SourceDatabaseQueue]" Item="[SourceDatabaseInstanceGuid]" />
-          <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_3" MaxRetries="5" JobInfo="[JobInfo]" >
+          <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_3" JobInfo="[JobInfo]" MaxRetries="5">
             <local:AttachDatabase EntityGuid="{x:Null}" AttachReadOnly="[Parameters.AttachAsReadOnly]" DatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" DisplayName="AttachDestinationDatabase" sap2010:WorkflowViewState.IdRef="AttachDatabase_2" JobInfo="[JobInfo]" />
           </jga:Retry>
           <If Condition="[Parameters.RunCheckDb]" sap2010:WorkflowViewState.IdRef="If_1">
@@ -154,7 +154,7 @@
               <local:RunCheckDb DatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" EntityGuid="[DestinationDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="RunCheckDb_1" JobInfo="[JobInfo]" />
             </If.Then>
           </If>
-          <jga1:ReleaseEntity DisplayName="ReleaseDestinationDatabase" EntityGuid="[DestinationDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="ReleaseEntity_2" JobInfo="[JobInfo]" />
+          <jga1:ReleaseEntity DisplayName="ReleaseDestinationDatabase" EntityGuid="[DestinationDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="ReleaseEntity_2" JobInfo="[JobInfo]" LockOwner="[JobInfo.JobGuid]" />
           <If Condition="[Parameters.CascadedCopy]" sap2010:WorkflowViewState.IdRef="If_2">
             <If.Then>
               <jga:EnqueueItem x:TypeArguments="s:Guid" DisplayName="EnqueueDestinationDatabase" sap2010:WorkflowViewState.IdRef="EnqueueItem`1_2" InputQueue="[SourceDatabaseQueue]" Item="[DestinationDatabaseInstanceGuid]" />
@@ -163,7 +163,7 @@
         </Sequence>
       </ActivityAction>
     </ParallelForEach>
-    <sads:DebugSymbol.Symbol>d3FDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjJcZ3JheXd1bGZcZGxsXEpodS5HcmF5d3VsZi5Kb2JzXEpvYnNcTWlycm9yRGF0YWJhc2VcTWlycm9yRGF0YWJhc2VKb2IueGFtbF1VA6gBDgIBAVc9V0gCAQNYPVhIAgECWgVaogMDAYcBWwWmARcCAQRa8gJaiQMDAZABWl5ajQEDAY8BWpMDWp8DAwGNAVqzAlrdAgMBjAFaiwJalgIDAYoBWqcBWsMBAwGIAVumAVvCAQMBhQFgCaQBFAIBBWI4YkYCAQhjOGNQAgEGZgt7FwIBfHwLfMIBAgF1fQt9zAECAW5+C36qAgIBZX8Lf+0BAgFegAELkAEdAgFKkQELkwEXAgE8lAELlAHLAQIBNZUBC5UB1AECATCWAQuYARcCASKZAQudARACAReeAQueAdUBAgEQnwELowEQAgEJaRFpuAEDAYABa0NrbgIBf24ZbmACAX18swF8vwECAXp8ngF8qQECAXh8SHxmAgF2fb0BfckBAgFzfagBfbMBAgFxfU19cAIBb37zAX6RAgIBbH6bAn6nAgIBan6IAX6TAQIBaH60AX7XAQIBZn9Mf2oCAWN/3gF/6gECAWF/yQF/1AECAV+AAZsBgAHDAQIBXIUBD44BGQIBS5EBcpEBdQIBQZEBf5EBiwECAT+RAVuRAWYCAT2SAQ2SAZ4CAgFClAG8AZQByAECATqUAacBlAGyAQIBOJQBTpQBbAIBNpUBlgGVAa0BAgEzlQGzAZUB0QECATGWAXKWAXUCASeWAX+WAYsBAgEllgFblgFmAgEjlwENlwGoAgIBKJkBGZkBMgIBGJsBD5sB5AECARmeAcYBngHSAQIBFZ4BsQGeAbwBAgETngFTngF2AgERnwEZnwE0AgEKoQEPoQHiAQIBC2l4aY8BAwGDAWmXAWm1AQMBgQFuKW4zAgF+hQGRAYUBxAECAVmKAROMAR8CAUySAX2SAZsBAgFIkgGPApIBmwICAUaSAfoBkgGFAgIBRJIBSJIBZwIBQ5cBfZcBoAECAS6XAZkClwGlAgIBLJcBhAKXAY8CAgEqlwFIlwFnAgEpmwE2mwFZAgEgmwHVAZsB4QECAR6bAcABmwHLAQIBHJsBZZsBiAECARqhAZ8BoQG2AQIBDqEBvAGhAd8BAgEMigGNAYoBkAECAU2LARWLAbUDAgFOiwHNAYsB/QECAViLAdoCiwH6AgIBV4sBpgOLAbIDAgFViwGKA4sBnAMCAVOLAb0CiwHIAgIBUYsBlwGLAboBAgFP</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d3FDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjNcZ3JheXd1bGZcZGxsXEpodS5HcmF5d3VsZi5Kb2JzXEpvYnNcTWlycm9yRGF0YWJhc2VcTWlycm9yRGF0YWJhc2VKb2IueGFtbFVUA6cBDgIBAVY9VkgCAQNXPVdIAgECWQVZjAMCAXVaBaUBFwIBBFnyAlmJAwIBfFleWY0BAgF7WYsCWZYCAgF5WbMCWd0CAgF4WacBWcMBAgF2WqYBWsIBAgFzXwmjARQCAQVhOGFGAgEIYjhiUAIBBmULehcCAWp7C3vKAQIBZHwLfNQBAgFefQt9lAICAVd+C37XAQIBUn8LjwEdAgE+kAELkgEXAgE0kwELkwHTAQIBLpQBC5QB1AECASmVAQuXARcCAR+YAQucARACARadAQudAd0BAgEQngELogEQAgEJaBFouAECAW5qQ2puAgFtbRltYAIBa3u0AXvHAQIBaXueAXupAQIBZ3tIe2YCAWV8vgF80QECAWN8qAF8swECAWF8TXxwAgFfffMBfZECAgFcfYgBfZMBAgFafbQBfdcBAgFYfkx+agIBVX7JAX7UAQIBU3+bAX/DAQIBUIQBD40BGQIBP5ABcpABdQIBN5ABW5ABZgIBNZEBDZEBiAICATiTAb0BkwHQAQIBM5MBpwGTAbIBAgExkwFOkwFsAgEvlAGWAZQBrQECASyUAbMBlAHRAQIBKpUBcpUBdQIBIpUBW5UBZgIBIJYBDZYBkgICASOYARmYATICAReaAQ+aAc4BAgEYnQHHAZ0B2gECARWdAbEBnQG8AQIBE50BU50BdgIBEZ4BGZ4BNAIBCqABD6AB4gECAQtoeGiPAQIBcWiXAWi1AQIBb20pbTMCAWyEAZEBhAHEAQIBTYkBE4sBHwIBQJEBfZEBmwECATyRAfoBkQGFAgIBOpEBSJEBZwIBOZYBfZYBoAECASeWAYQClgGPAgIBJZYBSJYBZwIBJJoBNpoBWQIBHZoBwAGaAcsBAgEbmgFlmgGIAQIBGaABnwGgAbYBAgEOoAG8AaAB3wECAQyJAXqJAX0CAUOJAWOJAW4CAUGKARWKAZ8DAgFEigHNAYoB/QECAUyKAdoCigH6AgIBS4oBvQKKAcgCAgFJigGKA4oBnAMCAUeKAZcBigG6AQIBRQ==</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>

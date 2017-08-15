@@ -7,6 +7,7 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.Configuration;
+using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.Scheduler
 {
@@ -19,12 +20,23 @@ namespace Jhu.Graywulf.Scheduler
 
         protected override void OnStart(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += Util.ServiceControl.WriteErrorDump;
+
+            // Initialize logger
+            LoggingContext.Current.StartLogger(Logging.EventSource.Scheduler, false);
+
+            // Initialize WCF service host to run the control service
+            // It will start the logger
             QueueManager.Instance.Start(Registry.ContextManager.Configuration.ClusterName, false);
         }
 
         protected override void OnStop()
         {
+            // The queue manager will also stop the logger
             QueueManager.Instance.Stop(TimeSpan.FromHours(1.5));
+
+            // Stop logger
+            LoggingContext.Current.StopLogger();
         }
 
         protected override void OnPause()

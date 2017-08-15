@@ -21,15 +21,14 @@ namespace Jhu.Graywulf.Web.Security
             this.FederationContext = context;
         }
 
-        public override void Execute(System.IO.TextWriter output)
+        protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
-            output.WriteLine("Checking identity provider module.");
-
+            yield return ReportInfo("Checking identity provider module.");
             var ip = IdentityProvider.Create(FederationContext.Domain);
-            output.WriteLine("Identity provider module: {0}", ip.GetType().FullName);
+            yield return ReportSuccess("Identity provider module: {0}", ip.GetType().FullName);
         }
 
-        public override IEnumerable<Graywulf.Check.CheckRoutineBase> GetCheckRoutines()
+        protected override IEnumerable<Graywulf.Check.CheckRoutineBase> OnGetCheckRoutines()
         {
             var ip = IdentityProvider.Create(FederationContext.Domain);
             return ip.GetCheckRoutines();

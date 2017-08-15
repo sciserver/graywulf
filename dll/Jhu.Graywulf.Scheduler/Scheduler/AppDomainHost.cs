@@ -1,16 +1,15 @@
 ﻿using System;
-using Jhu.Graywulf.Activities;
-using Jhu.Graywulf.Registry;
+using System.Collections.Generic;
 
 namespace Jhu.Graywulf.Scheduler
 {
     /// <summary>
-    /// Wraps an AppDomain that can be unloaded when idle.
+    /// Keeps track of an AppDomain that can be unloaded when idle.
     /// </summary>
     /// <remarks>
-    /// Every WorkflowApplication is started in a separate AppDomain if
-    /// the workflow is in an assembly that has not been loaded yet.
-    /// AppDomains are reused if the same assembly is required.
+    /// Because the UnhandledEvent exception is thrown from the wrapped
+    /// AppDomain, this type needs to be serializable to allow handling
+    /// the event outside that AppDomain.
     /// </remarks>
     class AppDomainHost : MarshalByRefObject
     {
@@ -22,26 +21,35 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// Reference to the AppDomain
         /// </summary>
-        private AppDomain appDomain;
+        private System.AppDomain appDomain;
+
+        /// <summary>
+        /// App domain id
+        /// </summary>
+        private int id;
 
         /// <summary>
         /// Proxy to the workflow host created inside the AppDomain
         /// </summary>
         private SchedulerWorkflowApplicationHost workflowHost;
 
+        private Dictionary<Guid, Job> runningJobsByGuid;
+
         /// <summary>
-        /// Event handler to forward workflow events to the
-        /// main program.
+        /// Event handler to forward workflow events to the main program.
         /// </summary>
         public event EventHandler<WorkflowApplicationHostEventArgs> WorkflowEvent;
 
+        /// <summary>
+        /// Event handler for forward app domain events to the main program.
+        /// </summary>
         public event EventHandler<UnhandledExceptionEventArgs> UnhandledException;
 
         /// <summary>
         /// Reference to the workflow event handler
         /// </summary>
         /// <remarks>
-        /// This on is necessary to keep the event handler alive
+        /// This explicit delegate declaration is necessary to keep the event handler alive
         /// when events are marshaled accross AppDomain boundaries.
         /// </remarks>
         private EventHandler<WorkflowApplicationHostEventArgs> workflowEventHandler;
@@ -51,7 +59,7 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public int ID
         {
-            get { return appDomain.Id; }
+            get { return id; }
         }
 
         /// <summary>
@@ -62,18 +70,25 @@ namespace Jhu.Graywulf.Scheduler
             get { return lastTimeActive; }
         }
 
+        public Dictionary<Guid, Job> RunningJobs
+        {
+            get { return runningJobsByGuid; }
+        }
+
         #region Constructors and initializers
 
-        public AppDomainHost(AppDomain ad)
+        public AppDomainHost(System.AppDomain ad)
         {
             InitializeMembers();
 
+            this.id = ad.Id;
             this.appDomain = ad;
         }
 
         private void InitializeMembers()
         {
             this.lastTimeActive = DateTime.MinValue;
+            this.id = -1;
             this.appDomain = null;
 
             this.workflowHost = null;
@@ -81,28 +96,32 @@ namespace Jhu.Graywulf.Scheduler
             this.workflowEventHandler = null;
         }
 
-        /// <summary>
-        /// This is to prevent remoting time-outs on event handler call-backs
-        /// </summary>
-        /// <returns></returns>
         public override object InitializeLifetimeService()
         {
+            // This is necessary
             return null;
         }
 
         #endregion
         #region Host operations
 
+        private void Touch()
+        {
+            lastTimeActive = DateTime.Now;
+        }
+
         /// <summary>
         /// Starts a new AppDomain to accept workflow execution requests.
         /// </summary>
-        public void Start(Scheduler scheduler, bool interactive)
+        public void Start(Guid guid, Scheduler scheduler, bool interactive)
         {
-            Logging.LoggingContext.Current.LogDebug(
-                Logging.EventSource.Scheduler,
-                String.Format("Staring new host in AppDomain: {0}", ID));
+            Touch();
 
-            lastTimeActive = DateTime.Now;
+            QueueManager.Instance.LogDebug("Staring new host in AppDomain: {0}", ID);
+
+            appDomain.UnhandledException += AppDomain_UnhandledException;
+
+            runningJobsByGuid = new Dictionary<Guid, Job>();
 
             // Create the new WorkflowHost inside the new AppDomain and unwrap the proxy
             workflowHost = (SchedulerWorkflowApplicationHost)appDomain.CreateInstanceAndUnwrap(
@@ -111,29 +130,52 @@ namespace Jhu.Graywulf.Scheduler
 
             // Now create a reference to the event handler and cache it in
             // workflowEventHandler. This is necessary to keep the delegate alive because
-            // workflowHost is a proxy class and events are marshaled accross AppDomain 
-            // boundaries.
-            workflowEventHandler = new EventHandler<WorkflowApplicationHostEventArgs>(workflowHost_WorkflowEvent);
+            // workflowHost is a proxy class from the prospective of the remote app domain
+            // and events are marshaled accross AppDomain boundaries.
+
+            // This event handler will be fired only if the exception is thrown from a thread
+            // which is started inside the domain.
+
+            workflowEventHandler = new EventHandler<WorkflowApplicationHostEventArgs>(WorkflowHost_WorkflowEvent);
             workflowHost.WorkflowEvent += workflowEventHandler;
 
             // Start the new workflow host inside the new AppDomain
-            workflowHost.Start(scheduler, interactive);
+            workflowHost.Start(guid, scheduler, interactive);
         }
-        
+
         /// <summary>
         /// Drain-stops the workflows hosted inside the app domain
         /// and unloads the AppDomain itself.
         /// </summary>
-        public void Stop(TimeSpan timeout, bool interactive)
+        public bool TryStop()
         {
-            Logging.LoggingContext.Current.LogDebug(
-                Logging.EventSource.Scheduler,
-                String.Format("Stopping AppDomain: {0}", ID));
+            if (runningJobsByGuid.Count == 0 && workflowHost.TryStop())
+            {
+                Logging.LoggingContext.Current.LogDebug(
+                    Logging.EventSource.Scheduler,
+                    String.Format("Stopping AppDomain: {0}", ID));
 
-            workflowHost.Stop(timeout);
-            workflowHost = null;
+                workflowHost.WorkflowEvent -= workflowEventHandler;
+                workflowEventHandler = null;
+                workflowHost = null;
+                appDomain.UnhandledException -= AppDomain_UnhandledException;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
+        public void Abort()
+        {
+            Logging.LoggingContext.Current.LogDebug(
+                    Logging.EventSource.Scheduler,
+                    String.Format("Aborting AppDomain: {0}", ID));
+
+            workflowHost.Abort();
+        }
+        
         #endregion
         #region Job operations
 
@@ -144,7 +186,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <returns></returns>
         public Guid PrepareStartJob(Job job)
         {
-            lastTimeActive = DateTime.Now;
+            Touch();
             return workflowHost.PrepareStartJob(job);
         }
 
@@ -156,15 +198,14 @@ namespace Jhu.Graywulf.Scheduler
         /// <returns></returns>
         public Guid PrepareResumeJob(Job job)
         {
-            lastTimeActive = DateTime.Now;
+            Touch();
             return workflowHost.PrepareResumeJob(job);
         }
 
         public void RunJob(Job job)
         {
-            lastTimeActive = DateTime.Now;
+            Touch();
             workflowHost.RunJob(job);
-
         }
 
         /// <summary>
@@ -174,7 +215,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="workflowInstanceId"></param>
         public void CancelJob(Job job)
         {
-            lastTimeActive = DateTime.Now;
+            Touch();
             workflowHost.CancelJob(job);
         }
 
@@ -184,7 +225,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="job"></param>
         public void TimeOutJob(Job job)
         {
-            lastTimeActive = DateTime.Now;
+            Touch();
             workflowHost.TimeOutJob(job);
         }
 
@@ -194,35 +235,29 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="jobGuid"></param>
         public void PersistJob(Job job)
         {
-            lastTimeActive = DateTime.Now;
+            Touch();
             workflowHost.PersistJob(job);
         }
 
         #endregion
-        #region Workflow host event forwarder
+        #region Workflow host event forwarders
 
         /// <summary>
         /// Forwards the workflow events.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void workflowHost_WorkflowEvent(object sender, WorkflowApplicationHostEventArgs e)
+        void WorkflowHost_WorkflowEvent(object sender, WorkflowApplicationHostEventArgs e)
         {
-            lastTimeActive = DateTime.Now;
+            Touch();
             WorkflowEvent(this, e);
         }
 
-        private void workflowHost_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private void AppDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            lastTimeActive = DateTime.Now;
-            UnhandledException(sender, e);
+            UnhandledException?.Invoke(this, e);
         }
 
         #endregion
-
-        private string GetFriendlyName()
-        {
-            return String.Format("Jhu.Graywulf.Scheduler_{0:yyyyMMdd_HHmmss}", DateTime.Now);
-        }
     }
 }

@@ -6,7 +6,7 @@ using System.Security.Principal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.Test;
-using Jhu.Graywulf.RemoteService;
+using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService.Server;
 
 namespace Jhu.Graywulf.RemoteService
@@ -106,8 +106,8 @@ namespace Jhu.Graywulf.RemoteService
                 Assert.AreEqual(
                     new Uri(String.Format(
                         "net.tcp://{0}:{1}/{2}",
-                        RemoteServiceHelper.GetFullyQualifiedDnsName(Jhu.Graywulf.Test.Constants.Localhost),
-                        RemoteServiceBase.Configuration.TcpPort,
+                        DnsHelper.GetFullyQualifiedDnsName(Jhu.Graywulf.Test.Constants.Localhost),
+                        RemoteServiceBase.Configuration.Endpoint.TcpPort,
                         typeof(CancelableDelay).FullName)),
                     uri);
 

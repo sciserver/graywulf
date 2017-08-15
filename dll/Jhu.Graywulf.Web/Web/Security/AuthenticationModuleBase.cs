@@ -118,6 +118,7 @@ namespace Jhu.Graywulf.Web.Security
                     }
                     catch (Exception ex)
                     {
+                        LogError(ex);
                         HandleException(request, response, ex);
                     }
                 }
@@ -138,6 +139,7 @@ namespace Jhu.Graywulf.Web.Security
                 }
                 catch (Exception ex)
                 {
+                    LogError(ex);
                     HandleException(request, response, ex);
                 }
             }
@@ -315,6 +317,36 @@ namespace Jhu.Graywulf.Web.Security
             identity.UserReference.Name = formsIdentity.Name;
 
             return new GraywulfPrincipal(identity);
+        }
+
+        #endregion
+        #region Logging functions
+
+
+
+        protected void LogDebug(string message, params object[] args)
+        {
+#if DEBUG
+            var method = Logging.LoggingContext.Current.UnwindStack(2);
+            Logging.LoggingContext.Current.LogDebug(
+                Logging.EventSource.Scheduler,
+                String.Format(message, args),
+                method.DeclaringType.FullName + "." + method.Name,
+                null);
+#endif
+        }
+
+        protected void LogError(Exception ex)
+        {
+#if BREAKDEBUG
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                System.Diagnostics.Debugger.Break();
+            }
+#endif
+
+            var method = Logging.LoggingContext.Current.UnwindStack(2);
+            Logging.LoggingContext.Current.LogError(Logging.EventSource.Scheduler, ex);
         }
 
         #endregion

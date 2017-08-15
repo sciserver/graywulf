@@ -141,6 +141,13 @@
     <Compile Include="Apps\Common\Error.aspx.designer.cs">
       <DependentUpon>Error.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Common\Status.aspx.cs">
+      <DependentUpon>Status.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Common\Status.aspx.designer.cs">
+      <DependentUpon>Status.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Apps\Common\Feedback.aspx.cs">
       <DependentUpon>Feedback.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -548,6 +555,7 @@
     <Content Include="Apps\Auth\User.aspx" />
     <Content Include="Apps\Common\Captcha.aspx" />
     <Content Include="Apps\Common\Error.aspx" />
+    <Content Include="Apps\Common\Status.aspx" />
     <Content Include="Apps\Common\Feedback.aspx" />
     <Content Include="Apps\Docs\Default.aspx" />
     <Content Include="Apps\Docs\Toolbar.js" />
@@ -677,6 +685,10 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
       <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
       <Name>Jhu.Graywulf.RemoteService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Scheduler\Jhu.Graywulf.Scheduler.csproj">
+      <Project>{94ab6a2e-6877-4fed-87e2-1f9f17622f43}</Project>
+      <Name>Jhu.Graywulf.Scheduler</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
       <Project>{5868B518-CBFC-43FB-B9C8-C617A65121C4}</Project>

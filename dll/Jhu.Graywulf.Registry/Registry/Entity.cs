@@ -86,7 +86,7 @@ namespace Jhu.Graywulf.Registry
             get { return isDeserializing; }
             set { isDeserializing = value; }
         }
-        
+
         /// <summary>
         /// Globally unique identifier of the entity, acts like the primary key in the database.
         /// </summary>
@@ -501,7 +501,7 @@ namespace Jhu.Graywulf.Registry
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
 
             this.isExisting = false;
             this.isDeserializing = false;
@@ -723,6 +723,11 @@ namespace Jhu.Graywulf.Registry
 
         #endregion
 
+        public bool IsFullyQualifiedNameLoaded()
+        {
+            return fullyQualifiedName != null;
+        }
+
         /// <summary>
         /// Computes the fully qualified name of the entity.
         /// </summary>
@@ -759,6 +764,11 @@ namespace Jhu.Graywulf.Registry
                 else if (EntityType == EntityType.Cluster)
                 {
                     fullyQualifiedName = EntityFactory.CombineName(EntityType.Cluster, name);
+                }
+
+                if (IsExisting)
+                {
+                    RegistryContext.EntityCache.Add(this);
                 }
             }
 
@@ -813,20 +823,17 @@ namespace Jhu.Graywulf.Registry
         public void LogDebug()
         {
 #if DEBUG
+            
             var method = new StackFrame(1, true).GetMethod();
-
-            Logging.LoggingContext.Current.LogDebug(
-                Logging.EventSource.Registry,
-                String.Format("{0} {1}: {2}", method.Name, Constants.EntityNames_Singular[this.EntityType], this.Name),
-                method.DeclaringType.FullName + "." + method.Name,
-                new Dictionary<string, object>() { { Logging.Constants.UserDataEntityGuid, this.Guid } });
+            var message = String.Format("{0} {1}: {2}", method.Name, Constants.EntityNames_Singular[this.EntityType], this.Name);
+            LogDebug(message);
 #endif
         }
 
         public void LogDebug(string message)
         {
 #if DEBUG
-            var method = new StackFrame(1, true).GetMethod();
+            var method = Logging.LoggingContext.Current.UnwindStack(1, typeof(Entity));
 
             Logging.LoggingContext.Current.LogDebug(
                 Logging.EventSource.Registry,

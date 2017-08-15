@@ -28,6 +28,7 @@ namespace Jhu.Graywulf.Test
 
         private Random rnd = new Random();
         private SqlServerDataset ioTestDataset;
+        private User testUser;
 
         protected SqlServerDataset IOTestDataset
         {
@@ -90,10 +91,10 @@ namespace Jhu.Graywulf.Test
             var ip = IdentityProvider.Create(context.Domain);
             ip.VerifyPassword(new AuthenticationRequest("test", "almafa"));
 
-            var user = ip.GetUserByUserName("test");
-            context.UserReference.Value = user;
+            testUser = ip.GetUserByUserName("test");
 
-            return user;
+            context.UserReference.Value = testUser;
+            return testUser;
         }
 
         protected static void InitializeJobTests()
@@ -193,7 +194,7 @@ WHERE DateFinished IS NULL";
 
                 lock (rnd)
                 {
-                    job.Name = String.Format("{0}_{1}_{2}", "test", DateTime.Now.ToString("yyMMddHHmmssff"), rnd.Next(1000));
+                    job.Name = String.Format("{0}_{1}_{2}", "test", DateTime.UtcNow.ToString("yyMMddHHmmssff"), rnd.Next(1000));
                 }
 
                 job.Save();
@@ -206,10 +207,8 @@ WHERE DateFinished IS NULL";
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.DirtyRead))
             {
-                var job = new JobInstance(context);
-                job.Guid = guid;
-                job.Load();
-
+                var ef = new EntityFactory(context);
+                var job = ef.LoadEntity<JobInstance>(guid);
                 return job;
             }
         }
@@ -218,10 +217,8 @@ WHERE DateFinished IS NULL";
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                var job = new JobInstance(context);
-                job.Guid = guid;
-                job.Load();
-
+                var ef = new EntityFactory(context);
+                var job = ef.LoadEntity<JobInstance>(guid);
                 job.Cancel();
             }
         }
@@ -235,7 +232,9 @@ WHERE DateFinished IS NULL";
         {
             var start = DateTime.Now;
 
-            while ((DateTime.Now - start) < timeout)
+            // Wait for job until timeout or indefinitely when debugging
+            while ((DateTime.Now - start) < timeout ||
+                System.Diagnostics.Debugger.IsAttached)
             {
                 Thread.Sleep(pollingInterval);
 

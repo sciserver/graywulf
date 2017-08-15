@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Util
             EmailTemplateUtility.ReplaceEmailTokens(ref subject, user);
 
             EmailTemplateUtility.ReplaceEmailToken(ref body, "[$BaseUrl]", baseUrl);
+            EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Copyright]", user.RegistryContext.Federation.Copyright);
             EmailTemplateUtility.ReplaceEmailTokens(ref body, user);
 
             EmailTemplateUtility.SendMessage(

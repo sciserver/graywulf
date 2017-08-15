@@ -9,6 +9,7 @@ using System.Text;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using Jhu.Graywulf.Logging;
+using Jhu.Graywulf.ServiceModel;
 
 namespace Jhu.Graywulf.RemoteService.Server
 {
@@ -52,7 +53,7 @@ namespace Jhu.Graywulf.RemoteService.Server
 
         protected override void OnStart(string[] args)
         {
-            AppDomain.CurrentDomain.UnhandledException += Util.ServiceHelper.WriteErrorDump;
+            AppDomain.CurrentDomain.UnhandledException += Util.ServiceControl.WriteErrorDump;
 
             // Initialize logger
             // TODO: add interactive mode
@@ -72,24 +73,23 @@ namespace Jhu.Graywulf.RemoteService.Server
         {
             // In case the server has been just rebooted
             // wait for the Windows Process Activation Service (WAS)
-            if (Util.ServiceHelper.IsServiceInstalled("WAS"))
+            if (Util.ServiceControl.IsServiceInstalled("WAS"))
             {
-                Util.ServiceHelper.WaitForService("WAS", 1000, 500);
+                Util.ServiceControl.WaitForService("WAS", 1000, 500);
             }
 
             // Initialize WCF service host to run the control service
-            // TODO: the localhost setting needs to be tested!
-            var fdqn = RemoteServiceHelper.GetFullyQualifiedDnsName();
-            var tcp = RemoteServiceHelper.CreateNetTcpBinding();
-            var ep = RemoteServiceHelper.CreateEndpointUri(fdqn, "Control");
+            var helper = new ServiceHelper()
+            {
+                ContractType = typeof(IRemoteServiceControl),
+                ServiceType = typeof(RemoteServiceControl),
+                ServiceName = "Control",
+                Configuration = RemoteServiceBase.Configuration.Endpoint
+            };
+            helper.CreateService();
 
-            controlServiceHost = new ServiceHost(
-                typeof(RemoteServiceControl), ep);
-
-            controlEndpoint = controlServiceHost.AddServiceEndpoint(
-                typeof(IRemoteServiceControl), tcp, ep);
-
-            controlServiceHost.Open();
+            controlServiceHost = helper.Host;
+            controlEndpoint = helper.Endpoint;
         }
 
         protected override void OnStop()
@@ -150,26 +150,31 @@ namespace Jhu.Graywulf.RemoteService.Server
         /// <returns></returns>
         public static Uri RegisterService(Type contract)
         {
-            ServiceHost host;
-            ServiceEndpoint endpoint;
+            var service = RemoteServiceHelper.GetServiceType(contract);
+            var helper = new ServiceHelper()
+            {
+                ContractType = contract,
+                ServiceType = service,
+                ServiceName = service.FullName,
+                Configuration = RemoteServiceBase.Configuration.Endpoint
+            };
+            helper.CreateService();
 
-            var uri = RemoteServiceHelper.CreateService(contract, out host, out endpoint);
-
-            // TODO: remove synchronization here
+            // TODO: try to remove synchronization here
             lock (syncRoot)
             {
-                registeredServiceHosts.Add(contract.FullName, host);
-                registeredEndpoints.Add(contract.FullName, endpoint);
+                registeredServiceHosts.Add(contract.FullName, helper.Host);
+                registeredEndpoints.Add(contract.FullName, helper.Endpoint);
             }
 
             LogDebug("New endpoint created for {0}.", contract.FullName);
 
-            return uri;
+            return helper.Endpoint.Address.Uri;
         }
 
         public static void LogDebug(string message, params object[] args)
         {
-            var context = WcfLoggingContext.Current;
+            var context = ServiceLoggingContext.Current;
             var method = context.UnwindStack(2);
 
             context.LogDebug(

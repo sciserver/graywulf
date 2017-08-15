@@ -8,6 +8,21 @@ namespace Jhu.Graywulf.Registry
 {
     public partial class Entity
     {
+        public void Discover()
+        {
+            // This is used by PS deploy scripts
+
+            var update = new List<Entity>();
+            var delete = new List<Entity>();
+            var create = new List<Entity>();
+            var error = new List<Entity>();
+
+            Discover(update, delete, create, error, false);
+
+            var ef = new EntityFactory(RegistryContext);
+            ef.ApplyChanges(update, delete, create);
+        }
+
         public void Discover(List<Entity> update, List<Entity> delete, List<Entity> create, List<Entity> error, bool supressError)
         {
             try

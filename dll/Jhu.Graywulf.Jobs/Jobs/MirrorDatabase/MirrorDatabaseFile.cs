@@ -42,35 +42,29 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
             // Load files
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
+                var ef = new EntityFactory(context);
+
                 // Load destination database instance
-                DatabaseInstance di = new DatabaseInstance(context);
-                di.Guid = destinationdatabaseinstanceguid;
-                di.Load();
+                var di = ef.LoadEntity<DatabaseInstance>(destinationdatabaseinstanceguid);
                 di.LoadFileGroups(false);
-
-                EntityGuid.Set(activityContext, di.Guid);
-
+                
                 // Math source file with destination file
                 DatabaseInstanceFile df;
-
-                DatabaseInstanceFile sf = new DatabaseInstanceFile(context);
-                sf.Guid = sourcefileguid;
-                sf.Load();
-
-                EntityGuidFrom.Set(activityContext, sourcefileguid);
-
-                sourcefilename = sf.GetFullUncFilename();
-
+                var sf = ef.LoadEntity<DatabaseInstanceFile>(sourcefileguid);
+                
                 DatabaseInstanceFileGroup fg = di.FileGroups[sf.DatabaseInstanceFileGroup.Name];
                 fg.LoadFiles(false);
                 df = fg.Files[sf.Name];
-
-                EntityGuidTo.Set(activityContext, df.Guid);
-
-                destinationfilename = df.GetFullUncFilename();
-
+                
                 DatabaseInstanceFile ssf = filecopydirection == Jhu.Graywulf.Registry.FileCopyDirection.Push ? sf : df;
                 hostname = ssf.DatabaseInstanceFileGroup.DatabaseInstance.ServerInstance.Machine.HostName.ResolvedValue;
+
+                sourcefilename = sf.GetFullUncFilename();
+                destinationfilename = df.GetFullUncFilename();
+
+                EntityGuid.Set(activityContext, di.Guid);
+                EntityGuidFrom.Set(activityContext, sourcefileguid);
+                EntityGuidTo.Set(activityContext, df.Guid);
             }
 
             return delegate ()

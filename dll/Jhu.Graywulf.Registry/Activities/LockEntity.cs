@@ -12,14 +12,19 @@ namespace Jhu.Graywulf.Activities
         [RequiredArgument]
         public InArgument<Guid> EntityGuid { get; set; }
 
+        [RequiredArgument]
+        public InArgument<Guid> LockOwner { get; set; }
+
         protected override void OnExecute(CodeActivityContext activityContext)
         {
             var entityguid = EntityGuid.Get(activityContext);
+            var lockOwner = LockOwner.Get(activityContext);
 
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                var ef = new EntityFactory(context);
+                context.LockOwner = lockOwner;
 
+                var ef = new EntityFactory(context);
                 var e = ef.LoadEntity(entityguid);
                 e.ObtainLock();
             }

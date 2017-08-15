@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Schema
         };
 
         private FederationContext federationContext;
-        
+
         #region Constructors and initializers
 
         // TODO: add assigned server instance
@@ -121,21 +121,28 @@ namespace Jhu.Graywulf.Schema
         /// <returns></returns>
         protected override DatasetBase LoadDataset(string datasetName)
         {
+            // A dataset is either a database definition or a remote database
             var ef = new EntityFactory(federationContext.RegistryContext);
-            var ddrd = ef.LoadEntity(EntityType.Unknown, federationContext.Federation.GetFullyQualifiedName(), datasetName);
 
-            if (ddrd is DatabaseDefinition)
+            try
             {
-                return CreateDataset((DatabaseDefinition)ddrd);
+                var dd = ef.LoadEntity<DatabaseDefinition>(federationContext.Federation.GetFullyQualifiedName(), datasetName);
+                return CreateDataset((DatabaseDefinition)dd);
             }
-            else if (ddrd is RemoteDatabase)
+            catch (EntityNotFoundException)
             {
-                return CreateDataset((RemoteDatabase)ddrd);
             }
-            else
+
+            try
             {
-                throw new NotImplementedException();
+                var rd = ef.LoadEntity<RemoteDatabase>(federationContext.Federation.GetFullyQualifiedName(), datasetName);
+                return CreateDataset(rd);
             }
+            catch (EntityNotFoundException)
+            {
+            }
+
+            throw new SchemaException(String.Format(Schema.ExceptionMessages.InvalidDatasetName, datasetName));
         }
 
 
@@ -261,7 +268,7 @@ namespace Jhu.Graywulf.Schema
             {
                 res.Add(ds);
             }
-            
+
             return res;
         }
 

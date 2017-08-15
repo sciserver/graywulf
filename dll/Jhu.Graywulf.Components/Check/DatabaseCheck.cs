@@ -25,11 +25,11 @@ namespace Jhu.Graywulf.Check
             this.ConnectionString = connectionString;
         }
 
-        public override void Execute(TextWriter output)
+        protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
             var csb = new SqlConnectionStringBuilder(ConnectionString);
 
-            output.WriteLine(
+            yield return ReportInfo(
                 "Testing database connection to server: {0}, database: {1}",
                 csb.DataSource,
                 csb.InitialCatalog);
@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Check
             var cn = new SqlConnection(ConnectionString);
             cn.Open();
 
-            output.WriteLine("Connected. Server version: {0}", cn.ServerVersion);
+            yield return ReportSuccess("Connected. Server version: {0}", cn.ServerVersion);
         }
     }
 }

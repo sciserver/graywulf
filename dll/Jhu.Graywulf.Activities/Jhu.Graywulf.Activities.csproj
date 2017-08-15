@@ -102,6 +102,7 @@
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\build\Jhu.Graywulf.Build.targets" />
 </Project>

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ServiceModel;
-using Jhu.Graywulf.Logging;
+using Jhu.Graywulf.ServiceModel;
 
 namespace Jhu.Graywulf.RemoteService
 {
     [ServiceContract]
     [RemoteService]
-    [WcfLoggingBehavior]
+    [ServiceLoggingBehavior]
     public interface IRemoteServiceControl
     {
         /// <summary>
@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.RemoteService
         /// </summary>
         /// <returns></returns>
         [OperationContract]
-        [LimitedAccessOperation]
+        [LimitedAccessOperation(Constants.DefaultRole)]
         string Hello();
 
         /// <summary>
@@ -27,6 +27,7 @@ namespace Jhu.Graywulf.RemoteService
         /// <param name="isAuthenticated"></param>
         /// <param name="authenticationType"></param>
         [OperationContract]
+        [LimitedAccessOperation(Constants.DefaultRole)]
         void WhoAmI(out string name, out bool isAuthenticated, out string authenticationType);
 
         [OperationContract]
@@ -39,6 +40,7 @@ namespace Jhu.Graywulf.RemoteService
         /// <param name="serviceType"></param>
         /// <returns></returns>
         [OperationContract]
+        [LimitedAccessOperation(Constants.DefaultRole)]
         Uri GetServiceEndpointUri(string contractType);
 
         /// <summary>
@@ -46,6 +48,7 @@ namespace Jhu.Graywulf.RemoteService
         /// </summary>
         /// <returns></returns>
         [OperationContract]
+        [LimitedAccessOperation(Constants.DefaultRole)]
         string[] QueryRegisteredServices();
     }
 }

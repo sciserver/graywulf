@@ -9,22 +9,19 @@ namespace Jhu.Graywulf
     {
         public static void Main(string[] args)
         {
-            Scheduler.SchedulerTest.Initialize(null);
+            Scheduler.FullSchedulerTest.Initialize(null);
 
-            var t = new Scheduler.SchedulerTest();
-            
+            var t = new Scheduler.SimpleSchedulerTest();
+
             // Call to test function
-
-            //t.ExceptionTest();
-            //t.AsyncExceptionTest();
-            t.AsyncExceptionWithRetryTest();
-
+            t.TestInitialize();
+            t.SimpleJobTest();
+            t.TestCleanup();
 
             Console.WriteLine("Press any key to stop");
             Console.ReadLine();
-
-
-            //Scheduler.SchedulerTest.CleanUp();
+            
+            Scheduler.FullSchedulerTest.CleanUp();
         }
     }
 }

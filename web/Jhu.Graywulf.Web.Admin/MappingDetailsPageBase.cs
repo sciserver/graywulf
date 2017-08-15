@@ -30,22 +30,15 @@ namespace Jhu.Graywulf.Web.Admin
 
             if (!IsPostBack)
             {
-                CreateItem();
                 LoadItem();
                 UpdateForm();
             }
         }
 
-        protected void CreateItem()
-        {
-            item = new T();
-            item.Guid = new Guid(Request.QueryString["guid"]);
-        }
-
         protected void LoadItem()
         {
-            item.RegistryContext = RegistryContext;
-            item.Load();
+            var ef = new EntityFactory(RegistryContext);
+            item = ef.LoadEntity<T>(new Guid(Request.QueryString["guid"]));
         }
 
         protected virtual void UpdateForm()

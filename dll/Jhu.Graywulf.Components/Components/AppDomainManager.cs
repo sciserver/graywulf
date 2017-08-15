@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using System.IO;
 using System.Configuration;
+using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Components
 {
@@ -88,11 +89,11 @@ namespace Jhu.Graywulf.Components
         #endregion
         #region Constructors and initializers
 
-        private AppDomainManager()
+        public AppDomainManager()
         {
             InitializeMembers();
         }
-        
+
         private void InitializeMembers()
         {
             this.syncRoot = new object();
@@ -152,7 +153,18 @@ namespace Jhu.Graywulf.Components
         {
             lock (syncRoot)
             {
-                AppDomain.Unload(appDomains[id].AppDomain);
+                var ad = appDomains[id];
+                appDomains[id].Helper = null;
+
+                // For some reason, when the debugger is attached to the process,
+                // AppDomain.Unlock deadlocks with some finalizer. This is a
+                // work-around to prevent this and the dead-lock should not happen
+                // at run-time.
+                if (!System.Diagnostics.Debugger.IsAttached)
+                {
+                    AppDomain.Unload(ad.AppDomain);
+                }
+
                 appDomains.Remove(id);
             }
         }
@@ -261,7 +273,7 @@ namespace Jhu.Graywulf.Components
             foreach (var dll in Directory.GetFiles(path, "*.dll"))
             {
                 AssemblyName an;
-                
+
                 // Try to get assembly name from the dll file
                 // If the dll is not a .net assembly, it might fail
                 try
@@ -308,7 +320,7 @@ namespace Jhu.Graywulf.Components
                 DisallowBindingRedirects = true,
                 DisallowCodeDownload = true,
                 ShadowCopyFiles = shadowcopy,
-                
+
                 //CachePath = "",
                 //DynamicBase = "",
                 //PrivateBinPath = "",

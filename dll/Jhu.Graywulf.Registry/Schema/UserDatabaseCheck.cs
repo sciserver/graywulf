@@ -21,15 +21,14 @@ namespace Jhu.Graywulf.Schema
             this.FederationContext = context;
         }
 
-        public override void Execute(System.IO.TextWriter output)
+        protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
-            output.WriteLine("Checking user database module.");
-
+            yield return ReportInfo("Checking user database module.");
             var uf = UserDatabaseFactory.Create(FederationContext);
-            output.WriteLine("User database module: {0}", uf.GetType().FullName);
+            yield return ReportSuccess("User database module: {0}", uf.GetType().FullName);
         }
 
-        public override IEnumerable<Graywulf.Check.CheckRoutineBase> GetCheckRoutines()
+        protected override IEnumerable<Graywulf.Check.CheckRoutineBase> OnGetCheckRoutines()
         {
             var uf = UserDatabaseFactory.Create(FederationContext);
             return uf.GetCheckRoutines();

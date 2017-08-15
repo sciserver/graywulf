@@ -48,6 +48,8 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             Assert.IsTrue(ds.Statistics.DataSpace > 0);
+            Assert.IsTrue(ds.Statistics.UsedSpace > 0);
+            Assert.IsTrue(ds.Statistics.LogSpace > 0);
         }
 
         #endregion

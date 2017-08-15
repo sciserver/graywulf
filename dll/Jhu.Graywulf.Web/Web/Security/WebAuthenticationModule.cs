@@ -299,11 +299,19 @@ namespace Jhu.Graywulf.Web.Security
                 returnUrl = HttpContext.Current.Request.Url.PathAndQuery;
             }
 
-            pageUri = Util.UriConverter.Combine(Configuration.BaseUri, pageUri);
-            url = pageUri.ToString();
+            // Remove any authentication tokens
+            foreach (var a in Authentications)
+            {
+                returnUrl = a.RemoveUrlTokens(returnUrl);
+            }
 
+            // Encore return url
             returnUrl = HttpUtility.UrlEncode(returnUrl);
 
+            // Build target url
+            pageUri = Util.UriConverter.Combine(Configuration.BaseUri, pageUri);
+            url = pageUri.ToString();
+            
             if (url.Contains("[$ReturnUrl]"))
             {
                 url = url.Replace("[$ReturnUrl]", returnUrl);

@@ -33,7 +33,6 @@ namespace Jhu.Graywulf.Web.Admin
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            CreateItem();
             LoadItem();
 
             if (!IsPostBack)
@@ -49,16 +48,10 @@ namespace Jhu.Graywulf.Web.Admin
             Page.DataBind();
         }
 
-        private void CreateItem()
-        {
-            item = new T();
-            item.Guid = new Guid(Request.QueryString["guid"]);
-        }
-
         private void LoadItem()
         {
-            item.RegistryContext = RegistryContext;
-            item.Load();
+            var ef = new EntityFactory(RegistryContext);
+            item = ef.LoadEntity<T>(new Guid(Request.QueryString["guid"]));
         }
 
         protected virtual void UpdateForm()

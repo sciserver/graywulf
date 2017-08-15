@@ -40,9 +40,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
             // Use lower isolation level for polling
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.DirtyRead))
             {
-                jobInstance = new JobInstance(context);
-                jobInstance.Guid = JobGuid;
-                jobInstance.Load();
+                var ef = new EntityFactory(context);
+                jobInstance = ef.LoadEntity<JobInstance>(JobGuid);
             }
         }
 

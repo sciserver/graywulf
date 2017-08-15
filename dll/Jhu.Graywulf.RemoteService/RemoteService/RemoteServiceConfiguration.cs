@@ -3,46 +3,17 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Configuration;
+using Jhu.Graywulf.ServiceModel;
 
 namespace Jhu.Graywulf.RemoteService
 {
     public class RemoteServiceConfiguration : ConfigurationSection
     {
-        #region Static declarations
-
-        private static ConfigurationPropertyCollection properties;
-
-        private static readonly ConfigurationProperty propTcpPort = new ConfigurationProperty(
-            "tcpPort", typeof(int), null, ConfigurationPropertyOptions.IsRequired);
-
-        private static readonly ConfigurationProperty propUserGroup = new ConfigurationProperty(
-            "userGroup", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
-
-        static RemoteServiceConfiguration()
+        [ConfigurationProperty("endpoint")]
+        public TcpEndpointConfiguration Endpoint
         {
-            properties = new ConfigurationPropertyCollection();
-
-            properties.Add(propTcpPort);
-            properties.Add(propUserGroup);
+            get { return (TcpEndpointConfiguration)base["endpoint"]; }
+            set { base["endpoint"] = value; }
         }
-
-        #endregion
-        #region Properties
-
-        [ConfigurationProperty("tcpPort")]
-        public int TcpPort
-        {
-            get { return (int)base[propTcpPort]; }
-            set { base[propTcpPort] = value; }
-        }
-
-        [ConfigurationProperty("userGroup")]
-        public string UserGroup
-        {
-            get { return (string)base[propUserGroup]; }
-            set { base[propUserGroup] = value; }
-        }
-
-        #endregion
     }
 }

@@ -10,21 +10,13 @@ namespace Jhu.Graywulf.Scheduler
     /// <summary>
     /// Represents a job queue
     /// </summary>
-    internal class Queue
+    [Serializable]
+    public class Queue : RegistryObject
     {
-        private Guid guid;
         private int maxOutstandingJobs;
-        private ConcurrentDictionary<Guid, Job> jobs;
+        private Dictionary<Guid, Job> jobs;
         private TimeSpan timeout;
         private Guid lastUserGuid;
-
-        /// <summary>
-        /// Unique ID of the queue, equals to QueueInstance.Guid
-        /// </summary>
-        public Guid Guid
-        {
-            get { return guid; }
-        }
 
         /// <summary>
         /// Gets the maximum jobs that can be executed in parallel from
@@ -39,7 +31,7 @@ namespace Jhu.Graywulf.Scheduler
         /// Jobs associated with the queue and already loaded by
         /// the poller.
         /// </summary>
-        public ConcurrentDictionary<Guid, Job> Jobs
+        public Dictionary<Guid, Job> Jobs
         {
             get { return jobs; }
         }
@@ -60,31 +52,22 @@ namespace Jhu.Graywulf.Scheduler
             get { return lastUserGuid; }
             set { lastUserGuid = value; }
         }
-
-        public Queue()
+        
+        public Queue(QueueInstance qi) :
+            base (qi)
         {
             InitializeMembers();
+
+            this.maxOutstandingJobs = qi.MaxOutstandingJobs;
+            this.timeout = TimeSpan.FromSeconds(qi.Timeout);
         }
 
         private void InitializeMembers()
         {
-            this.guid = Guid.Empty;
             this.maxOutstandingJobs = -1;
-            this.jobs = new ConcurrentDictionary<Guid, Job>();
+            this.jobs = new Dictionary<Guid, Job>();
             this.timeout = TimeSpan.Zero;
             this.lastUserGuid = Guid.Empty;
-        }
-
-        /// <summary>
-        /// Updates the queue information based on the values
-        /// read from the registry.
-        /// </summary>
-        /// <param name="q"></param>
-        public void Update(QueueInstance q)
-        {
-            this.guid = q.Guid;
-            this.maxOutstandingJobs = q.MaxOutstandingJobs;
-            this.timeout = TimeSpan.FromSeconds(q.Timeout);
         }
     }
 }

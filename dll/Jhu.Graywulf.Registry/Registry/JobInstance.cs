@@ -463,7 +463,7 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void RequestCancel()
         {
-            // Force releasing the lock
+            // Force releasing the lock, otherwise the scheduler will not pick up
             this.ReleaseLock(true);
 
             JobExecutionStatus |= JobExecutionState.CancelRequested;
@@ -473,7 +473,7 @@ namespace Jhu.Graywulf.Registry
         private void MarkCancelled()
         {
             JobExecutionStatus = JobExecutionState.Cancelled;
-            DateFinished = DateTime.Now;
+            DateFinished = DateTime.UtcNow;
 
             Save();
         }

@@ -278,3 +278,4 @@ FakesAssemblies/
 
 /web/Jhu.Graywulf.Web.UI/Scripts/Bootstrap-Lightbox
 /web/Jhu.Graywulf.Web.UI/App_Themes/Basic/style.min.css
+/exe/Jhu.Graywulf.TrafficGenerator.CmdLineUtil/App.config

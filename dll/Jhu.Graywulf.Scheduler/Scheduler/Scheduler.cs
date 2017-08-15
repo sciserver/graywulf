@@ -15,11 +15,13 @@ namespace Jhu.Graywulf.Scheduler
     /// </summary>
     public class Scheduler : MarshalByRefObject, IScheduler
     {
+        public const string ConfigurationSection = "jhu.graywulf/scheduler";
+
         public static SchedulerConfiguration Configuration
         {
             get
             {
-                return (SchedulerConfiguration)ConfigurationManager.GetSection("jhu.graywulf/scheduler");
+                return (SchedulerConfiguration)ConfigurationManager.GetSection(ConfigurationSection);
             }
         }
 
@@ -61,7 +63,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="jobID"></param>
         public JobInfo GetJobInfo(Guid workflowInstanceId)
         {
-            return queueManager.GetJobInto(workflowInstanceId);
+            return queueManager.GetJobInfo(workflowInstanceId);
         }
 
         public Guid GetNextServerInstance(Guid[] databaseDefinitions, string databaseVersion, Guid[] databaseInstances)

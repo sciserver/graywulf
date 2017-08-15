@@ -29,5 +29,16 @@ namespace Jhu.Graywulf.Web.UI
             RegisterService(typeof(IDataService));
             RegisterService(typeof(ITestService));
         }
+
+        protected override void RegisterButtons()
+        {
+            base.RegisterButtons();
+
+            RegisterFooterButton(new Graywulf.Web.UI.MenuButton()
+            {
+                Text = "status",
+                NavigateUrl = Jhu.Graywulf.Web.UI.Apps.Common.Status.GetUrl()
+            });
+        }
     }
 }

@@ -8,6 +8,7 @@ using System.Security;
 using System.Security.Principal;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Logging;
+using Jhu.Graywulf.ServiceModel;
 
 namespace Jhu.Graywulf.RemoteService.Server
 {
@@ -18,22 +19,16 @@ namespace Jhu.Graywulf.RemoteService.Server
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.Single,
         IncludeExceptionDetailInFaults = true)]
-    [WcfLoggingBehavior]
     class RemoteServiceControl : IRemoteServiceControl
     {
-        [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation]
         public string Hello()
         {
             var res = GetType().Assembly.FullName;
-
             RemoteService.LogDebug("Hello called on {0}", res);
-
             return res;
         }
 
         [OperationBehavior(Impersonation = ImpersonationOption.Required)]
-        [LimitedAccessOperation]
         public void WhoAmI(out string name, out bool isAuthenticated, out string authenticationType)
         {
             // Switch to windows principal
@@ -58,8 +53,7 @@ namespace Jhu.Graywulf.RemoteService.Server
             RemoteService.LogDebug("Server is {0} and {1}authenticated", name, isAuthenticated ? "" : "not ");
         }
 
-        [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation]
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
         public Uri GetServiceEndpointUri(string contractType)
         {
             var contract = Type.GetType(contractType);
@@ -78,8 +72,7 @@ namespace Jhu.Graywulf.RemoteService.Server
             }
         }
 
-        [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation]
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
         public string[] QueryRegisteredServices()
         {
             // TODO: remove synchronization if possible
