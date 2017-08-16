@@ -103,6 +103,24 @@ namespace Jhu.Graywulf.Web.Admin.Layout {
         protected global::System.Web.UI.WebControls.DropDownList databaseVersionList;
         
         /// <summary>
+        /// serverVersionLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label serverVersionLabel;
+        
+        /// <summary>
+        /// serverVersionList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList serverVersionList;
+        
+        /// <summary>
         /// SizeFactorLabel control.
         /// </summary>
         /// <remarks>
