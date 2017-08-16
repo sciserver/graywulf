@@ -378,7 +378,16 @@ WHERE Entity.Guid = @Guid
                     cmd.Parameters.Add("@EntityType", SqlDbType.Int).Value = entityType == EntityType.Unknown ? (object)DBNull.Value : entityType;
                     cmd.Parameters.Add("@NameParts", SqlDbType.Structured).Value = npdt;
 
-                    guid = (Guid)cmd.ExecuteScalar();
+                    var res = cmd.ExecuteScalar();
+
+                    if (res == DBNull.Value)
+                    {
+                        throw new EntityNotFoundException(String.Format(ExceptionMessages.EntityNotFound, fqn));
+                    }
+                    else
+                    {
+                        guid = (Guid)res;
+                    }
 
                     // TODO: entity not found?
                 }
