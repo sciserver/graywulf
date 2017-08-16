@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Jobs.CopyTables
         {
             var queue = GetQueueName(queueType);
 
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
                 var user = SignInTestUser(context);
 
@@ -97,7 +97,7 @@ namespace Jhu.Graywulf.Jobs.CopyTables
         [TestMethod]
         public void CopyTablesXmlTest()
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadOnlyContext())
             {
                 var name = GetTestUniqueName();
                 var guid = ScheduleCopyTablesJob("SampleData", name, false, QueueType.Long);

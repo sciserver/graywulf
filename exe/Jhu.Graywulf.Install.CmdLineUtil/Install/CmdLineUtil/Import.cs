@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
         {
             ContextManager.Instance.ConnectionString = GetConnectionString();
 
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
+            using (var context = ContextManager.Instance.CreateContext(TransactionMode.ManualCommit))
             {
                 var s = new RegistryDeserializer(context)
                 {

@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
 
             Console.Write("Creating admin user... ");
 
-            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateContext(TransactionMode.ManualCommit))
             {
                 var f = new EntityFactory(context);
                 var c = f.LoadEntity<Cluster>(clusterName);

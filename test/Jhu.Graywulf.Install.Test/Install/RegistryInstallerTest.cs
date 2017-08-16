@@ -34,8 +34,7 @@ namespace Jhu.Graywulf.Registry
 
             using (var context = ContextManager.Instance.CreateContext(
                 Jhu.Graywulf.Test.AppSettings.RegistryTestConnectionString,
-                ConnectionMode.AutoOpen, 
-                TransactionMode.AutoCommit))
+                TransactionMode.AutoCommit | TransactionMode.ReadWrite))
             {
                 // Create a cluster
                 var ci = new ClusterInstaller(context);

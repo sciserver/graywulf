@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected virtual SqlQuery CreateQuery(string query)
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadOnlyContext())
             {
                 var qf = CreateQueryFactory(context);
                 var q = CreateQuery(qf, query);
@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var queue = GetQueueName(queueType);
 
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
                 var qf = CreateQueryFactory(context);
                 var q = CreateQuery(qf, query);

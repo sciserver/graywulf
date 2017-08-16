@@ -184,10 +184,10 @@ namespace Jhu.Graywulf.Registry
         /// </exception>
         public void Save(bool forceOverwrite)
         {
-            // Check entity duplicate
-            var ef = new EntityFactory(RegistryContext);
-
-            var parentGuid = this.parentReference.IsEmpty ? Guid.Empty : this.parentReference.Guid;
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
 
             if (!IsExisting)
             {
@@ -374,6 +374,11 @@ namespace Jhu.Graywulf.Registry
         /// </exception>
         public void Delete(bool forceOverwrite)
         {
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
+
             try
             {
                 DeleteRecursively(forceOverwrite);
@@ -392,6 +397,11 @@ namespace Jhu.Graywulf.Registry
 
         private void DeleteRecursively(bool forceOverwrite)
         {
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
+
             LoadAllChildren(true);
 
             // Delete should go in reverse order in order to prevent
@@ -460,6 +470,11 @@ namespace Jhu.Graywulf.Registry
 
         public void Show()
         {
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
+
             string sql = "spShowEntity";
 
             using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
@@ -476,6 +491,11 @@ namespace Jhu.Graywulf.Registry
 
         public void Hide()
         {
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
+
             string sql = "spHideEntity";
 
             using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
@@ -499,6 +519,11 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         public void Move(EntityMoveDirection direction)
         {
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
+
             string sql;
             if (direction == EntityMoveDirection.Up)
             {
@@ -606,6 +631,11 @@ namespace Jhu.Graywulf.Registry
 
         private void ObtainLockRecursively()
         {
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
+
             LoadAllChildren(false);
 
             foreach (Entity e in EnumerateAllChildren())
@@ -661,6 +691,11 @@ namespace Jhu.Graywulf.Registry
 
         private void ReleaseLockRecursively(bool forceRelease)
         {
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
+
             LoadAllChildren(false);
             foreach (Entity e in EnumerateAllChildren()) e.ReleaseLockRecursively(forceRelease);
 

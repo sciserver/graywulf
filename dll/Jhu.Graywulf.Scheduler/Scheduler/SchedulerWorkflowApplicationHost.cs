@@ -63,13 +63,23 @@ namespace Jhu.Graywulf.Scheduler
             this.workflowInstanceStore = null;
         }
 
-        private RegistryContext CreateRegistryContext()
+        private RegistryContext CreateReadOnlyRegistryContext()
         {
-            var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit);
+            return CreateRegistryContext(TransactionMode.ManualCommit | TransactionMode.ReadOnly);
+        }
+
+        private RegistryContext CreateReadWriteRegistryContext()
+        {
+            return CreateRegistryContext(TransactionMode.ManualCommit | TransactionMode.ReadWrite);
+        }
+
+        private RegistryContext CreateRegistryContext(TransactionMode transactionMode)
+        {
+            var context = ContextManager.Instance.CreateContext(transactionMode);
             context.LockOwner = this.guid;
             return context;
         }
-
+        
         /// <summary>
         /// Starts a new Workflowhost
         /// </summary>
@@ -128,7 +138,7 @@ namespace Jhu.Graywulf.Scheduler
 
             Guid wfguid;
 
-            using (var context = CreateRegistryContext())
+            using (var context = CreateReadWriteRegistryContext())
             {
                 var ji = LoadJobInstance(context, job);
 
@@ -176,7 +186,7 @@ namespace Jhu.Graywulf.Scheduler
 
             Guid wfguid;
 
-            using (var context = CreateRegistryContext())
+            using (var context = CreateReadWriteRegistryContext())
             {
                 JobInstance ji = LoadJobInstance(context, job);
 
@@ -209,7 +219,7 @@ namespace Jhu.Graywulf.Scheduler
             new JobContext(job).Push();
 
             // Load job data from the registry
-            using (var context = CreateRegistryContext())
+            using (var context = CreateReadWriteRegistryContext())
             {
                 JobInstance ji = LoadJobInstance(context, job);
 
@@ -248,7 +258,7 @@ namespace Jhu.Graywulf.Scheduler
 
             Guid wfguid;
 
-            using (var context = CreateRegistryContext())
+            using (var context = CreateReadWriteRegistryContext())
             {
                 var ji = LoadJobInstance(context, job);
 
@@ -279,7 +289,7 @@ namespace Jhu.Graywulf.Scheduler
 
             Guid wfguid;
 
-            using (var context = CreateRegistryContext())
+            using (var context = CreateReadWriteRegistryContext())
             {
                 var ji = LoadJobInstance(context, job);
 
@@ -305,7 +315,7 @@ namespace Jhu.Graywulf.Scheduler
 
             Guid wfguid;
 
-            using (var context = CreateRegistryContext())
+            using (var context = CreateReadWriteRegistryContext())
             {
                 var ji = LoadJobInstance(context, job);
 
@@ -333,7 +343,7 @@ namespace Jhu.Graywulf.Scheduler
 
             Guid wfguid;
 
-            using (var context = CreateRegistryContext())
+            using (var context = CreateReadWriteRegistryContext())
             {
                 var ji = LoadJobInstance(context, job);
 

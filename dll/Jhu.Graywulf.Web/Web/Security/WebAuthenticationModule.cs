@@ -77,7 +77,7 @@ namespace Jhu.Graywulf.Web.Security
             // (0.) Called by the Http framework when the entire module is initializing
 
             // Load authenticators from the registry
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadOnlyContext())
             {
                 // The admin interface doesn't have a domain associated with, this
                 // special case has to be handled here

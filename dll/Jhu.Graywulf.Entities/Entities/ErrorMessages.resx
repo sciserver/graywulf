@@ -129,6 +129,9 @@
   <data name="ContextInvalid" xml:space="preserve">
     <value>Invalid context. Is it already disposed?</value>
   </data>
+  <data name="ContextReadOnly" xml:space="preserve">
+    <value>Cannot save an entity within a read-only context.</value>
+  </data>
   <data name="DuplicateKeyColumn" xml:space="preserve">
     <value>Duplicate key column '{0}' defined on type '{1}'.</value>
   </data>

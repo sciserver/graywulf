@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
                 Console.Write("Creating cluster... ");
             }
             
-            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateContext(TransactionMode.ManualCommit))
             {
                 var i = new ClusterInstaller(context)
                 {

@@ -11,12 +11,17 @@ namespace Jhu.Graywulf.Registry
         AutoOpen,
     }
 
-    public enum TransactionMode
+    [Flags]
+    public enum TransactionMode : int
     {
-        None,
-        AutoCommit,
-        ManualCommit,
-        DirtyRead,
+        None = 0,
+
+        DirtyRead = 1,
+        ReadOnly = 2,
+        ReadWrite = 4,
+
+        AutoCommit = 8,
+        ManualCommit = 16,
     }
 
     public enum DiagnosticMessageStatus

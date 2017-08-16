@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         {
             var queue = GetQueueName(queueType);
 
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
                 var user = SignInTestUser(context);
                 var federationContext = new FederationContext(context, user);
@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
         private void DropTestTables(string name)
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadOnlyContext())
             {
                 var user = SignInTestUser(context);
                 var federationContext = new FederationContext(context, user);

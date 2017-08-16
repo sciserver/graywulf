@@ -75,6 +75,7 @@
     <Compile Include="Logging\UserLoggingContext.cs" />
     <Compile Include="Registry\Check\EntityCheck.cs" />
     <Compile Include="Registry\EntityEnumerator.cs" />
+    <Compile Include="Registry\EntityReadOnlyException.cs" />
     <Compile Include="Registry\EntitySearch.cs" />
     <Compile Include="Registry\IRegistryContextObject.cs" />
     <Compile Include="Registry\Registry.cs" />

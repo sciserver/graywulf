@@ -199,9 +199,19 @@ namespace Jhu.Graywulf.Scheduler
 
         #endregion
 
-        private RegistryContext CreateRegistryContext()
+        private RegistryContext CreateReadOnlyRegistryContext()
         {
-            var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit);
+            return CreateRegistryContext(TransactionMode.ManualCommit | TransactionMode.ReadOnly);
+        }
+
+        private RegistryContext CreateReadWriteRegistryContext()
+        {
+            return CreateRegistryContext(TransactionMode.ManualCommit | TransactionMode.ReadWrite);
+        }
+
+        private RegistryContext CreateRegistryContext(TransactionMode transactionMode)
+        {
+            var context = ContextManager.Instance.CreateContext(transactionMode);
             context.LockOwner = this.guid;
             return context;
         }
@@ -226,7 +236,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             LogDebug(String.Format("Loading cluster config. Layout is {0}required.", isLayouRequired ? "" : "not "));
 
-            using (var context = CreateRegistryContext())
+            using (var context = CreateReadOnlyRegistryContext())
             {
                 var ef = new EntityFactory(context);
                 var c = ef.LoadEntity<Jhu.Graywulf.Registry.Cluster>(clusterName);
@@ -642,7 +652,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             // TODO: where to handle errors?
 
-            using (var context = CreateRegistryContext())
+            using (var context = CreateReadWriteRegistryContext())
             {
                 int failed = 0;
                 int started = 0;
@@ -741,7 +751,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 List<Job> res = new List<Job>();
 
-                using (var context = CreateRegistryContext())
+                using (var context = CreateReadWriteRegistryContext())
                 {
                     // The number of jobs to be requested from the queue is the
                     // number of maximum outstanding jobs minus the number of
@@ -822,7 +832,7 @@ namespace Jhu.Graywulf.Scheduler
 
             try
             {
-                using (var context = CreateRegistryContext())
+                using (var context = CreateReadOnlyRegistryContext())
                 {
                     var jf = new JobInstanceFactory(context);
                     var ji = jf.FindAndLockJobInstance(guid);
@@ -866,7 +876,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 List<Job> res = new List<Job>();
 
-                using (var context = CreateRegistryContext())
+                using (var context = CreateReadWriteRegistryContext())
                 {
                     var jf = new JobInstanceFactory(context);
                     jf.UserGuid = Guid.Empty;
@@ -923,7 +933,7 @@ namespace Jhu.Graywulf.Scheduler
 
             try
             {
-                using (var context = CreateRegistryContext())
+                using (var context = CreateReadWriteRegistryContext())
                 {
                     var job = e.Job;
 
@@ -1099,7 +1109,7 @@ namespace Jhu.Graywulf.Scheduler
 
             try
             {
-                using (var context = CreateRegistryContext())
+                using (var context = CreateReadWriteRegistryContext())
                 {
                     // *** TODO: why set guid here manually?
                     context.JobReference.Guid = job.Guid;
@@ -1186,7 +1196,7 @@ namespace Jhu.Graywulf.Scheduler
 
             try
             {
-                using (var context = CreateRegistryContext())
+                using (var context = CreateReadWriteRegistryContext())
                 {
                     // *** TODO: why do we have to set jobguid here explicitly?
                     context.JobReference.Guid = job.Guid;

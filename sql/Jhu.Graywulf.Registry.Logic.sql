@@ -552,6 +552,12 @@ AS
 	WHERE EntityGuid = @Guid
 GO
 
+---------------------------------------------------------------------
+
+IF OBJECT_ID('dbo.spFindJobInstance_byDetails') IS NOT NULL
+DROP PROC [dbo].[spFindJobInstance_byDetails]
+
+GO
 
 CREATE PROC [dbo].[spFindJobInstance_byDetails]
 	@UserGuid uniqueidentifier,
@@ -578,7 +584,7 @@ AS
 	WITH q AS
 	(
 		SELECT Entity.*, JobInstance.*, ROW_NUMBER () OVER ( ORDER BY DateCreated DESC ) AS rn
-		FROM Entity
+		FROM Entity WITH(ROWLOCK, UPDLOCK)
 		INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
 		INNER JOIN EntityReference JobDefinition ON JobDefinition.ReferenceType = 1 AND JobDefinition.EntityGuid = Entity.Guid
 		WHERE 

@@ -89,6 +89,18 @@ namespace Jhu.Graywulf.Registry
 
         #region Entity Search Functions
 
+        private string GetTableHint()
+        {
+            if (RegistryContext.TransactionMode.HasFlag(TransactionMode.ReadWrite))
+            {
+                return "WITH(ROWLOCK, UPDLOCK)";
+            }
+            else
+            {
+                return "";
+            }
+        }
+
         /// <summary>
         /// Loads all entities of a given type.
         /// </summary>
@@ -103,7 +115,7 @@ namespace Jhu.Graywulf.Registry
 WITH q AS
 (
 	SELECT Entity.*, [{0}].*, ROW_NUMBER () OVER ( ORDER BY Entity.Number ) AS rn
-	FROM Entity
+	FROM Entity {1}
 	INNER JOIN [{0}] ON [{0}].EntityGuid = Entity.Guid
 	WHERE
 		(@ShowHidden = 1 OR Entity.Hidden = 0) AND
@@ -114,7 +126,7 @@ WHERE rn BETWEEN @From + 1 AND @From + @Max OR @From IS NULL OR @Max IS NULL
 ORDER BY rn
 ";
 
-            sql = String.Format(sql, type);
+            sql = String.Format(sql, type, GetTableHint());
 
             var cmd = RegistryContext.CreateTextCommand(sql);
             cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
@@ -135,7 +147,7 @@ ORDER BY rn
 WITH q AS
 (
 	SELECT Entity.*, [{0}].*
-	FROM Entity
+	FROM Entity {1}
 	INNER JOIN [{0}] ON [{0}].EntityGuid = Entity.Guid
 	WHERE Entity.ParentGuid = @Guid AND
 		(@ShowHidden = 1 OR Entity.Hidden = 0) AND
@@ -145,7 +157,7 @@ SELECT q.* FROM q
 ORDER BY Number
 ";
 
-            sql = String.Format(sql, childrentype);
+            sql = String.Format(sql, childrentype, GetTableHint());
 
             var cmd = RegistryContext.CreateTextCommand(sql);
             cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
@@ -158,6 +170,8 @@ ORDER BY Number
 
         public IEnumerable<Entity> FindReferencing(Entity e)
         {
+            // TODO: update lock hint
+
             var sql = @"spFindReferencingEntity";
 
             var cmd = RegistryContext.CreateStoredProcedureCommand(sql);
@@ -176,7 +190,7 @@ ORDER BY Number
 WITH q AS
 (
 	SELECT Entity.*, [{0}].*
-	FROM Entity
+	FROM Entity {1}
 	INNER JOIN [{0}] ON [{0}].EntityGuid = Entity.Guid
     INNER JOIN EntityReference ON EntityReference.EntityGuid = Entity.Guid
 	WHERE 
@@ -190,7 +204,7 @@ SELECT q.* FROM q
 ORDER BY Number";
 
             var childrentype = Constants.EntityTypeMap[typeof(T)];
-            sql = String.Format(sql, childrentype);
+            sql = String.Format(sql, childrentype, GetTableHint());
 
             var cmd = RegistryContext.CreateTextCommand(sql);
             cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
@@ -231,9 +245,11 @@ ORDER BY Number";
 
             var sql = @"
 SELECT Entity.EntityType
-FROM Entity
+FROM Entity {0}
 WHERE Entity.Guid = @Guid
 ";
+
+            sql = String.Format(sql, GetTableHint());
 
             using (var cmd = RegistryContext.CreateTextCommand(sql))
             {
@@ -249,12 +265,12 @@ WHERE Entity.Guid = @Guid
         {
             var sql = @"
 SELECT Entity.*, [{0}].*, ROW_NUMBER () OVER ( ORDER BY Entity.Number ) AS rn
-FROM Entity
+FROM Entity {1}
 INNER JOIN [{0}] ON [{0}].EntityGuid = Entity.Guid
 WHERE Entity.Guid = @Guid
 ";
 
-            sql = String.Format(sql, entityType);
+            sql = String.Format(sql, entityType, GetTableHint());
 
             var cmd = RegistryContext.CreateTextCommand(sql);
             cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
@@ -355,6 +371,8 @@ WHERE Entity.Guid = @Guid
 
         private Entity LoadEntityByNameParts(EntityType entityType, string[] nameParts)
         {
+            // TODO: add update lock hint when necessary
+
             Guid guid;
             Entity entity;
             var fqn = CombineName(entityType, nameParts);
@@ -388,8 +406,6 @@ WHERE Entity.Guid = @Guid
                     {
                         guid = (Guid)res;
                     }
-
-                    // TODO: entity not found?
                 }
 
                 if (!RegistryContext.EntityCache.TryGet(guid, out entity))

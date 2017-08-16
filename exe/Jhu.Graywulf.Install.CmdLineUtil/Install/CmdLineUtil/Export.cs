@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
         {
             ContextManager.Instance.ConnectionString = GetConnectionString();
 
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadOnlyContext())
             {
                 var f = new EntityFactory(context);
                 var entity = f.LoadEntity(RootEntitity);

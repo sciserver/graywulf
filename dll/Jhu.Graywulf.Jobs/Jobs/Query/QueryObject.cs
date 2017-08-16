@@ -786,7 +786,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 case Query.ExecutionMode.SingleServer:
                     return null;
                 case Query.ExecutionMode.Graywulf:
-                    return Jhu.Graywulf.Registry.ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit);
+                    return Jhu.Graywulf.Registry.ContextManager.Instance.CreateReadOnlyContext();
                 default:
                     throw new NotImplementedException();
             }

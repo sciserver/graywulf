@@ -100,14 +100,19 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Context Creation Functions
 
-        public RegistryContext CreateContext()
+        public RegistryContext CreateReadOnlyContext()
         {
-            return CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit);
+            return CreateContext(TransactionMode.ReadOnly | TransactionMode.AutoCommit);
         }
 
-        public RegistryContext CreateContext(ConnectionMode connectionMode, TransactionMode transactionMode)
+        public RegistryContext CreateReadWriteContext()
         {
-            return CreateContext(this.connectionString, connectionMode, transactionMode);
+            return CreateContext(TransactionMode.ReadWrite | TransactionMode.AutoCommit);
+        }
+
+        public RegistryContext CreateContext(TransactionMode transactionMode)
+        {
+            return CreateContext(this.connectionString, transactionMode);
         }
 
         /// <summary>
@@ -117,12 +122,12 @@ namespace Jhu.Graywulf.Registry
         /// <param name="beginTransaction">True if a transaction is required.</param>
         /// <param name="openSmtp">True if an SMTP connection should be opened.</param>
         /// <returns>A valid connection.</returns>
-        public RegistryContext CreateContext(string connectionString, ConnectionMode connectionMode, TransactionMode transactionMode)
+        public RegistryContext CreateContext(string connectionString, TransactionMode transactionMode)
         {
             var context = new RegistryContext(Logging.LoggingContext.Current)
             {
                 ConnectionString = connectionString,
-                ConnectionMode = connectionMode,
+                ConnectionMode = ConnectionMode.AutoOpen,
                 TransactionMode = transactionMode,
             };
 

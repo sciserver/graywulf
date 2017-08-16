@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Jobs.SqlScript
 
         private Guid ScheduleSqlScriptJob(DatasetBase[] datasets, string sql, QueueType queueType)
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
                 var user = SignInTestUser(context);
 
@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Jobs.SqlScript
         {
             DatasetBase mydb;
 
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadOnlyContext())
             {
                 var user = SignInTestUser(context);
                 var udf = UserDatabaseFactory.Create(new FederationContext(context, user));

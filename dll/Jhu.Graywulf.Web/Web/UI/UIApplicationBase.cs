@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Web.UI
         /// </summary>
         public RegistryContext CreateRegistryContext()
         {
-            var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.ManualCommit);
+            var context = ContextManager.Instance.CreateContext(Registry.TransactionMode.ManualCommit);
             var session = HttpContext.Current.Session;
 
             if (session != null)

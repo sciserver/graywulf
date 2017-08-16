@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Registry
 
         private void SaveRegistry(string filename)
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadOnlyContext())
             {
                 var f = new EntityFactory(context);
                 var entity = f.LoadEntity(EntityType.Cluster, Constants.ClusterName);
@@ -64,8 +64,7 @@ namespace Jhu.Graywulf.Registry
         {
             using (var context = ContextManager.Instance.CreateContext(
                 Jhu.Graywulf.Test.AppSettings.RegistryTestConnectionString,
-                ConnectionMode.AutoOpen,
-                TransactionMode.AutoCommit))
+                TransactionMode.AutoCommit | TransactionMode.ReadWrite))
             {
                 var s = new RegistryDeserializer(context)
                 {

@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
             string hostname;
 
             // Load files
-            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateReadOnlyContext())
             {
                 var ef = new EntityFactory(context);
 

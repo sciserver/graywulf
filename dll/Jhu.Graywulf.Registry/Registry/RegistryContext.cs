@@ -55,6 +55,11 @@ namespace Jhu.Graywulf.Registry
             get { return isValid; }
         }
 
+        public bool IsReadOnly
+        {
+            get { return !transactionMode.HasFlag(TransactionMode.ReadWrite); }
+        }
+
         public Guid LockOwner
         {
             get { return lockOwner; }
@@ -257,19 +262,17 @@ namespace Jhu.Graywulf.Registry
         {
             if (databaseTransaction != null)
             {
-                switch (transactionMode)
+                if (transactionMode == TransactionMode.None)
                 {
-                    case TransactionMode.None:
-                        break;
-                    case TransactionMode.AutoCommit:
-                        CommitTransaction();
-                        break;
-                    case TransactionMode.DirtyRead:
-                    case TransactionMode.ManualCommit:
-                        RollbackTransaction();
-                        break;
-                    default:
-                        throw new NotImplementedException();
+                    // Do nothing
+                }
+                else if (transactionMode.HasFlag(TransactionMode.AutoCommit))
+                {
+                    CommitTransaction();
+                }
+                else
+                {
+                    RollbackTransaction();
                 }
             }
 
@@ -344,17 +347,13 @@ namespace Jhu.Graywulf.Registry
 
             if (databaseTransaction == null)
             {
-                switch (transactionMode)
+                if (transactionMode == TransactionMode.None)
                 {
-                    case TransactionMode.AutoCommit:
-                    case TransactionMode.ManualCommit:
-                    case TransactionMode.DirtyRead:
-                        BeginTransaction();
-                        break;
-                    case TransactionMode.None:
-                        throw new InvalidOperationException();
-                    default:
-                        throw new NotImplementedException();
+                    throw new InvalidOperationException();
+                }
+                else
+                {
+                    BeginTransaction();
                 }
             }
         }
@@ -366,13 +365,19 @@ namespace Jhu.Graywulf.Registry
             if (databaseTransaction == null)
             {
                 IsolationLevel iso;
-                if (transactionMode == TransactionMode.DirtyRead)
+
+                if (transactionMode.HasFlag(TransactionMode.DirtyRead))
                 {
                     iso = IsolationLevel.ReadUncommitted;
                 }
-                else
+                else if (transactionMode.HasFlag(TransactionMode.ReadOnly) ||
+                    transactionMode.HasFlag(TransactionMode.ReadWrite))
                 {
                     iso = IsolationLevel.ReadCommitted;
+                }
+                else
+                {
+                    throw new NotImplementedException();
                 }
 
                 databaseTransaction = databaseConnection.BeginTransaction(iso);

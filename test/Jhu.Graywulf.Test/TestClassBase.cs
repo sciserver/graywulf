@@ -113,7 +113,7 @@ namespace Jhu.Graywulf.Test
 
         public static void PurgeTestJobs()
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
                 var sql = @"UPDATE JobInstance
 SET JobExecutionStatus = 64
@@ -145,7 +145,7 @@ WHERE DateFinished IS NULL";
         protected SqlServerDataset GetTestUserMyDB()
         {
             // Get mydb default schema
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.DirtyRead))
+            using (var context = ContextManager.Instance.CreateContext(TransactionMode.DirtyRead))
             {
                 var user = SignInTestUser(context);
                 var fc = new FederationContext(context, user);
@@ -171,7 +171,7 @@ WHERE DateFinished IS NULL";
 
         protected Guid ScheduleTestJob(TimeSpan delayPeriod, JobType jobType, QueueType queueType, TimeSpan timeout)
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
                 SignInTestUser(context);
 
@@ -198,7 +198,7 @@ WHERE DateFinished IS NULL";
 
         protected JobInstance LoadJob(Guid guid)
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.DirtyRead))
+            using (var context = ContextManager.Instance.CreateContext(TransactionMode.DirtyRead))
             {
                 var ef = new EntityFactory(context);
                 var job = ef.LoadEntity<JobInstance>(guid);
@@ -208,7 +208,7 @@ WHERE DateFinished IS NULL";
 
         protected void CancelJob(Guid guid)
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
                 var ef = new EntityFactory(context);
                 var job = ef.LoadEntity<JobInstance>(guid);
@@ -290,7 +290,7 @@ WHERE DateFinished IS NULL";
 
         protected void DropUserDatabaseTable(string tableName)
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadOnlyContext())
             {
                 var user = SignInTestUser(context);
                 var udf = UserDatabaseFactory.Create(new FederationContext(context, user));

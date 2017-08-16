@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Activities
             var entityguid = EntityGuid.Get(activityContext);
             var lockOwner = LockOwner.Get(activityContext);
 
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
                 context.LockOwner = lockOwner;
 
