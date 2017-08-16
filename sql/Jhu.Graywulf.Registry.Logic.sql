@@ -11,23 +11,46 @@
 
 -- USER DEFINE TYPES --
 
+IF TYPE_ID('[dbo].[DeploymentState]') IS NOT NULL
+DROP TYPE [dbo].[DeploymentState]
+
+GO
+
 CREATE TYPE [dbo].[DeploymentState]
 EXTERNAL NAME [Jhu.Graywulf.Registry.Enum].[Jhu.Graywulf.Registry.Sql.DeploymentState]
 
 GO
 
+----------------------------------------------------------------
+
+IF TYPE_ID('[dbo].[JobExecutionState]') IS NOT NULL
+DROP TYPE [dbo].[JobExecutionState]
+
+GO
 
 CREATE TYPE [dbo].[JobExecutionState]
 EXTERNAL NAME [Jhu.Graywulf.Registry.Enum].[Jhu.Graywulf.Registry.Sql.JobExecutionState]
 
 GO
 
+----------------------------------------------------------------
+
+IF TYPE_ID('[dbo].[RunningState]') IS NOT NULL
+DROP TYPE [dbo].[RunningState]
+
+GO
 
 CREATE TYPE [dbo].[RunningState]
 EXTERNAL NAME [Jhu.Graywulf.Registry.Enum].[Jhu.Graywulf.Registry.Sql.RunningState]
 
 GO
 
+----------------------------------------------------------------
+
+IF TYPE_ID('[dbo].[ScheduleType]') IS NOT NULL
+DROP TYPE [dbo].[ScheduleType]
+
+GO
 
 CREATE TYPE [dbo].[ScheduleType]
 EXTERNAL NAME [Jhu.Graywulf.Registry.Enum].[Jhu.Graywulf.Registry.Sql.ScheduleType]
@@ -68,6 +91,7 @@ AS
 	RETURN 0
 GO
 
+----------------------------------------------------------------
 
 IF OBJECT_ID('[dbo].[spCheckEntityDuplicate]') IS NOT NULL
 DROP PROC [dbo].[spCheckEntityDuplicate]
@@ -93,6 +117,7 @@ AS
 	RETURN ISNULL(@count, 0);
 GO
 
+----------------------------------------------------------------
 
 IF OBJECT_ID('[dbo].[spCreateEntity]') IS NOT NULL
 DROP PROC [dbo].[spCreateEntity]
@@ -169,6 +194,7 @@ AS
 
 GO
 
+----------------------------------------------------------------
 
 IF OBJECT_ID('[dbo].[spModifyEntity]') IS NOT NULL
 DROP PROC [dbo].[spModifyEntity]
@@ -248,6 +274,12 @@ AS
 
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spDeleteEntity]') IS NOT NULL
+DROP PROC [dbo].[spDeleteEntity]
+
+GO
 
 CREATE PROC [dbo].[spDeleteEntity]
 	@UserGuid uniqueidentifier,
@@ -282,6 +314,12 @@ AS
 		  Deleted = 0
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spHideEntity]') IS NOT NULL
+DROP PROC [dbo].[spHideEntity]
+
+GO
 
 CREATE PROC [dbo].[spHideEntity]
 	@UserGuid uniqueidentifier,
@@ -299,6 +337,12 @@ AS
 	SET @ConcurrencyVersion = @@DBTS;
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spShowEntity]') IS NOT NULL
+DROP PROC [dbo].[spShowEntity]
+
+GO
 
 CREATE PROC [dbo].[spShowEntity]
 	@UserGuid uniqueidentifier,
@@ -316,6 +360,12 @@ AS
 	SET @ConcurrencyVersion = @@DBTS;
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spMoveDownEntity]') IS NOT NULL
+DROP PROC [dbo].[spMoveDownEntity]
+
+GO
 
 CREATE PROC [dbo].[spMoveDownEntity]
 	@UserGuid uniqueidentifier,
@@ -352,6 +402,12 @@ AS
 	RETURN @Number - 1;
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spMoveUpEntity]') IS NOT NULL
+DROP PROC [dbo].[spMoveUpEntity]
+
+GO
 
 CREATE PROC [dbo].[spMoveUpEntity]
 	@UserGuid uniqueidentifier,
@@ -384,6 +440,12 @@ AS
 	RETURN @Number - 1;
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spObtainEntityLock]') IS NOT NULL
+DROP PROC [dbo].[spObtainEntityLock]
+
+GO
 
 CREATE PROC [dbo].[spObtainEntityLock]
 	@UserGuid uniqueidentifier,
@@ -404,6 +466,12 @@ AS
 	RETURN 0
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spReleaseEntityLock]') IS NOT NULL
+DROP PROC [dbo].[spReleaseEntityLock]
+
+GO
 
 CREATE PROC [dbo].[spReleaseEntityLock]
 	@UserGuid uniqueidentifier,
@@ -424,6 +492,12 @@ AS
 	RETURN 0
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spFindEntityAscendants]') IS NOT NULL
+DROP PROC [dbo].[spFindEntityAscendants]
+
+GO
 
 CREATE PROC [dbo].[spFindEntityAscendants]
 (
@@ -450,6 +524,12 @@ AS
 
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[fGetEntityGuid_byName]') IS NOT NULL
+DROP FUNCTION [dbo].[fGetEntityGuid_byName]
+
+GO
 
 CREATE FUNCTION [dbo].[fGetEntityGuid_byName]
 (
@@ -507,8 +587,15 @@ BEGIN
 END
 GO
 
+----------------------------------------------------------------
 
-CREATE PROC spGetEntityGuid_byName
+IF OBJECT_ID('[dbo].[spGetEntityGuid_byName]') IS NOT NULL
+DROP PROC [dbo].[spGetEntityGuid_byName]
+
+GO
+
+
+CREATE PROC [dbo].[spGetEntityGuid_byName]
 	@UserGuid uniqueidentifier,
 	@EntityType int,
 	@NameParts NamePartList READONLY
@@ -517,8 +604,14 @@ AS
 
 GO
 
+----------------------------------------------------------------
 
-CREATE PROC spFindEntity_byName
+IF OBJECT_ID('[dbo].[spFindEntity_byName]') IS NOT NULL
+DROP PROC [dbo].[spFindEntity_byName]
+
+GO
+
+CREATE PROC [dbo].[spFindEntity_byName]
 	@UserGuid uniqueidentifier,
 	@EntityType int,
 	@NameParts NamePartList READONLY
@@ -541,7 +634,12 @@ AS
 
 GO
 	
+----------------------------------------------------------------
 
+IF OBJECT_ID('[dbo].[spFindEntityReference]') IS NOT NULL
+DROP PROC [dbo].[spFindEntityReference]
+
+GO
 
 CREATE PROC [dbo].[spFindEntityReference]
 	@UserGuid uniqueidentifier,
@@ -603,6 +701,7 @@ AS
 	SET @RowCount = @@ROWCOUNT
 GO
 
+----------------------------------------------------------------
 
 IF OBJECT_ID('[dbo].[spFindJobInstance_Next]') IS NOT NULL
 DROP PROC [dbo].[spFindJobInstance_Next]
@@ -688,13 +787,20 @@ AS
 	FROM Entity
 	INNER JOIN ##jobs ON Entity.Guid = ##jobs.JobInstanceGuid
 
-	SELECT * FROM Entity
+	SELECT * 
+	FROM Entity WITH(ROWLOCK, UPDLOCK)
 	INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
 	WHERE Guid IN (SELECT JobInstanceGuid FROM ##jobs)
 
 	DROP TABLE ##jobs
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spFindReferencingEntity]') IS NOT NULL
+DROP PROC [dbo].[spFindReferencingEntity]
+
+GO
 
 CREATE PROC [dbo].[spFindReferencingEntity]
 	@UserGuid uniqueidentifier,
@@ -713,6 +819,10 @@ GO
 
 -- USER MANAGEMENT --
 
+IF OBJECT_ID('[dbo].[spFindUser_byDomainActivationCode]') IS NOT NULL
+DROP PROC [dbo].[spFindUser_byDomainActivationCode]
+
+GO
 
 CREATE PROC [dbo].[spFindUser_byDomainActivationCode]
 	@DomainGuid uniqueidentifier,
@@ -727,6 +837,12 @@ AS
 		ActivationCode = @ActivationCode
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spFindUser_byDomainEmail]') IS NOT NULL
+DROP PROC [dbo].[spFindUser_byDomainEmail]
+
+GO
 
 CREATE PROC [dbo].[spFindUser_byDomainEmail]
 	@DomainGuid uniqueidentifier,
@@ -741,6 +857,12 @@ AS
 		Email = @Email
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spFindUser_byIdentity]') IS NOT NULL
+DROP PROC [dbo].[spFindUser_byIdentity]
+
+GO
 
 CREATE PROC [dbo].[spFindUser_byIdentity]
 	@DomainGuid uniqueidentifier,
@@ -762,6 +884,12 @@ AS
 		
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spLoginUser]') IS NOT NULL
+DROP PROC [dbo].[spLoginUser]
+
+GO
 
 CREATE PROC [dbo].[spLoginUser]
 	@ParentGuid uniqueidentifier,
@@ -776,6 +904,12 @@ AS
 		(Email = @NameOrEmail OR Entity.Name = @NameOrEmail)
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spLoginUserNtlm]') IS NOT NULL
+DROP PROC [dbo].[spLoginUserNtlm]
+
+GO
 
 CREATE PROC [dbo].[spLoginUserNtlm]
 	@NtlmUser nvarchar(128)
@@ -788,6 +922,12 @@ AS
 		NtlmUser = @NtlmUser AND Integrated = 1
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spCheckUserEmailDuplicate]') IS NOT NULL
+DROP PROC [dbo].[spCheckUserEmailDuplicate]
+
+GO
 
 CREATE PROC [dbo].[spCheckUserEmailDuplicate]
 	@ParentGuid uniqueidentifier,
@@ -811,7 +951,16 @@ GO
 	
 -- DEVELOPER TOOLS --
 
-CREATE SCHEMA dev
+IF SCHEMA_ID('dev') IS NULL
+EXEC('CREATE SCHEMA dev')
+
+GO
+
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dev].[spCleanupEverything]') IS NOT NULL
+DROP PROC [dev].[spCleanupEverything]
+
 GO
 
 CREATE PROC [dev].[spCleanupEverything]
