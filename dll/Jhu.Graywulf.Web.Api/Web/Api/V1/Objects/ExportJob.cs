@@ -161,7 +161,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             return ff.CreateParameters(context.Federation, uri, targetcredentials, sourcequery, FileFormat.MimeType);
         }
 
-        protected internal override void Schedule(FederationContext context, string queueName)
+        protected internal override void OnSchedule(FederationContext context, string queueName)
         {
             var p = CreateParameters(context);
 

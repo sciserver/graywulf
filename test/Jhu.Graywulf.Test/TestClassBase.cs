@@ -175,11 +175,11 @@ WHERE DateFinished IS NULL";
             {
                 SignInTestUser(context);
 
-                var ef = new EntityFactory(context);
-                var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
-
                 var queue = GetQueueName(queueType);
-
+                var ef = new EntityFactory(context);
+                var qi = ef.LoadEntity<QueueInstance>(queue);
+                var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
+                
                 JobInstance job = jd.CreateJobInstance(queue, ScheduleType.Queued, timeout);
 
                 job.Parameters["DelayPeriod"].Value = (int)delayPeriod.TotalMilliseconds;

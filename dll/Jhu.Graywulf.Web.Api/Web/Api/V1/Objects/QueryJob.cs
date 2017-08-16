@@ -187,7 +187,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected internal override void Schedule(FederationContext context, string queueName)
+        protected internal override void OnSchedule(FederationContext context, string queueName)
         {
             // Create the query object from the query test
             var query = CreateQuery(context);

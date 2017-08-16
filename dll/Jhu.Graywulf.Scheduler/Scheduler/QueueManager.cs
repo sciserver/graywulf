@@ -753,6 +753,11 @@ namespace Jhu.Graywulf.Scheduler
 
                 using (var context = CreateReadWriteRegistryContext())
                 {
+                    // Load the queue to set a lock on it. This will prevent
+                    // deadlocks with concurrent job operations.
+                    var ef = new EntityFactory(context);
+                    ef.LoadEntity<QueueInstance>(queue.Guid);
+
                     // The number of jobs to be requested from the queue is the
                     // number of maximum outstanding jobs minus the number of
                     // already running jobs

@@ -326,8 +326,17 @@ namespace Jhu.Graywulf.Web.Api.V1
             throw new NotImplementedException();
         }
 
-        internal protected virtual void Schedule(FederationContext context, string queueName)
+        public void Schedule(FederationContext context, string queueName)
         {
+            var ef = new EntityFactory(context.RegistryContext);
+            ef.LoadEntity<QueueInstance>(queueName);
+
+            OnSchedule(context, queueName);
+        }
+
+        internal protected virtual void OnSchedule(FederationContext context, string queueName)
+        {
+            throw new NotImplementedException();
         }
 
         protected virtual void SaveDependencies()

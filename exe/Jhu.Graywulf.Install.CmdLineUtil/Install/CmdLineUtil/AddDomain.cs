@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
                 Console.Write("Creating domain... ");
             }
 
-            using (RegistryContext context = ContextManager.Instance.CreateContext(TransactionMode.ManualCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateReadWriteContext())
             {
                 var f = new EntityFactory(context);
                 var c = f.LoadEntity<Cluster>(clusterName);
@@ -53,8 +53,6 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
                 var d = new Domain(c);
                 d.Name = domainName;
                 d.Save();
-
-                context.CommitTransaction();
             }
 
             if (!Quiet)

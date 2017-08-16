@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
         {
             ContextManager.Instance.ConnectionString = GetConnectionString();
 
-            using (var context = ContextManager.Instance.CreateContext(TransactionMode.ManualCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
                 var s = new RegistryDeserializer(context)
                 {
@@ -37,8 +37,6 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
                 {
                     s.Deserialize(infile);
                 }
-
-                context.CommitTransaction();
             }
         }
     }

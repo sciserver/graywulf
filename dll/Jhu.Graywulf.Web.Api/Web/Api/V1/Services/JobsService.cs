@@ -98,14 +98,17 @@ namespace Jhu.Graywulf.Web.Api.V1
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public QueueListResponse ListQueues()
         {
-            var jobFactory = new JobFactory(RegistryContext);
+            RegistryContext.TransactionMode = TransactionMode.DirtyRead;
 
+            var jobFactory = new JobFactory(RegistryContext);
             return new QueueListResponse(jobFactory.SelectQueue());
         }
 
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public QueueResponse GetQueue(string queue)
         {
+            RegistryContext.TransactionMode = TransactionMode.DirtyRead;
+
             var jobFactory = new JobFactory(RegistryContext);
             var q = jobFactory.GetQueue(queue);
 
@@ -117,6 +120,8 @@ namespace Jhu.Graywulf.Web.Api.V1
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public JobListResponse ListJobs(string queue, string type, string from, string max)
         {
+            RegistryContext.TransactionMode = TransactionMode.DirtyRead;
+
             var jobFactory = new JobFactory(RegistryContext);
 
             JobQueue jobQueue;
@@ -168,6 +173,8 @@ namespace Jhu.Graywulf.Web.Api.V1
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public JobResponse GetJob(string guid)
         {
+            RegistryContext.TransactionMode = TransactionMode.DirtyRead;
+
             var jobFactory = new JobFactory(RegistryContext);
             return new JobResponse(jobFactory.GetJob(new Guid(guid)));
         }

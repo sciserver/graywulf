@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
                 Console.Write("Creating cluster... ");
             }
             
-            using (RegistryContext context = ContextManager.Instance.CreateContext(TransactionMode.ManualCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateReadWriteContext())
             {
                 var i = new ClusterInstaller(context)
                 {
@@ -90,7 +90,6 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
                     CreateNode = createNode,
                 };
                 i.Install();
-                context.CommitTransaction();
             }
 
             if (!Quiet)

@@ -216,5 +216,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 Assert.AreEqual(JobStatus.Canceled, nj2.QueryJob.Status);
             }
         }
+
+
     }
 }
