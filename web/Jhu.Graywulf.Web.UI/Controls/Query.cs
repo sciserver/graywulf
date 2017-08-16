@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Web.UI.Controls
     [DefaultProperty("Text"), ParseChildren(false), PersistChildren(true), ToolboxData("<{0}:CodeView runat=server></{0}:CodeView>"), ControlValueProperty("Text")]
     public class Query : System.Web.UI.WebControls.WebControl, ITextControl
     {
-        private LinkButton edit;
+        private Button edit;
         private bool textSetByAddParsedSubObject;
 
         [Bindable(true), Localizable(true), PersistenceMode(PersistenceMode.InnerDefaultProperty)]
@@ -66,11 +66,16 @@ namespace Jhu.Graywulf.Web.UI.Controls
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            edit = new LinkButton();
+            edit = new Button();
+            edit.CssClass = "FormButton";
             edit.Text = "Try this query";
             edit.Click += new EventHandler(edit_Click);
 
-            this.Controls.Add(edit);
+            var p = new HtmlGenericControl("p");
+            p.Style["text-align"] = "right";
+            p.Controls.Add(edit);
+
+            this.Controls.Add(p);
         }
 
         protected void Page_PreRender(object sender, EventArgs e)
@@ -94,7 +99,7 @@ namespace Jhu.Graywulf.Web.UI.Controls
             writer.Write(Text);
             writer.Write("]]></script>");
 
-            edit.RenderControl(writer);
+            base.RenderControl(writer);
         }
     }
 }
