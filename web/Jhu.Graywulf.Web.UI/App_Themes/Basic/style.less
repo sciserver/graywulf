@@ -86,7 +86,11 @@ body {
     .font();
 }
 
-.dock-scroll {
+.dock-hidden {
+    visibility: hidden;
+}
+
+.dock-center .dock-scroll {
     overflow-y: auto;
     padding-right: @gutter;
     margin-right: 0px;
@@ -527,7 +531,7 @@ div.gw-docs-page id {
     display: inline;
     text-wrap: none;
     background-color: @colorLighter;
-    border: dotted 1px @colorDarker; 
+    border: dotted 1px @colorDarker;
     border-radius: 2px;
     padding: 0px 2px 0px 2px;
 }

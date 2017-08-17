@@ -81,7 +81,7 @@ function dockContents(idx, element) {
                 for (var j = 0; j < classList.length; j++) {
                     if (classList[j].startsWith("dock-")) {
                         var dockType = classList[j].substring(5);
-                        if (dockType != "container" && dockType != "scroll") {
+                        if (dockType != "container" && dockType != "scroll" && dockType != "hidden") {
                             vv.dockType = dockType;
                         }
                     }
@@ -143,6 +143,10 @@ function dockContents(idx, element) {
             case "center":
                 vv.css({ "left": left, "top": top });
                 break;
+        }
+
+        if (vv.dockType){
+            vv.removeClass("dock-hidden");
         }
     }
 }
