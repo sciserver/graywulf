@@ -837,7 +837,7 @@ namespace Jhu.Graywulf.Scheduler
 
             try
             {
-                using (var context = CreateReadOnlyRegistryContext())
+                using (var context = CreateReadWriteRegistryContext())
                 {
                     var jf = new JobInstanceFactory(context);
                     var ji = jf.FindAndLockJobInstance(guid);

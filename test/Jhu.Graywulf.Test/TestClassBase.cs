@@ -115,8 +115,10 @@ namespace Jhu.Graywulf.Test
         {
             using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
-                var sql = @"UPDATE JobInstance
-SET JobExecutionStatus = 64
+                var sql = @"UPDATE Entity
+SET RunningState = 64
+FROM Entity
+INNER JOIN JobInstance ON EntityGuid = Guid
 WHERE DateFinished IS NULL";
 
                 var cmd = context.CreateTextCommand(sql);

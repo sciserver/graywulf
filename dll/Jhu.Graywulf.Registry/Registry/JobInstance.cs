@@ -29,7 +29,6 @@ namespace Jhu.Graywulf.Registry
         private string workflowTypeName;
         private DateTime dateStarted;
         private DateTime dateFinished;
-        private JobExecutionState jobExecutionStatus;
         private TimeSpan jobTimeout;
         private DateTime suspendTimeout;
         private ScheduleType scheduleType;
@@ -86,11 +85,11 @@ namespace Jhu.Graywulf.Registry
             set { dateFinished = value; }
         }
 
-        [DBColumn]
+        [XmlIgnore]
         public JobExecutionState JobExecutionStatus
         {
-            get { return jobExecutionStatus; }
-            set { jobExecutionStatus = value; }
+            get { return (JobExecutionState)RunningState; }
+            set { RunningState = (RunningState)value; }
         }
 
         [DBColumn]
@@ -248,7 +247,7 @@ namespace Jhu.Graywulf.Registry
         {
             get
             {
-                switch (jobExecutionStatus)
+                switch (JobExecutionStatus)
                 {
                     case JobExecutionState.Executing:
                     case JobExecutionState.Persisted:
@@ -319,7 +318,6 @@ namespace Jhu.Graywulf.Registry
             this.workflowTypeName = string.Empty;
             this.dateStarted = DateTime.MinValue;
             this.dateFinished = DateTime.MinValue;
-            this.jobExecutionStatus = JobExecutionState.Unknown;
             this.jobTimeout = TimeSpan.Zero;
             this.suspendTimeout = DateTime.MinValue;
             this.scheduleType = ScheduleType.Unknown;
@@ -344,7 +342,6 @@ namespace Jhu.Graywulf.Registry
             this.workflowTypeName = old.workflowTypeName;
             this.dateStarted = old.dateStarted;
             this.dateFinished = old.dateFinished;
-            this.jobExecutionStatus = old.jobExecutionStatus;
             this.jobTimeout = old.jobTimeout;
             this.suspendTimeout = old.suspendTimeout;
             this.scheduleType = old.scheduleType;
@@ -366,7 +363,6 @@ namespace Jhu.Graywulf.Registry
             var o = other as JobInstance;
 
             eq &= this.workflowTypeName == o.workflowTypeName;
-            eq &= this.jobExecutionStatus == o.jobExecutionStatus;
             eq &= this.jobTimeout == o.jobTimeout;
             eq &= this.suspendTimeout == o.suspendTimeout;
             eq &= this.scheduleType == o.scheduleType;
@@ -386,7 +382,6 @@ namespace Jhu.Graywulf.Registry
             var o = other as JobInstance;
 
             this.workflowTypeName = o.workflowTypeName;
-            this.jobExecutionStatus = o.jobExecutionStatus;
             this.jobTimeout = o.jobTimeout;
             this.suspendTimeout = o.suspendTimeout;
             this.scheduleType = o.scheduleType;
@@ -431,7 +426,7 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         public void Cancel()
         {
-            switch (jobExecutionStatus)
+            switch (JobExecutionStatus)
             {
                 case JobExecutionState.Cancelled:
                 case JobExecutionState.CancelRequested:
@@ -491,9 +486,9 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         public JobInstance RescheduleIfRecurring()
         {
-            if ((jobExecutionStatus == JobExecutionState.Completed ||
-                jobExecutionStatus == JobExecutionState.Failed ||
-                jobExecutionStatus == JobExecutionState.Cancelled)
+            if ((JobExecutionStatus == JobExecutionState.Completed ||
+                JobExecutionStatus == JobExecutionState.Failed ||
+                JobExecutionStatus == JobExecutionState.Cancelled)
                 && scheduleType == ScheduleType.Recurring)
             {
                 // Create a copy first

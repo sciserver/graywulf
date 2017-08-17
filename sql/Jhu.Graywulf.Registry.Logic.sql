@@ -632,6 +632,11 @@ AS
         Entity.Guid = @guid
         AND Deleted = 0;
 
+	SELECT EntityReference.*
+	FROM EntityReference
+	WHERE EntityGuid = @guid
+	ORDER BY ReferenceType
+
 GO
 	
 ----------------------------------------------------------------
@@ -663,13 +668,18 @@ CREATE PROC [dbo].[spFindJobInstance_byDetails]
 	@ShowDeleted bit,
 	@From int,
 	@Max int,
-	@RowCount int OUTPUT,
+	@CountRows bit,
 	@JobUserGuid uniqueidentifier,
 	@QueueInstanceGuids GuidList READONLY,
 	@JobDefinitionGuids GuidList READONLY,
 	@JobExecutionStatus int
 AS
 	SET NOCOUNT ON;
+
+	DECLARE @temp TABLE
+	(
+		Guid uniqueidentifier PRIMARY KEY
+	)
 	
 	DECLARE @qicount int;
 	SELECT @qicount = COUNT(*) FROM @QueueInstanceGuids;
@@ -677,28 +687,40 @@ AS
 	DECLARE @jdcount int;
 	SELECT @jdcount = COUNT(*) FROM @JobDefinitionGuids;
 
+	INSERT INTO @temp
+	SELECT Entity.Guid
+	FROM Entity WITH(INDEX(IX_Entity_Jobs), ROWLOCK, UPDLOCK)
+	INNER LOOP JOIN EntityReference JobDefinition ON JobDefinition.ReferenceType = 1 AND JobDefinition.EntityGuid = Entity.Guid
+	WHERE 
+		(EntityType = 0x00200400) AND
+		(@ShowHidden = 1 OR Entity.Hidden = 0) AND
+		(@ShowDeleted = 1 OR Entity.Deleted = 0) AND
+			
+		(@JobUserGUID = Entity.UserGuidOwner OR @JobUserGuid IS NULL) AND
+		(Entity.ParentGuid IN (SELECT Guid FROM @QueueInstanceGuids) OR @qicount = 0) AND
+		(JobDefinition.ReferencedEntityGuid IN (SELECT Guid FROM @JobDefinitionGuids) OR @jdcount = 0) AND
+		((@JobExecutionStatus & RunningState) != 0 OR @JobExecutionStatus IS NULL)
+
+	ORDER BY DateCreated DESC
+	OFFSET ISNULL(@From, 0) ROWS
+	FETCH NEXT ISNULL(@Max, 0x7FFFFFFF) ROWS ONLY;
+	
 	SET NOCOUNT OFF;
 
-	WITH q AS
-	(
-		SELECT Entity.*, JobInstance.*, ROW_NUMBER () OVER ( ORDER BY DateCreated DESC ) AS rn
-		FROM Entity WITH(ROWLOCK, UPDLOCK)
+	IF @CountRows = 1 BEGIN
+		SELECT ISNULL(COUNT(*), 0) FROM @temp
+	END ELSE BEGIN
+		SELECT Entity.*, JobInstance.* 
+		FROM @temp t
+		INNER JOIN Entity ON Entity.Guid = t.Guid
 		INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
-		INNER JOIN EntityReference JobDefinition ON JobDefinition.ReferenceType = 1 AND JobDefinition.EntityGuid = Entity.Guid
-		WHERE 
-			(@ShowHidden = 1 OR Entity.Hidden = 0) AND
-			(@ShowDeleted = 1 OR Entity.Deleted = 0) AND
-			
-			(@JobUserGUID = Entity.UserGuidCreated OR @JobUserGuid IS NULL) AND
-			(Entity.ParentGuid IN (SELECT Guid FROM @QueueInstanceGuids) OR @qicount = 0) AND
-			(JobDefinition.ReferencedEntityGuid IN (SELECT Guid FROM @JobDefinitionGuids) OR @jdcount = 0) AND
-			((@JobExecutionStatus & JobInstance.JobExecutionStatus) != 0 OR @JobExecutionStatus IS NULL)
-	)
-	SELECT q.* FROM q
-	WHERE rn BETWEEN @From + 1 AND @From + @Max OR @From IS NULL OR @Max IS NULL
-	ORDER BY rn
+		ORDER BY Number
 
-	SET @RowCount = @@ROWCOUNT
+		SELECT r.*
+		FROM @temp t
+		INNER JOIN EntityReference r ON r.EntityGuid = t.Guid
+		ORDER BY r.EntityGuid, r.ReferenceType
+	END
 GO
 
 ----------------------------------------------------------------
@@ -718,7 +740,7 @@ AS
 	SET NOCOUNT ON
 	
 	-- Jobs will be collected in a temp table
-	CREATE TABLE ##jobs
+	DECLARE @jobs TABLE
 	(
 		JobInstanceGuid uniqueidentifier PRIMARY KEY
 	)
@@ -743,33 +765,33 @@ AS
 					 @attempt = 1 AND Entity.UserGuidOwner <= @LastUserGuid)
 				AND (
 					-- Resumed (previously persisted)
-					((JobExecutionStatus & dbo.JobExecutionState::Persisted) != 0)
+					((RunningState & dbo.JobExecutionState::Persisted) != 0)
 					  
 					 OR 
 					 
 					 -- Suspended but timed out workflows
-					((JobExecutionStatus & dbo.JobExecutionState::Suspended) != 0
+					((RunningState & dbo.JobExecutionState::Suspended) != 0
 					  AND SuspendTimeout < GETDATE())
 
 					 OR
 
 					 -- Job scheduled for a given time
-					((JobExecutionStatus & dbo.JobExecutionState::Scheduled != 0)
+					((RunningState & dbo.JobExecutionState::Scheduled != 0)
 					  AND ScheduleType = dbo.ScheduleType::Timed
 					  AND ScheduleTime <= GETDATE())		-- Earlier or now
 
 					OR
 
 					-- Queued job
-					((JobExecutionStatus & dbo.JobExecutionState::Scheduled) != 0
+					((RunningState & dbo.JobExecutionState::Scheduled) != 0
 					  AND ScheduleType = dbo.ScheduleType::Queued)
 
 					)
 		)
-		INSERT ##jobs
+		INSERT @jobs
 		SELECT JobInstanceGuid FROM q WHERE rn <= @MaxJobs;
 
-		SELECT @count = COUNT(*) FROM ##jobs;
+		SELECT @count = COUNT(*) FROM @jobs;
 		SET @MaxJobs = @MaxJobs - @count;
 
 		IF (@MaxJobs <= 0) BREAK;
@@ -785,14 +807,18 @@ AS
 	UPDATE Entity
 	SET LockOwner = @LockOwner
 	FROM Entity
-	INNER JOIN ##jobs ON Entity.Guid = ##jobs.JobInstanceGuid
+	INNER JOIN @jobs j ON Entity.Guid = j.JobInstanceGuid
 
 	SELECT * 
 	FROM Entity WITH(ROWLOCK, UPDLOCK)
 	INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
-	WHERE Guid IN (SELECT JobInstanceGuid FROM ##jobs)
+	WHERE Guid IN (SELECT JobInstanceGuid FROM @jobs)
 
-	DROP TABLE ##jobs
+	SELECT EntityReference.*
+	FROM EntityReference
+	INNER JOIN @jobs j ON EntityReference.EntityGuid = j.JobInstanceGuid
+	ORDER BY EntityReference.EntityGuid, EntityReference.ReferenceType
+
 GO
 
 ----------------------------------------------------------------
@@ -810,10 +836,18 @@ CREATE PROC [dbo].[spFindReferencingEntity]
 AS
 	SELECT Entity.*
 	FROM Entity
-	INNER JOIN EntityReference ON EntityReference.EntityGuid = Entity.Guid
-	WHERE EntityReference.ReferencedEntityGuid = @Guid AND
+	INNER JOIN EntityReference ref ON ref.EntityGuid = Entity.Guid
+	WHERE ref.ReferencedEntityGuid = @Guid AND
 		(@ShowHidden = 1 OR Entity.Hidden = 0) AND
 		(@ShowDeleted = 1 OR Entity.Deleted = 0)
+
+	SELECT EntityReference.*
+	FROM Entity
+	INNER JOIN EntityReference ON EntityReference.EntityGuid = Entity.Guid
+	INNER JOIN EntityReference ref ON ref.EntityGuid = EntityReference.EntityGuid
+	WHERE ref.ReferencedEntityGuid = @Guid
+	ORDER BY EntityReference.EntityGuid, EntityReference.ReferenceType
+
 GO
 
 

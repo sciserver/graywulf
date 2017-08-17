@@ -128,6 +128,25 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
+        internal void LoadEntityReferencesFromReader(SqlDataReader reader)
+        {
+            InitializeEntityReferences();
+
+            while (reader.Read())
+            {
+                var guid = reader.GetGuid(0);
+                var type = reader.GetByte(1);
+                var referencedguid = reader.GetGuid(2);
+
+                if (entityReferences.ContainsKey(type))
+                {
+                    entityReferences[type].Guid = referencedguid;
+                }
+            }
+
+            isEntityReferencesLoaded = true;
+        }
+
         private void LoadEntityReferences()
         {
             if (IsExisting && EntityType != EntityType.Unknown && entityReferences.Count > 0)
@@ -140,13 +159,7 @@ namespace Jhu.Graywulf.Registry
 
                     using (var dr = cmd.ExecuteReader())
                     {
-                        while (dr.Read())
-                        {
-                            var type = dr.GetByte(1);
-                            var guid = dr.GetGuid(2);
-
-                            entityReferences[type].Guid = guid;
-                        }
+                        LoadEntityReferencesFromReader(dr);
                     }
                 }
 

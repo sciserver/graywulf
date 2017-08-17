@@ -112,24 +112,34 @@ namespace Jhu.Graywulf.Registry
             var type = Constants.EntityTypeMap[typeof(T)];
 
             var sql = @"
-WITH q AS
-(
-	SELECT Entity.*, [{0}].*, ROW_NUMBER () OVER ( ORDER BY Entity.Number ) AS rn
-	FROM Entity {1}
-	INNER JOIN [{0}] ON [{0}].EntityGuid = Entity.Guid
-	WHERE
-		(@ShowHidden = 1 OR Entity.Hidden = 0) AND
-		(@ShowDeleted = 1 OR Entity.Deleted = 0)
-)
-SELECT q.* FROM q
-WHERE rn BETWEEN @From + 1 AND @From + @Max OR @From IS NULL OR @Max IS NULL
-ORDER BY rn
+DECLARE @guids TABLE (Guid uniqueidentifier PRIMARY KEY)
+
+INSERT INTO @guids
+SELECT Entity.Guid
+FROM Entity {1}
+WHERE EntityType = @EntityType AND
+	(@ShowHidden = 1 OR Entity.Hidden = 0) AND
+	(@ShowDeleted = 1 OR Entity.Deleted = 0)
+ORDER BY Entity.Number
+OFFSET ISNULL(@From, 0) ROWS
+FETCH NEXT ISNULL(@Max, 0x7FFFFFFF) ROWS ONLY;
+
+SELECT Entity.*, [{0}].*
+FROM @guids g
+INNER JOIN Entity ON Entity.Guid = g.Guid
+INNER JOIN [{0}] ON [{0}].EntityGuid = Entity.Guid
+ORDER BY Entity.Number
+
+SELECT EntityReference.*
+FROM @guids g
+INNER JOIN EntityReference ON EntityReference.EntityGuid = g.Guid
 ";
 
             sql = String.Format(sql, type, GetTableHint());
 
             var cmd = RegistryContext.CreateTextCommand(sql);
             cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+            cmd.Parameters.Add("@EntityType", SqlDbType.Int).Value = type;
             cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
             cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
             cmd.Parameters.Add("@From", SqlDbType.Int).Value = DBNull.Value;
@@ -144,40 +154,78 @@ ORDER BY rn
             var childrentype = Constants.EntityTypeMap[typeof(T)];
 
             var sql = @"
-WITH q AS
-(
-	SELECT Entity.*, [{0}].*
-	FROM Entity {1}
-	INNER JOIN [{0}] ON [{0}].EntityGuid = Entity.Guid
-	WHERE Entity.ParentGuid = @Guid AND
-		(@ShowHidden = 1 OR Entity.Hidden = 0) AND
-		(@ShowDeleted = 1 OR Entity.Deleted = 0)
-)
-SELECT q.* FROM q
-ORDER BY Number
+DECLARE @guids TABLE (Guid uniqueidentifier PRIMARY KEY)
+
+INSERT INTO @guids
+SELECT Entity.Guid
+FROM Entity {1}
+WHERE
+    Entity.ParentGuid = @ParentGuid AND
+    EntityType = @EntityType AND
+	(@ShowHidden = 1 OR Entity.Hidden = 0) AND
+	(@ShowDeleted = 1 OR Entity.Deleted = 0)
+ORDER BY Entity.Number
+OFFSET ISNULL(@From, 0) ROWS
+FETCH NEXT ISNULL(@Max, 0x7FFFFFFF) ROWS ONLY;
+
+SELECT Entity.*, [{0}].*
+FROM @guids g
+INNER JOIN Entity ON Entity.Guid = g.Guid
+INNER JOIN [{0}] ON [{0}].EntityGuid = Entity.Guid
+ORDER BY Entity.Number
+
+SELECT EntityReference.*
+FROM @guids g
+INNER JOIN EntityReference ON EntityReference.EntityGuid = g.Guid
 ";
 
             sql = String.Format(sql, childrentype, GetTableHint());
 
             var cmd = RegistryContext.CreateTextCommand(sql);
             cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+            cmd.Parameters.Add("@EntityType", SqlDbType.Int).Value = childrentype;
             cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
             cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
-            cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
+            cmd.Parameters.Add("@From", SqlDbType.Int).Value = DBNull.Value;
+            cmd.Parameters.Add("@Max", SqlDbType.Int).Value = DBNull.Value;
+            cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
 
             return new EntityCommandEnumerator<T>(RegistryContext, cmd, true);
         }
 
         public IEnumerable<Entity> FindReferencing(Entity e)
         {
-            // TODO: update lock hint
+            // TODO: test this
 
-            var sql = @"spFindReferencingEntity";
+            var sql = @"
+DECLARE @guids TABLE (Guid uniqueidentifier PRIMARY KEY)
+
+INSERT INTO @guids
+SELECT Entity.Guid
+FROM Entity {1}
+INNER JOIN EntityReference ref ON ref.EntityGuid = Entity.Guid
+WHERE ref.ReferencedEntityGuid = @Guid AND
+	(@ShowHidden = 1 OR Entity.Hidden = 0) AND
+	(@ShowDeleted = 1 OR Entity.Deleted = 0)
+ORDER BY Entity.Number
+OFFSET ISNULL(@From, 0) ROWS
+FETCH NEXT ISNULL(@Max, 0x7FFFFFFF) ROWS ONLY;
+
+SELECT Entity.*
+FROM @guids g
+INNER JOIN Entity ON Entity.Guid = g.Guid
+ORDER BY Entity.Number
+
+SELECT EntityReference.*
+FROM @guids g
+INNER JOIN EntityReference ON EntityReference.EntityGuid = g.Guid";
 
             var cmd = RegistryContext.CreateStoredProcedureCommand(sql);
             cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
             cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
             cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
+            cmd.Parameters.Add("@From", SqlDbType.Int).Value = DBNull.Value;
+            cmd.Parameters.Add("@Max", SqlDbType.Int).Value = DBNull.Value;
             cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = e.Guid;
 
             return new EntityCommandEnumerator<Entity>(RegistryContext, cmd, false);
@@ -186,6 +234,9 @@ ORDER BY Number
         public IEnumerable<T> FindConnection<T>(Entity parent, Entity to, int? referenceType)
             where T : Entity, new()
         {
+            // TODO: rewrite this to return entity references
+            // and do smart paging
+
             var sql = @"
 WITH q AS
 (
@@ -264,10 +315,14 @@ WHERE Entity.Guid = @Guid
         private SqlCommand GetLoadEntityCommand(EntityType entityType, Guid guid)
         {
             var sql = @"
-SELECT Entity.*, [{0}].*, ROW_NUMBER () OVER ( ORDER BY Entity.Number ) AS rn
+SELECT Entity.*, [{0}].*
 FROM Entity {1}
 INNER JOIN [{0}] ON [{0}].EntityGuid = Entity.Guid
 WHERE Entity.Guid = @Guid
+
+SELECT EntityReference.*
+FROM EntityReference
+WHERE EntityGuid = @Guid
 ";
 
             sql = String.Format(sql, entityType, GetTableHint());
@@ -318,6 +373,12 @@ WHERE Entity.Guid = @Guid
                         var entity = (Entity)Activator.CreateInstance(classtype);
                         entity.RegistryContext = RegistryContext;
                         entity.LoadFromDataReader(reader);
+
+                        if (reader.NextResult())
+                        {
+                            entity.LoadEntityReferencesFromReader(reader);
+                        }
+
                         RegistryContext.EntityCache.Add(entity);
                         return entity;
                     }

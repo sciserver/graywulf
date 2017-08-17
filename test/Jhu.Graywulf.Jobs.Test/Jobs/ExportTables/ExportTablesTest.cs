@@ -19,6 +19,20 @@ namespace Jhu.Graywulf.Jobs.ExportTables
     [TestClass]
     public class ExportTablesTest : TestClassBase
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            StartLogger();
+            InitializeJobTests();
+        }
+
+        [ClassCleanup]
+        public static void CleanUp()
+        {
+            CleanupJobTests();
+            StopLogger();
+        }
+
         protected Guid ScheduleExportTableJob(string schemaName, string tableName, string path, QueueType queueType)
         {
             var queue = GetQueueName(queueType);
