@@ -306,9 +306,8 @@ namespace Jhu.Graywulf.Web.Api.V1
             // the queue definition
             var jobFactory = new JobFactory(jobInstance.RegistryContext);
             var qi = jobFactory.GetQueueInstance(jobInstance.ParentReference.Guid);
-
-            
-
+            Enum.TryParse(qi.Name, out this.queue);
+                       
             // Load job dependencies, if requested
             if (jobInstance.Dependencies != null && jobInstance.Dependencies.Count > 0)
             {
