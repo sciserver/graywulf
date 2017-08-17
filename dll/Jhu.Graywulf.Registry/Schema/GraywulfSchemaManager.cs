@@ -264,7 +264,7 @@ namespace Jhu.Graywulf.Schema
                 }
             }
 
-            foreach (var ds in Datasets.Values.Where(k => !IsSystemDataset(k)).OrderBy(k => k.Name))
+            foreach (var ds in Datasets.Values.Where(k => !IsSystemDataset(k) && !IsUserDb(k)).OrderBy(k => k.Name))
             {
                 res.Add(ds);
             }
