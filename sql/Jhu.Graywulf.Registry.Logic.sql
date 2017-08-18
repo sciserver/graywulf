@@ -714,7 +714,7 @@ AS
 		FROM @temp t
 		INNER JOIN Entity ON Entity.Guid = t.Guid
 		INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
-		ORDER BY Number
+		ORDER BY DateCreated DESC
 
 		SELECT r.*
 		FROM @temp t
