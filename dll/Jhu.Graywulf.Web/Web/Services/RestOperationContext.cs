@@ -172,7 +172,7 @@ namespace Jhu.Graywulf.Web.Services
         /// </summary>
         public RegistryContext CreateRegistryContext()
         {
-            var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.ManualCommit);
+            var context = ContextManager.Instance.CreateContext(Registry.TransactionMode.ManualCommit | TransactionMode.ReadWrite);
 
             if (Thread.CurrentPrincipal is GraywulfPrincipal)
             {

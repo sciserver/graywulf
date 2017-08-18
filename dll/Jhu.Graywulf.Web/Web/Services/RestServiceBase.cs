@@ -90,16 +90,8 @@ namespace Jhu.Graywulf.Web.Services
         /// </summary>
         internal protected virtual void OnBeforeInvoke(RestOperationContext context)
         {
-
-            var context = ContextManager.Instance.CreateContext(Registry.TransactionMode.ManualCommit | TransactionMode.ReadWrite);
-
-            if (Thread.CurrentPrincipal is GraywulfPrincipal)
-            {
-                var identity = (GraywulfIdentity)Thread.CurrentPrincipal.Identity;
-                context.UserReference.Value = identity.User;
-            }
-
-            return context;
+            session = context.Session;
+            user = context.Principal;
         }
 
         /// <summary>
