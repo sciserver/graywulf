@@ -700,7 +700,6 @@ AS
 		(Entity.ParentGuid IN (SELECT Guid FROM @QueueInstanceGuids) OR @qicount = 0) AND
 		(JobDefinition.ReferencedEntityGuid IN (SELECT Guid FROM @JobDefinitionGuids) OR @jdcount = 0) AND
 		((@JobExecutionStatus & RunningState) != 0 OR @JobExecutionStatus IS NULL)
-
 	ORDER BY DateCreated DESC
 	OFFSET ISNULL(@From, 0) ROWS
 	FETCH NEXT ISNULL(@Max, 0x7FFFFFFF) ROWS ONLY;
