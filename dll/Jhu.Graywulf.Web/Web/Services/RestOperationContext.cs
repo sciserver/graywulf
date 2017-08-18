@@ -117,6 +117,15 @@ namespace Jhu.Graywulf.Web.Services
                     // TODO: wcf session doesn't work, for some reason, but the IIS session
                     // should, so this never happens here
 
+                    // If this happens for some reason, add to web.config:
+                    /*
+                    <configuration>
+                    <system.serviceModel>
+                    <serviceHostingEnvironment aspNetCompatibilityEnabled="true" />
+                    </system.serviceModel>
+                    </configuration>
+                    */
+
                     var session = operationContext.InstanceContext.Extensions.Find<RestInstanceSessionState>();
 
                     if (session == null)
@@ -172,7 +181,7 @@ namespace Jhu.Graywulf.Web.Services
         /// </summary>
         public RegistryContext CreateRegistryContext()
         {
-            var context = ContextManager.Instance.CreateContext(Registry.TransactionMode.ManualCommit | TransactionMode.ReadWrite);
+            var context = ContextManager.Instance.CreateReadWriteContext();
 
             if (Thread.CurrentPrincipal is GraywulfPrincipal)
             {
