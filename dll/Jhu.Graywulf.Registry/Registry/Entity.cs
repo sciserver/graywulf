@@ -65,8 +65,8 @@ namespace Jhu.Graywulf.Registry
         private string fullyQualifiedName;
 
         // --- Background storage for navigation properties ---
-        private Dictionary<int, IEntityReference> entityReferences;
-        private bool isEntityReferencesLoaded;
+        internal Dictionary<int, IEntityReference> entityReferences;
+        internal bool isEntityReferencesLoaded;
 
         private Dictionary<EntityType, System.Collections.IDictionary> childEntities;
 
@@ -631,7 +631,7 @@ namespace Jhu.Graywulf.Registry
             return new IEntityReference[0];
         }
 
-        private void InitializeEntityReferences()
+        internal void InitializeEntityReferences()
         {
             this.entityReferences = new Dictionary<int, IEntityReference>();
 

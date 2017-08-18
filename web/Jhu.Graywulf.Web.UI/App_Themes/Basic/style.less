@@ -16,30 +16,34 @@
     font-family: Calibri, Arial, Helvetica, Sans-Serif;
 }
 
-.headerFont() {
+.fontMonospace() {
+    font-family: Consolas, Courier New, Courier, monospace;
+}
+
+.fontHeader() {
     font-family: 'Arial Rounded MT Bold', Calibri, Arial, Helvetica, Sans-Serif;
     font-size: 16px;
 }
 
-.menuFont() {
+.fontMenu() {
     font-size: 14px;
     font-weight: bold;
     text-decoration: none;
     text-align: right;
 }
 
-.toolbarFont() {
+.fontToolbar() {
     font-size: 12px;
     font-weight: normal;
     text-decoration: none;
     text-align: left;
 }
 
-.textFont() {
+.fontText() {
     font-size: 14px;
 }
 
-.footerFont() {
+.fontFooter() {
     text-align: center;
     font-size: 12px;
 }
@@ -47,7 +51,7 @@
 /*#region Fonts */
 
 body, li, p {
-    .textFont();
+    .fontText();
 }
 
 h3 {
@@ -82,7 +86,11 @@ body {
     .font();
 }
 
-.dock-scroll {
+.dock-hidden {
+    visibility: hidden;
+}
+
+.dock-center .dock-scroll {
     overflow-y: auto;
     padding-right: @gutter;
     margin-right: 0px;
@@ -123,7 +131,7 @@ div.LayoutToolbar {
 td.Footline, div.LayoutFootline {
     height: 18px;
     padding-top: 3px;
-    .footerFont();
+    .fontFooter();
 }
 
 td.Footline a, div.LayoutFootline a {
@@ -166,7 +174,7 @@ div.LayoutProgress {
 }
 
 .gw-header-dropdown button {
-    .headerFont();
+    .fontHeader();
     padding: 0px;
     border: 0px;
     border-radius: 0px;
@@ -193,7 +201,7 @@ div.LayoutProgress {
 }
 
 .gw-header-dropdown ul li a {
-    .headerFont();
+    .fontHeader();
     color: @colorWhite;
     padding-top: 0px;
 }
@@ -248,7 +256,7 @@ div.menu {
 
 div.menu a, div.menu .span {
     .barButton(120px, 64px, @colorDarker, @colorLight, @colorWhite);
-    .menuFont();
+    .fontMenu();
 }
 
 div.menu a.selected {
@@ -275,12 +283,12 @@ div.toolbar {
 
 div.toolbar div {
     .barBox(120px, 38px, @colorDark, @colorLighter, @colorBlack);
-    .toolbarFont();
+    .fontToolbar();
 }
 
 div.toolbar a {
     .barButton(120px, 42px, @colorDark, @colorLighter, @colorBlack);
-    .menuFont();
+    .fontMenu();
     cursor: pointer;
 }
 
@@ -312,7 +320,7 @@ div.toolbar .separator {
 
 div.toolbar div input[type="text"],
 div.toolbar div select {
-    .toolbarFont();
+    .fontToolbar();
     width: 100%;
     border: 2px solid @colorDark;
 }
@@ -671,6 +679,58 @@ div.tab-content {
 /*#endregion */
 /*#region Docs and schema */
 
+.fontDocs() {
+    .font();
+    font-size: 12pt;
+}
+
+div.gw-docs-page {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.gw-docs-page p,
+div.gw-docs-page ul,
+div.gw-docs-page li {
+    .fontDocs();
+}
+
+div.gw-docs-page ul {
+    padding-left: 38px;
+}
+
+div.gw-docs-callout {
+    .fontDocs();
+    margin: (2 * @gutter) 0px 0px 28px;
+    padding: (2 * @gutter) (3 * @gutter) (2 * @gutter) (2 * @gutter);
+    border-left: 4px solid @colorDark;
+}
+
+div.gw-docs-page id {
+    .fontMonospace();
+    display: inline;
+    text-wrap: none;
+    background-color: @colorLighter;
+    border: dotted 1px @colorDarker;
+    border-radius: 2px;
+    padding: 0px 2px 0px 2px;
+}
+
+div.gw-docs-page a {
+    color: @colorMenuHover;
+    border-bottom: dotted 1px @colorMenuHover;
+    padding: 0px 3px 0px 3px;
+}
+
+div.gw-docs-page a:hover {
+    color: @colorMenuHover;
+    border: dotted 1px @colorMenuHover;
+    border-radius: 2px;
+    padding: 0px 2px 0px 2px;
+    text-decoration: none;
+}
+
 a.thumbnail > img {
     max-width: 200px;
     max-height: 160px;
@@ -680,6 +740,10 @@ a.thumbnail > img {
 
 a.thumbnail > div.caption {
     text-align: center;
+}
+
+.syntaxhighlighter {
+    overflow: hidden !important;
 }
 
 /*#endregion */

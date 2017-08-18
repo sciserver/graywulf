@@ -19,11 +19,25 @@ namespace Jhu.Graywulf.Jobs.ExportTables
     [TestClass]
     public class ExportTablesTest : TestClassBase
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            StartLogger();
+            InitializeJobTests();
+        }
+
+        [ClassCleanup]
+        public static void CleanUp()
+        {
+            CleanupJobTests();
+            StopLogger();
+        }
+
         protected Guid ScheduleExportTableJob(string schemaName, string tableName, string path, QueueType queueType)
         {
             var queue = GetQueueName(queueType);
 
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
                 var user = SignInTestUser(context);
 
@@ -74,7 +88,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         [TestMethod]
         public void ExportTablesXmlTest()
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadOnlyContext())
             {
                 var path = String.Format(@"\\{0}\{1}.csv.zip", Jhu.Graywulf.Test.Constants.Localhost, Jhu.Graywulf.Test.Constants.TestDirectory);
                 var guid = ScheduleExportTableJob(Schema.SqlServer.Constants.DefaultSchemaName, "SampleData", path, QueueType.Long);

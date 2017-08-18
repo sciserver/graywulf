@@ -11,23 +11,46 @@
 
 -- USER DEFINE TYPES --
 
+IF TYPE_ID('[dbo].[DeploymentState]') IS NOT NULL
+DROP TYPE [dbo].[DeploymentState]
+
+GO
+
 CREATE TYPE [dbo].[DeploymentState]
 EXTERNAL NAME [Jhu.Graywulf.Registry.Enum].[Jhu.Graywulf.Registry.Sql.DeploymentState]
 
 GO
 
+----------------------------------------------------------------
+
+IF TYPE_ID('[dbo].[JobExecutionState]') IS NOT NULL
+DROP TYPE [dbo].[JobExecutionState]
+
+GO
 
 CREATE TYPE [dbo].[JobExecutionState]
 EXTERNAL NAME [Jhu.Graywulf.Registry.Enum].[Jhu.Graywulf.Registry.Sql.JobExecutionState]
 
 GO
 
+----------------------------------------------------------------
+
+IF TYPE_ID('[dbo].[RunningState]') IS NOT NULL
+DROP TYPE [dbo].[RunningState]
+
+GO
 
 CREATE TYPE [dbo].[RunningState]
 EXTERNAL NAME [Jhu.Graywulf.Registry.Enum].[Jhu.Graywulf.Registry.Sql.RunningState]
 
 GO
 
+----------------------------------------------------------------
+
+IF TYPE_ID('[dbo].[ScheduleType]') IS NOT NULL
+DROP TYPE [dbo].[ScheduleType]
+
+GO
 
 CREATE TYPE [dbo].[ScheduleType]
 EXTERNAL NAME [Jhu.Graywulf.Registry.Enum].[Jhu.Graywulf.Registry.Sql.ScheduleType]
@@ -68,6 +91,7 @@ AS
 	RETURN 0
 GO
 
+----------------------------------------------------------------
 
 IF OBJECT_ID('[dbo].[spCheckEntityDuplicate]') IS NOT NULL
 DROP PROC [dbo].[spCheckEntityDuplicate]
@@ -93,6 +117,7 @@ AS
 	RETURN ISNULL(@count, 0);
 GO
 
+----------------------------------------------------------------
 
 IF OBJECT_ID('[dbo].[spCreateEntity]') IS NOT NULL
 DROP PROC [dbo].[spCreateEntity]
@@ -169,6 +194,7 @@ AS
 
 GO
 
+----------------------------------------------------------------
 
 IF OBJECT_ID('[dbo].[spModifyEntity]') IS NOT NULL
 DROP PROC [dbo].[spModifyEntity]
@@ -248,6 +274,12 @@ AS
 
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spDeleteEntity]') IS NOT NULL
+DROP PROC [dbo].[spDeleteEntity]
+
+GO
 
 CREATE PROC [dbo].[spDeleteEntity]
 	@UserGuid uniqueidentifier,
@@ -282,6 +314,12 @@ AS
 		  Deleted = 0
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spHideEntity]') IS NOT NULL
+DROP PROC [dbo].[spHideEntity]
+
+GO
 
 CREATE PROC [dbo].[spHideEntity]
 	@UserGuid uniqueidentifier,
@@ -299,6 +337,12 @@ AS
 	SET @ConcurrencyVersion = @@DBTS;
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spShowEntity]') IS NOT NULL
+DROP PROC [dbo].[spShowEntity]
+
+GO
 
 CREATE PROC [dbo].[spShowEntity]
 	@UserGuid uniqueidentifier,
@@ -316,6 +360,12 @@ AS
 	SET @ConcurrencyVersion = @@DBTS;
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spMoveDownEntity]') IS NOT NULL
+DROP PROC [dbo].[spMoveDownEntity]
+
+GO
 
 CREATE PROC [dbo].[spMoveDownEntity]
 	@UserGuid uniqueidentifier,
@@ -352,6 +402,12 @@ AS
 	RETURN @Number - 1;
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spMoveUpEntity]') IS NOT NULL
+DROP PROC [dbo].[spMoveUpEntity]
+
+GO
 
 CREATE PROC [dbo].[spMoveUpEntity]
 	@UserGuid uniqueidentifier,
@@ -384,6 +440,12 @@ AS
 	RETURN @Number - 1;
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spObtainEntityLock]') IS NOT NULL
+DROP PROC [dbo].[spObtainEntityLock]
+
+GO
 
 CREATE PROC [dbo].[spObtainEntityLock]
 	@UserGuid uniqueidentifier,
@@ -404,6 +466,12 @@ AS
 	RETURN 0
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spReleaseEntityLock]') IS NOT NULL
+DROP PROC [dbo].[spReleaseEntityLock]
+
+GO
 
 CREATE PROC [dbo].[spReleaseEntityLock]
 	@UserGuid uniqueidentifier,
@@ -424,6 +492,12 @@ AS
 	RETURN 0
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spFindEntityAscendants]') IS NOT NULL
+DROP PROC [dbo].[spFindEntityAscendants]
+
+GO
 
 CREATE PROC [dbo].[spFindEntityAscendants]
 (
@@ -450,6 +524,12 @@ AS
 
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[fGetEntityGuid_byName]') IS NOT NULL
+DROP FUNCTION [dbo].[fGetEntityGuid_byName]
+
+GO
 
 CREATE FUNCTION [dbo].[fGetEntityGuid_byName]
 (
@@ -507,8 +587,15 @@ BEGIN
 END
 GO
 
+----------------------------------------------------------------
 
-CREATE PROC spGetEntityGuid_byName
+IF OBJECT_ID('[dbo].[spGetEntityGuid_byName]') IS NOT NULL
+DROP PROC [dbo].[spGetEntityGuid_byName]
+
+GO
+
+
+CREATE PROC [dbo].[spGetEntityGuid_byName]
 	@UserGuid uniqueidentifier,
 	@EntityType int,
 	@NameParts NamePartList READONLY
@@ -517,8 +604,14 @@ AS
 
 GO
 
+----------------------------------------------------------------
 
-CREATE PROC spFindEntity_byName
+IF OBJECT_ID('[dbo].[spFindEntity_byName]') IS NOT NULL
+DROP PROC [dbo].[spFindEntity_byName]
+
+GO
+
+CREATE PROC [dbo].[spFindEntity_byName]
 	@UserGuid uniqueidentifier,
 	@EntityType int,
 	@NameParts NamePartList READONLY
@@ -539,9 +632,19 @@ AS
         Entity.Guid = @guid
         AND Deleted = 0;
 
+	SELECT EntityReference.*
+	FROM EntityReference
+	WHERE EntityGuid = @guid
+	ORDER BY ReferenceType
+
 GO
 	
+----------------------------------------------------------------
 
+IF OBJECT_ID('[dbo].[spFindEntityReference]') IS NOT NULL
+DROP PROC [dbo].[spFindEntityReference]
+
+GO
 
 CREATE PROC [dbo].[spFindEntityReference]
 	@UserGuid uniqueidentifier,
@@ -552,6 +655,12 @@ AS
 	WHERE EntityGuid = @Guid
 GO
 
+---------------------------------------------------------------------
+
+IF OBJECT_ID('dbo.spFindJobInstance_byDetails') IS NOT NULL
+DROP PROC [dbo].[spFindJobInstance_byDetails]
+
+GO
 
 CREATE PROC [dbo].[spFindJobInstance_byDetails]
 	@UserGuid uniqueidentifier,
@@ -559,13 +668,18 @@ CREATE PROC [dbo].[spFindJobInstance_byDetails]
 	@ShowDeleted bit,
 	@From int,
 	@Max int,
-	@RowCount int OUTPUT,
+	@CountRows bit,
 	@JobUserGuid uniqueidentifier,
 	@QueueInstanceGuids GuidList READONLY,
 	@JobDefinitionGuids GuidList READONLY,
 	@JobExecutionStatus int
 AS
 	SET NOCOUNT ON;
+
+	DECLARE @temp TABLE
+	(
+		Guid uniqueidentifier PRIMARY KEY
+	)
 	
 	DECLARE @qicount int;
 	SELECT @qicount = COUNT(*) FROM @QueueInstanceGuids;
@@ -573,30 +687,42 @@ AS
 	DECLARE @jdcount int;
 	SELECT @jdcount = COUNT(*) FROM @JobDefinitionGuids;
 
+	INSERT INTO @temp
+	SELECT Entity.Guid
+	FROM Entity WITH(INDEX(IX_Entity_Jobs), ROWLOCK, UPDLOCK)
+	INNER LOOP JOIN EntityReference JobDefinition ON JobDefinition.ReferenceType = 1 AND JobDefinition.EntityGuid = Entity.Guid
+	WHERE 
+		(EntityType = 0x00200400) AND
+		(@ShowHidden = 1 OR Entity.Hidden = 0) AND
+		(@ShowDeleted = 1 OR Entity.Deleted = 0) AND
+			
+		(@JobUserGUID = Entity.UserGuidOwner OR @JobUserGuid IS NULL) AND
+		(Entity.ParentGuid IN (SELECT Guid FROM @QueueInstanceGuids) OR @qicount = 0) AND
+		(JobDefinition.ReferencedEntityGuid IN (SELECT Guid FROM @JobDefinitionGuids) OR @jdcount = 0) AND
+		((@JobExecutionStatus & RunningState) != 0 OR @JobExecutionStatus IS NULL)
+	ORDER BY DateCreated DESC
+	OFFSET ISNULL(@From, 0) ROWS
+	FETCH NEXT ISNULL(@Max, 0x7FFFFFFF) ROWS ONLY;
+	
 	SET NOCOUNT OFF;
 
-	WITH q AS
-	(
-		SELECT Entity.*, JobInstance.*, ROW_NUMBER () OVER ( ORDER BY DateCreated DESC ) AS rn
-		FROM Entity
+	IF @CountRows = 1 BEGIN
+		SELECT ISNULL(COUNT(*), 0) FROM @temp
+	END ELSE BEGIN
+		SELECT Entity.*, JobInstance.* 
+		FROM @temp t
+		INNER JOIN Entity ON Entity.Guid = t.Guid
 		INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
-		INNER JOIN EntityReference JobDefinition ON JobDefinition.ReferenceType = 1 AND JobDefinition.EntityGuid = Entity.Guid
-		WHERE 
-			(@ShowHidden = 1 OR Entity.Hidden = 0) AND
-			(@ShowDeleted = 1 OR Entity.Deleted = 0) AND
-			
-			(@JobUserGUID = Entity.UserGuidCreated OR @JobUserGuid IS NULL) AND
-			(Entity.ParentGuid IN (SELECT Guid FROM @QueueInstanceGuids) OR @qicount = 0) AND
-			(JobDefinition.ReferencedEntityGuid IN (SELECT Guid FROM @JobDefinitionGuids) OR @jdcount = 0) AND
-			((@JobExecutionStatus & JobInstance.JobExecutionStatus) != 0 OR @JobExecutionStatus IS NULL)
-	)
-	SELECT q.* FROM q
-	WHERE rn BETWEEN @From + 1 AND @From + @Max OR @From IS NULL OR @Max IS NULL
-	ORDER BY rn
+		ORDER BY DateCreated DESC
 
-	SET @RowCount = @@ROWCOUNT
+		SELECT r.*
+		FROM @temp t
+		INNER JOIN EntityReference r ON r.EntityGuid = t.Guid
+		ORDER BY r.EntityGuid, r.ReferenceType
+	END
 GO
 
+----------------------------------------------------------------
 
 IF OBJECT_ID('[dbo].[spFindJobInstance_Next]') IS NOT NULL
 DROP PROC [dbo].[spFindJobInstance_Next]
@@ -613,7 +739,7 @@ AS
 	SET NOCOUNT ON
 	
 	-- Jobs will be collected in a temp table
-	CREATE TABLE ##jobs
+	DECLARE @jobs TABLE
 	(
 		JobInstanceGuid uniqueidentifier PRIMARY KEY
 	)
@@ -638,33 +764,33 @@ AS
 					 @attempt = 1 AND Entity.UserGuidOwner <= @LastUserGuid)
 				AND (
 					-- Resumed (previously persisted)
-					((JobExecutionStatus & dbo.JobExecutionState::Persisted) != 0)
+					((RunningState & dbo.JobExecutionState::Persisted) != 0)
 					  
 					 OR 
 					 
 					 -- Suspended but timed out workflows
-					((JobExecutionStatus & dbo.JobExecutionState::Suspended) != 0
+					((RunningState & dbo.JobExecutionState::Suspended) != 0
 					  AND SuspendTimeout < GETDATE())
 
 					 OR
 
 					 -- Job scheduled for a given time
-					((JobExecutionStatus & dbo.JobExecutionState::Scheduled != 0)
+					((RunningState & dbo.JobExecutionState::Scheduled != 0)
 					  AND ScheduleType = dbo.ScheduleType::Timed
 					  AND ScheduleTime <= GETDATE())		-- Earlier or now
 
 					OR
 
 					-- Queued job
-					((JobExecutionStatus & dbo.JobExecutionState::Scheduled) != 0
+					((RunningState & dbo.JobExecutionState::Scheduled) != 0
 					  AND ScheduleType = dbo.ScheduleType::Queued)
 
 					)
 		)
-		INSERT ##jobs
+		INSERT @jobs
 		SELECT JobInstanceGuid FROM q WHERE rn <= @MaxJobs;
 
-		SELECT @count = COUNT(*) FROM ##jobs;
+		SELECT @count = COUNT(*) FROM @jobs;
 		SET @MaxJobs = @MaxJobs - @count;
 
 		IF (@MaxJobs <= 0) BREAK;
@@ -680,15 +806,26 @@ AS
 	UPDATE Entity
 	SET LockOwner = @LockOwner
 	FROM Entity
-	INNER JOIN ##jobs ON Entity.Guid = ##jobs.JobInstanceGuid
+	INNER JOIN @jobs j ON Entity.Guid = j.JobInstanceGuid
 
-	SELECT * FROM Entity
+	SELECT * 
+	FROM Entity WITH(ROWLOCK, UPDLOCK)
 	INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
-	WHERE Guid IN (SELECT JobInstanceGuid FROM ##jobs)
+	WHERE Guid IN (SELECT JobInstanceGuid FROM @jobs)
 
-	DROP TABLE ##jobs
+	SELECT EntityReference.*
+	FROM EntityReference
+	INNER JOIN @jobs j ON EntityReference.EntityGuid = j.JobInstanceGuid
+	ORDER BY EntityReference.EntityGuid, EntityReference.ReferenceType
+
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spFindReferencingEntity]') IS NOT NULL
+DROP PROC [dbo].[spFindReferencingEntity]
+
+GO
 
 CREATE PROC [dbo].[spFindReferencingEntity]
 	@UserGuid uniqueidentifier,
@@ -698,15 +835,27 @@ CREATE PROC [dbo].[spFindReferencingEntity]
 AS
 	SELECT Entity.*
 	FROM Entity
-	INNER JOIN EntityReference ON EntityReference.EntityGuid = Entity.Guid
-	WHERE EntityReference.ReferencedEntityGuid = @Guid AND
+	INNER JOIN EntityReference ref ON ref.EntityGuid = Entity.Guid
+	WHERE ref.ReferencedEntityGuid = @Guid AND
 		(@ShowHidden = 1 OR Entity.Hidden = 0) AND
 		(@ShowDeleted = 1 OR Entity.Deleted = 0)
+
+	SELECT EntityReference.*
+	FROM Entity
+	INNER JOIN EntityReference ON EntityReference.EntityGuid = Entity.Guid
+	INNER JOIN EntityReference ref ON ref.EntityGuid = EntityReference.EntityGuid
+	WHERE ref.ReferencedEntityGuid = @Guid
+	ORDER BY EntityReference.EntityGuid, EntityReference.ReferenceType
+
 GO
 
 
 -- USER MANAGEMENT --
 
+IF OBJECT_ID('[dbo].[spFindUser_byDomainActivationCode]') IS NOT NULL
+DROP PROC [dbo].[spFindUser_byDomainActivationCode]
+
+GO
 
 CREATE PROC [dbo].[spFindUser_byDomainActivationCode]
 	@DomainGuid uniqueidentifier,
@@ -721,6 +870,12 @@ AS
 		ActivationCode = @ActivationCode
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spFindUser_byDomainEmail]') IS NOT NULL
+DROP PROC [dbo].[spFindUser_byDomainEmail]
+
+GO
 
 CREATE PROC [dbo].[spFindUser_byDomainEmail]
 	@DomainGuid uniqueidentifier,
@@ -735,6 +890,12 @@ AS
 		Email = @Email
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spFindUser_byIdentity]') IS NOT NULL
+DROP PROC [dbo].[spFindUser_byIdentity]
+
+GO
 
 CREATE PROC [dbo].[spFindUser_byIdentity]
 	@DomainGuid uniqueidentifier,
@@ -756,6 +917,12 @@ AS
 		
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spLoginUser]') IS NOT NULL
+DROP PROC [dbo].[spLoginUser]
+
+GO
 
 CREATE PROC [dbo].[spLoginUser]
 	@ParentGuid uniqueidentifier,
@@ -770,6 +937,12 @@ AS
 		(Email = @NameOrEmail OR Entity.Name = @NameOrEmail)
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spLoginUserNtlm]') IS NOT NULL
+DROP PROC [dbo].[spLoginUserNtlm]
+
+GO
 
 CREATE PROC [dbo].[spLoginUserNtlm]
 	@NtlmUser nvarchar(128)
@@ -782,6 +955,12 @@ AS
 		NtlmUser = @NtlmUser AND Integrated = 1
 GO
 
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dbo].[spCheckUserEmailDuplicate]') IS NOT NULL
+DROP PROC [dbo].[spCheckUserEmailDuplicate]
+
+GO
 
 CREATE PROC [dbo].[spCheckUserEmailDuplicate]
 	@ParentGuid uniqueidentifier,
@@ -805,7 +984,16 @@ GO
 	
 -- DEVELOPER TOOLS --
 
-CREATE SCHEMA dev
+IF SCHEMA_ID('dev') IS NULL
+EXEC('CREATE SCHEMA dev')
+
+GO
+
+----------------------------------------------------------------
+
+IF OBJECT_ID('[dev].[spCleanupEverything]') IS NOT NULL
+DROP PROC [dev].[spCleanupEverything]
+
 GO
 
 CREATE PROC [dev].[spCleanupEverything]

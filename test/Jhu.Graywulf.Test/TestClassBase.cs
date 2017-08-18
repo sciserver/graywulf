@@ -120,10 +120,12 @@ namespace Jhu.Graywulf.Test
 
         public static void PurgeTestJobs()
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
-                var sql = @"UPDATE JobInstance
-SET JobExecutionStatus = 64
+                var sql = @"UPDATE Entity
+SET RunningState = 64
+FROM Entity
+INNER JOIN JobInstance ON EntityGuid = Guid
 WHERE DateFinished IS NULL";
 
                 var cmd = context.CreateTextCommand(sql);
@@ -152,7 +154,7 @@ WHERE DateFinished IS NULL";
         protected SqlServerDataset GetTestUserMyDB()
         {
             // Get mydb default schema
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.DirtyRead))
+            using (var context = ContextManager.Instance.CreateContext(TransactionMode.DirtyRead))
             {
                 var user = SignInTestUser(context);
                 var fc = new FederationContext(context, user);
@@ -178,15 +180,15 @@ WHERE DateFinished IS NULL";
 
         protected Guid ScheduleTestJob(TimeSpan delayPeriod, JobType jobType, QueueType queueType, TimeSpan timeout)
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
                 SignInTestUser(context);
 
-                var ef = new EntityFactory(context);
-                var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
-
                 var queue = GetQueueName(queueType);
-
+                var ef = new EntityFactory(context);
+                var qi = ef.LoadEntity<QueueInstance>(queue);
+                var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
+                
                 JobInstance job = jd.CreateJobInstance(queue, ScheduleType.Queued, timeout);
 
                 job.Parameters["DelayPeriod"].Value = (int)delayPeriod.TotalMilliseconds;
@@ -205,7 +207,7 @@ WHERE DateFinished IS NULL";
 
         protected JobInstance LoadJob(Guid guid)
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.DirtyRead))
+            using (var context = ContextManager.Instance.CreateContext(TransactionMode.DirtyRead))
             {
                 var ef = new EntityFactory(context);
                 var job = ef.LoadEntity<JobInstance>(guid);
@@ -215,7 +217,7 @@ WHERE DateFinished IS NULL";
 
         protected void CancelJob(Guid guid)
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
                 var ef = new EntityFactory(context);
                 var job = ef.LoadEntity<JobInstance>(guid);
@@ -297,7 +299,7 @@ WHERE DateFinished IS NULL";
 
         protected void DropUserDatabaseTable(string tableName)
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadOnlyContext())
             {
                 var user = SignInTestUser(context);
                 var udf = UserDatabaseFactory.Create(new FederationContext(context, user));

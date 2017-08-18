@@ -9,19 +9,19 @@
     <asp:Panel runat="server" ID="summaryPanel">
         <h3>Summary</h3>
         <p>
-            <asp:Label runat="server" ID="summaryLabel" />
+            <asp:Literal runat="server" ID="summaryLabel" Mode="PassThrough" />
         </p>
     </asp:Panel>
     <asp:Panel runat="server" ID="remarksPanel">
         <h3>Remarks</h3>
         <p>
-            <asp:Label runat="server" ID="remarksLabel" />
+            <asp:Literal runat="server" ID="remarksLabel" Mode="PassThrough" />
         </p>
     </asp:Panel>
     <asp:Panel runat="server" ID="examplePanel">
         <h3>Example</h3>
         <p>
-            <asp:Label runat="server" ID="exampleLabel" />
+            <asp:Literal runat="server" ID="exampleLabel" Mode="PassThrough" />
         </p>
     </asp:Panel>
     <jgwc:HtmlIncluder runat="server" ID="docPage" />

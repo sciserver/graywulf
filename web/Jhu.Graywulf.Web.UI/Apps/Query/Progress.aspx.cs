@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
             Response.Expires = -1;
 
             // Use lower isolation level for polling
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.DirtyRead))
+            using (var context = ContextManager.Instance.CreateContext(Registry.TransactionMode.DirtyRead))
             {
                 var ef = new EntityFactory(context);
                 jobInstance = ef.LoadEntity<JobInstance>(JobGuid);

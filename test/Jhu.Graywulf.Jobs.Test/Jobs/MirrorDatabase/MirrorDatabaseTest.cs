@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
         protected Guid ScheduleMirroDatabaseJob(QueueType queueType)
         {
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
                 SignInTestUser(context);
 

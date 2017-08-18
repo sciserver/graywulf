@@ -39,6 +39,16 @@
                 </tr>
                 <tr>
                     <td class="FormLabel">
+                        <asp:Label ID="serverVersionLabel" runat="server" Text="Server Version:"></asp:Label>
+                    </td>
+                    <td class="FormField">
+                        <asp:DropDownList ID="serverVersionList" runat="server" CssClass="FormFieldNarrow"
+                            AutoPostBack="true" OnSelectedIndexChanged="ServerVersion_SelectedIndexChanged">
+                        </asp:DropDownList>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="FormLabel">
                         <asp:Label ID="SizeFactorLabel" runat="server" Text="Size factor:"></asp:Label>
                     </td>
                     <td class="FormField">
@@ -80,8 +90,6 @@
                     </td>
                 </tr>
             </table>
-        </div>
-        <div class="FormFrame">
             <asp:Table runat="server" ID="MappingTable">
             </asp:Table>
         </div>

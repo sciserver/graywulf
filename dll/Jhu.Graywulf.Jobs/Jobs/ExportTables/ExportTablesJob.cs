@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             var parameters = Parameters.Get(activityContext);
 
             // Make sure connection strings are cached
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadOnlyContext())
             {
                 for (int i = 0; i < parameters.Sources.Length; i++)
                 {

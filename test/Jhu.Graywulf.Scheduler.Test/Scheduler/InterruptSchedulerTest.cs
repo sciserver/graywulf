@@ -134,7 +134,7 @@ namespace Jhu.Graywulf.Scheduler
             var ji = LoadJob(guid);
             Assert.AreEqual(JobExecutionState.Persisted, ji.JobExecutionStatus);
 
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadWriteContext())
             {
                 ji.RegistryContext = context;
                 ji.Cancel();

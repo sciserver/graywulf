@@ -306,9 +306,8 @@ namespace Jhu.Graywulf.Web.Api.V1
             // the queue definition
             var jobFactory = new JobFactory(jobInstance.RegistryContext);
             var qi = jobFactory.GetQueueInstance(jobInstance.ParentReference.Guid);
-
-            
-
+            Enum.TryParse(qi.Name, out this.queue);
+                       
             // Load job dependencies, if requested
             if (jobInstance.Dependencies != null && jobInstance.Dependencies.Count > 0)
             {
@@ -326,8 +325,17 @@ namespace Jhu.Graywulf.Web.Api.V1
             throw new NotImplementedException();
         }
 
-        internal protected virtual void Schedule(FederationContext context, string queueName)
+        public void Schedule(FederationContext context, string queueName)
         {
+            var ef = new EntityFactory(context.RegistryContext);
+            ef.LoadEntity<QueueInstance>(queueName);
+
+            OnSchedule(context, queueName);
+        }
+
+        internal protected virtual void OnSchedule(FederationContext context, string queueName)
+        {
+            throw new NotImplementedException();
         }
 
         protected virtual void SaveDependencies()

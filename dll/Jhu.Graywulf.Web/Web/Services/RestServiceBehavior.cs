@@ -89,7 +89,7 @@ namespace Jhu.Graywulf.Web.Services
             var ram = new RestAuthenticationModule();
             var romi = new RestCorsMessageInspector();
 
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateReadOnlyContext())
             {
                 ram.Init(context.Domain);
             }

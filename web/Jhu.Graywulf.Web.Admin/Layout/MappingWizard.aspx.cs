@@ -24,9 +24,9 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
         protected DatabaseDefinition item;
         protected DatabaseVersion databaseVersion;
+        protected ServerVersion serverVersion;
         protected List<ServerInstance> serverInstances;
         protected List<Slice> slices;
-        protected List<DatabaseVersion> databaseVersions;
 
         public Entity Item
         {
@@ -38,19 +38,26 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             var ef = new EntityFactory(RegistryContext);
             item = ef.LoadEntity<DatabaseDefinition>(new Guid(Request.QueryString["guid"]));
 
-            item.LoadDatabaseVersions(false);
-            databaseVersions = new List<DatabaseVersion>(item.DatabaseVersions.Values);
             if (!IsPostBack)
             {
                 RefreshDatabaseVersionList();
+                RefreshServerVersionList();
             }
 
             // Load currently selected database version
             databaseVersion = ef.LoadEntity<DatabaseVersion>(new Guid(databaseVersionList.SelectedValue));
 
+            if (!IsPostBack)
+            {
+                serverVersionList.SelectedValue = databaseVersion.ServerVersion.Guid.ToString();
+            }
+
+            // Load currently selected server version
+            serverVersion = ef.LoadEntity<ServerVersion>(new Guid(serverVersionList.SelectedValue));
+
             // Load server instances
             serverInstances = new List<ServerInstance>(ef.FindAll<ServerInstance>()
-                .Where(i => i.ServerVersionReference.Guid == databaseVersion.ServerVersionReference.Guid)
+                .Where(i => i.ServerVersionReference.Guid == serverVersion.Guid)
                 .OrderBy(i => i.Machine.Number)
                 .ThenBy(i => i.Number));
 
@@ -79,10 +86,31 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             databaseVersionList.Items.Clear();
 
-            foreach (DatabaseVersion rs in databaseVersions)
+            item.LoadDatabaseVersions(false);
+
+            foreach (DatabaseVersion rs in item.DatabaseVersions.Values)
             {
                 ListItem li = new ListItem(rs.Name, rs.Guid.ToString());
                 databaseVersionList.Items.Add(li);
+            }
+        }
+
+        protected void RefreshServerVersionList()
+        {
+            serverVersionList.Items.Clear();
+
+            var cluster = RegistryContext.Cluster;
+            cluster.LoadMachineRoles(false);
+
+            foreach (var mr in cluster.MachineRoles.Values)
+            {
+                mr.LoadServerVersions(false);
+
+                foreach (var sv in mr.ServerVersions.Values)
+                {
+                    ListItem li = new ListItem(mr.Name + "/" + sv.Name, sv.Guid.ToString());
+                    serverVersionList.Items.Add(li);
+                }
             }
         }
 
@@ -150,6 +178,11 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             SizeFactor.Text = databaseVersion.SizeMultiplier.ToString();
         }
 
+        protected void ServerVersion_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+        }
+
         protected void Ok_Click(object sender, EventArgs e)
         {
             // TODO: add serverNumber or similar to add database instances to the layout
@@ -188,6 +221,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
                         {
                             var ndi = new DatabaseInstance(databaseVersion.DatabaseDefinition);
                             ndi.DatabaseVersion = databaseVersion;
+                            ndi.ServerInstance = serverInstances[ssi];
                             var nname = ExpressionProperty.ResolveExpression(ndi, name);
 
                             if (databaseVersion.DatabaseDefinition.DatabaseInstances.ContainsKey(nname))

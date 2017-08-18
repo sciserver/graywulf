@@ -30,7 +30,7 @@
             div.gw-node img {
                 margin-left: 20px;
                 margin-top: 16px;
-                float:left;
+                float: left;
             }
 
             div.gw-node ul {
@@ -52,14 +52,24 @@
     </style>
 </asp:Content>
 <asp:Content ContentPlaceHolderID="middle" runat="Server">
-    <div class="dock-fill" style="overflow: auto;">
-        <div style="max-width: 720px; margin-left: auto; margin-right: auto;">
-            <h1>System status</h1>
-            <%
-                foreach (var role in roles)
-                {
-            %>
-            <h2><%= role.Name %></h2>
+    <div class="dock-top gw-list-frame-top">
+        <div class="gw-list-header">
+            <div class="gw-list-row">
+                <span style="width: 200px">system component</span>
+                <span style="width: 200px">node / service status</span>
+                <span class="gw-list-span"></span>
+            </div>
+        </div>
+    </div>
+    <div class="dock-bottom gw-list-frame-bottom">
+    </div>
+    <div class="gw-list-frame dock-fill" style="padding: 8px">
+        <%
+            foreach (var role in roles)
+            {
+        %>
+        <div class="gw-list-row">
+            <span style="width: 200px; min-width: 200px"><%= role.Name %></span>
             <div class="gw-role">
                 <%
                     foreach (var node in role.Nodes)
@@ -102,9 +112,9 @@
                     }
                 %>
             </div>
-            <%
-                }
-            %>
         </div>
+        <%
+            }
+        %>
     </div>
 </asp:Content>

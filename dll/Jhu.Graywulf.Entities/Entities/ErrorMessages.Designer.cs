@@ -97,6 +97,15 @@ namespace Jhu.Graywulf.Entities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot save an entity within a read-only context..
+        /// </summary>
+        internal static string ContextReadOnly {
+            get {
+                return ResourceManager.GetString("ContextReadOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate key column &apos;{0}&apos; defined on type &apos;{1}&apos;..
         /// </summary>
         internal static string DuplicateKeyColumn {

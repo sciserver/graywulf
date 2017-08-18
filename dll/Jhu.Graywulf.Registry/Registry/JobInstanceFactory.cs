@@ -82,10 +82,9 @@ namespace Jhu.Graywulf.Registry
 
             using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
-                AppendCommandParameters(cmd, -1, -1);
+                AppendCommandParameters(cmd, -1, -1, true);
 
-                cmd.ExecuteNonQuery();
-                return (int)cmd.Parameters["@RowCount"].Value;
+                return (int)cmd.ExecuteScalar();
             }
         }
 
@@ -99,19 +98,19 @@ namespace Jhu.Graywulf.Registry
             string sql = "spFindJobInstance_byDetails";
 
             var cmd = RegistryContext.CreateStoredProcedureCommand(sql);
-            AppendCommandParameters(cmd, from, max);
+            AppendCommandParameters(cmd, from, max, false);
 
             return new EntityCommandEnumerator<JobInstance>(RegistryContext, cmd, true);
         }
 
-        private void AppendCommandParameters(SqlCommand cmd, int from, int max)
+        private void AppendCommandParameters(SqlCommand cmd, int from, int max, bool count)
         {
             cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
             cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
             cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
             cmd.Parameters.Add("@From", SqlDbType.Int).Value = from == -1 ? DBNull.Value : (object)from;
             cmd.Parameters.Add("@Max", SqlDbType.Int).Value = max == -1 ? DBNull.Value : (object)max;
-            cmd.Parameters.Add("@RowCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+            cmd.Parameters.Add("@CountRows", SqlDbType.Int).Value = count;
 
             cmd.Parameters.Add("@JobUserGuid", SqlDbType.UniqueIdentifier).Value = userGuid == Guid.Empty ? DBNull.Value : (object)userGuid;
             cmd.Parameters.Add("@QueueInstanceGuids", SqlDbType.Structured).Value = CreateGuidListTable(queueInstanceGuids);

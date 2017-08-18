@@ -236,7 +236,7 @@ namespace Jhu.Graywulf.Web.Security
             else
             {
                 // User not found in cache, need to load from database
-                using (var registryContext = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                using (var registryContext = ContextManager.Instance.CreateReadWriteContext())
                 {
                     var ip = new GraywulfIdentityProvider(registryContext);
                     ip.LoadOrCreateUser(principal);

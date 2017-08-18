@@ -38,14 +38,14 @@
         <div class="LayoutToolbar dock-top">
             <asp:ContentPlaceHolder ID="toolbar" runat="server" />
         </div>
-        <table class="Layout Footline dock-bottom">
+        <table class="Layout Footline dock-bottom dock-hidden">
             <tr>
                 <td class="Footline">
                     <asp:ContentPlaceHolder runat="server" ID="footer" />
                 </td>
             </tr>
         </table>
-        <div class="LayoutContent dock-fill dock-container">
+        <div class="LayoutContent dock-fill dock-container dock-hidden">
             <asp:ContentPlaceHolder ID="middle" runat="server" />
         </div>
     </form>

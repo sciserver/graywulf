@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label summaryLabel;
+        protected global::System.Web.UI.WebControls.Literal summaryLabel;
         
         /// <summary>
         /// remarksPanel control.
@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label remarksLabel;
+        protected global::System.Web.UI.WebControls.Literal remarksLabel;
         
         /// <summary>
         /// examplePanel control.
@@ -100,7 +100,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label exampleLabel;
+        protected global::System.Web.UI.WebControls.Literal exampleLabel;
         
         /// <summary>
         /// docPage control.

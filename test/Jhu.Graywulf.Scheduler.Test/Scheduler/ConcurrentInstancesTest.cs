@@ -76,7 +76,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 var guid = ScheduleTestJob(new TimeSpan(0, 0, 1), JobType.AtomicDelay, QueueType.Quick, new TimeSpan(0, 2, 0));
 
-                WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+                WaitJobComplete(guid, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(5));
 
                 var job = LoadJob(guid);
 

@@ -128,6 +128,25 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
+        internal void LoadEntityReferencesFromReader(SqlDataReader reader)
+        {
+            InitializeEntityReferences();
+
+            while (reader.Read())
+            {
+                var guid = reader.GetGuid(0);
+                var type = reader.GetByte(1);
+                var referencedguid = reader.GetGuid(2);
+
+                if (entityReferences.ContainsKey(type))
+                {
+                    entityReferences[type].Guid = referencedguid;
+                }
+            }
+
+            isEntityReferencesLoaded = true;
+        }
+
         private void LoadEntityReferences()
         {
             if (IsExisting && EntityType != EntityType.Unknown && entityReferences.Count > 0)
@@ -140,13 +159,7 @@ namespace Jhu.Graywulf.Registry
 
                     using (var dr = cmd.ExecuteReader())
                     {
-                        while (dr.Read())
-                        {
-                            var type = dr.GetByte(1);
-                            var guid = dr.GetGuid(2);
-
-                            entityReferences[type].Guid = guid;
-                        }
+                        LoadEntityReferencesFromReader(dr);
                     }
                 }
 
@@ -184,10 +197,10 @@ namespace Jhu.Graywulf.Registry
         /// </exception>
         public void Save(bool forceOverwrite)
         {
-            // Check entity duplicate
-            var ef = new EntityFactory(RegistryContext);
-
-            var parentGuid = this.parentReference.IsEmpty ? Guid.Empty : this.parentReference.Guid;
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
 
             if (!IsExisting)
             {
@@ -374,6 +387,11 @@ namespace Jhu.Graywulf.Registry
         /// </exception>
         public void Delete(bool forceOverwrite)
         {
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
+
             try
             {
                 DeleteRecursively(forceOverwrite);
@@ -392,6 +410,11 @@ namespace Jhu.Graywulf.Registry
 
         private void DeleteRecursively(bool forceOverwrite)
         {
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
+
             LoadAllChildren(true);
 
             // Delete should go in reverse order in order to prevent
@@ -460,6 +483,11 @@ namespace Jhu.Graywulf.Registry
 
         public void Show()
         {
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
+
             string sql = "spShowEntity";
 
             using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
@@ -476,6 +504,11 @@ namespace Jhu.Graywulf.Registry
 
         public void Hide()
         {
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
+
             string sql = "spHideEntity";
 
             using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
@@ -499,6 +532,11 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         public void Move(EntityMoveDirection direction)
         {
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
+
             string sql;
             if (direction == EntityMoveDirection.Up)
             {
@@ -606,6 +644,11 @@ namespace Jhu.Graywulf.Registry
 
         private void ObtainLockRecursively()
         {
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
+
             LoadAllChildren(false);
 
             foreach (Entity e in EnumerateAllChildren())
@@ -661,6 +704,11 @@ namespace Jhu.Graywulf.Registry
 
         private void ReleaseLockRecursively(bool forceRelease)
         {
+            if (RegistryContext.IsReadOnly)
+            {
+                throw new EntityReadOnlyException(ExceptionMessages.ContextReadOnly);
+            }
+
             LoadAllChildren(false);
             foreach (Entity e in EnumerateAllChildren()) e.ReleaseLockRecursively(forceRelease);
 

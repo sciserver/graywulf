@@ -97,6 +97,15 @@ namespace Jhu.Graywulf.Registry {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot save and entity within a read-only context..
+        /// </summary>
+        public static string ContextReadOnly {
+            get {
+                return ResourceManager.GetString("ContextReadOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Database does not exist or is not attached..
         /// </summary>
         public static string DatabaseNotAttached {

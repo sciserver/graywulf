@@ -159,4 +159,7 @@
   <data name="SchemaDatabaseNotFound" xml:space="preserve">
     <value>The schema database for '{0}' is not found.</value>
   </data>
+  <data name="ContextReadOnly" xml:space="preserve">
+    <value>Cannot save and entity within a read-only context.</value>
+  </data>
 </root>
