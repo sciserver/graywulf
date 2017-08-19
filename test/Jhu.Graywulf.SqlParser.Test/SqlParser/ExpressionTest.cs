@@ -26,6 +26,14 @@ namespace Jhu.Graywulf.SqlParser.Test
         }
 
         [TestMethod]
+        public void SingleHexLiteralTest()
+        {
+            var sql = "0X0123456789ABcDeF";
+            var exp = ExpressionTestHelper(sql);
+            Assert.AreEqual("0X0123456789ABcDeF", exp.FindDescendantRecursive<HexLiteral>().ToString());
+        }
+
+        [TestMethod]
         public void SingleVariableTest()
         {
             var sql = "@variable";

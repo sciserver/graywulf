@@ -53,6 +53,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Comment> SingleLineComment = () => @"\G--.*";
         public static Expression<Comment> MultiLineComment = () => @"\G(?sm)/\*.*?\*/";
         public static Expression<Terminal> Number = () => @"\G([0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)";
+        public static Expression<Terminal> HexLiteral = () => @"\G0[xX][0-9a-fA-F]+";
         public static Expression<Terminal> StringConstant = () => @"\G('([^']|'')*')";
         public static Expression<Terminal> Identifier = () => @"\G([a-zA-Z_]+[0-9a-zA-Z_]*|\[[^\]]+\])";
         public static Expression<Terminal> Variable = () => @"\G(@[$a-zA-Z_]+)";
@@ -115,8 +116,10 @@ namespace Jhu.Graywulf.SqlParser.Generator
                     ExpressionBrackets,
                     UdtFunctionCall,
                     FunctionCall,
+                    Sequence(UnaryOperator, May(CommentOrWhitespace), HexLiteral),
                     Sequence(UnaryOperator, May(CommentOrWhitespace), Number),
                     Sequence(UnaryOperator, May(CommentOrWhitespace), AnyVariable),
+                    HexLiteral,
                     Number,
                     AnyVariable,
                     StringConstant,
