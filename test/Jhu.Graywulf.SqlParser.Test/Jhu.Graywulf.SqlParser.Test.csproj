@@ -56,6 +56,7 @@
     <Compile Include="SqlParser\CnfConverterTest.cs" />
     <Compile Include="SqlParser\ColumnIdentifierTest.cs" />
     <Compile Include="SqlParser\CommentOrWhitespaceTest.cs" />
+    <Compile Include="SqlParser\StatementBlockTest.cs" />
     <Compile Include="SqlParser\TableValuedFunctionTest.cs" />
     <Compile Include="SqlParser\DnfConverterTest.cs" />
     <Compile Include="SqlParser\ExpressionTest.cs" />

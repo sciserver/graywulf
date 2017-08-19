@@ -56,6 +56,9 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Terminal> HexLiteral = () => @"\G0[xX][0-9a-fA-F]+";
         public static Expression<Terminal> StringConstant = () => @"\G('([^']|'')*')";
         public static Expression<Terminal> Identifier = () => @"\G([a-zA-Z_]+[0-9a-zA-Z_]*|\[[^\]]+\])";
+        public static Expression<Terminal> Variable = () => @"\G(@[a-zA-Z_][0-9a-zA-Z_]*)";
+        public static Expression<Terminal> SystemVariable = () => @"\G(@@[a-zA-Z_][0-9a-zA-Z_]*)";
+        public static Expression<Terminal> Cursor = () => @"\G([$a-zA-Z_]+)";
 
         #endregion
         #region Arithmetic operators used in expressions
@@ -84,6 +87,9 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Rule> DatabaseName = () => Identifier;
         public static Expression<Rule> SchemaName = () => Identifier;
         public static Expression<Rule> TableName = () => Identifier;
+        public static Expression<Rule> ConstraintName = () => Identifier;
+        public static Expression<Rule> IndexName = () => Identifier;
+        public static Expression<Rule> TypeName = () => Identifier;
         public static Expression<Rule> DerivedTable = () => Identifier;
         public static Expression<Rule> TableAlias = () => Identifier;
         public static Expression<Rule> FunctionName = () => Identifier;
@@ -342,7 +348,48 @@ namespace Jhu.Graywulf.SqlParser.Generator
         #region Data type
 
         public static Expression<Rule> DataType = () =>
-            Must(Identifier);
+            Sequence
+            (
+                // TODO: add support for UDTs
+                TypeName,
+                May
+                (
+                    Sequence
+                    (
+                        May(CommentOrWhitespace),
+                        Must
+                        (
+                            DataTypeScaleAndPrecision,
+                            DataTypeSize
+                        )
+                    )
+                ),
+                May(Sequence(CommentOrWhitespace, May(Sequence(Keyword("NOT"), CommentOrWhitespace)), Keyword("NULL")))
+            );
+
+        public static Expression<Rule> DataTypeSize = () =>
+            Sequence
+            (
+                BracketOpen,
+                May(CommentOrWhitespace),
+                Must(Keyword("MAX"), Number),
+                May(CommentOrWhitespace),
+                BracketClose
+            );
+
+        public static Expression<Rule> DataTypeScaleAndPrecision = () =>
+            Sequence
+            (
+                BracketOpen,
+                May(CommentOrWhitespace),
+                Number,
+                May(CommentOrWhitespace),
+                Comma,
+                May(CommentOrWhitespace),
+                Number,
+                May(CommentOrWhitespace),
+                BracketClose
+            );
 
         // TODO: allow CLR types
 
@@ -423,34 +470,48 @@ namespace Jhu.Graywulf.SqlParser.Generator
             (
                 May(CommentOrWhitespace),
                 Statement,
-                May(StatementBlock),
+                May
+                (
+                    Sequence
+                    (    
+                        Must
+                        (
+                            Sequence(May(CommentOrWhitespace), Semicolon, May(CommentOrWhitespace)),
+                            CommentOrWhitespace
+                        ),
+                        May(StatementBlock)
+                    )
+                ),
                 May(CommentOrWhitespace)
             );
 
         public static Expression<Rule> Statement = () =>
-            Sequence
+            Must
             (
-                Must
-                (
-                    Label,
-                    GotoStatement,
-                    BeginEndStatement,
-                    WhileStatement,
-                    ControlFlowStatement,
-                    IfStatement,
-                    ThrowStatement,
-                    TryCatchStatement,
+                Label,
+                GotoStatement,
+                BeginEndStatement,
+                WhileStatement,
+                ControlFlowStatement,
+                IfStatement,
+                ThrowStatement,
+                TryCatchStatement,
 
-                    DeclareCursorStatement,
-                    DeclareVariableStatement,
-                    CursorOperationStatement,
-                    SetCursorStatement,
-                    SetVariableStatement,
-                    FetchStatement,
+                DeclareCursorStatement,
+                DeclareVariableStatement,
+                CursorOperationStatement,
+                SetCursorStatement,
+                SetVariableStatement,
+                FetchStatement,
 
-                    SelectStatement
-                ),
-                May(Sequence(May(CommentOrWhitespace), Comma))
+                CreateTableStatement,
+                DropTableStatement,
+                TruncateTableStatement,
+
+                CreateIndexStatement,
+                DropIndexStatement,
+
+                SelectStatement
             );
 
         #endregion
@@ -551,16 +612,27 @@ namespace Jhu.Graywulf.SqlParser.Generator
 
         #region Scalar variables and cursors
 
-        public static Expression<Terminal> Variable = () => @"\G(@[$a-zA-Z_]+)";
-        public static Expression<Terminal> SystemVariable = () => @"\G(@@[$a-zA-Z_]+)";
-        public static Expression<Terminal> Cursor = () => @"\G([$a-zA-Z_]+)";
-
         public static Expression<Rule> VariableList = () =>
             Sequence
             (
                 May(CommentOrWhitespace),
                 Variable,
                 May(Sequence(May(CommentOrWhitespace), Comma, VariableList))
+            );
+
+        public static Expression<Rule> DeclareVariableStatement = () =>
+            Sequence
+            (
+                Keyword("DECLARE"),
+                CommentOrWhitespace,
+                VariableDeclarationList
+            );
+
+        public static Expression<Rule> VariableDeclarationList = () =>
+            Sequence
+            (
+                VariableDeclaration,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), VariableDeclarationList))
             );
 
         public static Expression<Rule> VariableDeclaration = () =>
@@ -584,22 +656,6 @@ namespace Jhu.Graywulf.SqlParser.Generator
                         )
                     )
                 )
-            );
-
-        public static Expression<Rule> VariableDeclarationList = () =>
-            Sequence
-            (
-                May(CommentOrWhitespace),
-                VariableDeclaration,
-                May(Sequence(May(CommentOrWhitespace), Comma, VariableDeclarationList))
-            );
-
-        public static Expression<Rule> DeclareVariableStatement = () =>
-            Sequence
-            (
-                Keyword("DECLARE"),
-                CommentOrWhitespace,
-                VariableDeclarationList
             );
 
         // TODO: add UDT support
@@ -1024,165 +1080,212 @@ FOR select_statement
 
         #endregion
 
-#if false
+        #region CREATE, ALTER, DROP and TRUNCATE TABLE
 
-
-
-
-	
-
-
-
-	
-
-    
-
-! <common_table_expression> ::=
-!    Identifier [ '(' <ColumnList> ')' ]
-!    "AS" '(' <QueryExpression> ')' ;
-    
-<ColumnList> ::= <ColumnName> [ ',' <ColumnList> ];
-    
-
-	
-! <compute_clause> ::= "COMPUTE" { <function_call_list> } [ "BY" <ExpressionList> ];
-	
-! <function_call_list> ::= <FunctionCall> [ ',' <FunctionCall> ];
-
-<ExpressionList> ::= <Expression> [ ',' <Expression> ];
-    
-
-
-! <query_hint > ::= 
-!	{ { "HASH" | "ORDER" } "GROUP"
-!    | { "CONCAT" | "HASH" | "MERGE" } "UNION"
-!    | { "LOOP" | "MERGE" | "HASH" } "JOIN"
-!    | "FAST" number_rows 
-!    | "FORCE" "ORDER"
-!    | "MAXDOP" number_of_processors 
-!    | "OPTIMIZE" "FOR" ( @variable_name = literal_constant [ , ...n ] ) 
-!    | "PARAMETERIZATION" { "SIMPLE" | "FORCED" }
-!    | "RECOMPILE"
-!    | "ROBUST" "PLAN"
-!    | "KEEP" "PLAN"
-!    | "KEEPFIXED" "PLAN"
-!    | "EXPAND" "VIEWS"
-!    | "MAXRECURSION" Number
-!    | "USE" "PLAN" N'xml_plan'
-!    } ;
-    
-! <query_hint_list> ::= <query_hint> [ ',' <query_hint> ]    ;
-        
-   
-
-! <NewTable> ::= Identifier;
-
-
-
-
-
-
-
-
-! -----------------------------------------------------------------------------------------------------
-
-
-
-
-
-<TableExpression> ::=	{ <TableOrViewName>	| <TableAlias> };
-    
-<UdtColumnExpression> ::=	<UdtColumnName> [ <UdtMemberExpression> ];
-                               
-<UdtMemberExpression> ::=	{ '.' | '::' } { <PropertyName> '(' <ArgumentList> ')' | <PropertyName> };
-	
-        public static Expression<Rule> ColumnExpression = () =>
-            Must
+        public static Expression<Rule> CreateTableStatement = () =>
+            Sequence
             (
-                Sequence(ColumnAlias, May(CommentOrWhitespace), Equals, May(CommentOrWhitespace), Expression),
-                Sequence(Expression, May(Sequence(May(Sequence(CommentOrWhitespace, Keyword("AS"))), CommentOrWhitespace, ColumnAlias)))
+                Keyword("CREATE"),
+                CommentOrWhitespace,
+                Keyword("TABLE"),
+                TableOrViewName,
+                BracketOpen,
+                May(CommentOrWhitespace),
+                TableDefinitionList,
+                May(CommentOrWhitespace),
+                BracketClose
             );
-    
 
+        public static Expression<Rule> TableDefinitionList = () =>
+            Sequence
+            (
+                Must
+                (
+                    ColumnDefinition,
+                    TableConstraint
+                ),
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), TableDefinitionList))
+            );
 
+        public static Expression<Rule> ColumnDefinition = () =>
+            Sequence
+            (
+                ColumnName,
+                CommentOrWhitespace,
+                DataType,
+                May
+                (
+                    Sequence
+                    (
+                        May(CommentOrWhitespace),
+                        Must
+                        (
+                            ColumnDefaultDefinition,
+                            ColumnIdentityDefinition
+                        )
+                    )
+                ),
+                May
+                (
+                    Sequence
+                    (
+                        May(CommentOrWhitespace),
+                        ColumnConstraint
+                    )
+                )
+            );
 
+        public static Expression<Rule> ConstraintNameSpecification = () =>
+            Sequence(Keyword("CONSTRAINT"), CommentOrWhitespace, ConstraintName, CommentOrWhitespace);
 
-<TableHintLimited> ::=
-	{ "KEEPIDENTITY"
-	| "KEEPDEFAULTS"
-	| "FASTFIRSTROW"
-	| "HOLDLOCK"
-	| "IGNORE_CONSTRAINTS"
-	| "IGNORE_TRIGGERS"
-	| "NOWAIT"
-	| "PAGLOCK"
-	| "READCOMMITTED"
-	| "READCOMMITTEDLOCK"
-	| "READPAST"
-	| "REPEATABLEREAD"
-	| "ROWLOCK"
-	| "SERIALIZABLE"
-	| "TABLOCK"
-	| "TABLOCKX"
-	| "UPDLOCK"
-	| "XLOCK"
-	} ;
-	
+        public static Expression<Rule> ColumnDefaultDefinition = () =>
+            Sequence
+            (
+                May(ConstraintNameSpecification),
+                Keyword("DEFAULT"),
+                CommentOrWhitespace,
+                Expression
+            );
 
-       
-<TableSource> ::=
-     { <FunctionCall> [ "AS" ] <TableAlias> [ '(' <ColumnAliasList> ')' ] 
-     | <TableOrViewName> [ [ "AS" ] <TableAlias> ] [ <TablesampleClause> ] [ "WITH" '(' <TableHint> ')' ] [ <TablePartitionClause> ]
-!    | "OPENXML" <openxml_clause> 
-     | <DerivedTable> [ "AS" ] <TableAlias> [ '(' <ColumnAliasList> ')' ] 
-!    | <pivoted_table> 
-!    | <unpivoted_table>
-     | <Variable> [ [ "AS" ] <TableAlias> ]
-     | <Variable> '.' <FunctionCall> [ [ "AS" ] <TableAlias> ] [ '(' <ColumnAliasList> ')' ]
-     | <Subquery> [ [ "AS" ] <TableAlias> ]
-     };
-     
+        public static Expression<Rule> ColumnIdentityDefinition = () =>
+            Sequence
+            (
+                Keyword("IDENTITY"),
+                May(FunctionArguments)
+            );
 
+        public static Expression<Rule> ColumnConstraint = () =>
+            Sequence
+            (
+                May(ConstraintNameSpecification),
+                ConstraintSpecification
+            );
 
-<JoinedTable> ::= 
-     { <JoinType> <TableSource> "ON" <SearchCondition> 
-     | "CROSS" "JOIN" <TableSource>
-     | { "CROSS" | "OUTER" } "APPLY" <TableSource>
-	 | ',' <TableSource>
-	 }
-     [ <JoinedTable> ];
+        public static Expression<Rule> TableConstraint = () =>
+            Sequence
+            (
+                May(ConstraintNameSpecification),
+                ConstraintSpecification,
+                May(CommentOrWhitespace),
+                BracketOpen,
+                May(CommentOrWhitespace),
+                IndexColumnList,
+                May(CommentOrWhitespace),
+                BracketClose
+            );
 
+        public static Expression<Rule> ConstraintSpecification = () =>
+            Sequence
+            (
+                Must
+                (
+                    Sequence(Keyword("PRIMARY"), CommentOrWhitespace, Keyword("KEY")),
+                    Keyword("UNIQUE")
+                ),
+                May
+                (
+                    Sequence
+                    (
+                        CommentOrWhitespace,
+                        Must(Keyword("CLUSTERED"), Keyword("NONCLUSTERED"))
+                    )
+                )
+            );
 
-!<SearchCondition> ::= 
-!    { <Predicate> | <LogicalNot> <SearchCondition> | <SearchConditionBrackets> } 
-!    [ <LogicalOperator> <SearchCondition> ]
-!    [ ',' <SearchCondition> ];
+        public static Expression<Rule> DropTableStatement = () =>
+            Sequence
+            (
+                Keyword("DROP"),
+                CommentOrWhitespace,
+                Keyword("TABLE"),
+                CommentOrWhitespace,
+                TableOrViewName
+            );
 
-<SearchCondition> ::= 
-    [ <LogicalNot> ] { <Predicate> | <SearchConditionBrackets> }
-    [ <LogicalOperator> <SearchCondition> ];
+        public static Expression<Rule> TruncateTableStatement = () =>
+            Sequence
+            (
+                Keyword("TRUNCATE"),
+                CommentOrWhitespace,
+                Keyword("TABLE"),
+                CommentOrWhitespace,
+                TableOrViewName
+            );
 
-<SearchConditionBrackets> ::= '(' <SearchCondition> ')';
+        #endregion
 
-! <SearchConditionTerms> ::= { "AND" | "OR" } [ "NOT" ] { <Predicate> | '(' <SearchCondition> ')' } [ <SearchConditionTerms> ];
+        #region Create index
 
-<Predicate> ::= 
-    { <Expression> <ComparisonOperator> <Expression>
-    | <Expression> [ "NOT" ] "LIKE" <Expression> [ "ESCAPE" <Expression> ]
-    | <Expression> [ "NOT" ] "BETWEEN" <Expression> "AND" <Expression>
-    | <Expression> "IS" [ "NOT" ] "NULL" 
-!    | "CONTAINS" '(' { <ColumnName> | '*' } ',' <contains_search_condition> ')' 
-!    | "FREETEXT" '(' { <ColumnName> | '*' } ',' <freetext_string> ')'
-    | <Expression> [ "NOT" ] "IN" { <Subquery> | '(' <ArgumentList> ')' }
-    | <Expression> <ComparisonOperator> { "ALL" | "SOME" | "ANY"} '(' <Subquery> ')'
-    | "EXISTS" <Subquery>
-    };
+        public static Expression<Rule> CreateIndexStatement = () =>
+            Sequence
+            (
+                Keyword("CREATE"),
+                May(Sequence(CommentOrWhitespace, Keyword("UNIQUE"))),
+                May(Sequence(CommentOrWhitespace, Must(Keyword("CLUSTERED"), Keyword("NONCLUSTERED")))),
+                CommentOrWhitespace,
+                Keyword("INDEX"),
+                CommentOrWhitespace,
+                IndexName,
+                CommentOrWhitespace,
+                Keyword("ON"),
+                CommentOrWhitespace,
+                TableOrViewName,
+                BracketOpen,
+                May(CommentOrWhitespace),
+                IndexColumnList,
+                May(CommentOrWhitespace),
+                BracketClose,
+                May
+                (
+                    Sequence
+                    (
+                        May(CommentOrWhitespace),
+                        Keyword("INCLUDE"),
+                        May(CommentOrWhitespace),
+                        BracketOpen,
+                        May(CommentOrWhitespace),
+                        IncludedColumnList,
+                        May(CommentOrWhitespace),
+                        BracketClose
+                    )
+                )
+            );
+        
+        public static Expression<Rule> IndexColumnList = () =>
+            Sequence
+            (
+                IndexColumn,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), IndexColumnList))
+            );
 
-	
-! <contains_search_condition> ::= <StringExpression>;
+        public static Expression<Rule> IndexColumn = () =>
+            Sequence
+            (
+                ColumnName,
+                May(Sequence(CommentOrWhitespace, Must(Keyword("ASC"), Keyword("DESC"))))
+            );
 
-! <freetext_string> ::= <StringExpression>;
+        public static Expression<Rule> IncludedColumnList = () =>
+            Sequence
+            (
+                ColumnName,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), IncludedColumnList))
+            );
 
-#endif
+        public static Expression<Rule> DropIndexStatement = () =>
+            Sequence
+            (
+                Keyword("DROP"),
+                CommentOrWhitespace,
+                Keyword("INDEX"),
+                CommentOrWhitespace,
+                IndexName,
+                CommentOrWhitespace,
+                Keyword("ON"),
+                CommentOrWhitespace,
+                TableOrViewName
+            );
+
+        #endregion
     }
 }
