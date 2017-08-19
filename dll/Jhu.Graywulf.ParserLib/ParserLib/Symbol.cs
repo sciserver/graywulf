@@ -44,7 +44,7 @@ namespace Jhu.Graywulf.ParserLib
                 parser.Comparer.Compare(parser.Code.Substring(parser.Pos, Pattern.Length), Pattern) == 0)
             {
                 this.Value = Pattern;
-                parser.GetLineCol(out pos, out line, out col);
+                parser.GetLineCol(parser.Pos, out line, out col);
                 parser.Advance(Pattern.Length);
 
                 return true;

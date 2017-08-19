@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.ParserLib
             if (m.Success && !parser.Keywords.Contains(m.Value))
             {
                 Value = m.Value;
-                parser.GetLineCol(out pos, out line, out col);
+                parser.GetLineCol(parser.Pos, out line, out col);
                 parser.Advance(m.Length);
 
                 return true;

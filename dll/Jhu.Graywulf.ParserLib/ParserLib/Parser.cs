@@ -20,6 +20,7 @@ namespace Jhu.Graywulf.ParserLib
         }
 
         private int pos;
+        private int maxpos;
 
         private Stack<ParserCheckpoint> checkpoints;
         private string code;
@@ -67,15 +68,16 @@ namespace Jhu.Graywulf.ParserLib
             else
             {
                 int p, line, col;
-                GetLineCol(out p, out line, out col);
+                GetLineCol(maxpos, out line, out col);
                 var ex = new ParserException(String.Format(ExceptionMessages.NotUnderstandableToken, line + 1, col + 1));
-                ex.Pos = p; ex.Line = line; ex.Col = col;
+                ex.Pos = maxpos; ex.Line = line; ex.Col = col;
                 throw ex;
             }
         }
 
         internal void Advance(int count)
         {
+            maxpos = Math.Max(maxpos, pos);
             pos += count;
         }
 
@@ -132,10 +134,8 @@ namespace Jhu.Graywulf.ParserLib
         /// <param name="pos"></param>
         /// <param name="line"></param>
         /// <param name="col"></param>
-        internal void GetLineCol(out int pos, out int line, out int col)
+        internal void GetLineCol(int pos, out int line, out int col)
         {
-            pos = this.pos;
-
             line = -1;
             foreach (var i in lineStarts)
             {
