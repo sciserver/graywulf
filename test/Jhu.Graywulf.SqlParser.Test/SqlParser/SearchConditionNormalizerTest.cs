@@ -14,7 +14,7 @@ using Jhu.Graywulf.Schema.SqlServer;
 namespace Jhu.Graywulf.SqlParser.Test
 {
     [TestClass]
-    public class ConditionNormalizerTest
+    public class SearchConditionNormalizerTest
     {
         private SchemaManager CreateSchemaManager()
         {

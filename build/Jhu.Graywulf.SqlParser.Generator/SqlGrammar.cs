@@ -469,20 +469,23 @@ namespace Jhu.Graywulf.SqlParser.Generator
             Sequence
             (
                 May(CommentOrWhitespace),
-                Statement,
+                May(Statement),
                 May
                 (
                     Sequence
                     (    
-                        Must
-                        (
-                            Sequence(May(CommentOrWhitespace), Semicolon, May(CommentOrWhitespace)),
-                            CommentOrWhitespace
-                        ),
+                        StatementSeparator,
                         May(StatementBlock)
                     )
                 ),
                 May(CommentOrWhitespace)
+            );
+
+        public static Expression<Rule> StatementSeparator = () =>
+            Must
+            (
+                Sequence(May(CommentOrWhitespace), Semicolon, May(CommentOrWhitespace)),
+                CommentOrWhitespace
             );
 
         public static Expression<Rule> Statement = () =>
@@ -492,7 +495,9 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 GotoStatement,
                 BeginEndStatement,
                 WhileStatement,
-                ControlFlowStatement,
+                BreakStatement,
+                ContinueStatement,
+                ReturnStatement,
                 IfStatement,
                 ThrowStatement,
                 TryCatchStatement,
@@ -548,16 +553,15 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 May(CommentOrWhitespace),
                 BooleanExpression,
                 May(CommentOrWhitespace),
-                StatementBlock
+                Statement
             );
 
-        public static Expression<Rule> ControlFlowStatement = () =>
-            Must
-            (
-                Keyword("BREAK"),
-                Keyword("CONTINUE"),
-                Keyword("RETURN")
-            );
+        public static Expression<Rule> BreakStatement = () => Keyword("BREAK");
+
+        public static Expression<Rule> ContinueStatement = () => Keyword("CONTINUE");
+
+        public static Expression<Rule> ReturnStatement = () => Keyword("RETURN");
+        // TODO: return can take a value
 
         public static Expression<Rule> IfStatement = () =>
             Sequence
@@ -566,11 +570,13 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 May(CommentOrWhitespace),
                 BooleanExpression,
                 May(CommentOrWhitespace),
-                StatementBlock,
+                Statement,
                 May(
                     Sequence(
+                        StatementSeparator,
                         Keyword("ELSE"),
-                        StatementBlock
+                        CommentOrWhitespace,
+                        Statement
                     )
                 )
             );

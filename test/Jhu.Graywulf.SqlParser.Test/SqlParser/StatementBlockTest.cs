@@ -66,5 +66,12 @@ DECLARE @test3 int;DECLARE @test4 int
 
             var sb = Parse(sql);
         }
+
+        [TestMethod]
+        public void EmptyStatementTest()
+        {
+            var sql = "; ;";
+            var sb = Parse(sql);
+        }
     }
 }

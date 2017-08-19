@@ -52,10 +52,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SqlParser\ArithmeticOperatorTest.cs" />
+    <Compile Include="SqlParser\IfStatementTest.cs" />
+    <Compile Include="SqlParser\WhileStatementTest.cs" />
     <Compile Include="SqlParser\BitwiseOperatorTest.cs" />
     <Compile Include="SqlParser\CnfConverterTest.cs" />
     <Compile Include="SqlParser\ColumnIdentifierTest.cs" />
     <Compile Include="SqlParser\CommentOrWhitespaceTest.cs" />
+    <Compile Include="SqlParser\BeginEndStatementTest.cs" />
+    <Compile Include="SqlParser\LabelAndGotoTest.cs" />
+    <Compile Include="SqlParser\DataTypeTest.cs" />
     <Compile Include="SqlParser\StatementBlockTest.cs" />
     <Compile Include="SqlParser\TableValuedFunctionTest.cs" />
     <Compile Include="SqlParser\DnfConverterTest.cs" />
