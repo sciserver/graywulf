@@ -196,7 +196,7 @@ namespace Jhu.Graywulf.SqlParser
             }
             else
             {
-                SearchCondition sc = wh.FindDescendant<SearchCondition>();
+                BooleanExpression sc = wh.FindDescendant<BooleanExpression>();
                 if (sc == null)
                 {
                     yield break;
@@ -211,9 +211,9 @@ namespace Jhu.Graywulf.SqlParser
                             wc = new SearchConditionReference((Predicate)n);
                             yield return wc;
                         }
-                        else if (n is SearchConditionBrackets)
+                        else if (n is BooleanExpressionBrackets)
                         {
-                            wc = new SearchConditionReference((SearchConditionBrackets)n);
+                            wc = new SearchConditionReference((BooleanExpressionBrackets)n);
                             yield return wc;
                         }
                     }
@@ -242,7 +242,7 @@ namespace Jhu.Graywulf.SqlParser
             Stack.AddAfter(wsn, where);
         }
 
-        public void AppendSearchCondition(SearchCondition condition, string op)
+        public void AppendSearchCondition(BooleanExpression condition, string op)
         {
             if (condition == null)
             {

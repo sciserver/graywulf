@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.SqlParser.LogicalExpressions
             return visitor.VisitOperatorNot(this);
         }
 
-        public override SearchCondition GetParsingTree()
+        public override BooleanExpression GetParsingTree()
         {
             var sc = Operand.GetParsingTree();
             sc.Stack.AddFirst(Whitespace.Create());

@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.SqlParser.LogicalExpressions
             this.Right = right;
         }
 
-        public override SearchCondition GetParsingTree()
+        public override BooleanExpression GetParsingTree()
         {
             var lsc = Left.GetParsingTree(this);
             var rsc = Right.GetParsingTree(this);

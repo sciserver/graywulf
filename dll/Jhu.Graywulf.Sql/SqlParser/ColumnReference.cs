@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.SqlParser
         private TableReference tableReference;
 
         private string columnName;
-        private DataType dataType;
+        private Schema.DataType dataType;
         private string columnAlias;
 
         private bool isStar;
@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.SqlParser
             set { columnName = value; }
         }
 
-        public DataType DataType
+        public Schema.DataType DataType
         {
             get { return dataType; }
             set { dataType = value; }
@@ -86,7 +86,7 @@ namespace Jhu.Graywulf.SqlParser
             CopyMembers(old);
         }
 
-        public ColumnReference(TableReference tableReference, string columnName, DataType columnType)
+        public ColumnReference(TableReference tableReference, string columnName, Schema.DataType columnType)
         {
             InitializeMembers();
 
@@ -111,7 +111,7 @@ namespace Jhu.Graywulf.SqlParser
             // TODO: copy metadata here
         }
 
-        public ColumnReference(string name, DataType dataType)
+        public ColumnReference(string name, Schema.DataType dataType)
         {
             InitializeMembers();
 

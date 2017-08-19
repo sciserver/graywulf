@@ -6,18 +6,18 @@ using Jhu.Graywulf.ParserLib;
 
 namespace Jhu.Graywulf.SqlParser
 {
-    public partial class SearchCondition
+    public partial class BooleanExpression
     {
         #region Instance creation
 
-        public static SearchCondition Create()
+        public static BooleanExpression Create()
         {
-            return new SearchCondition();
+            return new BooleanExpression();
         }
 
-        private static SearchCondition CreateInternal(bool negated, Node n)
+        private static BooleanExpression CreateInternal(bool negated, Node n)
         {
-            var sc = new SearchCondition();
+            var sc = new BooleanExpression();
             if (negated)
             {
                 sc.Stack.AddLast(LogicalNot.Create());
@@ -26,19 +26,19 @@ namespace Jhu.Graywulf.SqlParser
             return sc;
         }
 
-        public static SearchCondition Create(bool negated, Predicate predicate)
+        public static BooleanExpression Create(bool negated, Predicate predicate)
         {
             return CreateInternal(negated, predicate);
         }
 
-        public static SearchCondition Create(bool negated, SearchConditionBrackets brackets)
+        public static BooleanExpression Create(bool negated, BooleanExpressionBrackets brackets)
         {
             return CreateInternal(negated, brackets);
         }
 
-        public static SearchCondition Create(SearchCondition a, SearchCondition b, LogicalOperator op)
+        public static BooleanExpression Create(BooleanExpression a, BooleanExpression b, LogicalOperator op)
         {
-            var nsc = new SearchCondition();
+            var nsc = new BooleanExpression();
 
             nsc.Stack.AddLast(a);
             nsc.Stack.AddLast(Whitespace.Create());
@@ -49,9 +49,9 @@ namespace Jhu.Graywulf.SqlParser
             return nsc;
         }
 
-        public static SearchCondition Create(SearchConditionBrackets br, SearchCondition sc, LogicalOperator op)
+        public static BooleanExpression Create(BooleanExpressionBrackets br, BooleanExpression sc, LogicalOperator op)
         {
-            var nsc = new SearchCondition();
+            var nsc = new BooleanExpression();
 
             nsc.Stack.AddLast(br);
             nsc.Stack.AddLast(Whitespace.Create());
@@ -128,7 +128,7 @@ namespace Jhu.Graywulf.SqlParser
         /// </remarks>
         private IEnumerable<LogicalExpressions.Expression> EnumerateRawExpressions()
         {
-            SearchCondition sc = this;
+            BooleanExpression sc = this;
 
             while (sc != null)
             {
@@ -140,7 +140,7 @@ namespace Jhu.Graywulf.SqlParser
                 }
 
                 var pr = sc.FindDescendant<Predicate>();
-                var br = sc.FindDescendant<SearchConditionBrackets>();
+                var br = sc.FindDescendant<BooleanExpressionBrackets>();
 
                 if (pr != null)
                 {
@@ -175,7 +175,7 @@ namespace Jhu.Graywulf.SqlParser
                     }
 
                     // proceed to next iteration
-                    sc = sc.FindDescendant<SearchCondition>();
+                    sc = sc.FindDescendant<BooleanExpression>();
                 }
                 else
                 {

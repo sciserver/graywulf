@@ -7,7 +7,7 @@ using Jhu.Graywulf.ParserLib;
 namespace Jhu.Graywulf.SqlParser.Generator
 {
     [Grammar(Namespace = "Jhu.Graywulf.SqlParser", ParserName = "SqlParser",
-        Comparer="StringComparer.InvariantCultureIgnoreCase", RootToken = "SelectStatement")]
+        Comparer = "StringComparer.InvariantCultureIgnoreCase", RootToken = "SelectStatement")]
     public class SqlGrammar : Grammar
     {
 
@@ -56,8 +56,6 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Terminal> HexLiteral = () => @"\G0[xX][0-9a-fA-F]+";
         public static Expression<Terminal> StringConstant = () => @"\G('([^']|'')*')";
         public static Expression<Terminal> Identifier = () => @"\G([a-zA-Z_]+[0-9a-zA-Z_]*|\[[^\]]+\])";
-        public static Expression<Terminal> Variable = () => @"\G(@[$a-zA-Z_]+)";
-        public static Expression<Terminal> SystemVariable = () => @"\G(@@[$a-zA-Z_]+)";
 
         #endregion
         #region Arithmetic operators used in expressions
@@ -143,6 +141,110 @@ namespace Jhu.Graywulf.SqlParser.Generator
             Must(ColumnIdentifier, SystemVariable, Variable);
 
         #endregion
+        #region Boolean expressions
+
+        public static Expression<Rule> BooleanExpression = () =>
+            Sequence
+            (
+                May(LogicalNot),
+                May(CommentOrWhitespace),
+                Must(Predicate, BooleanExpressionBrackets),
+                May(Sequence(May(CommentOrWhitespace), LogicalOperator, May(CommentOrWhitespace), BooleanExpression))
+            );
+
+        public static Expression<Rule> BooleanExpressionBrackets = () =>
+            Sequence
+            (
+                BracketOpen,
+                May(CommentOrWhitespace),
+                BooleanExpression,
+                May(CommentOrWhitespace),
+                BracketClose
+            );
+
+        public static Expression<Rule> Predicate = () =>
+            Must
+            (
+                // Expression comparieson
+                Sequence
+                (
+                    Expression,
+                    May(CommentOrWhitespace),
+                    ComparisonOperator,
+                    May(CommentOrWhitespace),
+                    Expression
+                ),
+                // Like
+                Sequence
+                (
+                    Expression,
+                    May(Keyword("NOT")),
+                    May(CommentOrWhitespace),
+                    Keyword("LIKE"),
+                    May(CommentOrWhitespace),
+                    Expression,
+                    May(Sequence(May(CommentOrWhitespace), Keyword("ESCAPE"), May(CommentOrWhitespace), Expression))
+                ),
+                // Between
+                Sequence
+                (
+                    Expression,
+                    May(Sequence(May(CommentOrWhitespace), Keyword("NOT"))),
+                    May(CommentOrWhitespace),
+                    Keyword("BETWEEN"),
+                    May(CommentOrWhitespace),
+                    Expression,
+                    May(CommentOrWhitespace),
+                    Keyword("AND"),
+                    May(CommentOrWhitespace),
+                    Expression
+                ),
+                // IS NULL
+                Sequence
+                (
+                    Expression,
+                    May(CommentOrWhitespace),
+                    Keyword("IS"),
+                    May(Sequence(CommentOrWhitespace, Keyword("NOT"))),
+                    CommentOrWhitespace,
+                    Keyword("NULL")
+                ),
+                // IN - semi join
+                Sequence
+                (
+                    Expression,
+                    May(Keyword("NOT")),
+                    May(CommentOrWhitespace),
+                    Keyword("IN"),
+                    May(CommentOrWhitespace),
+                    Must
+                    (
+                        Subquery,
+                        Sequence(BracketOpen, May(CommentOrWhitespace), ArgumentList, May(CommentOrWhitespace), BracketClose)
+                    )
+                ),
+                // comparision semi join
+                Sequence
+                (
+                    Expression,
+                    May(CommentOrWhitespace),
+                    ComparisonOperator,
+                    May(CommentOrWhitespace),
+                    Must(Keyword("ALL"), Keyword("SOME"), Keyword("ANY")),
+                    May(CommentOrWhitespace),
+                    Subquery
+                ),
+                // EXISTS
+                Sequence
+                (
+                    Keyword("EXISTS"),
+                    May(CommentOrWhitespace),
+                    Subquery
+                )
+            // *** TODO: add string constructs (contains, freetext etc.)
+            );
+
+        #endregion
         #region Case-When constructs *** TODO: test, especially whitespaces
 
         public static Expression<Rule> SimpleCaseExpression = () =>
@@ -223,9 +325,9 @@ namespace Jhu.Graywulf.SqlParser.Generator
             (
                 Sequence
                 (
-                // Optional dataset prefix
+                    // Optional dataset prefix
                     May(Sequence(DatasetName, May(CommentOrWhitespace), Colon, May(CommentOrWhitespace))),
-                // Original column name syntax
+                    // Original column name syntax
                     Must
                     (
                         Sequence(DatabaseName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), May(Sequence(SchemaName, May(CommentOrWhitespace))), Dot, May(CommentOrWhitespace), TableName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Must(Mul, ColumnName)),
@@ -235,6 +337,14 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 ),
                 Must(Mul, ColumnName)
             );
+
+        #endregion
+        #region Data type
+
+        public static Expression<Rule> DataType = () =>
+            Must(Identifier);
+
+        // TODO: allow CLR types
 
         #endregion
         #region Function call syntax
@@ -305,16 +415,306 @@ namespace Jhu.Graywulf.SqlParser.Generator
             );
 
         #endregion
-        #region Select statement and query expressions (combinations of selects)
+
+        #region Statements
+
+        public static Expression<Rule> StatementBlock = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace),
+                Statement,
+                May(StatementBlock),
+                May(CommentOrWhitespace)
+            );
+
+        public static Expression<Rule> Statement = () =>
+            Sequence
+            (
+                Must
+                (
+                    Label,
+                    GotoStatement,
+                    BeginEndStatement,
+                    WhileStatement,
+                    ControlFlowStatement,
+                    IfStatement,
+                    ThrowStatement,
+                    TryCatchStatement,
+
+                    DeclareCursorStatement,
+                    DeclareVariableStatement,
+                    CursorOperationStatement,
+                    SetCursorStatement,
+                    SetVariableStatement,
+                    FetchStatement,
+
+                    SelectStatement
+                ),
+                May(Sequence(May(CommentOrWhitespace), Comma))
+            );
+
+        #endregion
+
+        #region Control flow statements
+
+        public static Expression<Rule> Label = () =>
+            Sequence
+            (
+                Identifier,
+                Colon
+            );
+
+        public static Expression<Rule> GotoStatement = () =>
+            Sequence
+            (
+                Keyword("GOTO"),
+                CommentOrWhitespace,
+                Identifier
+            );
+
+        public static Expression<Rule> BeginEndStatement = () =>
+            Sequence
+            (
+                Keyword("BEGIN"),
+                StatementBlock,
+                Keyword("END")
+            );
+
+        public static Expression<Rule> WhileStatement = () =>
+            Sequence
+            (
+                Keyword("WHILE"),
+                May(CommentOrWhitespace),
+                BooleanExpression,
+                May(CommentOrWhitespace),
+                StatementBlock
+            );
+
+        public static Expression<Rule> ControlFlowStatement = () =>
+            Must
+            (
+                Keyword("BREAK"),
+                Keyword("CONTINUE"),
+                Keyword("RETURN")
+            );
+
+        public static Expression<Rule> IfStatement = () =>
+            Sequence
+            (
+                Keyword("IF"),
+                May(CommentOrWhitespace),
+                BooleanExpression,
+                May(CommentOrWhitespace),
+                StatementBlock,
+                May(
+                    Sequence(
+                        Keyword("ELSE"),
+                        StatementBlock
+                    )
+                )
+            );
+
+        public static Expression<Rule> ThrowStatement = () =>
+            Sequence
+            (
+                Keyword("THROW"),
+                May(
+                    Sequence(
+                        May(CommentOrWhitespace),
+                        Must(Number, Variable),
+                        May(CommentOrWhitespace),
+                        Comma,
+                        May(CommentOrWhitespace),
+                        Must(StringConstant, Variable),
+                        May(CommentOrWhitespace),
+                        Comma,
+                        May(CommentOrWhitespace),
+                        Must(Number, Variable),
+                        May(CommentOrWhitespace)
+                    )
+                )
+            );
+
+        public static Expression<Rule> TryCatchStatement = () =>
+            Sequence
+            (
+                Keyword("BEGIN"), CommentOrWhitespace, Keyword("TRY"),
+                StatementBlock,
+                Keyword("END"), CommentOrWhitespace, Keyword("TRY"),
+                CommentOrWhitespace,
+                Keyword("BEGIN"), CommentOrWhitespace, Keyword("CATCH"),
+                Must(StatementBlock, CommentOrWhitespace),
+                Keyword("END"), CommentOrWhitespace, Keyword("CATCH")
+            );
+
+        #endregion
+
+        #region Scalar variables and cursors
+
+        public static Expression<Terminal> Variable = () => @"\G(@[$a-zA-Z_]+)";
+        public static Expression<Terminal> SystemVariable = () => @"\G(@@[$a-zA-Z_]+)";
+        public static Expression<Terminal> Cursor = () => @"\G([$a-zA-Z_]+)";
+
+        public static Expression<Rule> VariableList = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace),
+                Variable,
+                May(Sequence(May(CommentOrWhitespace), Comma, VariableList))
+            );
+
+        public static Expression<Rule> VariableDeclaration = () =>
+            Sequence
+            (
+                Variable,
+                May(Sequence(CommentOrWhitespace, Keyword("AS"))),
+                CommentOrWhitespace,
+                Must(
+                    Keyword("CURSOR"),
+                    Sequence(
+                        DataType,
+                        May(
+                            Sequence
+                            (
+                                May(CommentOrWhitespace),
+                                Equals1,
+                                May(CommentOrWhitespace),
+                                Expression
+                            )
+                        )
+                    )
+                )
+            );
+
+        public static Expression<Rule> VariableDeclarationList = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace),
+                VariableDeclaration,
+                May(Sequence(May(CommentOrWhitespace), Comma, VariableDeclarationList))
+            );
+
+        public static Expression<Rule> DeclareVariableStatement = () =>
+            Sequence
+            (
+                Keyword("DECLARE"),
+                CommentOrWhitespace,
+                VariableDeclarationList
+            );
+
+        // TODO: add UDT support
+
+        public static Expression<Rule> SetVariableStatement = () =>
+            Sequence
+            (
+                Keyword("SET"),
+                CommentOrWhitespace,
+                Variable,
+                May(CommentOrWhitespace),
+                Equals1,
+                May(CommentOrWhitespace),
+                Expression
+            );
+
+        public static Expression<Rule> CursorDefinition = () =>
+            Sequence
+            (
+                Keyword("CURSOR"),
+                CommentOrWhitespace,
+                Keyword("FOR"),
+                CommentOrWhitespace,
+                SelectStatement
+            );
+
+        // TODO: full cursor syntax
+        /*
+        { CURSOR[FORWARD_ONLY | SCROLL]
+[STATIC | KEYSET | DYNAMIC | FAST_FORWARD]
+[READ_ONLY | SCROLL_LOCKS | OPTIMISTIC]
+[TYPE_WARNING]
+FOR select_statement
+[FOR { READ ONLY | UPDATE[OF column_name[ ,...n]]
+    } ] 
+      }
+      */
+
+        public static Expression<Rule> DeclareCursorStatement = () =>
+            Sequence
+            (
+                Keyword("DECLARE"),
+                CommentOrWhitespace,
+                Cursor,
+                CommentOrWhitespace,
+                CursorDefinition
+            );
+
+        public static Expression<Rule> CursorOperationStatement = () =>
+            Sequence
+            (
+                Must(Keyword("OPEN"), Keyword("CLOSE"), Keyword("DEALLOCATE")),
+                CommentOrWhitespace,
+                Must(Cursor, Variable)
+            );
+
+        public static Expression<Rule> SetCursorStatement = () =>
+            Sequence
+            (
+                Keyword("SET"),
+                CommentOrWhitespace,
+                Variable,
+                May(CommentOrWhitespace),
+                Equals1,
+                May(CommentOrWhitespace),
+                CursorDefinition
+            );
+
+
+        public static Expression<Rule> FetchStatement = () =>
+            Sequence
+            (
+                Keyword("FETCH"),
+                CommentOrWhitespace,
+                May
+                (
+                    Must
+                    (
+                        Keyword("NEXT"),
+                        Keyword("PRIOR"),
+                        Keyword("FIRST"),
+                        Keyword("LAST"),
+                        Sequence
+                        (
+                            Must(Keyword("ABSOLUTE"), Keyword("RELATIVE")),
+                            Must(Number, Variable)
+                        )
+                    )
+                ),
+                CommentOrWhitespace,
+                Keyword("FROM"),
+                CommentOrWhitespace,
+                Must(Cursor, Variable),
+                May
+                (
+                    Sequence
+                    (
+                        CommentOrWhitespace,
+                        Keyword("INTO"),
+                        CommentOrWhitespace,
+                        VariableList
+                    )
+                )
+            );
+
+        #endregion
+
+        #region SELECT statement and query expressions (combinations of selects)
 
         public static Expression<Rule> SelectStatement = () =>
             Sequence
             (
-                May(CommentOrWhitespace),   // remove this when wrapped in generic statement grammar
                 QueryExpression,
                 May(CommentOrWhitespace),
-                May(OrderByClause),
-                May(CommentOrWhitespace)   // remove this when wrapped in generic statement grammar
+                May(OrderByClause)
             );
 
         public static Expression<Rule> QueryExpression = () =>
@@ -405,7 +805,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
             (
                 Must
                 (
-                    Sequence(JoinType, May(CommentOrWhitespace), TableSource, May(CommentOrWhitespace), Keyword("ON"), May(CommentOrWhitespace), SearchCondition),
+                    Sequence(JoinType, May(CommentOrWhitespace), TableSource, May(CommentOrWhitespace), Keyword("ON"), May(CommentOrWhitespace), BooleanExpression),
                     Sequence(Keyword("CROSS"), CommentOrWhitespace, Keyword("JOIN"), May(CommentOrWhitespace), TableSource),
                     Sequence(Comma, May(CommentOrWhitespace), TableSource),
                     Sequence(Must(Keyword("CROSS"), Keyword("OUTER")), CommentOrWhitespace, Keyword("APPLY"), May(CommentOrWhitespace), TableSource)
@@ -561,108 +961,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
             (
                 Keyword("WHERE"),
                 May(CommentOrWhitespace),
-                SearchCondition
-            );
-
-        public static Expression<Rule> SearchCondition = () =>
-            Sequence
-            (
-                May(LogicalNot),
-                May(CommentOrWhitespace),
-                Must(Predicate, SearchConditionBrackets),
-                May(Sequence(May(CommentOrWhitespace), LogicalOperator, May(CommentOrWhitespace), SearchCondition))
-            );
-
-        public static Expression<Rule> SearchConditionBrackets = () =>
-            Sequence
-            (
-                BracketOpen,
-                May(CommentOrWhitespace),
-                SearchCondition,
-                May(CommentOrWhitespace),
-                BracketClose
-            );
-
-        public static Expression<Rule> Predicate = () =>
-            Must
-            (
-                // Expression comparieson
-                Sequence
-                (
-                    Expression,
-                    May(CommentOrWhitespace),
-                    ComparisonOperator,
-                    May(CommentOrWhitespace),
-                    Expression
-                ),
-                // Like
-                Sequence
-                (
-                    Expression,
-                    May(Keyword("NOT")),
-                    May(CommentOrWhitespace),
-                    Keyword("LIKE"),
-                    May(CommentOrWhitespace),
-                    Expression,
-                    May(Sequence(May(CommentOrWhitespace), Keyword("ESCAPE"), May(CommentOrWhitespace), Expression))
-                ),
-                // Between
-                Sequence
-                (
-                    Expression,
-                    May(Sequence(May(CommentOrWhitespace), Keyword("NOT"))),
-                    May(CommentOrWhitespace),
-                    Keyword("BETWEEN"),
-                    May(CommentOrWhitespace),
-                    Expression,
-                    May(CommentOrWhitespace),
-                    Keyword("AND"),
-                    May(CommentOrWhitespace),
-                    Expression
-                ),
-                // IS NULL
-                Sequence
-                (
-                    Expression,
-                    May(CommentOrWhitespace),
-                    Keyword("IS"),
-                    May(Sequence(CommentOrWhitespace, Keyword("NOT"))),
-                    CommentOrWhitespace,
-                    Keyword("NULL")
-                ),
-                // IN - semi join
-                Sequence
-                (
-                    Expression,
-                    May(Keyword("NOT")),
-                    May(CommentOrWhitespace),
-                    Keyword("IN"),
-                    May(CommentOrWhitespace),
-                    Must
-                    (
-                        Subquery,
-                        Sequence(BracketOpen, May(CommentOrWhitespace), ArgumentList, May(CommentOrWhitespace), BracketClose)
-                    )
-                ),
-                // comparision semi join
-                Sequence
-                (
-                    Expression,
-                    May(CommentOrWhitespace),
-                    ComparisonOperator,
-                    May(CommentOrWhitespace),
-                    Must(Keyword("ALL"), Keyword("SOME"), Keyword("ANY")),
-                    May(CommentOrWhitespace),
-                    Subquery
-                ),
-                // EXISTS
-                Sequence
-                (
-                    Keyword("EXISTS"),
-                    May(CommentOrWhitespace),
-                    Subquery
-                )
-                // *** TODO: add string constructs (contains, freetext etc.)
+                BooleanExpression
             );
 
         #endregion
@@ -696,7 +995,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
             (
                 Keyword("HAVING"),
                 May(CommentOrWhitespace),
-                SearchCondition
+                BooleanExpression
             );
 
         #endregion

@@ -575,13 +575,13 @@ namespace Jhu.Graywulf.Jobs.Query
             return key == null;
         }
 
-        protected SearchCondition GetPartitioningConditions(Expression partitioningKeyExpression)
+        protected BooleanExpression GetPartitioningConditions(Expression partitioningKeyExpression)
         {
             if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyMin) && !IsPartitioningKeyUnbound(Partition.PartitioningKeyMax))
             {
                 var from = GetPartitioningKeyMinCondition(partitioningKeyExpression);
                 var to = GetPartitioningKeyMaxCondition(partitioningKeyExpression);
-                return SearchCondition.Create(from, to, LogicalOperator.CreateAnd());
+                return BooleanExpression.Create(from, to, LogicalOperator.CreateAnd());
             }
             else if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyMin))
             {
@@ -602,11 +602,11 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="partitioningKey"></param>
         /// <returns></returns>
-        private SearchCondition GetPartitioningKeyMinCondition(Expression partitioningKeyExpression)
+        private BooleanExpression GetPartitioningKeyMinCondition(Expression partitioningKeyExpression)
         {
             var a = Expression.Create(SqlParser.Variable.Create(partitioningKeyMinParameterName));
             var p = Predicate.CreateLessThanOrEqual(a, partitioningKeyExpression);
-            return SearchCondition.Create(false, p);
+            return BooleanExpression.Create(false, p);
         }
 
         /// <summary>
@@ -614,11 +614,11 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="partitioningKey"></param>
         /// <returns></returns>
-        private SearchCondition GetPartitioningKeyMaxCondition(Expression partitioningKeyExpression)
+        private BooleanExpression GetPartitioningKeyMaxCondition(Expression partitioningKeyExpression)
         {
             var b = Expression.Create(SqlParser.Variable.Create(partitioningKeyMaxParameterName));
             var p = Predicate.CreateLessThan(partitioningKeyExpression, b);
-            return SearchCondition.Create(false, p);
+            return BooleanExpression.Create(false, p);
         }
 
         #endregion

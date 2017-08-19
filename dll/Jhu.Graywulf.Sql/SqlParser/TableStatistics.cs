@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.SqlParser
 
         private int binCount;
         private Expression keyColumn;
-        private DataType keyColumnDataType;
+        private Schema.DataType keyColumnDataType;
         private List<IComparable> keyValue;
         private List<long> keyCount;
         private long rowCount;
@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.SqlParser
             set { keyColumn = value; }
         }
 
-        public DataType KeyColumnDataType
+        public Schema.DataType KeyColumnDataType
         {
             get { return keyColumnDataType; }
             set { keyColumnDataType = value; }

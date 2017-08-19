@@ -99,6 +99,8 @@
     <Compile Include="SqlCodeGen\SqlServer\SqlServerColumnListGenerator.cs" />
     <Compile Include="SqlParser\Argument.cs" />
     <Compile Include="SqlParser\ArgumentList.cs" />
+    <Compile Include="SqlParser\BooleanExpression.cs" />
+    <Compile Include="SqlParser\BooleanExpressionBrackets.cs" />
     <Compile Include="SqlParser\ColumnExpression.cs" />
     <Compile Include="SqlParser\ColumnIdentifier.cs" />
     <Compile Include="SqlParser\ColumnName.cs" />
@@ -150,8 +152,6 @@
     <Compile Include="SqlParser\QueryOperator.cs" />
     <Compile Include="SqlParser\QuerySpecification.cs" />
     <Compile Include="SqlParser\SchemaName.cs" />
-    <Compile Include="SqlParser\SearchCondition.cs" />
-    <Compile Include="SqlParser\SearchConditionBrackets.cs" />
     <Compile Include="SqlParser\SearchConditionNormalizer.cs" />
     <Compile Include="SqlParser\SearchConditionReference.cs" />
     <Compile Include="SqlParser\SelectList.cs" />

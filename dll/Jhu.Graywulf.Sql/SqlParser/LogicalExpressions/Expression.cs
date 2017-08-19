@@ -11,13 +11,13 @@ namespace Jhu.Graywulf.SqlParser.LogicalExpressions
 
         internal protected abstract Expression Accept(ExpressionVisitor visitor);
 
-        public abstract SearchCondition GetParsingTree();
+        public abstract BooleanExpression GetParsingTree();
 
-        protected internal virtual SearchCondition GetParsingTree(Expression parent)
+        protected internal virtual BooleanExpression GetParsingTree(Expression parent)
         {
             if (Precedence > 0 && parent.Precedence > Precedence)
             {
-                return SearchCondition.Create(false, SearchConditionBrackets.Create(GetParsingTree()));
+                return BooleanExpression.Create(false, BooleanExpressionBrackets.Create(GetParsingTree()));
             }
             else
             {

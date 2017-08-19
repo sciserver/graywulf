@@ -117,7 +117,7 @@ ORDER BY 1";
             var sql = "SELECT a WHERE ID = 12";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("ID = 12", exp.FindDescendantRecursive<WhereClause>().FindDescendantRecursive<SearchCondition>().ToString());
+            Assert.AreEqual("ID = 12", exp.FindDescendantRecursive<WhereClause>().FindDescendantRecursive<BooleanExpression>().ToString());
         }
 
         [TestMethod]
@@ -135,7 +135,7 @@ ORDER BY 1";
             var sql = "SELECT AVG(a) FROM table HAVING AVG(ID) > 1";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("AVG(ID) > 1", exp.FindDescendantRecursive<HavingClause>().FindDescendant<SearchCondition>().ToString());
+            Assert.AreEqual("AVG(ID) > 1", exp.FindDescendantRecursive<HavingClause>().FindDescendant<BooleanExpression>().ToString());
         }
     }
 }

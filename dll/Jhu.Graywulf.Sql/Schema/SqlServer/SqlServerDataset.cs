@@ -1378,7 +1378,7 @@ WHERE f.type = 1
                         if (stats.LogSpace == 2199023255552L)
                         {
                             // In this special case the log file can grow to a maximum of 2TB
-                            https://docs.microsoft.com/en-us/sql/relational-databases/system-catalog-views/sys-database-files-transact-sql
+                            // https://docs.microsoft.com/en-us/sql/relational-databases/system-catalog-views/sys-database-files-transact-sql
                             stats.LogSpace = -1;
                         }
 

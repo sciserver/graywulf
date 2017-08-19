@@ -8,7 +8,7 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class JoinedTable
     {
-        public static JoinedTable Create(JoinType joinType, TableSource tableSource, SearchCondition joinCondition)
+        public static JoinedTable Create(JoinType joinType, TableSource tableSource, BooleanExpression joinCondition)
         {
             var jt = new JoinedTable();
             jt.Stack.AddLast(joinType);

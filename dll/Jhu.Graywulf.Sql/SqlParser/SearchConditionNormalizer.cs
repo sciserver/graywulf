@@ -48,7 +48,7 @@ namespace Jhu.Graywulf.SqlParser
                 foreach (JoinedTable jt in tablesource.EnumerateDescendantsRecursive<JoinedTable>(typeof(Subquery)))
                 {
                     // CROSS JOIN queries have no search condition
-                    SearchCondition sc = jt.FindDescendant<SearchCondition>();
+                    BooleanExpression sc = jt.FindDescendant<BooleanExpression>();
                     if (sc != null)
                     {
                         conditions.Add(GetConjunctiveNormalForm(sc));
@@ -60,14 +60,14 @@ namespace Jhu.Graywulf.SqlParser
             WhereClause where = qs.FindDescendant<WhereClause>();
             if (where != null)
             {
-                var sc = where.FindDescendant<SearchCondition>();
+                var sc = where.FindDescendant<BooleanExpression>();
                 conditions.Add(GetConjunctiveNormalForm(sc));
             }
         }
 
         public WhereClause GenerateWhereClauseSpecificToTable(TableReference table)
         {
-            SearchCondition sc = null;
+            BooleanExpression sc = null;
 
             // Loop over all conditions (JOIN ONs and WHERE conditions)
             // Result will be a combinations of the table specific conditions terms
@@ -224,14 +224,14 @@ namespace Jhu.Graywulf.SqlParser
             }
         }
 
-        private LogicalExpressions.Expression GetDisjunctiveNormalForm(SearchCondition sc)
+        private LogicalExpressions.Expression GetDisjunctiveNormalForm(BooleanExpression sc)
         {
             var exp = sc.GetExpressionTree();
             var dnf = new LogicalExpressions.DnfConverter();
             return dnf.Visit(exp);
         }
 
-        private LogicalExpressions.Expression GetConjunctiveNormalForm(SearchCondition sc)
+        private LogicalExpressions.Expression GetConjunctiveNormalForm(BooleanExpression sc)
         {
             var exp = sc.GetExpressionTree();
             var cnf = new LogicalExpressions.CnfConverter();

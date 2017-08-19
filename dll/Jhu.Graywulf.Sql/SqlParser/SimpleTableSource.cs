@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.SqlParser
     {
         private ColumnIdentifier partitioningColumn;
         private Expression partitioningKeyExpression;
-        private DataType partitioningKeyDataType;
+        private Schema.DataType partitioningKeyDataType;
 
         public TableOrViewName TableOrViewName
         {
@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.SqlParser
             }
         }
 
-        public DataType PartitioningKeyDataType
+        public Schema.DataType PartitioningKeyDataType
         {
             get
             {

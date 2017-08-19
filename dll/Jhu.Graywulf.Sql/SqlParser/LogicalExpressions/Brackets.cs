@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.SqlParser.LogicalExpressions
             throw new NotImplementedException();
         }
 
-        public override SearchCondition GetParsingTree()
+        public override BooleanExpression GetParsingTree()
         {
             throw new NotImplementedException();
         }

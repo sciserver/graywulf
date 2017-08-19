@@ -24,11 +24,11 @@ namespace Jhu.Graywulf.SqlParser.LogicalExpressions
             return visitor.VisitPredicate(this);
         }
 
-        public override SearchCondition GetParsingTree()
+        public override BooleanExpression GetParsingTree()
         {
             // *** TODO Value.AddLeadingWhitespace();
 
-            var sc = new SearchCondition();
+            var sc = new BooleanExpression();
             sc.Stack.AddLast(Value);
             return sc;
         }

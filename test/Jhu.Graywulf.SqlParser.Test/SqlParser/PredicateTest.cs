@@ -15,18 +15,18 @@ namespace Jhu.Graywulf.SqlParser.Test
     [TestClass]
     public class PredicateTest
     {
-        private void GetSearchCondition(string query, out SelectStatement select, out SearchCondition where)
+        private void GetSearchCondition(string query, out SelectStatement select, out BooleanExpression where)
         {
             var p = new SqlParser();
             select = (SelectStatement)p.Execute(new SelectStatement(), query);
-            where = select.FindDescendantRecursive<WhereClause>().FindDescendant<SearchCondition>();
+            where = select.FindDescendantRecursive<WhereClause>().FindDescendant<BooleanExpression>();
         }
 
         [TestMethod]
         public void BetweenTest()
         {
             SelectStatement select;
-            SearchCondition where;
+            BooleanExpression where;
 
             var sql = "SELECT ID FROM Book WHERE ID BETWEEN 6 AND 10";
             GetSearchCondition(sql, out select, out where);
@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             string sql;
             SelectStatement select;
-            SearchCondition where;
+            BooleanExpression where;
             TableReference table;
             Predicate predicate;
             

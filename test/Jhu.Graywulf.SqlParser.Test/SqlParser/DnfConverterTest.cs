@@ -13,13 +13,13 @@ namespace Jhu.Graywulf.SqlParser.Test
     [TestClass]
     public class DnfConverterTest
     {
-        private SearchCondition GetSearchCondition(string sql)
+        private BooleanExpression GetSearchCondition(string sql)
         {
             SqlParser p = new SqlParser();
             var select = (SelectStatement)p.Execute(new SelectStatement(), sql);
 
             var where = select.FindDescendantRecursive<WhereClause>();
-            return where.FindDescendant<SearchCondition>();
+            return where.FindDescendant<BooleanExpression>();
         }
 
         private string VisitTestHelper(string sql)

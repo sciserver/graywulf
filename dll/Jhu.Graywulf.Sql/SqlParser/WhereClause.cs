@@ -9,7 +9,7 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class WhereClause
     {
-        public static WhereClause Create(SearchCondition sc)
+        public static WhereClause Create(BooleanExpression sc)
         {
             var wh = new WhereClause();
 
@@ -20,16 +20,16 @@ namespace Jhu.Graywulf.SqlParser
             return wh;
         }
 
-        public void AppendCondition(SearchCondition sc, string opstring)
+        public void AppendCondition(BooleanExpression sc, string opstring)
         {
-            var cond = this.FindDescendant<SearchCondition>();
+            var cond = this.FindDescendant<BooleanExpression>();
             this.Stack.Remove(cond);
 
-            var br1 = SearchConditionBrackets.Create(sc);
-            var br2 = SearchConditionBrackets.Create(cond);
+            var br1 = BooleanExpressionBrackets.Create(sc);
+            var br2 = BooleanExpressionBrackets.Create(cond);
 
             var op = LogicalOperator.Create(opstring);
-            cond = SearchCondition.Create(br1, SearchCondition.Create(false, br2), op);
+            cond = BooleanExpression.Create(br1, BooleanExpression.Create(false, br2), op);
 
             this.Stack.AddLast(cond);
         }

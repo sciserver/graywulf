@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.SqlParser
             ts.Stack.AddLast(joinedTable);
         }
 
-        public void PrependJoinedTable(TableSource tableSource, JoinType joinType, SearchCondition joinCondition)
+        public void PrependJoinedTable(TableSource tableSource, JoinType joinType, BooleanExpression joinCondition)
         {
             // Find the first table source
             var tse = FindDescendant<TableSourceExpression>();

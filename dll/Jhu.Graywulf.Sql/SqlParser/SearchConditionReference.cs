@@ -50,13 +50,13 @@ namespace Jhu.Graywulf.SqlParser
             UpdateFromNode((Node)node);
         }
 
-        public SearchConditionReference(SearchCondition node)
+        public SearchConditionReference(BooleanExpression node)
         {
             InitializeMembers();
             UpdateFromNode((Node)node);
         }
 
-        public SearchConditionReference(SearchConditionBrackets node)
+        public SearchConditionReference(BooleanExpressionBrackets node)
         {
             InitializeMembers();
             UpdateFromNode((Node)node);
