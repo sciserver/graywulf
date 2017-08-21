@@ -391,7 +391,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
             (
                 BracketOpen,
                 May(CommentOrWhitespace),
-                Must(Keyword("MAX"), Number),
+                Must(Literal("MAX"), Number),
                 May(CommentOrWhitespace),
                 BracketClose
             );
