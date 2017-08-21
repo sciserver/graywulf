@@ -67,8 +67,8 @@ namespace Jhu.Graywulf.SqlParser.Test
             Assert.AreEqual("table1", tables[0].TableReference.DatabaseObjectName);
             Assert.AreEqual("table2", tables[1].TableReference.DatabaseObjectName);
 
-            sql = @"
-SELECT Title, Name
+            sql = 
+@"SELECT Title, Name
 FROM Book
 INNER JOIN BookAuthor ON BookAuthor.BookID = Book.ID
 INNER JOIN Author ON Author.ID = BookAuthor.AuthorID";

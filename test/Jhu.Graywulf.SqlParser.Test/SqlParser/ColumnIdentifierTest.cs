@@ -6,22 +6,21 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.SqlParser;
 
-namespace Jhu.Graywulf.SqlParser.Test
+namespace Jhu.Graywulf.SqlParser
 {
     [TestClass]
     public class ColumnIdentifierTest
     {
-        private Jhu.Graywulf.SqlParser.Expression ExpressionTestHelper(string query)
+        private ColumnIdentifier Parse(string query)
         {
-            var p = new SqlParser();
-            return (Jhu.Graywulf.SqlParser.Expression)p.Execute(new Jhu.Graywulf.SqlParser.Expression(), query);
+            return new SqlParser().Execute<ColumnIdentifier>(query);
         }
 
         [TestMethod]
         public void SingleColumnNameTest()
         {
             var sql = "column";
-            var exp = ExpressionTestHelper(sql);
+            var exp = Parse(sql);
             Assert.AreEqual("column", exp.FindDescendantRecursive<ColumnName>().ToString());
         }
 
@@ -31,56 +30,56 @@ namespace Jhu.Graywulf.SqlParser.Test
             try
             {
                 var sql = "dataset:column";
-                var exp = ExpressionTestHelper(sql);
+                var exp = Parse(sql);
             }
             catch (ParserException ex)
             {
-                Assert.AreEqual(7, ex.Pos);
+                Assert.AreEqual(8, ex.Pos);
             }
         }
 
         [TestMethod]
         public void ColumnNameWithTableNameTest()
         {
-            var sql = "table.column";
-            var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("table.column", exp.ToString());
-            Assert.AreEqual("table", exp.FindDescendantRecursive<TableName>().ToString());
-            Assert.AreEqual("column", exp.FindDescendantRecursive<ColumnName>().ToString());
+            var sql = "table1.column1";
+            var exp = Parse(sql);
+            Assert.AreEqual("table1.column1", exp.ToString());
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().ToString());
         }
 
         [TestMethod]
         public void ColumnNameWithTableNameAndDatasetPrefixTest()
         {
-            var sql = "dataset:table.column";
-            var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("dataset:table.column", exp.ToString());
+            var sql = "dataset:table1.column1";
+            var exp = Parse(sql);
+            Assert.AreEqual("dataset:table1.column1", exp.ToString());
             Assert.AreEqual("dataset", exp.FindDescendantRecursive<DatasetName>().ToString());
-            Assert.AreEqual("table", exp.FindDescendantRecursive<TableName>().ToString());
-            Assert.AreEqual("column", exp.FindDescendantRecursive<ColumnName>().ToString());
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().ToString());
         }
 
         [TestMethod]
         public void ColumnNameWithSchemaAndTableNameTest()
         {
-            var sql = "schema.table.column";
-            var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("schema.table.column", exp.ToString());
-            Assert.AreEqual("schema", exp.FindDescendantRecursive<SchemaName>().ToString());
-            Assert.AreEqual("table", exp.FindDescendantRecursive<TableName>().ToString());
-            Assert.AreEqual("column", exp.FindDescendantRecursive<ColumnName>().ToString());
+            var sql = "schema1.table1.column1";
+            var exp = Parse(sql);
+            Assert.AreEqual("schema1.table1.column1", exp.ToString());
+            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().ToString());
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().ToString());
         }
 
         [TestMethod]
         public void ColumnNameWithSchemaAndTableNameAndDatasetPrefixTest()
         {
-            var sql = "dataset:schema.table.column";
-            var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("dataset:schema.table.column", exp.ToString());
+            var sql = "dataset:schema1.table1.column1";
+            var exp = Parse(sql);
+            Assert.AreEqual("dataset:schema1.table1.column1", exp.ToString());
             Assert.AreEqual("dataset", exp.FindDescendantRecursive<DatasetName>().ToString());
-            Assert.AreEqual("schema", exp.FindDescendantRecursive<SchemaName>().ToString());
-            Assert.AreEqual("table", exp.FindDescendantRecursive<TableName>().ToString());
-            Assert.AreEqual("column", exp.FindDescendantRecursive<ColumnName>().ToString());
+            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().ToString());
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().ToString());
         }
 
         [TestMethod]
@@ -88,62 +87,62 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             try
             {
-                var sql = "schema..column";
-                var exp = ExpressionTestHelper(sql);
+                var sql = "schema1..column1";
+                var exp = Parse(sql);
             }
             catch (ParserException ex)
             {
-                Assert.AreEqual(6, ex.Pos);
+                Assert.AreEqual(9, ex.Pos);
             }
         }
 
         [TestMethod]
         public void ColumnNameFourPartNameTest()
         {
-            var sql = "database.schema.table.column";
-            var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("database.schema.table.column", exp.ToString());
-            Assert.AreEqual("database", exp.FindDescendantRecursive<DatabaseName>().ToString());
-            Assert.AreEqual("schema", exp.FindDescendantRecursive<SchemaName>().ToString());
-            Assert.AreEqual("table", exp.FindDescendantRecursive<TableName>().ToString());
-            Assert.AreEqual("column", exp.FindDescendantRecursive<ColumnName>().ToString());
+            var sql = "database1.schema1.table1.column1";
+            var exp = Parse(sql);
+            Assert.AreEqual("database1.schema1.table1.column1", exp.ToString());
+            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().ToString());
+            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().ToString());
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().ToString());
         }
 
         [TestMethod]
         public void ColumnNameFourPartNameAndDatasetPrefixTest()
         {
-            var sql = "dataset:database.schema.table.column";
-            var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("dataset:database.schema.table.column", exp.ToString());
+            var sql = "dataset:database1.schema1.table1.column1";
+            var exp = Parse(sql);
+            Assert.AreEqual("dataset:database1.schema1.table1.column1", exp.ToString());
             Assert.AreEqual("dataset", exp.FindDescendantRecursive<DatasetName>().ToString());
-            Assert.AreEqual("database", exp.FindDescendantRecursive<DatabaseName>().ToString());
-            Assert.AreEqual("schema", exp.FindDescendantRecursive<SchemaName>().ToString());
-            Assert.AreEqual("table", exp.FindDescendantRecursive<TableName>().ToString());
-            Assert.AreEqual("column", exp.FindDescendantRecursive<ColumnName>().ToString());
+            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().ToString());
+            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().ToString());
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().ToString());
         }
 
         [TestMethod]
         public void ColumnNameFourPartNameAndDatasetPrefixWhitespacesTest()
         {
-            var sql = "dataset : database . schema . table . column";
-            var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("dataset : database . schema . table . column", exp.ToString());
+            var sql = "dataset : database1 . schema1 . table1 . column1";
+            var exp = Parse(sql);
+            Assert.AreEqual("dataset : database1 . schema1 . table1 . column1", exp.ToString());
             Assert.AreEqual("dataset", exp.FindDescendantRecursive<DatasetName>().ToString());
-            Assert.AreEqual("database", exp.FindDescendantRecursive<DatabaseName>().ToString());
-            Assert.AreEqual("schema", exp.FindDescendantRecursive<SchemaName>().ToString());
-            Assert.AreEqual("table", exp.FindDescendantRecursive<TableName>().ToString());
-            Assert.AreEqual("column", exp.FindDescendantRecursive<ColumnName>().ToString());
+            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().ToString());
+            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().ToString());
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().ToString());
         }
 
         [TestMethod]
         public void ColumnNameFourPartNameWithMissingSchemaNameTest()
         {
-            var sql = "database..table.column";
-            var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("database..table.column", exp.ToString());
-            Assert.AreEqual("database", exp.FindDescendantRecursive<DatabaseName>().ToString());
-            Assert.AreEqual("table", exp.FindDescendantRecursive<TableName>().ToString());
-            Assert.AreEqual("column", exp.FindDescendantRecursive<ColumnName>().ToString());
+            var sql = "database1..table1.column1";
+            var exp = Parse(sql);
+            Assert.AreEqual("database1..table1.column1", exp.ToString());
+            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().ToString());
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().ToString());
         }
 
     }

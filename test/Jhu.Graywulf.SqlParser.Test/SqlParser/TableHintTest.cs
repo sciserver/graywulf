@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.SqlParser.Test
         [TestMethod]
         public void SimpleTableTest()
         {
-            var sql = "SELECT column FROM table WITH(NOLOCK)";
+            var sql = "SELECT column1 FROM table1 WITH(NOLOCK)";
 
             var hints = TableHintTestHelper(sql);
 
@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.SqlParser.Test
         [TestMethod]
         public void SimpleTableWithAliasTest()
         {
-            var sql = "SELECT column FROM table t WITH( NOLOCK)";
+            var sql = "SELECT column1 FROM table1 t WITH( NOLOCK)";
 
             var hints = TableHintTestHelper(sql);
 

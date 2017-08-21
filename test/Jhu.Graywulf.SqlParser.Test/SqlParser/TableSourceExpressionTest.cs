@@ -21,21 +21,21 @@ namespace Jhu.Graywulf.SqlParser.Test
         [TestMethod]
         public void SimpleTableTest()
         {
-            var sql = "SELECT column FROM table";
+            var sql = "SELECT column1 FROM table1";
 
             var exp = ExpressionTestHelper(sql);
 
-            Assert.AreEqual("table", exp.ToString());
+            Assert.AreEqual("table1", exp.ToString());
         }
 
         [TestMethod]
         public void SimpleTableWithAliasTest()
         {
-            var sql = "SELECT column FROM table t";
+            var sql = "SELECT column1 FROM table1 t";
 
             var exp = ExpressionTestHelper(sql);
 
-            Assert.AreEqual("table t", exp.ToString());
+            Assert.AreEqual("table1 t", exp.ToString());
             Assert.AreEqual("t", exp.FindDescendantRecursive<TableAlias>().ToString());
         }
 

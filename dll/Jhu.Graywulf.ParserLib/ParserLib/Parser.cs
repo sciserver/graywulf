@@ -42,6 +42,12 @@ namespace Jhu.Graywulf.ParserLib
 
         public abstract Token Execute(string code);
 
+        public T Execute<T>(string code)
+            where T : Token, new()
+        {
+            return (T)Execute(new T(), code);
+        }
+
         public Token Execute(Token rootToken, string code)
         {
             this.pos = 0;

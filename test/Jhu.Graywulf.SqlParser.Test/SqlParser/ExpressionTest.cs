@@ -60,14 +60,14 @@ namespace Jhu.Graywulf.SqlParser.Test
         [TestMethod]
         public void FullColumnNameTest()
         {
-            var sql = "dataset:database.schema.table.column";
+            var sql = "dataset:database1.schema1.table1.column1";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("dataset:database.schema.table.column", exp.ToString());
+            Assert.AreEqual("dataset:database1.schema1.table1.column1", exp.ToString());
             Assert.AreEqual("dataset", exp.FindDescendantRecursive<DatasetName>().ToString());
-            Assert.AreEqual("database", exp.FindDescendantRecursive<DatabaseName>().ToString());
-            Assert.AreEqual("schema", exp.FindDescendantRecursive<SchemaName>().ToString());
-            Assert.AreEqual("table", exp.FindDescendantRecursive<TableName>().ToString());
-            Assert.AreEqual("column", exp.FindDescendantRecursive<ColumnName>().ToString());
+            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().ToString());
+            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().ToString());
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().ToString());
         }
 
         [TestMethod]
@@ -98,12 +98,12 @@ namespace Jhu.Graywulf.SqlParser.Test
         [TestMethod]
         public void UnaryOperatorWithColumnIdentifierTest()
         {
-            var sql = "-table.column";
+            var sql = "-table1.column1";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("-table.column", exp.ToString());
+            Assert.AreEqual("-table1.column1", exp.ToString());
             Assert.AreEqual("-", exp.FindDescendantRecursive<UnaryOperator>().FindDescendantRecursive<Minus>().ToString());
-            Assert.AreEqual("table", exp.FindDescendantRecursive<TableName>().ToString());
-            Assert.AreEqual("column", exp.FindDescendantRecursive<ColumnName>().ToString());
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().ToString());
         }
 
         [TestMethod]
@@ -172,7 +172,7 @@ namespace Jhu.Graywulf.SqlParser.Test
         [TestMethod]
         public void ComplexExpressionTest()
         {
-            var sql = "(a + table.b) * 2 / ((SIN(c) | d) & ~2)";
+            var sql = "(a + table1.b) * 2 / ((SIN(c) | d) & ~2)";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.ToString());
         }

@@ -218,8 +218,8 @@ namespace Jhu.Graywulf.SqlParser.Test
         [TestMethod]
         public void GenerateWhereClauseSpecificToTable_JoinedTablesNoPredicatesTest()
         {
-            var sql = @"
-SELECT Title, Name
+            var sql = 
+@"SELECT Title, Name
 FROM Book
 INNER JOIN BookAuthor ON BookAuthor.BookID = Book.ID
 INNER JOIN Author ON Author.ID = BookAuthor.AuthorID";
@@ -232,8 +232,8 @@ INNER JOIN Author ON Author.ID = BookAuthor.AuthorID";
         [TestMethod]
         public void GenerateWhereClauseSpecificToTable_JoinedTablesWherePredicateTest()
         {
-            var sql = @"
-SELECT Title, Name
+            var sql = 
+@"SELECT Title, Name
 FROM Book
 INNER JOIN BookAuthor ON BookAuthor.BookID = Book.ID
 INNER JOIN Author ON Author.ID = BookAuthor.AuthorID
@@ -247,8 +247,8 @@ WHERE Book.ID = 6";
         [TestMethod]
         public void GenerateWhereClauseSpecificToTable_JoinedTablesWherePredicatesTest()
         {
-            var sql = @"
-SELECT Title, Name
+            var sql = 
+@"SELECT Title, Name
 FROM Book
 INNER JOIN BookAuthor ON BookAuthor.BookID = Book.ID
 INNER JOIN Author ON Author.ID = BookAuthor.AuthorID
@@ -264,8 +264,8 @@ WHERE Book.ID = 6 AND Author.ID = 3";
         [TestMethod]
         public void GenerateWhereClauseSpecificToTable_JoinedTablesOnPredicatesTest()
         {
-            var sql = @"
-SELECT Title, Name
+            var sql = 
+@"SELECT Title, Name
 FROM Book
 INNER JOIN BookAuthor ON BookAuthor.BookID = Book.ID AND Book.ID = 6
 INNER JOIN Author ON Author.ID = BookAuthor.AuthorID
@@ -281,8 +281,8 @@ WHERE Author.ID = 3";
         [TestMethod]
         public void GenerateWhereClauseSpecificToTable_JoinedTablesOnPredicates2Test()
         {
-            var sql = @"
-SELECT Title, Name
+            var sql = 
+@"SELECT Title, Name
 FROM Book
 INNER JOIN BookAuthor ON BookAuthor.BookID = Book.ID AND Book.ID = 6
 INNER JOIN Author ON Author.ID = BookAuthor.AuthorID
@@ -298,8 +298,8 @@ WHERE Book.ID IN (3, 6)";
         [TestMethod]
         public void GenerateWhereClauseSpecificToTable_JoinedTablesOnPredicates3Test()
         {
-            var sql = @"
-SELECT a.Title, b.ID
+            var sql = 
+@"SELECT a.Title, b.ID
 FROM Book a
 INNER JOIN Book b ON a.ID = b.ID
 WHERE a.ID = 3";

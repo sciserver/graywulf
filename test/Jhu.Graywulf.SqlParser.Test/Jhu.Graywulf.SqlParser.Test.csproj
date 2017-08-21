@@ -52,6 +52,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SqlParser\ArithmeticOperatorTest.cs" />
+    <Compile Include="SqlParser\CursorTest.cs" />
+    <Compile Include="SqlParser\ThrowStatementTest.cs" />
+    <Compile Include="SqlParser\TryCatchStatementTest.cs" />
     <Compile Include="SqlParser\IfStatementTest.cs" />
     <Compile Include="SqlParser\WhileStatementTest.cs" />
     <Compile Include="SqlParser\BitwiseOperatorTest.cs" />

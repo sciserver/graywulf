@@ -24,6 +24,15 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Symbol> BitwiseOr = () => @"|";
         public static Expression<Symbol> BitwiseXor = () => @"^";
 
+        public static Expression<Symbol> PlusEquals = () => @"+=";
+        public static Expression<Symbol> MinusEquals = () => @"-=";
+        public static Expression<Symbol> MulEquals = () => @"*=";
+        public static Expression<Symbol> DivEquals = () => @"/=";
+        public static Expression<Symbol> ModEquals = () => @"%=";
+        public static Expression<Symbol> AndEquals = () => @"&=";
+        public static Expression<Symbol> XorEquals = () => @"^=";
+        public static Expression<Symbol> OrEquals = () => @"|=";
+
         public static Expression<Symbol> Equals1 = () => @"=";
         public static Expression<Symbol> Equals2 = () => @"==";
         public static Expression<Symbol> LessOrGreaterThan = () => @"<>";
@@ -115,14 +124,13 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Rule> Expression = () =>
             Sequence
             (
+                May(UnaryOperator),
+                May(CommentOrWhitespace),
                 Must
                 (
                     ExpressionBrackets,
                     UdtFunctionCall,
                     FunctionCall,
-                    Sequence(UnaryOperator, May(CommentOrWhitespace), HexLiteral),
-                    Sequence(UnaryOperator, May(CommentOrWhitespace), Number),
-                    Sequence(UnaryOperator, May(CommentOrWhitespace), AnyVariable),
                     HexLiteral,
                     Number,
                     AnyVariable,
@@ -132,10 +140,12 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 ),
                 May
                 (
-                    Must
+                    Sequence
                     (
-                        Sequence(May(CommentOrWhitespace), ArithmeticOperator, May(CommentOrWhitespace), Expression),
-                        Sequence(May(CommentOrWhitespace), BitwiseOperator, May(CommentOrWhitespace), Expression)
+                        May(CommentOrWhitespace),
+                        Must(ArithmeticOperator, BitwiseOperator),
+                        May(CommentOrWhitespace),
+                        Expression
                     )
                 )
             );
@@ -332,7 +342,16 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 Sequence
                 (
                     // Optional dataset prefix
-                    May(Sequence(DatasetName, May(CommentOrWhitespace), Colon, May(CommentOrWhitespace))),
+                    May
+                    (
+                        Sequence
+                        (
+                            DatasetName, 
+                            May(CommentOrWhitespace), 
+                            Colon, 
+                            May(CommentOrWhitespace)
+                        )
+                    ),
                     // Original column name syntax
                     Must
                     (
@@ -499,16 +518,17 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 ContinueStatement,
                 ReturnStatement,
                 IfStatement,
-                ThrowStatement,
                 TryCatchStatement,
+                ThrowStatement,
 
                 DeclareCursorStatement,
-                DeclareVariableStatement,
-                CursorOperationStatement,
                 SetCursorStatement,
-                SetVariableStatement,
+                CursorOperationStatement,
                 FetchStatement,
 
+                DeclareVariableStatement,              
+                SetVariableStatement,
+                
                 CreateTableStatement,
                 DropTableStatement,
                 TruncateTableStatement,
@@ -587,7 +607,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 Keyword("THROW"),
                 May(
                     Sequence(
-                        May(CommentOrWhitespace),
+                        CommentOrWhitespace,
                         Must(Number, Variable),
                         May(CommentOrWhitespace),
                         Comma,
@@ -673,9 +693,41 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 CommentOrWhitespace,
                 Variable,
                 May(CommentOrWhitespace),
-                Equals1,
+                Must(
+                    Equals1,
+                    PlusEquals,
+                    MinusEquals,
+                    MulEquals,
+                    DivEquals,
+                    ModEquals,
+                    AndEquals,
+                    XorEquals,
+                    OrEquals
+                ),
                 May(CommentOrWhitespace),
                 Expression
+            );
+
+        public static Expression<Rule> DeclareCursorStatement = () =>
+            Sequence
+            (
+                Keyword("DECLARE"),
+                CommentOrWhitespace,
+                Must(Cursor, Variable),
+                CommentOrWhitespace,
+                CursorDefinition
+            );
+
+        public static Expression<Rule> SetCursorStatement = () =>
+            Sequence
+            (
+                Keyword("SET"),
+                CommentOrWhitespace,
+                Variable,
+                May(CommentOrWhitespace),
+                Equals1,
+                May(CommentOrWhitespace),
+                CursorDefinition
             );
 
         public static Expression<Rule> CursorDefinition = () =>
@@ -700,16 +752,6 @@ FOR select_statement
       }
       */
 
-        public static Expression<Rule> DeclareCursorStatement = () =>
-            Sequence
-            (
-                Keyword("DECLARE"),
-                CommentOrWhitespace,
-                Cursor,
-                CommentOrWhitespace,
-                CursorDefinition
-            );
-
         public static Expression<Rule> CursorOperationStatement = () =>
             Sequence
             (
@@ -717,20 +759,7 @@ FOR select_statement
                 CommentOrWhitespace,
                 Must(Cursor, Variable)
             );
-
-        public static Expression<Rule> SetCursorStatement = () =>
-            Sequence
-            (
-                Keyword("SET"),
-                CommentOrWhitespace,
-                Variable,
-                May(CommentOrWhitespace),
-                Equals1,
-                May(CommentOrWhitespace),
-                CursorDefinition
-            );
-
-
+        
         public static Expression<Rule> FetchStatement = () =>
             Sequence
             (
@@ -747,6 +776,7 @@ FOR select_statement
                         Sequence
                         (
                             Must(Keyword("ABSOLUTE"), Keyword("RELATIVE")),
+                            CommentOrWhitespace,
                             Must(Number, Variable)
                         )
                     )
