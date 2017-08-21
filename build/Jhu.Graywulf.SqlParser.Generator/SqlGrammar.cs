@@ -128,6 +128,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 May(CommentOrWhitespace),
                 Must
                 (
+                    Subquery,
                     ExpressionBrackets,
                     UdtFunctionCall,
                     FunctionCall,
@@ -528,6 +529,8 @@ namespace Jhu.Graywulf.SqlParser.Generator
 
                 DeclareVariableStatement,              
                 SetVariableStatement,
+
+                DeclareTableStatement,
                 
                 CreateTableStatement,
                 DropTableStatement,
@@ -537,6 +540,11 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 DropIndexStatement,
 
                 SelectStatement
+                // InsertStatement
+                // UpdateStatement
+                // DeleteStatement
+                // MergeStatement
+                // CommonTableExpression
             );
 
         #endregion
@@ -795,6 +803,22 @@ FOR select_statement
                         VariableList
                     )
                 )
+            );
+
+        public static Expression<Rule> DeclareTableStatement = () =>
+            Sequence
+            (
+                Keyword("DECLARE"),
+                CommentOrWhitespace,
+                Variable,
+                CommentOrWhitespace,
+                Keyword("TABLE"),
+                May(CommentOrWhitespace),
+                BracketOpen,
+                May(CommentOrWhitespace),
+                TableDefinitionList,
+                May(CommentOrWhitespace),
+                BracketClose
             );
 
         #endregion
@@ -1124,7 +1148,9 @@ FOR select_statement
                 Keyword("CREATE"),
                 CommentOrWhitespace,
                 Keyword("TABLE"),
+                CommentOrWhitespace,
                 TableOrViewName,
+                May(CommentOrWhitespace),
                 BracketOpen,
                 May(CommentOrWhitespace),
                 TableDefinitionList,
@@ -1132,16 +1158,18 @@ FOR select_statement
                 BracketClose
             );
 
+        // TODO: create table could be extended with options and file group part
+
         public static Expression<Rule> TableDefinitionList = () =>
-            Sequence
+        Sequence
+        (
+            Must
             (
-                Must
-                (
-                    ColumnDefinition,
-                    TableConstraint
-                ),
-                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), TableDefinitionList))
-            );
+                ColumnDefinition,
+                TableConstraint
+            ),
+            May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), TableDefinitionList))
+        );
 
         public static Expression<Rule> ColumnDefinition = () =>
             Sequence
@@ -1171,17 +1199,19 @@ FOR select_statement
                 )
             );
 
-        public static Expression<Rule> ConstraintNameSpecification = () =>
-            Sequence(Keyword("CONSTRAINT"), CommentOrWhitespace, ConstraintName, CommentOrWhitespace);
+        // TODO: add computed columns
 
         public static Expression<Rule> ColumnDefaultDefinition = () =>
             Sequence
             (
                 May(ConstraintNameSpecification),
                 Keyword("DEFAULT"),
-                CommentOrWhitespace,
+                May(CommentOrWhitespace),
                 Expression
             );
+
+        public static Expression<Rule> ConstraintNameSpecification = () =>
+            Sequence(Keyword("CONSTRAINT"), May(CommentOrWhitespace), ConstraintName, May(CommentOrWhitespace));
 
         public static Expression<Rule> ColumnIdentityDefinition = () =>
             Sequence
@@ -1228,13 +1258,15 @@ FOR select_statement
                 )
             );
 
+        // TODO: any other constraints?
+
         public static Expression<Rule> DropTableStatement = () =>
             Sequence
             (
                 Keyword("DROP"),
                 CommentOrWhitespace,
                 Keyword("TABLE"),
-                CommentOrWhitespace,
+                May(CommentOrWhitespace),
                 TableOrViewName
             );
 
@@ -1244,7 +1276,7 @@ FOR select_statement
                 Keyword("TRUNCATE"),
                 CommentOrWhitespace,
                 Keyword("TABLE"),
-                CommentOrWhitespace,
+                May(CommentOrWhitespace),
                 TableOrViewName
             );
 
@@ -1260,12 +1292,13 @@ FOR select_statement
                 May(Sequence(CommentOrWhitespace, Must(Keyword("CLUSTERED"), Keyword("NONCLUSTERED")))),
                 CommentOrWhitespace,
                 Keyword("INDEX"),
-                CommentOrWhitespace,
+                May(CommentOrWhitespace),
                 IndexName,
-                CommentOrWhitespace,
+                May(CommentOrWhitespace),
                 Keyword("ON"),
-                CommentOrWhitespace,
+                May(CommentOrWhitespace),
                 TableOrViewName,
+                May(CommentOrWhitespace),
                 BracketOpen,
                 May(CommentOrWhitespace),
                 IndexColumnList,
@@ -1298,7 +1331,7 @@ FOR select_statement
             Sequence
             (
                 ColumnName,
-                May(Sequence(CommentOrWhitespace, Must(Keyword("ASC"), Keyword("DESC"))))
+                May(Sequence(May(CommentOrWhitespace), Must(Keyword("ASC"), Keyword("DESC"))))
             );
 
         public static Expression<Rule> IncludedColumnList = () =>
@@ -1314,11 +1347,11 @@ FOR select_statement
                 Keyword("DROP"),
                 CommentOrWhitespace,
                 Keyword("INDEX"),
-                CommentOrWhitespace,
+                May(CommentOrWhitespace),
                 IndexName,
-                CommentOrWhitespace,
+                May(CommentOrWhitespace),
                 Keyword("ON"),
-                CommentOrWhitespace,
+                May(CommentOrWhitespace),
                 TableOrViewName
             );
 
