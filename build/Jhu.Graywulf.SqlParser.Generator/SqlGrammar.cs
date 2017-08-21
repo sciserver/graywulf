@@ -543,8 +543,8 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 DropIndexStatement,
 
                 SelectStatement,
-                InsertStatement
-            // UpdateStatement
+                InsertStatement,
+                UpdateStatement
             // DeleteStatement
             // MergeStatement
             // CommonTableExpression
@@ -704,19 +704,22 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 CommentOrWhitespace,
                 Variable,
                 May(CommentOrWhitespace),
-                Must(
-                    Equals1,
-                    PlusEquals,
-                    MinusEquals,
-                    MulEquals,
-                    DivEquals,
-                    ModEquals,
-                    AndEquals,
-                    XorEquals,
-                    OrEquals
-                ),
+                ValueAssignmentOperator,
                 May(CommentOrWhitespace),
                 Expression
+            );
+
+        public static Expression<Rule> ValueAssignmentOperator = () =>
+            Must(
+                Equals1,
+                PlusEquals,
+                MinusEquals,
+                MulEquals,
+                DivEquals,
+                ModEquals,
+                AndEquals,
+                XorEquals,
+                OrEquals
             );
 
         public static Expression<Rule> DeclareCursorStatement = () =>
@@ -907,7 +910,24 @@ FOR select_statement
         #region Into clause
 
         public static Expression<Rule> IntoClause = () =>
-            Sequence(Keyword("INTO"), May(CommentOrWhitespace), TableOrViewName);
+            Sequence
+            (
+                Keyword("INTO"),
+                May(CommentOrWhitespace),
+                IntoTableSpecification
+            );
+
+        public static Expression<Rule> IntoTableSpecification = () =>
+            Sequence
+            (
+                Must
+                (
+                    Variable,
+                    TableOrViewName
+                    // TODO: temp table?
+                ),
+                May(Sequence(May(CommentOrWhitespace), TableHintClause))
+            );
 
         #endregion
         #region From clause, table sources and joins
@@ -1151,7 +1171,14 @@ FOR select_statement
             Sequence
             (
                 Keyword("INSERT"),
-                InsertIntoClause,
+                May(CommentOrWhitespace),
+                Must
+                (
+                    // with or without the INTO keyword
+                    IntoClause,
+                    IntoTableSpecification
+                ),
+                May(CommentOrWhitespace),
                 May(
                     Sequence
                     (
@@ -1172,20 +1199,6 @@ FOR select_statement
                     // ExecuteStatement  TODO
                     Sequence(Keyword("DEFAULT"), CommentOrWhitespace, Keyword("VALUES"))
                 )
-            );
-
-        public static Expression<Rule> InsertIntoClause = () =>
-            Sequence
-            (
-                May(Sequence(CommentOrWhitespace, Keyword("INTO"))),
-                May(CommentOrWhitespace),
-                Must
-                (
-                    Variable,
-                    TableOrViewName
-                    // TODO: temp table?
-                ),
-                May(TableHintClause)
             );
 
         public static Expression<Rule> InsertColumnList = () =>
@@ -1236,12 +1249,61 @@ FOR select_statement
 
         #region UPDATE statement
 
-        public static Expression<Rule> UpdateStatement = () => UpdateSpecification;
-
-        public static Expression<Rule> UpdateSpecification = () =>
+        public static Expression<Rule> UpdateStatement = () => 
             Sequence
             (
-                Keyword("UPDATE")
+                Keyword("UPDATE"),
+                May(CommentOrWhitespace),
+                Must
+                (
+                    Variable,
+                    TableOrViewName
+                // TODO: temp table?
+                ),
+                May(Sequence(May(CommentOrWhitespace), TableHintClause)),
+                May(CommentOrWhitespace),
+                Keyword("SET"),
+                May(CommentOrWhitespace),
+                UpdateSetList,
+                // TODO: OUTPUT clause
+                May(Sequence(May(CommentOrWhitespace), FromClause)),
+                May(Sequence(May(CommentOrWhitespace), WhereClause))
+            );
+
+        public static Expression<Rule> UpdateSetList = () =>
+            Sequence
+            (
+                UpdateSetColumn,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), UpdateSetList))
+            );
+
+        public static Expression<Rule> UpdateSetColumn = () =>
+            Sequence
+            (
+                Must
+                (
+                    Sequence
+                    (
+                        Variable,
+                        May(CommentOrWhitespace),
+                        Equals1,
+                        May(CommentOrWhitespace),
+                        ColumnName
+                    ),
+                    Must
+                    (
+                        Variable,
+                        ColumnName
+                    )
+                ),
+                May(CommentOrWhitespace),
+                ValueAssignmentOperator,
+                May(CommentOrWhitespace),
+                Must
+                (
+                    Keyword("DEFAULT"),
+                    Expression
+                )
             );
 
         #endregion

@@ -84,5 +84,18 @@ CROSS JOIN test3
 UNION SELECT * FROM test4";
             new SqlParser().Execute<InsertStatement>(sql);
         }
+
+        [TestMethod]
+        public void TableHintTest()
+        {
+            var sql = @"INSERT test WITH(TABLOCKX) SELECT ID FROM test2";
+            new SqlParser().Execute<InsertStatement>(sql);
+
+            sql = @"INSERT test WITH ( NOLOCK , TABLOCKX ) SELECT ID FROM test2";
+            new SqlParser().Execute<InsertStatement>(sql);
+
+            sql = @"INSERT test WITH(NOLOCK,TABLOCKX)SELECT ID FROM test2";
+            new SqlParser().Execute<InsertStatement>(sql);
+        }
     }
 }
