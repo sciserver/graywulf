@@ -27,6 +27,9 @@ namespace Jhu.Graywulf.SqlParser
         {
             var sql = @"SELECT * FROM @test";
             new SqlParser().Execute<SelectStatement>(sql);
+
+            sql = @"SELECT * FROM @test AS t";
+            new SqlParser().Execute<SelectStatement>(sql);
         }
     }
 }

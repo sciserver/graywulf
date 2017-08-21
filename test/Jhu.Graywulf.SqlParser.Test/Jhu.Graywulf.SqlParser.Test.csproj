@@ -10,7 +10,7 @@
     <ProjectGuid>{54517A77-C93A-424E-A6B3-C74973632995}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jhu.Graywulf.SqlParser.Test</RootNamespace>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
     <AssemblyName>Jhu.Graywulf.SqlParser.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -54,6 +54,7 @@
     <Compile Include="SqlParser\ArithmeticOperatorTest.cs" />
     <Compile Include="SqlParser\CreateIndexTest.cs" />
     <Compile Include="SqlParser\CreateTableTest.cs" />
+    <Compile Include="SqlParser\InsertStatementTest.cs" />
     <Compile Include="SqlParser\TableVariableTest.cs" />
     <Compile Include="SqlParser\ScalarVariableTest.cs" />
     <Compile Include="SqlParser\CursorTest.cs" />
