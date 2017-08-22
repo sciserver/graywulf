@@ -368,7 +368,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
             );
 
         #endregion
-        #region Data type
+        #region Data types
 
         public static Expression<Rule> DataType = () =>
             Sequence
@@ -544,10 +544,11 @@ namespace Jhu.Graywulf.SqlParser.Generator
 
                 SelectStatement,
                 InsertStatement,
-                UpdateStatement
-            // DeleteStatement
-            // MergeStatement
-            // CommonTableExpression
+                UpdateStatement,
+                DeleteStatement,
+                // TODO: MergeStatement
+
+                CommonTableExpression
             );
 
         #endregion
@@ -829,14 +830,45 @@ FOR select_statement
 
         #endregion
 
+        #region Common table expressions
+
+        public static Expression<Rule> CommonTableExpression = () =>
+            Sequence
+            (
+                Keyword("WITH"),
+                CommonTableSpecificationList
+            );
+
+        public static Expression<Rule> CommonTableSpecificationList = () =>
+            Sequence
+            (
+                CommonTableSpecification,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), CommonTableSpecificationList))
+            );
+
+        public static Expression<Rule> CommonTableSpecification = () =>
+            Sequence
+            (
+                TableAlias,
+                May(Sequence(May(CommentOrWhitespace), ColumnListBrackets)),
+                May(CommentOrWhitespace),
+                Keyword("AS"),
+                May(CommentOrWhitespace),
+                QueryExpressionBrackets
+            );
+
+        #endregion
+
         #region SELECT statement and query expressions (combinations of selects)
 
         public static Expression<Rule> SelectStatement = () =>
             Sequence
             (
-                QueryExpression,
+                May(CommonTableExpression),
                 May(CommentOrWhitespace),
-                May(OrderByClause)
+                QueryExpression,
+                May(Sequence(May(CommentOrWhitespace), OrderByClause)),
+                May(Sequence(May(CommentOrWhitespace), QueryHintClause))
             );
 
         public static Expression<Rule> QueryExpression = () =>
@@ -867,13 +899,14 @@ FOR select_statement
                 Keyword("SELECT"),
                 May(Sequence(CommentOrWhitespace, Must(Keyword("ALL"), Keyword("DISTINCT")))),
                 May(Sequence(CommentOrWhitespace, TopExpression)),
-                May(CommentOrWhitespace), SelectList,
-                May(Sequence(CommentOrWhitespace, IntoClause)),
-                May(Sequence(CommentOrWhitespace, FromClause)),
-                May(Sequence(CommentOrWhitespace, WhereClause)),
-                May(Sequence(CommentOrWhitespace, GroupByClause)),
-                May(Sequence(CommentOrWhitespace, HavingClause)),
-                May(Sequence(CommentOrWhitespace, OrderByClause))
+                May(CommentOrWhitespace),
+                SelectList,
+                May(Sequence(May(CommentOrWhitespace), IntoClause)),
+                May(Sequence(May(CommentOrWhitespace), FromClause)),
+                May(Sequence(May(CommentOrWhitespace), WhereClause)),
+                May(Sequence(May(CommentOrWhitespace), GroupByClause)),
+                May(Sequence(May(CommentOrWhitespace), HavingClause)),
+                May(Sequence(May(CommentOrWhitespace), OrderByClause))
             );
 
         #endregion
@@ -914,17 +947,17 @@ FOR select_statement
             (
                 Keyword("INTO"),
                 May(CommentOrWhitespace),
-                IntoTableSpecification
+                TargetTableSpecification
             );
 
-        public static Expression<Rule> IntoTableSpecification = () =>
+        public static Expression<Rule> TargetTableSpecification = () =>
             Sequence
             (
                 Must
                 (
                     Variable,
                     TableOrViewName
-                    // TODO: temp table?
+                // TODO: temp table?
                 ),
                 May(Sequence(May(CommentOrWhitespace), TableHintClause))
             );
@@ -986,6 +1019,7 @@ FOR select_statement
                 FunctionTableSource,
                 SimpleTableSource,
                 VariableTableSource,
+                VariableTableSource,
                 SubqueryTableSource
             );
 
@@ -1045,35 +1079,6 @@ FOR select_statement
                     RepeatSeed,
                     May(CommentOrWhitespace), BracketClose)
                 )
-            );
-
-        public static Expression<Rule> TableHintClause = () =>
-            Sequence
-            (
-                Keyword("WITH"),
-                May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace),
-                TableHintList,
-                May(CommentOrWhitespace), BracketClose
-            );
-
-        public static Expression<Rule> TableHintList = () =>
-            Sequence
-            (
-                TableHint,
-                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), TableHintList))
-            );
-
-        public static Expression<Rule> TableHint = () =>
-            Must(
-                Sequence(Identifier, FunctionArguments),
-                Identifier
-            );
-
-        public static Expression<Rule> IndexValueList = () =>
-            Sequence
-            (
-                IndexValue,
-                Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), IndexValueList)
             );
 
         public static Expression<Rule> Subquery = () =>
@@ -1150,6 +1155,7 @@ FOR select_statement
                 Keyword("BY"),
                 May(CommentOrWhitespace),
                 OrderByList
+            // TODO: add OFFSET .. FETCH
             );
 
         public static Expression<Rule> OrderByList = () =>
@@ -1164,30 +1170,90 @@ FOR select_statement
             );
 
         #endregion
+        #region Table and query hints
+
+        public static Expression<Rule> TableHintClause = () =>
+            Sequence
+            (
+                Keyword("WITH"),
+                May(CommentOrWhitespace),
+                BracketOpen, 
+                May(CommentOrWhitespace),
+                TableHintList,
+                May(CommentOrWhitespace), 
+                BracketClose
+            );
+
+        public static Expression<Rule> TableHintList = () =>
+            Sequence
+            (
+                TableHint,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), TableHintList))
+            );
+
+        public static Expression<Rule> TableHint = () =>
+            Must(
+                Sequence(Identifier, FunctionArguments),
+                Identifier
+            );
+
+        public static Expression<Rule> QueryHintClause = () =>
+            Sequence
+            (
+                Keyword("OPTION"),
+                May(CommentOrWhitespace), 
+                BracketOpen, 
+                May(CommentOrWhitespace),
+                QueryHintList,
+                May(CommentOrWhitespace), 
+                BracketClose
+            );
+
+        public static Expression<Rule> QueryHintList = () =>
+            Sequence
+            (
+                QueryHint,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), QueryHintList))
+            );
+        
+        public static Expression<Rule> QueryHint = () =>
+            Must(
+                Sequence(Identifier, FunctionArguments),
+                Sequence(Identifier, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Number),
+                Sequence(Identifier, CommentOrWhitespace, Number),
+                QueryHintIdentifierList,
+                Identifier
+            );
+
+        public static Expression<Rule> QueryHintIdentifierList = () =>
+            Sequence
+            (
+                Identifier,
+                May(Sequence(CommentOrWhitespace, Identifier))
+            );
+
+        #endregion
 
         #region INSERT statement
 
         public static Expression<Rule> InsertStatement = () =>
             Sequence
             (
+                May(CommonTableExpression),
+                May(CommentOrWhitespace),
                 Keyword("INSERT"),
                 May(CommentOrWhitespace),
                 Must
                 (
                     // with or without the INTO keyword
                     IntoClause,
-                    IntoTableSpecification
+                    TargetTableSpecification
                 ),
-                May(CommentOrWhitespace),
                 May(
                     Sequence
                     (
                         May(CommentOrWhitespace),
-                        BracketOpen,
-                        May(CommentOrWhitespace),
-                        InsertColumnList,
-                        May(CommentOrWhitespace),
-                        BracketClose
+                        ColumnListBrackets
                     )
                 ),
                 // TODO: add OUTPUT clause
@@ -1201,11 +1267,21 @@ FOR select_statement
                 )
             );
 
-        public static Expression<Rule> InsertColumnList = () =>
+        public static Expression<Rule> ColumnListBrackets = () =>
+            Sequence
+            (
+                BracketOpen,
+                May(CommentOrWhitespace),
+                ColumnList,
+                May(CommentOrWhitespace),
+                BracketClose
+            );
+
+        public static Expression<Rule> ColumnList = () =>
             Sequence
             (
                 ColumnName,
-                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), InsertColumnList))
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ColumnList))
             );
 
         public static Expression<Rule> ValuesClause = () =>
@@ -1249,25 +1325,22 @@ FOR select_statement
 
         #region UPDATE statement
 
-        public static Expression<Rule> UpdateStatement = () => 
+        public static Expression<Rule> UpdateStatement = () =>
             Sequence
             (
+                May(CommonTableExpression),
+                May(CommentOrWhitespace),
                 Keyword("UPDATE"),
                 May(CommentOrWhitespace),
-                Must
-                (
-                    Variable,
-                    TableOrViewName
-                // TODO: temp table?
-                ),
-                May(Sequence(May(CommentOrWhitespace), TableHintClause)),
+                TargetTableSpecification,
                 May(CommentOrWhitespace),
                 Keyword("SET"),
                 May(CommentOrWhitespace),
                 UpdateSetList,
                 // TODO: OUTPUT clause
                 May(Sequence(May(CommentOrWhitespace), FromClause)),
-                May(Sequence(May(CommentOrWhitespace), WhereClause))
+                May(Sequence(May(CommentOrWhitespace), WhereClause)),
+                May(Sequence(May(CommentOrWhitespace), QueryHintClause))
             );
 
         public static Expression<Rule> UpdateSetList = () =>
@@ -1315,7 +1388,17 @@ FOR select_statement
         public static Expression<Rule> DeleteSpecification = () =>
             Sequence
             (
-                Keyword("DELETE")
+                May(CommonTableExpression),
+                May(CommentOrWhitespace),
+                Keyword("DELETE"),
+                May(CommentOrWhitespace),
+                May(Keyword("FROM")),
+                May(CommentOrWhitespace),
+                TargetTableSpecification,
+                // TODO: OUTPUT clause
+                May(Sequence(May(CommentOrWhitespace), FromClause)),
+                May(Sequence(May(CommentOrWhitespace), WhereClause)),
+                May(Sequence(May(CommentOrWhitespace), QueryHintClause))
             );
 
         #endregion
