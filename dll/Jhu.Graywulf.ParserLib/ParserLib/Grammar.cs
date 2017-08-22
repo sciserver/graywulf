@@ -10,10 +10,6 @@ namespace Jhu.Graywulf.ParserLib
     /// </summary>
     public class Grammar
     {
-        
-
-        // ---
-
         public delegate string Symbol();
         public delegate string Terminal();
         public delegate string Whitespace();
@@ -41,6 +37,21 @@ namespace Jhu.Graywulf.ParserLib
         }
 
         public static Expression Keyword(string keyword)
+        {
+            return null;
+        }
+
+        public static Expression Inherit()
+        {
+            return null;
+        }
+
+        public static Expression Inherit(Expression parent)
+        {
+            return null;
+        }
+
+        public static Expression Inherit(Expression parent, Expression rule)
         {
             return null;
         }

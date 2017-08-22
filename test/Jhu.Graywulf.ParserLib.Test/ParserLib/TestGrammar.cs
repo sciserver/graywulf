@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.ParserLib.Test
 {
-    [Grammar(RootToken = "List")]
+    [Grammar(Namespace = "TestNS", RootToken = "TestNS.List")]
     class TestGrammar : Grammar
     {
         public static Expression<Symbol> Comma = () => @",";
@@ -36,6 +36,18 @@ namespace Jhu.Graywulf.ParserLib.Test
                         List
                     )
                 )
+            );
+
+        public static Expression<Rule> BaseRule1 = () =>
+            Sequence
+            (
+                Word, Comma, Word
+            );
+
+        public static Expression<Rule> BaseRule2 = () =>
+            Sequence
+            (
+                Word, Comma, Word
             );
     }
 }

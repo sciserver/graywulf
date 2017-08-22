@@ -120,4 +120,7 @@
   <data name="NotUnderstandableToken" xml:space="preserve">
     <value>Syntax Error: no understandable token found at ({0},{1}).</value>
   </data>
+  <data name="RuleExistsUseInherit" xml:space="preserve">
+    <value>The rule with the same name '{0}' exists in the inherited grammar '{1}'. Use and Inherit rule.</value>
+  </data>
 </root>

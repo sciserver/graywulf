@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="ParserLib\GeneratorTest.cs" />
     <Compile Include="ParserLib\GrammarInfoTest.cs" />
+    <Compile Include="ParserLib\InheritedGrammar.cs" />
     <Compile Include="ParserLib\TestGrammar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

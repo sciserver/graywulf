@@ -12,19 +12,21 @@ namespace Jhu.Graywulf.ParserLib
         private Type grammarType;
         private GrammarAttribute attributes;
 
-        protected Dictionary<string, FieldInfo> allProductions;
+        protected GrammarInfo inheritedGrammar;
 
+        protected Dictionary<string, FieldInfo> allRules;
+        
         protected Dictionary<string, FieldInfo> symbols;
         protected Dictionary<string, FieldInfo> terminals;
         protected Dictionary<string, FieldInfo> whitespaces;
         protected Dictionary<string, FieldInfo> comments;
         protected Dictionary<string, FieldInfo> rules;
-        
-        protected Dictionary<string, HashSet<string>> ruleDependencies;
-        protected HashSet<string> keywords;
-        protected GrammarInfo inheritedGrammar;
-        protected HashSet<string> inheritedRules;
 
+        protected HashSet<string> keywords;
+
+        protected HashSet<string> inheritedRules;
+        protected Dictionary<string, HashSet<string>> ruleDependencies;
+        
         public Type GrammarType
         {
             get { return grammarType; }
@@ -33,6 +35,11 @@ namespace Jhu.Graywulf.ParserLib
         public GrammarAttribute Attributes
         {
             get { return attributes; }
+        }
+
+        public GrammarInfo InheritedGrammar
+        {
+            get { return inheritedGrammar; }
         }
 
         public string ParserClassName
@@ -45,9 +52,9 @@ namespace Jhu.Graywulf.ParserLib
             get { return attributes.Namespace ?? grammarType.Namespace; }
         }
 
-        public Dictionary<string, FieldInfo> AllProductions
+        public Dictionary<string, FieldInfo> AllRules
         {
-            get { return allProductions; }
+            get { return allRules; }
         }
 
         public Dictionary<string, FieldInfo> Symbols
@@ -84,12 +91,7 @@ namespace Jhu.Graywulf.ParserLib
         {
             get { return keywords; }
         }
-
-        public GrammarInfo InheritedGrammar
-        {
-            get { return inheritedGrammar; }
-        }
-
+        
         public HashSet<string> InheritedRules
         {
             get { return inheritedRules; }
@@ -114,7 +116,7 @@ namespace Jhu.Graywulf.ParserLib
             this.grammarType = null;
             this.attributes = null;
 
-            this.allProductions = null;
+            this.allRules = null;
 
             this.symbols = null;
             this.terminals = null;
@@ -130,7 +132,7 @@ namespace Jhu.Graywulf.ParserLib
 
         private void CollectProductions()
         {
-            allProductions = new Dictionary<string, FieldInfo>();
+            allRules = new Dictionary<string, FieldInfo>();
 
             symbols = new Dictionary<string, FieldInfo>();
             terminals = new Dictionary<string, FieldInfo>();
@@ -146,27 +148,27 @@ namespace Jhu.Graywulf.ParserLib
                 if (f.FieldType == typeof(Expression<Grammar.Symbol>))
                 {
                     symbols.Add(f.Name, f);
-                    allProductions.Add(f.Name, f);
+                    allRules.Add(f.Name, f);
                 }
                 else if (f.FieldType == typeof(Expression<Grammar.Terminal>))
                 {
                     terminals.Add(f.Name, f);
-                    allProductions.Add(f.Name, f);
+                    allRules.Add(f.Name, f);
                 }
                 else if (f.FieldType == typeof(Expression<Grammar.Whitespace>))
                 {
                     whitespaces.Add(f.Name, f);
-                    allProductions.Add(f.Name, f);
+                    allRules.Add(f.Name, f);
                 }
                 else if (f.FieldType == typeof(Expression<Grammar.Comment>))
                 {
                     comments.Add(f.Name, f);
-                    allProductions.Add(f.Name, f);
+                    allRules.Add(f.Name, f);
                 }
                 else if (f.FieldType == typeof(Expression<Grammar.Rule>))
                 {
                     rules.Add(f.Name, f);
-                    allProductions.Add(f.Name, f);
+                    allRules.Add(f.Name, f);
                     ruleDependencies.Add(f.Name, new HashSet<string>());
                 }
             }
@@ -210,6 +212,13 @@ namespace Jhu.Graywulf.ParserLib
         private void CollectInheritedRules()
         {
             this.inheritedRules = new HashSet<string>();
+
+            // Check if the rule can be inherited from the parent grammar or not.
+            // In most cases it can be, but it there's anything in the production list
+            // that is overloaded, then inheritance is not possible and a new rule class
+            // needs to be generated.
+
+            // The ruleDependencies collection ...
 
             // Look for dependent non-terminals in inherited grammars
             // but not in the current grammar
@@ -287,67 +296,31 @@ namespace Jhu.Graywulf.ParserLib
             }
         }
 
-        public GrammarInfo FindProductionGrammar(string name)
+
+        /// <summary>
+        /// Find the first grammar in the ancestor chaing that defined the rule
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public GrammarInfo FindRuleGrammar(string name)
         {
-            if (allProductions.ContainsKey(name) || inheritedRules.Contains(name))
+            if (allRules.ContainsKey(name) || inheritedRules.Contains(name))
             {
                 return this;
             }
             else if (inheritedGrammar != null)
             {
-                return inheritedGrammar.FindProductionGrammar(name);
+                return inheritedGrammar.FindRuleGrammar(name);
             }
             else
             {
                 throw new InvalidOperationException();
             }
         }
-
-        /*
-        public Grammar FindSymbolsGrammar(string name)
+        
+        public GrammarInfo FindRuleGrammar(string name, bool includeInherited)
         {
-            if (symbols.ContainsKey(name))
-            {
-                return this;
-            }
-            else
-            {
-                foreach (Grammar g in EnumerateInheritedGrammars())
-                {
-                    if (g.Symbols.ContainsKey(name))
-                    {
-                        return g;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        public Grammar FindPatternsGrammar(string name)
-        {
-            if (patterns.ContainsKey(name))
-            {
-                return this;
-            }
-            else
-            {
-                foreach (Grammar g in EnumerateInheritedGrammars())
-                {
-                    if (g.Patterns.ContainsKey(name))
-                    {
-                        return g;
-                    }
-                }
-            }
-
-            return null;
-        }
-         * */
-
-        public GrammarInfo FindProductionGrammar(string name, bool includeInherited)
-        {
-            if (allProductions.ContainsKey(name) || (includeInherited && inheritedRules.Contains(name)))
+            if (allRules.ContainsKey(name) || (includeInherited && inheritedRules.Contains(name)))
             {
                 return this;
             }
@@ -355,7 +328,7 @@ namespace Jhu.Graywulf.ParserLib
             {
                 foreach (var g in EnumerateInheritedGrammars())
                 {
-                    if (g.allProductions.ContainsKey(name))
+                    if (g.allRules.ContainsKey(name))
                     {
                         return g;
                     }
@@ -365,11 +338,11 @@ namespace Jhu.Graywulf.ParserLib
             return null;
         }
 
-        public GrammarInfo FindProductionBaseGrammar(string name)
+        public GrammarInfo FindRuleBaseGrammar(string name)
         {
             foreach (var g in EnumerateInheritedGrammars())
             {
-                if (g.AllProductions.ContainsKey(name))
+                if (g.AllRules.ContainsKey(name))
                 {
                     return g;
                 }
@@ -378,19 +351,5 @@ namespace Jhu.Graywulf.ParserLib
             // Not found in base grammars
             return this;
         }
-
-        /*
-        public GrammarInfo FindRulesDefiningGrammar(string name)
-        {
-            foreach (var g in EnumerateInheritedGrammars())
-            {
-                if (g.Rules.ContainsKey(name))
-                {
-                    return g;
-                }
-            }
-
-            return null;
-        }*/
     }
 }

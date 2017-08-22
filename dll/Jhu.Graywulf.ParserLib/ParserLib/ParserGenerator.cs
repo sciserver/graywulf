@@ -15,7 +15,6 @@ namespace Jhu.Graywulf.ParserLib
     public class ParserGenerator
     {
         private int excount;
-        //private HashSet<string> inheritedRules;
 
         /// <summary>
         /// Executes the source code generation
@@ -24,10 +23,9 @@ namespace Jhu.Graywulf.ParserLib
         /// <param name="grammar"></param>
         public void Execute(TextWriter output, GrammarInfo grammar)
         {
-            this.excount = 0;
-            //this.inheritedRules = new HashSet<string>();
-
             var template = new StringBuilder(Templates.Parser);
+
+            this.excount = 0;
 
             template.Replace("[$Namespace]", grammar.Namespace);
             template.Replace("[$LibNamespace]", typeof(Token).Namespace);
@@ -211,7 +209,7 @@ namespace Jhu.Graywulf.ParserLib
             // Classes that have to be overloaded
             foreach (string name in grammar.InheritedRules)
             {
-                if (!grammar.AllProductions.ContainsKey(name))
+                if (!grammar.AllRules.ContainsKey(name))
                 {
                     sb.AppendLine(GenerateRuleClass(grammar, name));
                     sb.AppendLine();
@@ -231,41 +229,129 @@ namespace Jhu.Graywulf.ParserLib
             int tabs = 3;
             var resstr = "res";
 
-            var g = grammar.FindProductionGrammar(name, false);
+            var g = grammar.FindRuleGrammar(name, false);
             var exp = g.Rules[name].GetValue(null) as LambdaExpression;
+
             if (exp == null)
             {
                 // **** TODO
                 throw new ParserGeneratorException(String.Format("Rule '{0}' must be a lambda expression.", name));
             }
 
-            CodeStringBuilder code = new CodeStringBuilder();
+            var rule = exp.Body;
 
-            code.AppendLine(tabs, "bool res = true;");
-            code.AppendLine();
+            // Figure out whether this rule is inherited or not 
+            bool inherit;
+            bool overwrite;
+            GrammarInfo inheritedGrammar = null;
+            string inheritedRule = null;
+            string inheritedType;
 
-            code.Append(GenerateProductionMatch(tabs, grammar, exp.Body, resstr));
+            MethodInfo method = null;
+            Expression[] args = null;
 
-            code.AppendLine(tabs, "return res;");
-
-            // Figure out whether this rule is inherited or not      
-            string inherited;
-            g = grammar.FindProductionBaseGrammar(name);
-
-            if (g == grammar)
+            if (rule.NodeType == ExpressionType.Call)
             {
-                inherited = String.Format("{0}.Node", typeof(Token).Namespace);
+                method = ((MethodCallExpression)rule).Method;
+                args = ((MethodCallExpression)rule).Arguments.ToArray();
+            }
+
+            // There are four types of rule inheritance:
+            // 1. The rule is an Inherit() without parameters
+            //    The match class is inherited into the new namespace with the same name but the
+            //    rule is kept the original
+            // 2. The rule is an Inherit(oldrule)
+            //    The match class is inherited into the new namespace with a new name but the
+            //    rule is kept the original
+            // 3. The rule is an Inherit(oldrule, newproduction)
+            //    In this case the match class is inherited with a new name into the new
+            //    namespace and the rule is overwritten
+            // 4. The rule with the same name is defined in the inherited grammar
+            //    In this case we throw an exception
+
+            if (rule != null && method.Name == "Inherit")
+            {
+                if (args.Length == 0)
+                {
+                    // Inherit rule with the same name
+                    overwrite = false;
+                    inheritedRule = name;
+                    inheritedGrammar = grammar.FindRuleBaseGrammar(name);
+                }
+                else if (args.Length == 1)
+                {
+                    // Inherit rule with a different name but same production
+                    overwrite = false;
+                    inheritedRule = ((MemberExpression)args[0]).Member.Name;
+                    inheritedGrammar = grammar.FindRuleBaseGrammar(inheritedRule);
+                }
+                else if (args.Length == 2)
+                {
+                    // Inherit rule with a different name and different production
+                    overwrite = true;
+                    inheritedRule = ((MemberExpression)args[0]).Member.Name;
+                    inheritedGrammar = grammar.FindRuleBaseGrammar(inheritedRule);
+
+                    // This is the new rule for which the match will be generated
+                    rule = args[1];
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+
+                inherit = true;
             }
             else
             {
-                inherited = String.Format("{0}.{1}", g.Attributes.Namespace, name);
-                //inheritedRules.Add(name);
+                // This must be a new rule
+                inheritedGrammar = grammar.FindRuleBaseGrammar(name);
+
+                if (inheritedGrammar != grammar)
+                {
+                    throw new ParserGeneratorException(
+                        String.Format(ExceptionMessages.RuleExistsUseInherit,
+                        name, grammar.GrammarType.FullName));
+                }
+
+                inherit = false;
+                overwrite = false;
             }
 
+            // Generate matching code
+            CodeStringBuilder code = new CodeStringBuilder();
+
+            if (!inherit || overwrite)
+            {
+                // Generate the new match logic
+                code.AppendLine(tabs, "bool res = true;");
+                code.AppendLine();
+
+                code.Append(GenerateRuleMatch(tabs, grammar, rule, resstr));
+
+                code.AppendLine(tabs, "return res;");
+            }
+            else
+            {
+                // Inherit the match logic from the base class
+                code.Append(GenerateBaseMatch(tabs));
+            }
+
+            if (inherit)
+            {
+                inheritedType = String.Format("{0}.{1}", inheritedGrammar.Namespace, inheritedRule);
+            }
+            else
+            {
+                inheritedType = String.Format("{0}.Node", typeof(Token).Namespace);
+            }
+
+            // Load template and substitute tokens
             var template = new StringBuilder(Templates.Rule);
 
-            template.Replace("[$InheritedType]", inherited);
+            template.Replace("[$InheritedType]", inheritedType);
             template.Replace("[$LibNamespace]", typeof(Token).Namespace);
+            template.Replace("[$Namespace]", grammar.Namespace);
             template.Replace("[$Name]", name);
             template.Replace("[$Code]", code.ToString());
 
@@ -276,28 +362,35 @@ namespace Jhu.Graywulf.ParserLib
         /// Generates code that matches a sequence, or alternatively anything else.
         /// </summary>
         /// <param name="tabs"></param>
-        /// <param name="exp"></param>
+        /// <param name="rule"></param>
         /// <param name="resstr"></param>
         /// <returns></returns>
         /// <remarks>
         /// If the matched rule is not a sequence it gets wrapped into a virtual sequence.
         /// </remarks>
-        private string GenerateProductionMatch(int tabs, GrammarInfo grammar, Expression exp, string resstr)
+        private string GenerateRuleMatch(int tabs, GrammarInfo grammar, Expression rule, string resstr)
         {
             var code = new CodeStringBuilder();
 
-            if (exp.NodeType == ExpressionType.Call &&
-                ((MethodCallExpression)exp).Method.Name == "Sequence")
+            if (rule.NodeType == ExpressionType.Call &&
+                ((MethodCallExpression)rule).Method.Name == "Sequence")
             {
                 // If it's a sequence extract arguments
-                code.Append(GenerateSequenceMatch(tabs, grammar, (MethodCallExpression)exp, resstr));
+                code.Append(GenerateSequenceMatch(tabs, grammar, (MethodCallExpression)rule, resstr));
             }
             else
             {
                 // If it's not a sequence, wrap it in a list
-                code.Append(GenerateListMatch(tabs, grammar, new Expression[] { exp }, resstr));
+                code.Append(GenerateListMatch(tabs, grammar, new Expression[] { rule }, resstr));
             }
 
+            return code.ToString();
+        }
+
+        private string GenerateBaseMatch(int tabs)
+        {
+            CodeStringBuilder code = new CodeStringBuilder();
+            code.AppendLineFormat(tabs, "return base.Match(parser);");
             return code.ToString();
         }
 
@@ -337,7 +430,7 @@ namespace Jhu.Graywulf.ParserLib
             foreach (var a in args)
             {
                 code.AppendLineFormat(tabs + 1, "if (!{0})", exstr);
-                code.Append(GenerateProductionMatch(tabs + 1, grammar, a, exstr));
+                code.Append(GenerateRuleMatch(tabs + 1, grammar, a, exstr));
             }
 
             if (must)
@@ -440,7 +533,7 @@ namespace Jhu.Graywulf.ParserLib
         /// <returns></returns>
         private string GenerateRuleMatch(GrammarInfo grammar, string name)
         {
-            var g = grammar.FindProductionGrammar(name);
+            var g = grammar.FindRuleGrammar(name);
 
             //return String.Format("Match(parser, new {0}.{1}())", ns, name);
             return String.Format(
@@ -460,7 +553,7 @@ namespace Jhu.Graywulf.ParserLib
             code.AppendLineFormat(tabs, "if ({0})", resstr);
             code.AppendLineFormat(tabs, "{{ // may {0}", exstr);
             code.AppendLineFormat(tabs + 1, "bool {0} = false;", exstr);
-            code.Append(GenerateProductionMatch(tabs + 1, grammar, arg, exstr));
+            code.Append(GenerateRuleMatch(tabs + 1, grammar, arg, exstr));
             code.AppendLineFormat(tabs + 1, "{0} |= {1};", resstr, exstr);
             code.AppendLineFormat(tabs, "}} // end may {0}", exstr);
             code.AppendLine();

@@ -68,5 +68,14 @@ namespace Jhu.Graywulf.ParserLib {
                 return ResourceManager.GetString("NotUnderstandableToken", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The rule with the same name &apos;{0}&apos; exists in the inherited grammar &apos;{1}&apos;. Use and Inherit rule..
+        /// </summary>
+        internal static string RuleExistsUseInherit {
+            get {
+                return ResourceManager.GetString("RuleExistsUseInherit", resourceCulture);
+            }
+        }
     }
 }

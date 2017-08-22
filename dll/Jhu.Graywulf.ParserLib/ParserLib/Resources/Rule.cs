@@ -5,14 +5,14 @@
         {
         }
 
-        public [$Name]([$Name] old)
+        public [$Name]([$Namespace].[$Name] old)
             :base(old)
         {
         }
 
         public override object Clone()
         {
-            return new [$Name](this);
+            return new [$Namespace].[$Name](this);
         }
 
         public override bool Match([$LibNamespace].Parser parser)
