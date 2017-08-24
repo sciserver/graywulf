@@ -104,7 +104,6 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Rule> FunctionName = () => Identifier;
         public static Expression<Rule> ColumnName = () => Identifier;
         public static Expression<Rule> ColumnAlias = () => Identifier;
-        public static Expression<Rule> ColumnPosition = () => Number;
         public static Expression<Rule> UdtColumnName = () => Identifier;
         public static Expression<Rule> PropertyName = () => Identifier;
         public static Expression<Rule> SampleNumber = () => Number;
@@ -130,6 +129,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 (
                     Subquery,
                     ExpressionBrackets,
+                    RankingFunctionCall,
                     UdtFunctionCall,
                     FunctionCall,
                     Null,
@@ -448,15 +448,15 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Rule> ArgumentList = () =>
             Sequence
             (
-                May(CommentOrWhitespace),
                 Argument,
-                May(Sequence(May(CommentOrWhitespace), Comma, ArgumentList))
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ArgumentList))
             );
 
         public static Expression<Rule> UdtFunctionCall = () =>
             Sequence
             (
                 UdtFunctionIdentifier,
+                May(CommentOrWhitespace),
                 FunctionArguments
             );
 
@@ -464,6 +464,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
             Sequence
             (
                 FunctionIdentifier,
+                May(CommentOrWhitespace),
                 FunctionArguments
             );
 
@@ -471,17 +472,50 @@ namespace Jhu.Graywulf.SqlParser.Generator
             Sequence
             (
                 FunctionIdentifier,
+                May(CommentOrWhitespace),
                 FunctionArguments
+            );
+
+        public static Expression<Rule> RankingFunctionCall = () =>
+            Sequence
+            (
+                FunctionName,
+                May(CommentOrWhitespace),
+                FunctionArguments,
+                May(CommentOrWhitespace),
+                OverClause
             );
 
         public static Expression<Rule> FunctionArguments = () =>
             Sequence
             (
-                May(CommentOrWhitespace),
                 BracketOpen,
+                May(CommentOrWhitespace),
                 May(ArgumentList),
                 May(CommentOrWhitespace),
                 BracketClose
+            );
+
+        public static Expression<Rule> OverClause = () =>
+            Sequence
+            (
+                Keyword("OVER"),
+                May(CommentOrWhitespace),
+                BracketOpen,
+                May(CommentOrWhitespace),
+                May(Sequence(PartitionByClause, May(CommentOrWhitespace))),
+                May(Sequence(OrderByClause, May(CommentOrWhitespace))),
+                BracketClose
+            );
+
+        public static Expression<Rule> PartitionByClause = () =>
+            Sequence
+            (
+                Keyword("PARTITION"),
+                CommentOrWhitespace,
+                Keyword("BY"),
+                May(CommentOrWhitespace),
+                ArgumentList
             );
 
         #endregion
@@ -949,6 +983,7 @@ FOR select_statement
         public static Expression<Rule> ColumnExpression = () =>
             Must
             (
+                Sequence(Variable, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Expression),
                 Sequence(ColumnAlias, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Expression),
                 Sequence(Expression, May(Sequence(May(Sequence(CommentOrWhitespace, Keyword("AS"))), CommentOrWhitespace, ColumnAlias)))
             );
@@ -1163,18 +1198,21 @@ FOR select_statement
                 Keyword("BY"),
                 May(CommentOrWhitespace),
                 OrderByList
-            // TODO: add OFFSET .. FETCH
+                // TODO: add OFFSET .. FETCH but do it as a separate clause to select so that order by clause can be used in ranking functions
             );
 
         public static Expression<Rule> OrderByList = () =>
             Sequence
             (
-                Must
-                (
-                    Expression,
-                    Sequence(ColumnPosition, May(Sequence(May(CommentOrWhitespace), Must(Keyword("ASC"), Keyword("DESC")))))
-                ),
+                OrderByArgument,
                 May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), OrderByList))
+            );
+
+        public static Expression<Rule> OrderByArgument = () =>
+            Sequence
+            (
+                Expression,
+                May(Sequence(May(CommentOrWhitespace), Must(Keyword("ASC"), Keyword("DESC"))))
             );
 
         #endregion
@@ -1201,7 +1239,7 @@ FOR select_statement
 
         public static Expression<Rule> TableHint = () =>
             Must(
-                Sequence(Identifier, FunctionArguments),
+                Sequence(Identifier, May(CommentOrWhitespace), FunctionArguments),
                 Identifier
             );
 
@@ -1226,7 +1264,7 @@ FOR select_statement
         
         public static Expression<Rule> QueryHint = () =>
             Must(
-                Sequence(Identifier, FunctionArguments),
+                Sequence(Identifier, May(CommentOrWhitespace), FunctionArguments),
                 Sequence(Identifier, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Number),
                 Sequence(Identifier, CommentOrWhitespace, Number),
                 QueryHintIdentifierList,
@@ -1491,7 +1529,7 @@ FOR select_statement
             Sequence
             (
                 Keyword("IDENTITY"),
-                May(FunctionArguments)
+                May(Sequence(May(CommentOrWhitespace), FunctionArguments))
             );
 
         public static Expression<Rule> ColumnConstraint = () =>
