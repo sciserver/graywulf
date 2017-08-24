@@ -52,10 +52,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SqlParser\ArithmeticOperatorTest.cs" />
+    <Compile Include="SqlParser\SubqueryTest.cs" />
     <Compile Include="SqlParser\CommonTableExpressionTest.cs" />
     <Compile Include="SqlParser\CreateIndexTest.cs" />
     <Compile Include="SqlParser\CreateTableTest.cs" />
     <Compile Include="SqlParser\QueryHintTest.cs" />
+    <Compile Include="SqlParser\DeleteStatementTest.cs" />
     <Compile Include="SqlParser\UpdateStatementTest.cs" />
     <Compile Include="SqlParser\InsertStatementTest.cs" />
     <Compile Include="SqlParser\TableVariableTest.cs" />

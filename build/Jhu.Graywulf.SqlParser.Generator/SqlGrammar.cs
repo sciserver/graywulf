@@ -836,6 +836,7 @@ FOR select_statement
             Sequence
             (
                 Keyword("WITH"),
+                May(CommentOrWhitespace),
                 CommonTableSpecificationList
             );
 
@@ -854,7 +855,7 @@ FOR select_statement
                 May(CommentOrWhitespace),
                 Keyword("AS"),
                 May(CommentOrWhitespace),
-                QueryExpressionBrackets
+                Subquery
             );
 
         #endregion
@@ -864,8 +865,7 @@ FOR select_statement
         public static Expression<Rule> SelectStatement = () =>
             Sequence
             (
-                May(CommonTableExpression),
-                May(CommentOrWhitespace),
+                May(Sequence(CommonTableExpression, May(CommentOrWhitespace))),
                 QueryExpression,
                 May(Sequence(May(CommentOrWhitespace), OrderByClause)),
                 May(Sequence(May(CommentOrWhitespace), QueryHintClause))
@@ -1247,8 +1247,7 @@ FOR select_statement
         public static Expression<Rule> InsertStatement = () =>
             Sequence
             (
-                May(CommonTableExpression),
-                May(CommentOrWhitespace),
+                May(Sequence(CommonTableExpression, May(CommentOrWhitespace))),
                 Keyword("INSERT"),
                 May(CommentOrWhitespace),
                 Must
@@ -1269,10 +1268,16 @@ FOR select_statement
                 Must
                 (
                     ValuesClause,
-                    SelectStatement,
+                    Sequence(Keyword("DEFAULT"), CommentOrWhitespace, Keyword("VALUES")),
                     // ExecuteStatement  TODO
-                    Sequence(Keyword("DEFAULT"), CommentOrWhitespace, Keyword("VALUES"))
-                )
+
+                    Sequence
+                    (
+                        QueryExpression,
+                        May(Sequence(May(CommentOrWhitespace), OrderByClause))
+                    )
+                ),
+                May(Sequence(May(CommentOrWhitespace), QueryHintClause))
             );
 
         public static Expression<Rule> ColumnListBrackets = () =>
@@ -1336,8 +1341,7 @@ FOR select_statement
         public static Expression<Rule> UpdateStatement = () =>
             Sequence
             (
-                May(CommonTableExpression),
-                May(CommentOrWhitespace),
+                May(Sequence(CommonTableExpression, May(CommentOrWhitespace))),
                 Keyword("UPDATE"),
                 May(CommentOrWhitespace),
                 TargetTableSpecification,
@@ -1396,8 +1400,7 @@ FOR select_statement
         public static Expression<Rule> DeleteSpecification = () =>
             Sequence
             (
-                May(CommonTableExpression),
-                May(CommentOrWhitespace),
+                May(Sequence(CommonTableExpression, May(CommentOrWhitespace))),
                 Keyword("DELETE"),
                 May(CommentOrWhitespace),
                 May(Keyword("FROM")),
