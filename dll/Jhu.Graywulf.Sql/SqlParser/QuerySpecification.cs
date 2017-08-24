@@ -149,7 +149,7 @@ namespace Jhu.Graywulf.SqlParser
             {
                 foreach (var sq in where.EnumerateDescendantsRecursive<Subquery>(typeof(Subquery)))
                 {
-                    foreach (var ts in sq.SelectStatement.EnumerateSourceTables(recursive))
+                    foreach (var ts in sq.EnumerateSourceTables(recursive))
                     {
                         yield return ts;
                     }

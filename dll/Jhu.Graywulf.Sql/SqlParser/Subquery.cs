@@ -7,11 +7,6 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class Subquery
     {
-        public SelectStatement SelectStatement
-        {
-            get { return FindDescendant<SelectStatement>(); }
-        }
-
         public static Subquery Create(SelectStatement ss)
         {
             var sq = new Subquery();

@@ -50,7 +50,6 @@ namespace Jhu.Graywulf.SqlParser.Test
             Assert.AreEqual("f", exp.FindDescendantRecursive<TableAlias>().ToString());
         }
 
-        /*
         [TestMethod]
         public void TableValuedVariableTest()
         {
@@ -59,7 +58,7 @@ namespace Jhu.Graywulf.SqlParser.Test
             var exp = ExpressionTestHelper(sql);
 
             Assert.AreEqual("@table", exp.ToString());
-        }*/
+        }
 
         [TestMethod]
         public void SubQueryTest()

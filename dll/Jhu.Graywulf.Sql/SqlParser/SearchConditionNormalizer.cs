@@ -18,12 +18,7 @@ namespace Jhu.Graywulf.SqlParser
         private void InitializeMembers()
         {
         }
-
-        public void CollectConditions(SelectStatement selectStatement)
-        {
-            CollectConditions(selectStatement.QueryExpression);
-        }
-
+        
         public void CollectConditions(QueryExpression qe)
         {
             foreach (var qs in qe.EnumerateDescendants<QuerySpecification>())
@@ -36,7 +31,7 @@ namespace Jhu.Graywulf.SqlParser
         {
             foreach (var sq in qs.EnumerateSubqueries())
             {
-                CollectConditions(sq.SelectStatement);
+                CollectConditions(sq.QueryExpression);
             }
 
             // Process join conditions

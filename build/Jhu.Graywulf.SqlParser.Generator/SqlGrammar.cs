@@ -7,7 +7,7 @@ using Jhu.Graywulf.ParserLib;
 namespace Jhu.Graywulf.SqlParser.Generator
 {
     [Grammar(Namespace = "Jhu.Graywulf.SqlParser", ParserName = "SqlParser",
-        Comparer = "StringComparer.InvariantCultureIgnoreCase", RootToken = "SelectStatement")]
+        Comparer = "StringComparer.InvariantCultureIgnoreCase", RootToken = "StatementBlock")]
     public class SqlGrammar : Grammar
     {
 
@@ -871,6 +871,21 @@ FOR select_statement
                 May(Sequence(May(CommentOrWhitespace), QueryHintClause))
             );
 
+        public static Expression<Rule> Subquery = () =>
+            Override
+            (
+                SelectStatement,
+                Sequence
+                (
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    QueryExpression,
+                    May(Sequence(May(CommentOrWhitespace), OrderByClause)),
+                    May(CommentOrWhitespace),
+                    BracketClose
+                )
+            );
+
         public static Expression<Rule> QueryExpression = () =>
             Sequence
             (
@@ -905,8 +920,7 @@ FOR select_statement
                 May(Sequence(May(CommentOrWhitespace), FromClause)),
                 May(Sequence(May(CommentOrWhitespace), WhereClause)),
                 May(Sequence(May(CommentOrWhitespace), GroupByClause)),
-                May(Sequence(May(CommentOrWhitespace), HavingClause)),
-                May(Sequence(May(CommentOrWhitespace), OrderByClause))
+                May(Sequence(May(CommentOrWhitespace), HavingClause))
             );
 
         #endregion
@@ -966,7 +980,11 @@ FOR select_statement
         #region From clause, table sources and joins
 
         public static Expression<Rule> FromClause = () =>
-            Sequence(Keyword("FROM"), May(CommentOrWhitespace), TableSourceExpression);
+            Sequence
+            (
+                Keyword("FROM"),
+                May(CommentOrWhitespace),
+                TableSourceExpression);
 
         public static Expression<Rule> TableSourceExpression = () =>
             Sequence(
@@ -1079,16 +1097,6 @@ FOR select_statement
                     RepeatSeed,
                     May(CommentOrWhitespace), BracketClose)
                 )
-            );
-
-        public static Expression<Rule> Subquery = () =>
-            Sequence
-            (
-                BracketOpen,
-                May(CommentOrWhitespace),
-                SelectStatement,            // Order by is also allowed here with top!
-                May(CommentOrWhitespace),
-                BracketClose
             );
 
         public static Expression<Rule> TablePartitionClause = () =>

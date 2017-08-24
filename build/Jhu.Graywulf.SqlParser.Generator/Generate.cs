@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
 #endif
 
                     var g = new ParserLib.ParserGenerator();
-                    g.Execute(outfile, new GrammarInfo(typeof(SqlGrammar)));
+                    g.Execute(outfile, typeof(SqlGrammar));
 
 #if !DEBUG
                 }

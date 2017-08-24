@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.SqlParser.Test
         private QuerySpecification Parse(string query)
         {
             var p = new SqlParser();
-            var ss = (SelectStatement)p.Execute(query);
+            var ss = p.Execute<SelectStatement>(query);
             var qs = (QuerySpecification)ss.EnumerateQuerySpecifications().First();
             
             ResolveNames(qs);
@@ -428,6 +428,17 @@ namespace Jhu.Graywulf.SqlParser.Test
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
+        }
+
+        [TestMethod]
+        public void SubqueryWithOrderByTest()
+        {
+            var sql = "SELECT Name FROM (SELECT TOP 10 Name FROM Author ORDER BY Name) a";
+
+            var qs = Parse(sql);
+
+            var res = GenerateCode(qs);
+            Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM (SELECT TOP 10 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[Name]) [a]", res);
         }
 
         [TestMethod]

@@ -9,14 +9,9 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class SubqueryTableSource : ITableSource
     {
-        public SelectStatement SelectStatement
-        {
-            get { return FindDescendant<Subquery>().SelectStatement; }
-        }
-
         public QueryExpression QueryExpression
         {
-            get { return SelectStatement.QueryExpression; }
+            get { return FindDescendant<Subquery>().QueryExpression; }
         }
 
         public TableReference TableReference
@@ -57,7 +52,7 @@ namespace Jhu.Graywulf.SqlParser
 
         public IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive)
         {
-            foreach (var tts in FindDescendant<Subquery>().SelectStatement.EnumerateSourceTables(recursive))
+            foreach (var tts in FindDescendant<Subquery>().EnumerateSourceTables(recursive))
             {
                 yield return tts;
             }

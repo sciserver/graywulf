@@ -185,7 +185,7 @@ namespace Jhu.Graywulf.SqlParser
             // expressions
             foreach (var sq in qs.EnumerateSubqueries())
             {
-                ResolveSelectStatement(sq.SelectStatement, depth + 1);
+                ResolveSelectStatement(sq, depth + 1);
             }
 
             // Substitute default dataset names and schema names
