@@ -22,6 +22,8 @@ namespace Jhu.Graywulf.ParserLib.Test
                 May(CommentOrWhitespace)
             );
 
+        public static Expression<Rule> Argument = () => Word;
+
         public static Expression<Rule> List = () =>
             Sequence
             (
@@ -38,13 +40,39 @@ namespace Jhu.Graywulf.ParserLib.Test
                 )
             );
 
+        public static Expression<Rule> List1 = () => Inherit(List);
+
         public static Expression<Rule> BaseRule1 = () =>
+            Sequence
+            (
+                List
+            );
+
+        public static Expression<Rule> BaseRule2 = () =>
+            Sequence
+            (
+                BaseRule3
+            );
+
+        public static Expression<Rule> BaseRule3 = () =>
+            Sequence
+            (
+                Word, Comma, Word, BaseRule4
+            );
+
+        public static Expression<Rule> BaseRule4 = () =>
             Sequence
             (
                 Word, Comma, Word
             );
 
-        public static Expression<Rule> BaseRule2 = () =>
+        public static Expression<Rule> BaseRule5 = () =>
+            Sequence
+            (
+                Word, Comma, Word, BaseRule6
+            );
+
+        public static Expression<Rule> BaseRule6 = () =>
             Sequence
             (
                 Word, Comma, Word

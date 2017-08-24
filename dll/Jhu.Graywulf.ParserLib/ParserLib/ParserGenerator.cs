@@ -14,18 +14,33 @@ namespace Jhu.Graywulf.ParserLib
     /// </summary>
     public class ParserGenerator
     {
+        #region Private member variables
+
+        /// <summary>
+        /// Global counter used to generate unique variable names
+        /// </summary>
         private int excount;
+
+        #endregion
 
         /// <summary>
         /// Executes the source code generation
         /// </summary>
         /// <param name="output"></param>
         /// <param name="grammar"></param>
-        public void Execute(TextWriter output, GrammarInfo grammar)
+        public void Execute(TextWriter output, Type grammarType)
+        {
+            excount = 0;
+
+            var grammar = new GrammarInfo(grammarType);
+            var parser = GenerateParserClass(grammar);
+
+            output.Write(parser.ToString());
+        }
+
+        private string GenerateParserClass(GrammarInfo grammar)
         {
             var template = new StringBuilder(Templates.Parser);
-
-            this.excount = 0;
 
             template.Replace("[$Namespace]", grammar.Namespace);
             template.Replace("[$LibNamespace]", typeof(Token).Namespace);
@@ -55,8 +70,9 @@ namespace Jhu.Graywulf.ParserLib
 
             template.Replace("[$Keywords]", GenerateKeywordList(grammar));
 
-            output.Write(template.ToString());
+            return template.ToString();
         }
+
 
         /// <summary>
         /// Generates a class for a symbol, terminal or whitespace
@@ -206,8 +222,9 @@ namespace Jhu.Graywulf.ParserLib
                 sb.AppendLine();
             }
 
-            // Classes that have to be overloaded
-            foreach (string name in grammar.InheritedRules)
+            // Classes that have to be inherited because they depend
+            // on overwritten rules
+            foreach (string name in grammar.OverwrittenRules)
             {
                 if (!grammar.AllRules.ContainsKey(name))
                 {
@@ -229,112 +246,31 @@ namespace Jhu.Graywulf.ParserLib
             int tabs = 3;
             var resstr = "res";
 
-            var g = grammar.FindRuleGrammar(name, false);
-            var exp = g.Rules[name].GetValue(null) as LambdaExpression;
-
-            if (exp == null)
-            {
-                // **** TODO
-                throw new ParserGeneratorException(String.Format("Rule '{0}' must be a lambda expression.", name));
-            }
-
-            var rule = exp.Body;
-
             // Figure out whether this rule is inherited or not 
             bool inherit;
             bool overwrite;
-            GrammarInfo inheritedGrammar = null;
-            string inheritedRule = null;
+            GrammarInfo inheritedGrammar;
+            string inheritedRule;
             string inheritedType;
-
-            MethodInfo method = null;
-            Expression[] args = null;
-
-            if (rule.NodeType == ExpressionType.Call)
-            {
-                method = ((MethodCallExpression)rule).Method;
-                args = ((MethodCallExpression)rule).Arguments.ToArray();
-            }
-
-            // There are four types of rule inheritance:
-            // 1. The rule is an Inherit() without parameters
-            //    The match class is inherited into the new namespace with the same name but the
-            //    rule is kept the original
-            // 2. The rule is an Inherit(oldrule)
-            //    The match class is inherited into the new namespace with a new name but the
-            //    rule is kept the original
-            // 3. The rule is an Inherit(oldrule, newproduction)
-            //    In this case the match class is inherited with a new name into the new
-            //    namespace and the rule is overwritten
-            // 4. The rule with the same name is defined in the inherited grammar
-            //    In this case we throw an exception
-
-            if (rule != null && method.Name == "Inherit")
-            {
-                if (args.Length == 0)
-                {
-                    // Inherit rule with the same name
-                    overwrite = false;
-                    inheritedRule = name;
-                    inheritedGrammar = grammar.FindRuleBaseGrammar(name);
-                }
-                else if (args.Length == 1)
-                {
-                    // Inherit rule with a different name but same production
-                    overwrite = false;
-                    inheritedRule = ((MemberExpression)args[0]).Member.Name;
-                    inheritedGrammar = grammar.FindRuleBaseGrammar(inheritedRule);
-                }
-                else if (args.Length == 2)
-                {
-                    // Inherit rule with a different name and different production
-                    overwrite = true;
-                    inheritedRule = ((MemberExpression)args[0]).Member.Name;
-                    inheritedGrammar = grammar.FindRuleBaseGrammar(inheritedRule);
-
-                    // This is the new rule for which the match will be generated
-                    rule = args[1];
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-
-                inherit = true;
-            }
-            else
-            {
-                // This must be a new rule
-                inheritedGrammar = grammar.FindRuleBaseGrammar(name);
-
-                if (inheritedGrammar != grammar)
-                {
-                    throw new ParserGeneratorException(
-                        String.Format(ExceptionMessages.RuleExistsUseInherit,
-                        name, grammar.GrammarType.FullName));
-                }
-
-                inherit = false;
-                overwrite = false;
-            }
+            var rule = grammar.GetRuleExpression(name, out inherit, out overwrite, out inheritedGrammar, out inheritedRule);
 
             // Generate matching code
-            CodeStringBuilder code = new CodeStringBuilder();
+            StringBuilder match = null;
 
-            if (!inherit || overwrite)
+            if (overwrite)
             {
+                // In this case we generate a new match logic
+                // This recreates the match logic even if the production of the rule didn't
+                // changed during inheritance, because it might reference rules that did change
+                // and in this case we have to use the class from the new namespace.
                 // Generate the new match logic
-                code.AppendLine(tabs, "bool res = true;");
-                code.AppendLine();
-
-                code.Append(GenerateRuleMatch(tabs, grammar, rule, resstr));
-
-                code.AppendLine(tabs, "return res;");
+                match = new StringBuilder(Templates.Match);
+                match.Replace("[$LibNamespace]", typeof(Token).Namespace);
+                match.Replace("[$Code]", GenerateRuleMatch(tabs, grammar, rule, resstr));
             }
             else
             {
                 // Inherit the match logic from the base class
-                code.Append(GenerateBaseMatch(tabs));
             }
 
             if (inherit)
@@ -353,7 +289,7 @@ namespace Jhu.Graywulf.ParserLib
             template.Replace("[$LibNamespace]", typeof(Token).Namespace);
             template.Replace("[$Namespace]", grammar.Namespace);
             template.Replace("[$Name]", name);
-            template.Replace("[$Code]", code.ToString());
+            template.Replace("[$Match]", match == null? "" : match.ToString());
 
             return template.ToString();
         }
@@ -533,7 +469,7 @@ namespace Jhu.Graywulf.ParserLib
         /// <returns></returns>
         private string GenerateRuleMatch(GrammarInfo grammar, string name)
         {
-            var g = grammar.FindRuleGrammar(name);
+            var g = grammar.FindOverwritingGrammar(name);
 
             //return String.Format("Match(parser, new {0}.{1}())", ns, name);
             return String.Format(

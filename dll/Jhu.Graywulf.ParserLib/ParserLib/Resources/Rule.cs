@@ -15,8 +15,5 @@
             return new [$Namespace].[$Name](this);
         }
 
-        public override bool Match([$LibNamespace].Parser parser)
-        {
-[$Code]
-        }
+[$Match]
     }

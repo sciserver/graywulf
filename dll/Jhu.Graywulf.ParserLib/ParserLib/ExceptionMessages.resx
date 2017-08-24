@@ -123,4 +123,10 @@
   <data name="RuleExistsUseInherit" xml:space="preserve">
     <value>The rule with the same name '{0}' exists in the inherited grammar '{1}'. Use and Inherit rule.</value>
   </data>
+  <data name="RuleNotLambda" xml:space="preserve">
+    <value>Rule '{0}' must be a lambda expression.</value>
+  </data>
+  <data name="UnrecognizedType" xml:space="preserve">
+    <value>The static field '{0]' of grammar '{1}' has an unrecognized type.</value>
+  </data>
 </root>

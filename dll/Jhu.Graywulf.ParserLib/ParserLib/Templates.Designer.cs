@@ -91,6 +91,22 @@ namespace Jhu.Graywulf.ParserLib {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to         public override bool Match([$LibNamespace].Parser parser)
+        ///        {
+        ///            bool res = true;
+        ///
+        ///[$Code]
+        ///
+        ///            return res;
+        ///        }.
+        /// </summary>
+        internal static string Match {
+            get {
+                return ResourceManager.GetString("Match", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to using System;
         ///using System.Collections.Generic;
         ///using System.Text;
@@ -128,20 +144,17 @@ namespace Jhu.Graywulf.ParserLib {
         ///        {
         ///        }
         ///
-        ///        public [$Name]([$Name] old)
+        ///        public [$Name]([$Namespace].[$Name] old)
         ///            :base(old)
         ///        {
         ///        }
         ///
         ///        public override object Clone()
         ///        {
-        ///            return new [$Name](this);
+        ///            return new [$Namespace].[$Name](this);
         ///        }
         ///
-        ///        public override bool Match([$LibNamespace].Parser parser)
-        ///        {
-        ///[$Code]
-        ///        }
+        ///[$Match]
         ///    }.
         /// </summary>
         internal static string Rule {

@@ -13,14 +13,14 @@ using Microsoft.CSharp;
 namespace Jhu.Graywulf.ParserLib.Test
 {
     [TestClass]
-    public class GeneratorTest
+    public class ParserGeneratorTest
     {
         private string GenerateParser(Type grammar)
         {
             var g = new ParserGenerator();
 
             var sw = new StringWriter();
-            g.Execute(sw, new GrammarInfo(grammar));
+            g.Execute(sw, grammar);
 
             return sw.ToString();
         }
@@ -42,10 +42,16 @@ namespace Jhu.Graywulf.ParserLib.Test
 
         private Assembly BuildParser(string code, Type grammar)
         {
+            var g = new GrammarInfo(grammar);
+            var t = Type.GetType(g.Namespace + "." + g.ParserClassName + "," + grammar.Name);
+            if (t != null)
+            {
+                return t.Assembly;
+            }
+
             var source = Path.Combine(Path.GetDirectoryName(typeof(Grammar).Assembly.Location), grammar.Name + ".cs");
             var output = Path.Combine(Path.GetDirectoryName(typeof(Grammar).Assembly.Location), grammar.Name + ".dll");
             File.WriteAllText(source, code);
-            File.Delete(output);
 
             var cp = new CompilerParameters();
             cp.ReferencedAssemblies.Add("System.dll");
@@ -84,7 +90,7 @@ namespace Jhu.Graywulf.ParserLib.Test
         }
 
         [TestMethod]
-        public void ParserExecuteTest()
+        public void SimpleGrammarTest()
         {
             var p = CreateParser(typeof(TestGrammar));
             var code = "one, two,three ,four";
@@ -92,7 +98,7 @@ namespace Jhu.Graywulf.ParserLib.Test
         }
 
         [TestMethod]
-        public void ParserExecuteTest2()
+        public void InheritedGrammarTest()
         {
             var p = CreateParser(typeof(InheritedGrammar));
             var code = "one, two,three ,four";

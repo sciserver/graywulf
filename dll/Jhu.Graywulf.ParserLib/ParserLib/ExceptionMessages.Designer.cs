@@ -77,5 +77,23 @@ namespace Jhu.Graywulf.ParserLib {
                 return ResourceManager.GetString("RuleExistsUseInherit", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rule &apos;{0}&apos; must be a lambda expression..
+        /// </summary>
+        internal static string RuleNotLambda {
+            get {
+                return ResourceManager.GetString("RuleNotLambda", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The static field &apos;{0]&apos; of grammar &apos;{1}&apos; has an unrecognized type..
+        /// </summary>
+        internal static string UnrecognizedType {
+            get {
+                return ResourceManager.GetString("UnrecognizedType", resourceCulture);
+            }
+        }
     }
 }

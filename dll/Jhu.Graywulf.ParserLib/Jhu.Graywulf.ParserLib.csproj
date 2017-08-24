@@ -103,7 +103,9 @@
     <Compile Include="ParserLib\ParserException.cs" />
     <Compile Include="ParserLib\ParserGenerator.cs" />
     <Compile Include="ParserLib\ParserGeneratorException.cs" />
+    <None Include="ParserLib\Resources\Match.cs" />
     <Compile Include="ParserLib\TokenStack.cs" />
+    <None Include="build.config" />
     <None Include="ParserLib\Resources\Comment.cs" />
     <None Include="ParserLib\Resources\Parser.cs" />
     <None Include="ParserLib\Resources\Rule.cs" />
