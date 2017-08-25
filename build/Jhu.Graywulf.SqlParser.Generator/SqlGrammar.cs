@@ -1066,7 +1066,6 @@ FOR select_statement
                 FunctionTableSource,
                 SimpleTableSource,
                 VariableTableSource,
-                VariableTableSource,
                 SubqueryTableSource
             );
 
