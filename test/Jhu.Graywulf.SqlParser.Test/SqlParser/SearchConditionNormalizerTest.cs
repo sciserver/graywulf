@@ -48,7 +48,7 @@ namespace Jhu.Graywulf.SqlParser.Test
             var select = CreateSelect(query);
             var res = new List<string>();
 
-            foreach (var qs in select.EnumerateQuerySpecifications())
+            foreach (var qs in select.QueryExpression.EnumerateQuerySpecifications())
             {
                 cn.CollectConditions(qs);
 
@@ -122,7 +122,7 @@ namespace Jhu.Graywulf.SqlParser.Test
             var conditions = typeof(SearchConditionNormalizer).GetField("conditions", BindingFlags.Instance | BindingFlags.NonPublic);
             var enumterms = typeof(SearchConditionNormalizer).GetMethod("EnumerateCnfTermsSpecificToTable", BindingFlags.Static | BindingFlags.NonPublic);
 
-            return (IEnumerable<LogicalExpressions.Expression>)enumterms.Invoke(null, new object[] { ((List<LogicalExpressions.Expression>)conditions.GetValue(scn)).FirstOrDefault(), select.EnumerateSourceTableReferences(false).First() });
+            return (IEnumerable<LogicalExpressions.Expression>)enumterms.Invoke(null, new object[] { ((List<LogicalExpressions.Expression>)conditions.GetValue(scn)).FirstOrDefault(), select.QueryExpression.EnumerateSourceTableReferences(false).First() });
         }
 
         [TestMethod]

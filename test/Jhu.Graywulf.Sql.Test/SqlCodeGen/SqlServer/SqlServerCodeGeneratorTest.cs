@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 
             var res = new List<string>();
 
-            foreach (var qs in ss.EnumerateQuerySpecifications())
+            foreach (var qs in ss.QueryExpression.EnumerateQuerySpecifications())
             {
                 // TODO: use qs.SourceTableReferences
                 foreach (var tr in qs.EnumerateSourceTableReferences(true))

@@ -240,7 +240,7 @@ namespace Jhu.Graywulf.Jobs.Query
             q.ExecutionMode = ExecutionMode.SingleServer;
 
             var cg = new SqlQueryCodeGenerator(q);
-            var ts = q.SelectStatement.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
+            var ts = q.SelectStatement.QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
 
             // Column to compute the statistics on, not partitioning!
             ts.TableReference.Statistics = new Graywulf.SqlParser.TableStatistics()

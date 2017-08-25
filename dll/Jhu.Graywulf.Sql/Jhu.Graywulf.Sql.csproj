@@ -126,6 +126,7 @@
     <Compile Include="SqlParser\IColumnReference.cs" />
     <Compile Include="SqlParser\IFunctionReference.cs" />
     <Compile Include="SqlParser\IntoClause.cs" />
+    <Compile Include="SqlParser\ISelect.cs" />
     <Compile Include="SqlParser\ITableReference.cs" />
     <Compile Include="SqlParser\ITableSource.cs" />
     <Compile Include="SqlParser\JoinedTable.cs" />

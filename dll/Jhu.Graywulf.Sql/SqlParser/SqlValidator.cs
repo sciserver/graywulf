@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.SqlParser
         public virtual void Execute(SelectStatement selectStatement)
         {
             // Validate top level query specifications
-            foreach (QuerySpecification qs in selectStatement.EnumerateQuerySpecifications())
+            foreach (QuerySpecification qs in selectStatement.QueryExpression.EnumerateQuerySpecifications())
             {
                 ValidateQuerySpecification(qs);
             }

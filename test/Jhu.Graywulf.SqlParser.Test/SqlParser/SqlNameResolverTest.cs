@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var p = new SqlParser();
             var ss = p.Execute<SelectStatement>(query);
-            var qs = (QuerySpecification)ss.EnumerateQuerySpecifications().First();
+            var qs = (QuerySpecification)ss.QueryExpression.EnumerateQuerySpecifications().First();
             
             ResolveNames(qs);
 

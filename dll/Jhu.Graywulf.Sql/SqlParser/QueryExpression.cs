@@ -80,7 +80,12 @@ namespace Jhu.Graywulf.SqlParser
             this.tableReference = new TableReference(this);
         }
 
-        public virtual IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
+        public IEnumerable<QuerySpecification> EnumerateQuerySpecifications()
+        {
+            return EnumerateDescendants<QuerySpecification>();
+        }
+
+        public IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
         {
             foreach (var qs in EnumerateDescendants<QuerySpecification>())
             {
@@ -89,6 +94,11 @@ namespace Jhu.Graywulf.SqlParser
                     yield return ts;
                 }
             }
+        }
+
+        public IEnumerable<TableReference> EnumerateSourceTableReferences(bool recursive)
+        {
+            return EnumerateSourceTables(recursive).Select(ts => ts.TableReference);
         }
     }
 }

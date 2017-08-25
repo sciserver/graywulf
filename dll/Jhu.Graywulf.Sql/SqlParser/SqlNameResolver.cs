@@ -115,8 +115,8 @@ namespace Jhu.Graywulf.SqlParser
         {
             ResolveSelectStatement(selectStatement, 0);
         }
-
-        protected void ResolveSelectStatement(SelectStatement selectStatement, int depth)
+        
+        protected void ResolveSelectStatement(ISelect select, int depth)
         {
             // SqlParser builds the parsing tree and tags many nodes with TableReference and ColumnReference objects.
             // At this point these references only contain information directly available from the query, but names are
@@ -139,15 +139,15 @@ namespace Jhu.Graywulf.SqlParser
             // 5. Resolve table aliases
             // 6. Assign default column aliases
 
-            SubstituteFunctionDefaults(selectStatement);
-            ResolveFunctionReferences(selectStatement);
+            SubstituteFunctionDefaults((Node)select);
+            ResolveFunctionReferences((Node)select);
 
-            var qe = selectStatement.QueryExpression;
+            var qe = select.QueryExpression;
 
             ResolveQueryExpression(qe, depth);
 
             var firstqs = qe.FindDescendant<QuerySpecification>();
-            var orderby = selectStatement.OrderByClause;
+            var orderby = select.OrderByClause;
 
             ResolveOrderByClause(orderby, firstqs);
         }

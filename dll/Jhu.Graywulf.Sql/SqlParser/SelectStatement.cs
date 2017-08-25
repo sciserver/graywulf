@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.SqlParser
     /// <summary>
     /// Implements a SELECT statement including the ORDER BY clause
     /// </summary>
-    public partial class SelectStatement
+    public partial class SelectStatement : ISelect
     {
         public QueryExpression QueryExpression
         {
@@ -22,11 +22,12 @@ namespace Jhu.Graywulf.SqlParser
             get { return FindDescendant<OrderByClause>(); }
         }
 
+        // TODO: remove this and use SET PARTITION or something else for the whole script
         public virtual bool IsPartitioned
         {
             get
             {
-                var qs = this.EnumerateQuerySpecifications().FirstOrDefault<QuerySpecification>();
+                var qs = QueryExpression.EnumerateQuerySpecifications().FirstOrDefault<QuerySpecification>();
                 var ts = qs.EnumerateSourceTables(false).FirstOrDefault();
 
                 if (ts == null || !(ts is SimpleTableSource))
@@ -53,27 +54,6 @@ namespace Jhu.Graywulf.SqlParser
             var qe = QueryExpression.Create(qs);
 
             return Create(qe);
-        }
-
-        public IEnumerable<QuerySpecification> EnumerateQuerySpecifications()
-        {
-            return QueryExpression.EnumerateDescendants<QuerySpecification>();
-        }
-
-        public IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
-        {
-            foreach (var qs in EnumerateQuerySpecifications())
-            {
-                foreach (var ts in qs.EnumerateSourceTables(recursive))
-                {
-                    yield return ts;
-                }
-            }
-        }
-
-        public IEnumerable<TableReference> EnumerateSourceTableReferences(bool recursive)
-        {
-            return EnumerateSourceTables(recursive).Select(ts => ts.TableReference);
         }
     }
 }

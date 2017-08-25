@@ -25,6 +25,7 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             return
                 (from ats in CreateSelect(query)
+                     .QueryExpression
                      .EnumerateQuerySpecifications()
                      .First()
                      .EnumerateSourceTables(recursive)

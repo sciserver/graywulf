@@ -118,7 +118,7 @@ FROM `Graywulf_Schema_Test`.`Book` `b1`, `Graywulf_Schema_Test`.`Book` `b2`", re
 
             var res = new List<string>();
 
-            foreach (var qs in ss.EnumerateQuerySpecifications())
+            foreach (var qs in ss.QueryExpression.EnumerateQuerySpecifications())
             {
                 // TODO: use qs.SourceTableReferences
                 foreach (var tr in qs.EnumerateSourceTableReferences(true))

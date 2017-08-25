@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var q = CreateQuery(sql);
             var cg = new SqlQueryCodeGenerator(q);
-            var ts = q.SelectStatement.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
+            var ts = q.SelectStatement.QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
             var table = (IColumns)ts.TableReference.DatabaseObject;
             var cr = ts.TableReference.FilterColumnReferences(context);
             var cs = cr.Select(c => table.Columns[c.ColumnName]);
