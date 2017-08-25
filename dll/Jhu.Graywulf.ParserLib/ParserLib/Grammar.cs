@@ -56,6 +56,11 @@ namespace Jhu.Graywulf.ParserLib
             return null;
         }
 
+        public static Expression Override()
+        {
+            return null;
+        }
+
         public static Expression Override(Expression expression)
         {
             return null;

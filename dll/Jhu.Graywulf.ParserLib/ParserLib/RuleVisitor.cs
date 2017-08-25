@@ -82,7 +82,12 @@ namespace Jhu.Graywulf.ParserLib
             {
                 isOverrideRule = true;
 
-                if (args.Length == 1)
+                if (args.Length == 0)
+                {
+                    baseRule = null;
+                    skipArgument = false;
+                }
+                else if (args.Length == 1)
                 {
                     baseRule = null;
                     skipArgument = false;

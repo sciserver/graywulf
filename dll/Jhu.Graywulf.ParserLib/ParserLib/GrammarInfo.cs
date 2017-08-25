@@ -430,7 +430,15 @@ namespace Jhu.Graywulf.ParserLib
 
             if (rule != null && method != null && method.Name == "Override")
             {
-                if (args.Length == 1)
+                if (args.Length == 0)
+                {
+                    // Override the rule but inherit original production
+                    inheritedGrammar = FindDefiningGrammar(name, false);
+                    inheritedRule = name;
+                    isInherited = true;
+                    rule = null;
+                }
+                else if (args.Length == 1)
                 {
                     // Override the rule with a new production
                     inheritedGrammar = FindDefiningGrammar(name, false);
