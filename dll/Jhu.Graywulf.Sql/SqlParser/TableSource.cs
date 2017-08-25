@@ -8,13 +8,12 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class TableSource : ITableReference
     {
-
-        public ITableSource SpecificTableSource
+        public virtual ITableSource SpecificTableSource
         {
             get { return FindSpecificTableSource(); }
         }
 
-        public TableReference TableReference
+        public virtual TableReference TableReference
         {
             get { return SpecificTableSource.TableReference; }
             set { SpecificTableSource.TableReference = value; }

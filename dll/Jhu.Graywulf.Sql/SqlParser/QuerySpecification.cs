@@ -102,6 +102,13 @@ namespace Jhu.Graywulf.SqlParser
             // Start from the FROM clause, if specified, otherwise no
             // table sources in the query
             var from = FindDescendant<FromClause>();
+            var where = FindDescendant<WhereClause>();
+
+            return EnumerateSourceTables(from, where, recursive);
+        }
+
+        protected IEnumerable<ITableSource> EnumerateSourceTables(FromClause from, WhereClause where, bool recursive)
+        {
             if (from != null)
             {
                 var node = (Node)from.FindDescendant<TableSourceExpression>();
@@ -120,8 +127,9 @@ namespace Jhu.Graywulf.SqlParser
                         }
                     }
 
-                    // TODO: extend here to return all tables from
-                    // the XMATCH table source
+                    // Certain table sources might return additional table sources
+                    // This is not standard SQL, it is used with special extensions
+                    // such as the XMATCH syntax
                     if (ts.SpecificTableSource.IsMultiTable)
                     {
                         foreach (var mts in ts.SpecificTableSource.EnumerateMultiTableSources())
@@ -139,12 +147,10 @@ namespace Jhu.Graywulf.SqlParser
                         }
                     }
 
-
                     node = node.FindDescendant<JoinedTable>();
                 }
             }
 
-            var where = FindDescendant<WhereClause>();
             if (where != null)
             {
                 foreach (var sq in where.EnumerateDescendantsRecursive<Subquery>(typeof(Subquery)))
