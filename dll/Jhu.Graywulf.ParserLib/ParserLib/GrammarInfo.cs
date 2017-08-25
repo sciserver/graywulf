@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.ParserLib
         protected HashSet<string> keywords;
 
         protected Dictionary<string, HashSet<string>> ruleDependencies;
-        protected HashSet<string> overwrittenRules;
+        protected HashSet<string> overriddenRules;
 
         #endregion
         #region Properties
@@ -97,9 +97,9 @@ namespace Jhu.Graywulf.ParserLib
             get { return keywords; }
         }
 
-        public HashSet<string> OverwrittenRules
+        public HashSet<string> OverriddenRules
         {
-            get { return overwrittenRules; }
+            get { return overriddenRules; }
         }
 
         #endregion
@@ -117,7 +117,7 @@ namespace Jhu.Graywulf.ParserLib
             CollectRules();
             CollectKeywords();
             CollectRuleDependencies();
-            CollectOverwrittenRules();
+            CollectOverriddenRules();
         }
 
         private void InitializeMembers()
@@ -136,7 +136,7 @@ namespace Jhu.Graywulf.ParserLib
             this.ruleDependencies = null;
             this.keywords = null;
             this.inheritedGrammar = null;
-            this.overwrittenRules = null;
+            this.overriddenRules = null;
         }
 
         #endregion
@@ -196,15 +196,15 @@ namespace Jhu.Graywulf.ParserLib
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public GrammarInfo FindOverwritingGrammar(string name)
+        public GrammarInfo FindOverridingGrammar(string name)
         {
-            if (allRules.ContainsKey(name) || overwrittenRules.Contains(name))
+            if (allRules.ContainsKey(name) || overriddenRules.Contains(name))
             {
                 return this;
             }
             else if (inheritedGrammar != null)
             {
-                return inheritedGrammar.FindOverwritingGrammar(name);
+                return inheritedGrammar.FindOverridingGrammar(name);
             }
             else
             {
@@ -293,11 +293,6 @@ namespace Jhu.Graywulf.ParserLib
 
             foreach (var rule in rules.Values)
             {
-                ruleDependencies.Add(rule.Name, new HashSet<string>());
-            }
-
-            foreach (var rule in rules.Values)
-            {
                 // Collect all rules that are referenced from the production of the current rule
                 var vis = new RuleVisitor();
                 vis.Visit((Expression)rule.GetValue(null));
@@ -306,7 +301,12 @@ namespace Jhu.Graywulf.ParserLib
                 {
                     foreach (var dr in vis.ReferencedRules)
                     {
-                        if (rules.ContainsKey(dr.Name) && !ruleDependencies[dr.Name].Contains(rule.Name) && rule.Name != dr.Name)
+                        if (!ruleDependencies.ContainsKey(dr.Name))
+                        {
+                            ruleDependencies.Add(dr.Name, new HashSet<string>());
+                        }
+
+                        if (!ruleDependencies[dr.Name].Contains(rule.Name) && rule.Name != dr.Name)
                         {
                             ruleDependencies[dr.Name].Add(rule.Name);
                         }
@@ -321,9 +321,9 @@ namespace Jhu.Graywulf.ParserLib
         /// these rules will automatically generated within the current namespace by
         /// inheriting from the parent grammar's match class.
         /// </summary>
-        private void CollectOverwrittenRules()
+        private void CollectOverriddenRules()
         {
-            this.overwrittenRules = new HashSet<string>();
+            this.overriddenRules = new HashSet<string>();
 
             // Look for dependent non-terminals in inherited grammars
             // but not in the current grammar
@@ -331,36 +331,38 @@ namespace Jhu.Graywulf.ParserLib
             {
                 foreach (string rule in rules.Keys)
                 {
-                    // If the rule appears anywhere in any production
-                    // of the inherited grammar
-                    if (g.RuleDependencies.ContainsKey(rule))
+                    var vis = new RuleVisitor();
+                    vis.Visit((Expression)rules[rule].GetValue(null));
+
+                    if (vis.IsOverrideRule)
                     {
-                        foreach (string inheritedRule in g.RuleDependencies[rule])
-                        {
-                            if (!allRules.ContainsKey(inheritedRule) && !overwrittenRules.Contains(inheritedRule))
-                            {
-                                overwrittenRules.Add(inheritedRule);
-                                CollectInheritedRules(g, inheritedRule);
-                            }
-                        }
+                        CollectOverriddenRules(g, rule);
                     }
                 }
             }
         }
 
-        private void CollectInheritedRules(GrammarInfo grammar, string rule)
+        private void CollectOverriddenRules(GrammarInfo grammar, string rule)
         {
-            // Look for dependent non-terminals in inherited grammars
-            foreach (var g in EnumerateGrammars(true))
+            // Find all rules in the grammar that have the passed rule in their production
+            // These rules need to be inherited into the current namespace
+
+            if (grammar.RuleDependencies.ContainsKey(rule))
             {
-                if (g.RuleDependencies.ContainsKey(rule))
+                foreach (var r in grammar.RuleDependencies[rule])
                 {
-                    foreach (string inheritedRule in g.RuleDependencies[rule])
+                    // r has rule in its production list, so it needs to be inherited
+                    // into the current namespace
+
+                    if (!allRules.ContainsKey(r) && !overriddenRules.Contains(r))
                     {
-                        if (!allRules.ContainsKey(inheritedRule) && !overwrittenRules.Contains(inheritedRule))
+                        overriddenRules.Add(r);
+
+                        // Now do the whole thing recursively to get to the
+                        // root node of the base grammar.
+                        foreach (var g in grammar.EnumerateGrammars(true))
                         {
-                            overwrittenRules.Add(inheritedRule);
-                            CollectInheritedRules(g, inheritedRule);
+                            CollectOverriddenRules(g, r);
                         }
                     }
                 }
@@ -378,24 +380,23 @@ namespace Jhu.Graywulf.ParserLib
         /// <param name="inheritedGrammar"></param>
         /// <param name="inheritedRule"></param>
         /// <returns></returns>
-        public Expression GetRuleExpression(string name, out bool isInherited, out bool isOverwritten, out GrammarInfo inheritedGrammar, out string inheritedRule)
+        public Expression GetRuleExpression(string name, out bool isInherited, out GrammarInfo inheritedGrammar, out string inheritedRule)
         {
             // This is a rule that has to be inherited from the base grammar because
             // something in its production is overwritten
-            if (overwrittenRules.Contains(name))
+            if (overriddenRules.Contains(name))
             {
-                return GetInheritedRuleExpression(name, out isInherited, out isOverwritten, out inheritedGrammar, out inheritedRule);
+                return GetInheritedRuleExpression(name, out isInherited, out inheritedGrammar, out inheritedRule);
             }
             else
             {
-                return GetLocalRuleExpression(name, out isInherited, out isOverwritten, out inheritedGrammar, out inheritedRule);
+                return GetLocalRuleExpression(name, out isInherited, out inheritedGrammar, out inheritedRule);
             }
         }
 
-        private Expression GetInheritedRuleExpression(string name, out bool isInherited, out bool isOverwritten, out GrammarInfo inheritedGrammar, out string inheritedRule)
+        private Expression GetInheritedRuleExpression(string name, out bool isInherited, out GrammarInfo inheritedGrammar, out string inheritedRule)
         {
             isInherited = true;
-            isOverwritten = true;
             inheritedGrammar = FindDefiningGrammar(name, false);
             inheritedRule = name;
 
@@ -405,13 +406,12 @@ namespace Jhu.Graywulf.ParserLib
             return rule;
         }
 
-        private Expression GetLocalRuleExpression(string name, out bool isInherited, out bool isOverwritten, out GrammarInfo inheritedGrammar, out string inheritedRule)
+        private Expression GetLocalRuleExpression(string name, out bool isInherited, out GrammarInfo inheritedGrammar, out string inheritedRule)
         {
             LambdaExpression exp = null;
             Expression rule = null;
 
             isInherited = false;
-            isOverwritten = false;
             inheritedGrammar = null;
             inheritedRule = null;
 
@@ -422,68 +422,53 @@ namespace Jhu.Graywulf.ParserLib
             if (rule.NodeType != ExpressionType.Call)
             {
                 isInherited = false;
-                isOverwritten = true;
                 return rule;
             }
             
-            // There are four cases of rule inheritance:
-
-            // 1. The rule is an Inherit() without parameters
-            //    The match class is inherited into the new namespace with the same name but the
-            //    rule is kept the original
-
-            // 2. The rule is an Inherit(newproduction)
-            //    In this case the match class is inherited into the new
-            //    namespace and the match rule is overwritten
-
-            // 3. The rule with the same name is defined in the inherited grammar
-            //    In this case we throw an exception
-
             var method = ((MethodCallExpression)rule).Method;
             var args = ((MethodCallExpression)rule).Arguments.ToArray();
 
-            if (rule != null && method != null && method.Name == "Inherit")
+            if (rule != null && method != null && method.Name == "Override")
             {
-                if (args.Length == 0)
+                if (args.Length == 1)
                 {
-                    // Inherit rule with the same name
+                    // Override the rule with a new production
                     inheritedGrammar = FindDefiningGrammar(name, false);
                     inheritedRule = name;
-                    isOverwritten = false;
                     isInherited = true;
-                }
-                else if (args.Length == 1)
-                {
-                    // Inherit rule with a new name
-                    inheritedGrammar = FindDefiningGrammar(name, true);
-                    inheritedRule = ((MemberExpression)args[0]).Member.Name;
-                    isOverwritten = false;
-                    isInherited = true;
+
+                    // This is the new rule for which the match will be generated
+                    rule = args[0];
                 }
                 else
                 {
                     throw new NotImplementedException();
                 }
             }
-            else if (rule != null && method != null && method.Name == "Override")
+            else if (rule != null && method != null && method.Name == "Inherit")
             {
-                if (args.Length == 1)
+                if (args.Length == 0)
                 {
-                    // Inherit rule with the same name but overwrite production
+                    // Explicitly inherit rule into the current namespace with the same name
+                    // and same production
                     inheritedGrammar = FindDefiningGrammar(name, false);
                     inheritedRule = name;
-                    isOverwritten = true;
                     isInherited = true;
-
-                    // This is the new rule for which the match will be generated
-                    rule = args[0];
+                    rule = null;
+                }
+                else if (args.Length == 1)
+                {
+                    // Inherit rule with a new name and the same production into the current namespace
+                    inheritedRule = ((MemberExpression)args[0]).Member.Name;
+                    inheritedGrammar = FindDefiningGrammar(inheritedRule, true);
+                    isInherited = true;
+                    rule = null;
                 }
                 else if (args.Length == 2)
                 {
-                    // Inherit rule with a new name and override production
-                    inheritedGrammar = FindDefiningGrammar(name, true);
+                    // Inherit rule with a new name and new production into the namespace
                     inheritedRule = ((MemberExpression)args[0]).Member.Name;
-                    isOverwritten = true;
+                    inheritedGrammar = FindDefiningGrammar(inheritedRule, true);
                     isInherited = true;
 
                     // This is the new rule for which the match will be generated
@@ -507,7 +492,6 @@ namespace Jhu.Graywulf.ParserLib
                         name, grammarType.FullName));
                 }
 
-                isOverwritten = true;
                 isInherited = false;
             }
 

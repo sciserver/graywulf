@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.ParserLib
         private bool skipArgument;
         private bool isInheritRule;
         private bool isOverrideRule;
-        private string inheritedRule;
+        private string baseRule;
         private HashSet<MemberInfo> referencedRules;
         
         public bool IsInheritedRule
@@ -29,9 +29,9 @@ namespace Jhu.Graywulf.ParserLib
             get { return isOverrideRule; }
         }
 
-        public string InheritedRule
+        public string BaseRule
         {
-            get { return inheritedRule; }
+            get { return baseRule; }
         }
 
         public HashSet<MemberInfo> ReferencedRules
@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.ParserLib
             skipArgument = false;
             isInheritRule = false;
             isOverrideRule = false;
-            inheritedRule = null;
+            baseRule = null;
             referencedRules = new HashSet<MemberInfo>();
         }
 
@@ -60,12 +60,17 @@ namespace Jhu.Graywulf.ParserLib
 
                 if (args.Length == 0)
                 {
-                    inheritedRule = null;
+                    baseRule = null;
                     skipArgument = false;
                 }
                 else if (args.Length == 1)
                 {
-                    inheritedRule = ((MemberExpression)args[0]).Member.Name;
+                    baseRule = ((MemberExpression)args[0]).Member.Name;
+                    skipArgument = true;
+                }
+                else if (args.Length == 2)
+                {
+                    baseRule = ((MemberExpression)args[0]).Member.Name;
                     skipArgument = true;
                 }
                 else
@@ -79,13 +84,8 @@ namespace Jhu.Graywulf.ParserLib
 
                 if (args.Length == 1)
                 {
-                    inheritedRule = null;
+                    baseRule = null;
                     skipArgument = false;
-                }
-                else if (args.Length == 2)
-                {
-                    inheritedRule = ((MemberExpression)args[0]).Member.Name;
-                    skipArgument = true;
                 }
                 else
                 {

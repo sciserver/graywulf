@@ -9,23 +9,37 @@ namespace Jhu.Graywulf.ParserLib.Test
         Comparer = "StringComparer.InvariantCultureIgnoreCase", RootToken = "TestNS.List")]
     class InheritedGrammar : TestGrammar
     {
-        // This should force inheriting BaseRule2 and BaseRule3
-        public static new Expression<Rule> List = () => Inherit();
-
-        public static Expression<Rule> List3 = () => Inherit(List);
-
-        public static Expression<Rule> List4 = () => Inherit(List3);
-
-        public static new Expression<Rule> BaseRule1 = () => Inherit();
-
-        // This should force inheriting BaseRule3
-        public static new Expression<Rule> BaseRule4 = () =>
+        // This will force inheriting BaseRule1 and BaseRule5
+        public static new Expression<Rule> List = () =>
             Override
             (
-                Sequence(Word, Comma, Comma, Word, List)
+                Sequence(List, Comma, List)
             );
 
-        // This should force inheriting BaseRule5
-        public static new Expression<Rule> BaseRule6 = () => Inherit();
+        // This overrides single rule
+        public static new Expression<Rule> BaseRule1 = () => 
+            Override
+            (
+                Sequence(List, Comma, List)
+            );
+
+        // This should force inheriting BaseRule2
+        public static new Expression<Rule> BaseRule3 = () =>
+            Override
+            (
+                Sequence
+                (
+                    Word, Comma, Comma, Word, BaseRule4
+                )
+            );
+
+        // This is a new rule, it should show up among dependencies
+        // but should not force any inheritance into the current
+        // namespace
+        public static Expression<Rule> NewRule = () =>
+            Sequence
+            (
+                BaseRule4
+            );
     }
 }

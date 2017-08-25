@@ -51,12 +51,12 @@ namespace Jhu.Graywulf.ParserLib
             return null;
         }
 
-        public static Expression Override(Expression parent)
+        public static Expression Inherit(Expression<Rule> inheritedRule, Expression expression)
         {
             return null;
         }
 
-        public static Expression Override(Expression<Rule> inheritedRule, Expression expression)
+        public static Expression Override(Expression expression)
         {
             return null;
         }

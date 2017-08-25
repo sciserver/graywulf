@@ -579,10 +579,8 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 SelectStatement,
                 InsertStatement,
                 UpdateStatement,
-                DeleteStatement,
-                // TODO: MergeStatement
-
-                CommonTableExpression
+                DeleteStatement
+            // TODO: MergeStatement
             );
 
         #endregion
@@ -906,18 +904,14 @@ FOR select_statement
             );
 
         public static Expression<Rule> Subquery = () =>
-            Override
+            Sequence
             (
-                SelectStatement,
-                Sequence
-                (
-                    BracketOpen,
-                    May(CommentOrWhitespace),
-                    QueryExpression,
-                    May(Sequence(May(CommentOrWhitespace), OrderByClause)),
-                    May(CommentOrWhitespace),
-                    BracketClose
-                )
+                BracketOpen,
+                May(CommentOrWhitespace),
+                QueryExpression,
+                May(Sequence(May(CommentOrWhitespace), OrderByClause)),
+                May(CommentOrWhitespace),
+                BracketClose
             );
 
         public static Expression<Rule> QueryExpression = () =>
@@ -1198,7 +1192,7 @@ FOR select_statement
                 Keyword("BY"),
                 May(CommentOrWhitespace),
                 OrderByList
-                // TODO: add OFFSET .. FETCH but do it as a separate clause to select so that order by clause can be used in ranking functions
+            // TODO: add OFFSET .. FETCH but do it as a separate clause to select so that order by clause can be used in ranking functions
             );
 
         public static Expression<Rule> OrderByList = () =>
@@ -1223,10 +1217,10 @@ FOR select_statement
             (
                 Keyword("WITH"),
                 May(CommentOrWhitespace),
-                BracketOpen, 
+                BracketOpen,
                 May(CommentOrWhitespace),
                 TableHintList,
-                May(CommentOrWhitespace), 
+                May(CommentOrWhitespace),
                 BracketClose
             );
 
@@ -1247,11 +1241,11 @@ FOR select_statement
             Sequence
             (
                 Keyword("OPTION"),
-                May(CommentOrWhitespace), 
-                BracketOpen, 
+                May(CommentOrWhitespace),
+                BracketOpen,
                 May(CommentOrWhitespace),
                 QueryHintList,
-                May(CommentOrWhitespace), 
+                May(CommentOrWhitespace),
                 BracketClose
             );
 
@@ -1261,7 +1255,7 @@ FOR select_statement
                 QueryHint,
                 May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), QueryHintList))
             );
-        
+
         public static Expression<Rule> QueryHint = () =>
             Must(
                 Sequence(Identifier, May(CommentOrWhitespace), FunctionArguments),

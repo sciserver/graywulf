@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.ParserLib.Test
         public static Expression<Rule> BaseRule5 = () =>
             Sequence
             (
-                Word, Comma, Word, BaseRule6
+                Word, Comma, List, BaseRule6
             );
 
         public static Expression<Rule> BaseRule6 = () =>

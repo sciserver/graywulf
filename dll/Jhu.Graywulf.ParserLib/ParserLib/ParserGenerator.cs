@@ -224,7 +224,7 @@ namespace Jhu.Graywulf.ParserLib
 
             // Classes that have to be inherited because they depend
             // on overwritten rules
-            foreach (string name in grammar.OverwrittenRules)
+            foreach (string name in grammar.OverriddenRules)
             {
                 if (!grammar.AllRules.ContainsKey(name))
                 {
@@ -247,17 +247,16 @@ namespace Jhu.Graywulf.ParserLib
             var resstr = "res";
 
             // Figure out whether this rule is inherited or not 
-            bool inherit;
-            bool overwrite;
+            bool isInherited;
             GrammarInfo inheritedGrammar;
             string inheritedRule;
             string inheritedType;
-            var rule = grammar.GetRuleExpression(name, out inherit, out overwrite, out inheritedGrammar, out inheritedRule);
+            var rule = grammar.GetRuleExpression(name, out isInherited, out inheritedGrammar, out inheritedRule);
 
             // Generate matching code
             StringBuilder match = null;
 
-            if (overwrite)
+            if (rule != null)
             {
                 // In this case we generate a new match logic
                 // This recreates the match logic even if the production of the rule didn't
@@ -273,7 +272,7 @@ namespace Jhu.Graywulf.ParserLib
                 // Inherit the match logic from the base class
             }
 
-            if (inherit)
+            if (isInherited)
             {
                 inheritedType = String.Format("{0}.{1}", inheritedGrammar.Namespace, inheritedRule);
             }
@@ -469,7 +468,7 @@ namespace Jhu.Graywulf.ParserLib
         /// <returns></returns>
         private string GenerateRuleMatch(GrammarInfo grammar, string name)
         {
-            var g = grammar.FindOverwritingGrammar(name);
+            var g = grammar.FindOverridingGrammar(name);
 
             //return String.Format("Match(parser, new {0}.{1}())", ns, name);
             return String.Format(
