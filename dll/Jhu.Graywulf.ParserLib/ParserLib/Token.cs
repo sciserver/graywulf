@@ -102,7 +102,7 @@ namespace Jhu.Graywulf.ParserLib
 
         public override string ToString()
         {
-            return Value.Replace("\r\n", " ");
+            return GetType().FullName + ":" + Value.Replace("\r\n", " ");
         }
     }
 }

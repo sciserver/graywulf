@@ -345,21 +345,7 @@ namespace Jhu.Graywulf.ParserLib
         #endregion
         #region Interpreter functions
 
-        /// <summary>
-        /// When overriden in derived classes, replaces a parsing tree element with
-        /// a derived class, based on descendant elements of the subtree
-        /// </summary>
-        /// <returns></returns>
-        public virtual Node Exchange()
-        {
-            return this;
-        }
-
-        public virtual void Interpret()
-        {
-        }
-
-        internal void ExchangeChildren()
+        internal void ExchangeChildren(Parser parser)
         {
             var item = stack.First;
 
@@ -370,15 +356,14 @@ namespace Jhu.Graywulf.ParserLib
                 if (o is Node)
                 {
                     var node = (Node)o;
-                    node.ExchangeChildren();
-                    node.Parent = this;
-                    item.Value = node.Exchange();
+                    node.ExchangeChildren(parser);
+                    item.Value = parser.Exchange(node);
                 }
 
                 item = item.Next;
             }
         }
-
+        
         internal void InterpretChildren()
         {
             var item = stack.First;
@@ -396,6 +381,10 @@ namespace Jhu.Graywulf.ParserLib
 
                 item = item.Next;
             }
+        }
+
+        public virtual void Interpret()
+        {
         }
 
         #endregion

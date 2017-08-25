@@ -60,10 +60,13 @@ namespace Jhu.Graywulf.ParserLib
                 if (rootToken is Node)
                 {
                     var node = (Node)rootToken;
-                    node.ExchangeChildren();
-                    node = node.Exchange();
+
+                    node.ExchangeChildren(this);
+                    node = Exchange(node);
+
                     node.InterpretChildren();
                     node.Interpret();
+
                     return node;
                 }
                 else
@@ -73,13 +76,25 @@ namespace Jhu.Graywulf.ParserLib
             }
             else
             {
-                int p, line, col;
+                int line, col;
                 GetLineCol(maxpos, out line, out col);
                 var ex = new ParserException(String.Format(ExceptionMessages.NotUnderstandableToken, line + 1, col + 1));
                 ex.Pos = maxpos; ex.Line = line; ex.Col = col;
                 throw ex;
             }
         }
+
+        /// <summary>
+        /// When overriden in derived classes, optionally exchanges the node to something
+        /// else during parsing. Use this to replace tokens based on ascendents.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        internal protected virtual Node Exchange(Node node)
+        {
+            return node;
+        }
+
 
         internal void Advance(int count)
         {
