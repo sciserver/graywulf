@@ -22,8 +22,8 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var sql = "table1";
             var exp = TablenameTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
         }
 
         [TestMethod]
@@ -31,9 +31,9 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var sql = "schema1.table1";
             var exp = TablenameTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().ToString());
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
         }
 
         [TestMethod]
@@ -41,10 +41,10 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var sql = "database1.schema1.table1";
             var exp = TablenameTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().ToString());
-            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().ToString());
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().Value);
+            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
         }
 
         [TestMethod]
@@ -52,9 +52,9 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var sql = "database1..table1";
             var exp = TablenameTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().ToString());
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
         }
 
         [TestMethod]
@@ -62,11 +62,11 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var sql = "dataset:database1.schema1.table1";
             var exp = TablenameTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("dataset", exp.FindDescendantRecursive<DatasetName>().ToString());
-            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().ToString());
-            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().ToString());
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("dataset", exp.FindDescendantRecursive<DatasetName>().Value);
+            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().Value);
+            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
         }
 
         [TestMethod]
@@ -74,11 +74,11 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var sql = "dataset : database1 . schema1 . table1";
             var exp = TablenameTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("dataset", exp.FindDescendantRecursive<DatasetName>().ToString());
-            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().ToString());
-            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().ToString());
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("dataset", exp.FindDescendantRecursive<DatasetName>().Value);
+            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().Value);
+            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
         }
     }
 }

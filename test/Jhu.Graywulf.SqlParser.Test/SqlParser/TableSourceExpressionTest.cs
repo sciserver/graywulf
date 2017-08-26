@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.SqlParser.Test
 
             var exp = ExpressionTestHelper(sql);
 
-            Assert.AreEqual("table1", exp.ToString());
+            Assert.AreEqual("table1", exp.Value);
         }
 
         [TestMethod]
@@ -35,8 +35,8 @@ namespace Jhu.Graywulf.SqlParser.Test
 
             var exp = ExpressionTestHelper(sql);
 
-            Assert.AreEqual("table1 t", exp.ToString());
-            Assert.AreEqual("t", exp.FindDescendantRecursive<TableAlias>().ToString());
+            Assert.AreEqual("table1 t", exp.Value);
+            Assert.AreEqual("t", exp.FindDescendantRecursive<TableAlias>().Value);
         }
 
         [TestMethod]
@@ -46,8 +46,8 @@ namespace Jhu.Graywulf.SqlParser.Test
 
             var exp = ExpressionTestHelper(sql);
 
-            Assert.AreEqual("dbo.TableValuedFunction() f", exp.ToString());
-            Assert.AreEqual("f", exp.FindDescendantRecursive<TableAlias>().ToString());
+            Assert.AreEqual("dbo.TableValuedFunction() f", exp.Value);
+            Assert.AreEqual("f", exp.FindDescendantRecursive<TableAlias>().Value);
         }
 
         [TestMethod]
@@ -57,7 +57,7 @@ namespace Jhu.Graywulf.SqlParser.Test
 
             var exp = ExpressionTestHelper(sql);
 
-            Assert.AreEqual("@table", exp.ToString());
+            Assert.AreEqual("@table", exp.Value);
         }
 
         [TestMethod]
@@ -67,8 +67,8 @@ namespace Jhu.Graywulf.SqlParser.Test
 
             var exp = ExpressionTestHelper(sql);
 
-            Assert.AreEqual("(SELECT column2 FROM table2) s", exp.ToString());
-            Assert.AreEqual("s", exp.FindDescendantRecursive<TableAlias>().ToString());
+            Assert.AreEqual("(SELECT column2 FROM table2) s", exp.Value);
+            Assert.AreEqual("s", exp.FindDescendantRecursive<TableAlias>().Value);
         }
 
         [TestMethod]
@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.SqlParser.Test
 
             var exp = ExpressionTestHelper(sql);
 
-            Assert.AreEqual("table1, table2", exp.ToString());
+            Assert.AreEqual("table1, table2", exp.Value);
         }
 
         [TestMethod]
@@ -88,7 +88,7 @@ namespace Jhu.Graywulf.SqlParser.Test
 
             var exp = ExpressionTestHelper(sql);
 
-            Assert.AreEqual("table1 CROSS JOIN table2", exp.ToString());
+            Assert.AreEqual("table1 CROSS JOIN table2", exp.Value);
         }
 
         [TestMethod]
@@ -98,7 +98,7 @@ namespace Jhu.Graywulf.SqlParser.Test
 
             var exp = ExpressionTestHelper(sql);
 
-            Assert.AreEqual("table1 t1 INNER JOIN table2 t2 ON t1.ID = t2.ID", exp.ToString());
+            Assert.AreEqual("table1 t1 INNER JOIN table2 t2 ON t1.ID = t2.ID", exp.Value);
         }
 
         [TestMethod]

@@ -22,9 +22,9 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var sql = "a|b";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("a|b", exp.ToString());
-            Assert.AreEqual("|", exp.FindDescendantRecursive<BitwiseOr>().ToString());
-            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnName>().ToString());
+            Assert.AreEqual("a|b", exp.Value);
+            Assert.AreEqual("|", exp.FindDescendantRecursive<BitwiseOr>().Value);
+            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnName>().Value);
         }
 
         // *** TODO: write rest of tests

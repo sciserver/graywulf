@@ -22,8 +22,8 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var sql = "-1";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("-", exp.FindDescendantRecursive<Minus>().ToString());
-            Assert.AreEqual("1", exp.FindDescendantRecursive<Number>().ToString());
+            Assert.AreEqual("-", exp.FindDescendantRecursive<Minus>().Value);
+            Assert.AreEqual("1", exp.FindDescendantRecursive<Number>().Value);
         }
 
         [TestMethod]
@@ -31,8 +31,8 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var sql = "+1";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("+", exp.FindDescendantRecursive<Plus>().ToString());
-            Assert.AreEqual("1", exp.FindDescendantRecursive<Number>().ToString());
+            Assert.AreEqual("+", exp.FindDescendantRecursive<Plus>().Value);
+            Assert.AreEqual("1", exp.FindDescendantRecursive<Number>().Value);
         }
 
         [TestMethod]
@@ -40,8 +40,8 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var sql = "~1";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("~", exp.FindDescendantRecursive<BitwiseNot>().ToString());
-            Assert.AreEqual("1", exp.FindDescendantRecursive<Number>().ToString());
+            Assert.AreEqual("~", exp.FindDescendantRecursive<BitwiseNot>().Value);
+            Assert.AreEqual("1", exp.FindDescendantRecursive<Number>().Value);
         }
 
         [TestMethod]
@@ -49,9 +49,9 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var sql = "+ 1";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("+ 1", exp.ToString());
-            Assert.AreEqual("+", exp.FindDescendantRecursive<Plus>().ToString());
-            Assert.AreEqual("1", exp.FindDescendantRecursive<Number>().ToString());
+            Assert.AreEqual("+ 1", exp.Value);
+            Assert.AreEqual("+", exp.FindDescendantRecursive<Plus>().Value);
+            Assert.AreEqual("1", exp.FindDescendantRecursive<Number>().Value);
         }
     
     }

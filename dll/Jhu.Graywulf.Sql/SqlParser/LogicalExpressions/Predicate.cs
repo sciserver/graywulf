@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.SqlParser.LogicalExpressions
 
         public override string ToString()
         {
-            return Value.ToString().Trim();
+            return Value.Value.Trim();
         }
     }
 }

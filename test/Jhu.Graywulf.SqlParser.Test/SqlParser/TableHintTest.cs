@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.SqlParser.Test
 
             var hints = TableHintTestHelper(sql);
 
-            Assert.AreEqual("NOLOCK", hints[0].ToString());
+            Assert.AreEqual("NOLOCK", hints[0].Value);
         }
 
 
@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.SqlParser.Test
 
             var hints = TableHintTestHelper(sql);
 
-            Assert.AreEqual("NOLOCK", hints[0].ToString());
+            Assert.AreEqual("NOLOCK", hints[0].Value);
         }
 
 
@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.SqlParser.Test
 
             var hints = TableHintTestHelper(sql);
 
-            Assert.AreEqual("NOLOCK", hints[0].ToString());
+            Assert.AreEqual("NOLOCK", hints[0].Value);
         }
     }
 }

@@ -22,9 +22,9 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var sql = "SELECT * FROM dbo.TVF(0) AS t";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().ToString());
-            Assert.AreEqual("dbo.TVF(0)", exp.FindDescendantRecursive<TableValuedFunctionCall>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().Value);
+            Assert.AreEqual("dbo.TVF(0)", exp.FindDescendantRecursive<TableValuedFunctionCall>().Value);
         }
 
     }

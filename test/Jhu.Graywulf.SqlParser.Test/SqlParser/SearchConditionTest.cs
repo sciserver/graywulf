@@ -122,7 +122,7 @@ namespace Jhu.Graywulf.SqlParser.Test
         private string GetParsingTreeTestHelper(string sql)
         {
             var exp = GetSearchCondition(sql).GetExpressionTree();
-            return exp.GetParsingTree().ToString();
+            return exp.GetParsingTree().Value;
         }
 
         [TestMethod]

@@ -22,9 +22,9 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var sql = "SELECT * FROM table1";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().ToString());
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
         }
 
         [TestMethod]
@@ -32,10 +32,10 @@ namespace Jhu.Graywulf.SqlParser.Test
         {
             var sql = "SELECT * FROM table1 ORDER BY a";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().ToString());
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
-            Assert.AreEqual("a", exp.FindDescendantRecursive<OrderByClause>().FindDescendantRecursive<ColumnName>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
+            Assert.AreEqual("a", exp.FindDescendantRecursive<OrderByClause>().FindDescendantRecursive<ColumnName>().Value);
         }
 
         [TestMethod]
@@ -48,7 +48,7 @@ SELECT b FROM table2";
 
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("UNION", exp.FindDescendantRecursive<QueryOperator>().ToString());
+            Assert.AreEqual("UNION", exp.FindDescendantRecursive<QueryOperator>().Value);
         }
 
         [TestMethod]
@@ -62,7 +62,7 @@ ORDER BY 1";
 
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("UNION", exp.FindDescendantRecursive<QueryOperator>().ToString());
+            Assert.AreEqual("UNION", exp.FindDescendantRecursive<QueryOperator>().Value);
         }
 
         [TestMethod]
@@ -70,8 +70,8 @@ ORDER BY 1";
         {
             var sql = "SELECT DISTINCT a FROM table1";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
         }
 
         [TestMethod]
@@ -79,9 +79,9 @@ ORDER BY 1";
         {
             var sql = "SELECT TOP 10 a FROM table1";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("10", exp.FindDescendantRecursive<TopExpression>().FindDescendantRecursive<Number>().ToString());
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("10", exp.FindDescendantRecursive<TopExpression>().FindDescendantRecursive<Number>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
         }
 
         [TestMethod]
@@ -89,9 +89,9 @@ ORDER BY 1";
         {
             var sql = "SELECT a, b, c, d FROM table1";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
+            Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual(4, exp.FindDescendantRecursive<SelectList>().EnumerateDescendantsRecursive<ColumnExpression>().Count());
-            Assert.AreEqual("a, b, c, d", exp.FindDescendantRecursive<SelectList>().ToString());
+            Assert.AreEqual("a, b, c, d", exp.FindDescendantRecursive<SelectList>().Value);
         }
 
         [TestMethod]
@@ -99,8 +99,8 @@ ORDER BY 1";
         {
             var sql = "SELECT a, b, c, d INTO table1 FROM table2";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<IntoClause>().FindDescendantRecursive<TableName>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<IntoClause>().FindDescendantRecursive<TableName>().Value);
         }
 
         [TestMethod]
@@ -108,7 +108,7 @@ ORDER BY 1";
         {
             var sql = "SELECT 1";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
+            Assert.AreEqual(sql, exp.Value);
         }
 
         [TestMethod]
@@ -116,8 +116,8 @@ ORDER BY 1";
         {
             var sql = "SELECT a WHERE ID = 12";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("ID = 12", exp.FindDescendantRecursive<WhereClause>().FindDescendantRecursive<BooleanExpression>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("ID = 12", exp.FindDescendantRecursive<WhereClause>().FindDescendantRecursive<BooleanExpression>().Value);
         }
 
         [TestMethod]
@@ -125,8 +125,8 @@ ORDER BY 1";
         {
             var sql = "SELECT AVG(a) FROM table1 GROUP BY ID";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("ID", exp.FindDescendantRecursive<GroupByClause>().FindDescendant<GroupByList>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("ID", exp.FindDescendantRecursive<GroupByClause>().FindDescendant<GroupByList>().Value);
         }
 
         [TestMethod]
@@ -134,8 +134,8 @@ ORDER BY 1";
         {
             var sql = "SELECT AVG(a) FROM table1 HAVING AVG(ID) > 1";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual(sql, exp.ToString());
-            Assert.AreEqual("AVG(ID) > 1", exp.FindDescendantRecursive<HavingClause>().FindDescendant<BooleanExpression>().ToString());
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("AVG(ID) > 1", exp.FindDescendantRecursive<HavingClause>().FindDescendant<BooleanExpression>().Value);
         }
     }
 }
