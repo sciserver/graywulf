@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jhu.Graywulf.ParserLib
+namespace Jhu.Graywulf.Parsing
 {
     [Serializable]
     public class ParserException : Exception

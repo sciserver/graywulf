@@ -10,7 +10,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.CSharp;
 
-namespace Jhu.Graywulf.ParserLib.Test
+namespace Jhu.Graywulf.Parsing.Generator
 {
     [TestClass]
     public class ParserGeneratorTest
@@ -49,14 +49,14 @@ namespace Jhu.Graywulf.ParserLib.Test
                 return t.Assembly;
             }
 
-            var source = Path.Combine(Path.GetDirectoryName(typeof(Grammar).Assembly.Location), grammar.Name + ".cs");
-            var output = Path.Combine(Path.GetDirectoryName(typeof(Grammar).Assembly.Location), grammar.Name + ".dll");
+            var source = grammar.Name + ".cs";
+            var output = grammar.Name + ".dll";
             File.WriteAllText(source, code);
 
             var cp = new CompilerParameters();
             cp.ReferencedAssemblies.Add("System.dll");
             cp.ReferencedAssemblies.Add("System.Core.dll");
-            cp.ReferencedAssemblies.Add(typeof(Grammar).Assembly.Location);
+            cp.ReferencedAssemblies.Add(typeof(Parser).Assembly.Location);
             AddInheritedGrammarReference(cp, grammar);
 
             cp.OutputAssembly = output;
@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.ParserLib.Test
             }
             else
             {
-                return Assembly.LoadFile(output);
+                return Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, output));
             }
         }
 

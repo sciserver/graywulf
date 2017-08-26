@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace Jhu.Graywulf.ParserLib
+namespace Jhu.Graywulf.Parsing
 {
     public class CodeGenerator
     {

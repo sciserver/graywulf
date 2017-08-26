@@ -10,8 +10,8 @@
     <ProjectGuid>{131EA75A-8232-42EE-8FDA-0102D6F83D9A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jhu.Graywulf.ParserLib.Test</RootNamespace>
-    <AssemblyName>Jhu.Graywulf.ParserLib.Test</AssemblyName>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
+    <AssemblyName>Jhu.Graywulf.Parsing.Generator.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -49,10 +49,10 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ParserLib\GrammarInfoTest.cs" />
-    <Compile Include="ParserLib\InheritedGrammar.cs" />
-    <Compile Include="ParserLib\ParserGeneratorTest.cs" />
-    <Compile Include="ParserLib\TestGrammar.cs" />
+    <Compile Include="Parsing\Generator\GrammarInfoTest.cs" />
+    <Compile Include="Parsing\Generator\InheritedGrammar.cs" />
+    <Compile Include="Parsing\Generator\ParserGeneratorTest.cs" />
+    <Compile Include="Parsing\Generator\TestGrammar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -60,9 +60,13 @@
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.ParserLib\Jhu.Graywulf.ParserLib.csproj">
-      <Project>{4039B7D0-F8E5-49D8-A770-133DBED2EA75}</Project>
-      <Name>Jhu.Graywulf.ParserLib</Name>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Parsing.Generator\Jhu.Graywulf.Parsing.Generator.csproj">
+      <Project>{f4bb3377-5edc-4989-899d-ef7c89ba1632}</Project>
+      <Name>Jhu.Graywulf.Parsing.Generator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Parsing\Jhu.Graywulf.Parsing.csproj">
+      <Project>{6215a919-1626-4f32-8c16-5764243b2748}</Project>
+      <Name>Jhu.Graywulf.Parsing</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

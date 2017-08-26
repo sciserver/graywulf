@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace Jhu.Graywulf.ParserLib
+namespace Jhu.Graywulf.Parsing.Generator
 {
     class KeywordVisitor : ExpressionVisitor
     {

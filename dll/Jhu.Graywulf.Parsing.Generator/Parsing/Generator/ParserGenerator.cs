@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.IO;
 
-namespace Jhu.Graywulf.ParserLib
+namespace Jhu.Graywulf.Parsing.Generator
 {
     /// <summary>
     /// Represents a parser generator object that can be used to

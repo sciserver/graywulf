@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Reflection;
 
-namespace Jhu.Graywulf.ParserLib
+namespace Jhu.Graywulf.Parsing.Generator
 {
     internal class GrammarInfo
     {

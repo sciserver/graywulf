@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace Jhu.Graywulf.ParserLib.Test
+namespace Jhu.Graywulf.Parsing.Generator
 {
     [Grammar(Namespace = "InheritedNS", ParserName = "InheritedParser",
         Comparer = "StringComparer.InvariantCultureIgnoreCase", RootToken = "TestNS.List")]

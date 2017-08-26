@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Jhu.Graywulf.ParserLib
+namespace Jhu.Graywulf.Parsing
 {
     /// <summary>
     /// Represents a token that matches keywords

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jhu.Graywulf.ParserLib {
+namespace Jhu.Graywulf.Parsing {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.ParserLib {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Jhu.Graywulf.ParserLib.ExceptionMessages", typeof(ExceptionMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Jhu.Graywulf.Parsing.ExceptionMessages", typeof(ExceptionMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -66,33 +66,6 @@ namespace Jhu.Graywulf.ParserLib {
         internal static string NotUnderstandableToken {
             get {
                 return ResourceManager.GetString("NotUnderstandableToken", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The rule with the same name &apos;{0}&apos; exists in the inherited grammar &apos;{1}&apos;. Use and Inherit rule..
-        /// </summary>
-        internal static string RuleExistsUseInherit {
-            get {
-                return ResourceManager.GetString("RuleExistsUseInherit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Rule &apos;{0}&apos; must be a lambda expression..
-        /// </summary>
-        internal static string RuleNotLambda {
-            get {
-                return ResourceManager.GetString("RuleNotLambda", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The static field &apos;{0]&apos; of grammar &apos;{1}&apos; has an unrecognized type..
-        /// </summary>
-        internal static string UnrecognizedType {
-            get {
-                return ResourceManager.GetString("UnrecognizedType", resourceCulture);
             }
         }
     }

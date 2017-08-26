@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace Jhu.Graywulf.ParserLib
+namespace Jhu.Graywulf.Parsing.Generator
 {
     /// <summary>
     /// This dummy class is used to define a grammar

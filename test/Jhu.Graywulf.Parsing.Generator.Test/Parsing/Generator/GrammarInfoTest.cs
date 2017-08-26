@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.CSharp;
 
 
-namespace Jhu.Graywulf.ParserLib.Test
+namespace Jhu.Graywulf.Parsing.Generator
 {
     [TestClass]
     public class GrammarInfoTest
