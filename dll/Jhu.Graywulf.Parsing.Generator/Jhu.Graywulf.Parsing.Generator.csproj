@@ -69,6 +69,8 @@
       <DependentUpon>Templates.resx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="post-build.ps1" />
+    <None Include="pre-build.ps1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jhu.Graywulf.Parsing\Jhu.Graywulf.Parsing.csproj">

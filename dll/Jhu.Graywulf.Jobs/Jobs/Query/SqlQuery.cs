@@ -11,7 +11,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
-using Jhu.Graywulf.ParserLib;
+using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.SqlCodeGen;
 using Jhu.Graywulf.IO;

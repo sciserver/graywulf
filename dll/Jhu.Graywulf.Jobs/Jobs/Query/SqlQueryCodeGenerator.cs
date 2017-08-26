@@ -6,7 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.ParserLib;
+using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.SqlCodeGen.SqlServer;
 using Jhu.Graywulf.Schema;

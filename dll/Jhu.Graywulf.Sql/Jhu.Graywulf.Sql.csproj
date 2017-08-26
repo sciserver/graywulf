@@ -160,6 +160,7 @@
     <Compile Include="SqlParser\SimpleTableSource.cs" />
     <Compile Include="SqlParser\SqlNameResolver.cs" />
     <Compile Include="SqlParser\SqlParser.cs" />
+    <Compile Include="SqlParser\SqlParser.g.cs" />
     <Compile Include="SqlParser\SqlValidator.cs" />
     <Compile Include="SqlParser\StringConstant.cs" />
     <Compile Include="SqlParser\Subquery.cs" />
@@ -192,6 +193,10 @@
     <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Parsing\Jhu.Graywulf.Parsing.csproj">
+      <Project>{6215a919-1626-4f32-8c16-5764243b2748}</Project>
+      <Name>Jhu.Graywulf.Parsing</Name>
     </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
       <Project>{5868B518-CBFC-43FB-B9C8-C617A65121C4}</Project>

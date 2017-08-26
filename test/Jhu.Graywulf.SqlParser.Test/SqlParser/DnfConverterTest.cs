@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.ParserLib;
+using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.Schema;
 

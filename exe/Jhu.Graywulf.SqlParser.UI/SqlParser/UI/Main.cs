@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Linq;
 using Jhu.Graywulf.Jobs.Query;
-using Jhu.Graywulf.ParserLib;
+using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 
@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Parser.Test
                 //queryFactory = new Jhu.SkyQuery.Jobs.Query.XMatchQueryFactory();
                 queryFactory = QueryFactory.Create(typeof(Jhu.Graywulf.Jobs.Query.SqlQueryFactory).AssemblyQualifiedName, null);
 
-                Jhu.Graywulf.ParserLib.Parser parser = queryFactory.CreateParser();
+                Jhu.Graywulf.Parsing.Parser parser = queryFactory.CreateParser();
 
                 rootNode = (Node)parser.Execute(sql.Text);
 

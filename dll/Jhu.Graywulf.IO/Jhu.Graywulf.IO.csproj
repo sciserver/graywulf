@@ -146,6 +146,10 @@
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Parsing\Jhu.Graywulf.Parsing.csproj">
+      <Project>{6215a919-1626-4f32-8c16-5764243b2748}</Project>
+      <Name>Jhu.Graywulf.Parsing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
       <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
       <Name>Jhu.Graywulf.RemoteService</Name>

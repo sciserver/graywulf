@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
-using Jhu.Graywulf.ParserLib;
+using Jhu.Graywulf.Parsing;
+using Jhu.Graywulf.Parsing.Generator;
 
-namespace Jhu.Graywulf.SqlParser.Generator
+namespace Jhu.Graywulf.Sql.Parser.Grammar
 {
     [Grammar(Namespace = "Jhu.Graywulf.SqlParser", ParserName = "SqlParser",
         Comparer = "StringComparer.InvariantCultureIgnoreCase", RootToken = "StatementBlock")]
-    public class SqlGrammar : Grammar
+    public class SqlGrammar : Jhu.Graywulf.Parsing.Generator.Grammar
     {
 
         #region Symbols (matched by value)

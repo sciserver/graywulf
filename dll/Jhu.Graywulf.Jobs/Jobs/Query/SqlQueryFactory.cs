@@ -6,7 +6,7 @@ using System.IO;
 using System.Xml;
 using System.Runtime.Serialization;
 using System.Activities;
-using Jhu.Graywulf.ParserLib;
+using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;

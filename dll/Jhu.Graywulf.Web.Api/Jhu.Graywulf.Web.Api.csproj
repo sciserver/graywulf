@@ -149,6 +149,10 @@
       <Project>{129E1B6F-B0B3-4C7C-8FE2-4B1B8556B96D}</Project>
       <Name>Jhu.Graywulf.Metadata</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Parsing\Jhu.Graywulf.Parsing.csproj">
+      <Project>{6215a919-1626-4f32-8c16-5764243b2748}</Project>
+      <Name>Jhu.Graywulf.Parsing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Registry.Enum\Jhu.Graywulf.Registry.Enum.csproj">
       <Project>{f163a859-0fe2-4099-bd85-f61c9c05426a}</Project>
       <Name>Jhu.Graywulf.Registry.Enum</Name>

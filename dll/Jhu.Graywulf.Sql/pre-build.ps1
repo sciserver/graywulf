@@ -1,2 +1,1 @@
-﻿cd "${ProjectDir}..\..\build\Jhu.Graywulf.SqlParser.Generator\${OutDir}"
-.\gwsqlpgen.exe generate -o ..\..\..\..\dll\Jhu.Graywulf.Sql\SqlParser\SqlParser.cs
+﻿& "${SolutionDir}${OutDir}gwpgen.exe" generate -a ..\..\build\Jhu.Graywulf.Sql.Parser.Grammar\$OutDir\Jhu.Graywulf.Sql.Parser.Grammar.dll -t Jhu.Graywulf.Sql.Parser.Grammar.SqlGrammar -o SqlParser\SqlParser.g.cs

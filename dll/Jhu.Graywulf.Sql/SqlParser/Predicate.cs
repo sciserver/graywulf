@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jhu.Graywulf.ParserLib;
+using Jhu.Graywulf.Parsing;
 
 namespace Jhu.Graywulf.SqlParser
 {

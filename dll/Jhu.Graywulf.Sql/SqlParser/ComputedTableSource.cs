@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.SqlParser
 {
-    public class ComputedTableSource : Jhu.Graywulf.ParserLib.Node, ITableSource, ICloneable
+    public class ComputedTableSource : Jhu.Graywulf.Parsing.Node, ITableSource, ICloneable
     {
         private TableReference tableReference;
 
@@ -56,7 +56,7 @@ namespace Jhu.Graywulf.SqlParser
             return new ComputedTableSource(this);
         }
 
-        public override bool Match(ParserLib.Parser parser)
+        public override bool Match(Parsing.Parser parser)
         {
             throw new NotImplementedException();
         }
