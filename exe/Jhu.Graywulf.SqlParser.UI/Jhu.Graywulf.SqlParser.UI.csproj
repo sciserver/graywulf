@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlParser\SearchConditionReference.cs" />
     <Compile Include="SqlParser\UI\Main.cs">
       <SubType>Form</SubType>
     </Compile>

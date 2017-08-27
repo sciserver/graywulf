@@ -6,7 +6,7 @@ using System.Activities;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Scheduler;
-using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Jobs.Query
 {

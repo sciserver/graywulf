@@ -3,18 +3,16 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.SqlParser;
 
-namespace Jhu.Graywulf.SqlParser.Test
+namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
     public class SelectStatementTest
     {
-        private Jhu.Graywulf.SqlParser.SelectStatement ExpressionTestHelper(string query)
+        private SelectStatement ExpressionTestHelper(string query)
         {
             var p = new SqlParser();
-            return (Jhu.Graywulf.SqlParser.SelectStatement)p.Execute(new Jhu.Graywulf.SqlParser.SelectStatement(), query);
+            return p.Execute<SelectStatement>(query);
         }
 
         [TestMethod]

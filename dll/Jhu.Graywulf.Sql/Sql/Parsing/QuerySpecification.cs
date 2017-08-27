@@ -188,48 +188,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             return SelectList.EnumerateDescendantsRecursive<ColumnIdentifier>();
         }
 
-        /* TODO: remove or move to Parser UI
-        public IEnumerable<SearchConditionReference> EnumerateConditions()
-        {
-            //*** This goes to the SkyQueryJob and the Condition normalizer
-            // TODO: this has to be updated to handle non conjunctive normal form predicates too
-
-            // Currently used by the Parser UI only, need to remove.
-
-            WhereClause wh = FindDescendant<WhereClause>();
-
-            if (wh == null)
-            {
-                yield break;
-            }
-            else
-            {
-                BooleanExpression sc = wh.FindDescendant<BooleanExpression>();
-                if (sc == null)
-                {
-                    yield break;
-                }
-                else
-                {
-                    foreach (object n in sc.Nodes)
-                    {
-                        SearchConditionReference wc;
-                        if (n is Predicate)
-                        {
-                            wc = new SearchConditionReference((Predicate)n);
-                            yield return wc;
-                        }
-                        else if (n is BooleanExpressionBrackets)
-                        {
-                            wc = new SearchConditionReference((BooleanExpressionBrackets)n);
-                            yield return wc;
-                        }
-                    }
-                }
-            }
-        }
-        */
-
         #region Query construction functions
 
         public void AppendWhereClause(WhereClause where)

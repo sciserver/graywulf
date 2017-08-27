@@ -16,7 +16,8 @@ using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
-using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.RemoteService;
 
 namespace Jhu.Graywulf.Jobs.Query
@@ -57,7 +58,6 @@ namespace Jhu.Graywulf.Jobs.Query
         /// The original query to be executed
         /// </summary>
         private string queryString;
-
         private string batchName;
         private string queryName;
 
@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// The root object of the query parsing tree
         /// </summary>
         [NonSerialized]
-        private SelectStatement selectStatement;
+        private StatementBlock parsingTree;
 
         /// <summary>
         /// True, if the FinishInterpret function has completed.
@@ -134,6 +134,11 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Query execution mode, either single server or Graywulf cluster
         /// </summary>
         private ExecutionMode executionMode;
+
+        /// <summary>
+        /// Holds table statistics gathered for all the tables in the query
+        /// </summary>
+        private Dictionary<ITableSource, TableStatistics> tableStatistics;
 
         /// <summary>
         /// Holds a list of temporary tables created during query execution.
@@ -232,10 +237,10 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Gets or sets the root object of the query parsing tree.
         /// </summary>
         [IgnoreDataMember]
-        public SelectStatement SelectStatement
+        public StatementBlock ParsingTree
         {
-            get { return selectStatement; }
-            protected set { selectStatement = value; }
+            get { return parsingTree; }
+            protected set { parsingTree = value; }
         }
 
         /// <summary>
@@ -420,6 +425,16 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         /// <summary>
+        /// Holds a list of statistics computed for the tables accessed
+        /// by the query
+        /// </summary>
+        [IgnoreDataMember]
+        public Dictionary<ITableSource, TableStatistics> TableStatistics
+        {
+            get { return tableStatistics; }
+        }
+
+        /// <summary>
         /// Gets the list of temporary tables created during query execution.
         /// </summary>
         [IgnoreDataMember]
@@ -472,7 +487,7 @@ namespace Jhu.Graywulf.Jobs.Query
             this.sourceDatabaseVersionName = String.Empty;
             this.statDatabaseVersionName = String.Empty;
 
-            this.selectStatement = null;
+            this.parsingTree = null;
             this.isInterpretFinished = false;
 
             this.queryTimeout = 60;
@@ -494,6 +509,7 @@ namespace Jhu.Graywulf.Jobs.Query
             this.temporaryDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this);
             this.codeDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this);
 
+            this.tableStatistics = new Dictionary<ITableSource, TableStatistics>();
             this.temporaryTables = new ConcurrentDictionary<string, Table>(SchemaManager.Comparer);
             this.temporaryViews = new ConcurrentDictionary<string, View>(SchemaManager.Comparer);
         }
@@ -521,7 +537,7 @@ namespace Jhu.Graywulf.Jobs.Query
             this.sourceDatabaseVersionName = old.sourceDatabaseVersionName;
             this.statDatabaseVersionName = old.statDatabaseVersionName;
 
-            this.selectStatement = null;
+            this.parsingTree = null;
             this.isInterpretFinished = false;
 
             this.queryTimeout = old.queryTimeout;
@@ -543,6 +559,7 @@ namespace Jhu.Graywulf.Jobs.Query
             this.temporaryDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this, old.temporaryDatabaseInstanceReference);
             this.codeDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this, old.codeDatabaseInstanceReference);
 
+            this.tableStatistics = new Dictionary<ITableSource, TableStatistics>();
             this.temporaryTables = new ConcurrentDictionary<string, Table>(old.temporaryTables, SchemaManager.Comparer);
             this.temporaryViews = new ConcurrentDictionary<string, View>(old.temporaryViews, SchemaManager.Comparer);
         }
@@ -623,10 +640,10 @@ namespace Jhu.Graywulf.Jobs.Query
         protected void Parse(bool forceReinitialize)
         {
             // Reparse only if needed
-            if (selectStatement == null || forceReinitialize)
+            if (parsingTree == null || forceReinitialize)
             {
                 var parser = queryFactory.Value.CreateParser();
-                selectStatement = (SelectStatement)parser.Execute(queryString);
+                parsingTree = parser.Execute<StatementBlock>(queryString);
             }
         }
 
@@ -639,7 +656,7 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 // --- Execute name resolution
                 var nr = CreateNameResolver(forceReinitialize);
-                nr.Execute(selectStatement);
+                nr.Execute(parsingTree);
 
                 FinishInterpret(forceReinitialize);
 
@@ -657,7 +674,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="forceReinitialize"></param>
         /// <returns></returns>
-        protected SqlNameResolver CreateNameResolver(bool forceReinitialize)
+        protected Sql.NameResolution.SqlNameResolver CreateNameResolver(bool forceReinitialize)
         {
             LoadDatasets(forceReinitialize);
 
@@ -687,7 +704,9 @@ namespace Jhu.Graywulf.Jobs.Query
             var sc = GetSchemaManager();
             var dss = new Dictionary<string, GraywulfDataset>(SchemaManager.Comparer);
 
-            foreach (var tr in SelectStatement.QueryExpression.EnumerateSourceTableReferences(true))
+            // TODO: add support for multiple statements
+
+            foreach (var tr in ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateSourceTableReferences(true))
             {
                 if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
                 {

@@ -4,16 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.Activities;
-using Jhu.Graywulf.Scheduler;
-using Jhu.Graywulf.RemoteService;
-using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Jobs.Query;
-using Jhu.Graywulf.SqlParser;
-using Jhu.Graywulf.SqlCodeGen;
-using Jhu.Graywulf.SqlCodeGen.SqlServer;
-using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -26,7 +19,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var q = CreateQuery(sql);
             var cg = new SqlQueryCodeGenerator(q);
-            var ts = q.SelectStatement.QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
+            var ts = q.ParsingTree.FindDescendantRecursive<SelectStatement>().QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
             var table = (IColumns)ts.TableReference.DatabaseObject;
             var cr = ts.TableReference.FilterColumnReferences(context);
             var cs = cr.Select(c => table.Columns[c.ColumnName]);

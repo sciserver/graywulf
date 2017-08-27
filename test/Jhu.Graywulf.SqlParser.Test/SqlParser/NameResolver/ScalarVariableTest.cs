@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Jhu.Graywulf.SqlParser.NameResolver
+namespace Jhu.Graywulf.Sql.Parsing.NameResolver
 {
     [TestClass]
     public class ScalarVariableTest : SqlNameResolverTestBase

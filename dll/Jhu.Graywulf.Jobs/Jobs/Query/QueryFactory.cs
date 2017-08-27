@@ -99,9 +99,9 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public abstract Parsing.Parser CreateParser();
 
-        public abstract SqlParser.SqlValidator CreateValidator();
+        public abstract Sql.Validation.SqlValidator CreateValidator();
 
-        public abstract SqlParser.SqlNameResolver CreateNameResolver();
+        public abstract Sql.NameResolution.SqlNameResolver CreateNameResolver();
 
         protected abstract SqlQuery CreateQueryBase(Node root);
 

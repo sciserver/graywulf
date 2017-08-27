@@ -3,10 +3,8 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.SqlParser;
 
-namespace Jhu.Graywulf.SqlParser.Test
+namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
     public class TableSourceExpressionTest

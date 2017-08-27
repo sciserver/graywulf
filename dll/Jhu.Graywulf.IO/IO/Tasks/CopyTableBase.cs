@@ -11,7 +11,7 @@ using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.SqlCodeGen.SqlServer;
+using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Data;
 

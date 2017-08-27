@@ -5,12 +5,9 @@ using System.Linq;
 using System.IO;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.SqlParser;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.NameResolution;
 
-
-namespace Jhu.Graywulf.SqlParser.Test
+namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
     public class PredicateTest

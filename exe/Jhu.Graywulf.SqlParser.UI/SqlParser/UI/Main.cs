@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Parsing;
+using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 
@@ -50,7 +51,7 @@ namespace Jhu.Graywulf.Parser.Test
             }
 
             RefreshNodeTree(null, rootNode);
-            parsed.Text = Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator.GetCode(rootNode, false);
+            parsed.Text = Jhu.Graywulf.Sql.CodeGeneration.SqlServer.SqlServerCodeGenerator.GetCode(rootNode, false);
         }
 
         private void toolbuttonResolve_Click(object sender, EventArgs e)
@@ -62,7 +63,7 @@ namespace Jhu.Graywulf.Parser.Test
 
                     //try
                     //{
-                    SqlParser.QuerySpecification qs = rootNode.FindDescendant<SqlParser.QueryExpression>().FindDescendant<SqlParser.QuerySpecification>();
+                    var qs = rootNode.FindDescendant<QueryExpression>().FindDescendant<QuerySpecification>();
 
                     //Jhu.Graywulf.Schema.SqlServerSchemaManager sm = new Schema.SqlServerSchemaManager();
 
@@ -80,21 +81,56 @@ namespace Jhu.Graywulf.Parser.Test
                     nr.SchemaManager = sm;
 
                     nr.DefaultTableDatasetName = "MYDB";
-                    nr.Execute((SqlParser.StatementBlock)rootNode);
+                    nr.Execute((StatementBlock)rootNode);
 
                     //List<SqlParser.TableReference> rt = new List<SqlParser.TableReference>(qs.e);
-                    List<SqlParser.SearchConditionReference> pc = new List<SqlParser.SearchConditionReference>(qs.EnumerateConditions());
+                    List<SearchConditionReference> pc = new List<SearchConditionReference>(EnumerateConditions(qs));
 
-                    SqlParser.SelectList sl = qs.FindDescendant<SqlParser.SelectList>();
-                    List<SqlParser.ColumnExpression> ce = new List<SqlParser.ColumnExpression>(sl.EnumerateDescendants<SqlParser.ColumnExpression>());
+                    SelectList sl = qs.FindDescendant<SelectList>();
+                    List<ColumnExpression> ce = new List<ColumnExpression>(sl.EnumerateDescendants<ColumnExpression>());
 
-                    parsed.Text = Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator.GetCode(rootNode, true);
+                    parsed.Text = Jhu.Graywulf.Sql.CodeGeneration.SqlServer.SqlServerCodeGenerator.GetCode(rootNode, true);
                     //}
                     //catch (Exception ex)
                     //{
                     //    MessageBox.Show(ex.Message);
                     //}
 
+                }
+            }
+        }
+
+        public IEnumerable<SearchConditionReference> EnumerateConditions(QuerySpecification qs)
+        {
+            WhereClause wh = qs.FindDescendant<WhereClause>();
+
+            if (wh == null)
+            {
+                yield break;
+            }
+            else
+            {
+                BooleanExpression sc = wh.FindDescendant<BooleanExpression>();
+                if (sc == null)
+                {
+                    yield break;
+                }
+                else
+                {
+                    foreach (object n in sc.Nodes)
+                    {
+                        SearchConditionReference wc;
+                        if (n is Predicate)
+                        {
+                            wc = new SearchConditionReference((Predicate)n);
+                            yield return wc;
+                        }
+                        else if (n is BooleanExpressionBrackets)
+                        {
+                            wc = new SearchConditionReference((BooleanExpressionBrackets)n);
+                            yield return wc;
+                        }
+                    }
                 }
             }
         }

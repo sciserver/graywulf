@@ -7,8 +7,9 @@ using System.Data.SqlClient;
 using System.IO;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.SqlParser;
-using Jhu.Graywulf.SqlCodeGen.SqlServer;
+using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Sql.NameResolution;
+using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.IO.Tasks;
@@ -69,9 +70,11 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Basic query rewrite functions
 
-        public SourceTableQuery GetExecuteQuery(SelectStatement selectStatement)
+        public SourceTableQuery GetExecuteQuery(StatementBlock parsingTree)
         {
-            var ss = (SelectStatement)selectStatement.Clone();
+            // TODO add support for multi-statement queries
+
+            var ss = (SelectStatement)parsingTree.FindDescendantRecursive<SelectStatement>().Clone();
             return OnGetExecuteQuery(ss);
         }
 
@@ -424,7 +427,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             exp = (Expression)exp.Clone();
 
-            foreach (var ci in exp.EnumerateDescendantsRecursive<ColumnIdentifier>(typeof(Jhu.Graywulf.SqlParser.Subquery)))
+            foreach (var ci in exp.EnumerateDescendantsRecursive<ColumnIdentifier>(typeof(Subquery)))
             {
                 var cr = ci.ColumnReference;
 
@@ -452,14 +455,16 @@ namespace Jhu.Graywulf.Jobs.Query
                 ntr.DatabaseName = statisticsDataset.DatabaseName;
                 ntr.DatabaseObject = statisticsDataset.GetObject(ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName);
 
-                var nstat = new SqlParser.TableStatistics(tableSource.TableReference.Statistics);
+                var nstat = new TableStatistics(queryObject.TableStatistics[tableSource]);
                 SubstituteTableReference(nstat.KeyColumn, tableSource.TableReference, ntr);
                 SubstituteTableReference(nts, ntr);
 
                 return nts;
             }
-
-            return tableSource;
+            else
+            {
+                return tableSource;
+            }
         }
 
         /// <summary>
@@ -469,14 +474,14 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         public virtual SqlCommand GetTableStatisticsCommand(ITableSource tableSource, DatasetBase statisticsDataset)
         {
-            if (tableSource.TableReference.Statistics == null)
-            {
-                throw new ArgumentNullException();
-            }
-
             if (!(tableSource.TableReference.DatabaseObject is TableOrView))
             {
                 throw new ArgumentException();
+            }
+
+            if (!queryObject.TableStatistics.ContainsKey(tableSource))
+            {
+                throw new ArgumentNullException();
             }
 
             var sql = new StringBuilder(SqlQueryScripts.TableStatistics);
@@ -490,12 +495,14 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void SubstituteTableStatisticsQueryTokens(StringBuilder sql, ITableSource tableSource)
         {
-            SubstituteSystemDatabaseNames(tableSource.TableReference.Statistics.KeyColumn);
+            var stat = queryObject.TableStatistics[tableSource];
+
+            SubstituteSystemDatabaseNames(stat.KeyColumn);
 
             var tablename = GenerateEscapedUniqueName(tableSource.TableReference);
             var temptable = queryObject.GetTemporaryTable("stat_" + tablename);
-            var keycol = Execute(tableSource.TableReference.Statistics.KeyColumn);
-            var keytype = tableSource.TableReference.Statistics.KeyColumnDataType.TypeNameWithLength;
+            var keycol = Execute(stat.KeyColumn);
+            var keytype = stat.KeyColumnDataType.TypeNameWithLength;
             var where = GetTableSpecificWhereClause(tableSource);
 
             sql.Replace("[$temptable]", GetResolvedTableName(temptable));
@@ -507,14 +514,15 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected virtual void AppendTableStatisticsCommandParameters(ITableSource tableSource, SqlCommand cmd)
         {
-            cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = tableSource.TableReference.Statistics.BinCount;
+            var stat = queryObject.TableStatistics[tableSource];
+            cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = stat.BinCount;
         }
 
         protected virtual WhereClause GetTableSpecificWhereClause(ITableSource tableSource)
         {
             var tr = tableSource.TableReference;
 
-            var cnr = new SearchConditionNormalizer();
+            var cnr = new Sql.LogicalExpressions.SearchConditionNormalizer();
             cnr.CollectConditions(((TableSource)tr.Node).QuerySpecification);
             var where = cnr.GenerateWhereClauseSpecificToTable(tr);
 
@@ -604,7 +612,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         private BooleanExpression GetPartitioningKeyMinCondition(Expression partitioningKeyExpression)
         {
-            var a = Expression.Create(SqlParser.Variable.Create(partitioningKeyMinParameterName));
+            var a = Expression.Create(Sql.Parsing.Variable.Create(partitioningKeyMinParameterName));
             var p = Predicate.CreateLessThanOrEqual(a, partitioningKeyExpression);
             return BooleanExpression.Create(false, p);
         }
@@ -616,7 +624,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         private BooleanExpression GetPartitioningKeyMaxCondition(Expression partitioningKeyExpression)
         {
-            var b = Expression.Create(SqlParser.Variable.Create(partitioningKeyMaxParameterName));
+            var b = Expression.Create(Sql.Parsing.Variable.Create(partitioningKeyMaxParameterName));
             var p = Predicate.CreateLessThan(partitioningKeyExpression, b);
             return BooleanExpression.Create(false, p);
         }

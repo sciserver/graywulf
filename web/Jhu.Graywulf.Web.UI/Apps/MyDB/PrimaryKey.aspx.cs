@@ -2,7 +2,7 @@
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.SqlCodeGen.SqlServer;
+using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
 using Jhu.Graywulf.Jobs.SqlScript;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB

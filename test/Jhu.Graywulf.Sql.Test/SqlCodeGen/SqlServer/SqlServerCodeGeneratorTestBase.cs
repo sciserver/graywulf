@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Sql.NameResolution;
 
-namespace Jhu.Graywulf.SqlCodeGen.SqlServer
+namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 {
     public abstract class SqlServerCodeGeneratorTestBase : Jhu.Graywulf.Schema.SqlServer.SqlServerTestBase
     {
@@ -23,16 +24,16 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 
         protected SelectStatement CreateSelect(string query)
         {
-            var p = new SqlParser.SqlParser();
-            var select = (SelectStatement)p.Execute(new SelectStatement(), query);
+            var p = new SqlParser();
+            var script = p.Execute<StatementBlock>(query);
 
             SqlNameResolver nr = new SqlNameResolver();
             nr.DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
             nr.DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName;
             nr.SchemaManager = CreateSchemaManager();
-            nr.Execute(select);
+            nr.Execute(script);
 
-            return select;
+            return script.FindDescendantRecursive<SelectStatement>();
         }
     }
 }

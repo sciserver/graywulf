@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 
-namespace Jhu.Graywulf.SqlParser
+namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
     public class StatementBlockTest
@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.SqlParser
         private StatementBlock Parse(string query)
         {
             var p = new SqlParser();
-            return (StatementBlock)p.Execute(new StatementBlock(), query);
+            return p.Execute<StatementBlock>(query);
         }
 
         [TestMethod]

@@ -120,7 +120,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         public static SourceTableQuery Create(TableOrView table, int top)
         {
-            var cg = SqlCodeGen.CodeGeneratorFactory.CreateCodeGenerator(table.Dataset.ProviderName);
+            var cg = Sql.CodeGeneration.CodeGeneratorFactory.CreateCodeGenerator(table.Dataset.ProviderName);
 
             return new SourceTableQuery()
             {

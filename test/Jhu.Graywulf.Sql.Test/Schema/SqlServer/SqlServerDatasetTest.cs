@@ -6,10 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Data;
-using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.Schema.SqlServer;
-using Jhu.Graywulf.SqlCodeGen;
-using Jhu.Graywulf.SqlCodeGen.SqlServer;
+using Jhu.Graywulf.Sql.CodeGeneration;
 
 namespace Jhu.Graywulf.Schema.SqlServer.Test
 {

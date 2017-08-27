@@ -7,7 +7,7 @@ using System.Linq;
 using Jhu.Graywulf.Schema;
 using schema = Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.SqlCodeGen;
+using Jhu.Graywulf.Sql.CodeGeneration;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Data;
 

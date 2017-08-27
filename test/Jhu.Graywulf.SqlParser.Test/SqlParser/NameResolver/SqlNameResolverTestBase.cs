@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using System.IO;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
-using Jhu.Graywulf.SqlCodeGen.SqlServer;
+using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
 using Jhu.Graywulf.Sql.NameResolution;
 
-namespace Jhu.Graywulf.SqlParser
+namespace Jhu.Graywulf.Sql.Parsing
 {
     public class SqlNameResolverTestBase
     {
@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.SqlParser
         }
 
         protected T Parse<T>(string query)
-            where T : Parsing.Node
+            where T : Jhu.Graywulf.Parsing.Node
         {
             var p = new SqlParser();
             var script = p.Execute<StatementBlock>(query);
@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.SqlParser
             return script.FindDescendantRecursive<T>();
         }
 
-        protected string GenerateCode(Parsing.Node node)
+        protected string GenerateCode(Jhu.Graywulf.Parsing.Node node)
         {
             var cg = new SqlServerCodeGenerator();
             cg.ResolveNames = true;

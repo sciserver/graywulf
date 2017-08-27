@@ -3,8 +3,9 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Jhu.Graywulf.Sql.NameResolution;
 
-namespace Jhu.Graywulf.SqlParser
+namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
     public class SqlNameResolverTest : SqlNameResolverTestBase

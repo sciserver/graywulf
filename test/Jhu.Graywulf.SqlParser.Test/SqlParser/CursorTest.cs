@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 
-namespace Jhu.Graywulf.SqlParser
+namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
     public class CursorTest

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Parsing;
+using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 
-namespace Jhu.Graywulf.SqlParser
+namespace Jhu.Graywulf.Parser.Test
 {
     /// <summary>
     /// References a 
@@ -45,19 +46,19 @@ namespace Jhu.Graywulf.SqlParser
             InitializeMembers();
         }
 
-        public SearchConditionReference(Predicate node)
+        public SearchConditionReference(Sql.Parsing.Predicate node)
         {
             InitializeMembers();
             UpdateFromNode((Node)node);
         }
 
-        public SearchConditionReference(BooleanExpression node)
+        public SearchConditionReference(Sql.Parsing.BooleanExpression node)
         {
             InitializeMembers();
             UpdateFromNode((Node)node);
         }
 
-        public SearchConditionReference(BooleanExpressionBrackets node)
+        public SearchConditionReference(Sql.Parsing.BooleanExpressionBrackets node)
         {
             InitializeMembers();
             UpdateFromNode((Node)node);

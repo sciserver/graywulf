@@ -7,7 +7,7 @@ using System.Xml;
 using System.Runtime.Serialization;
 using System.Activities;
 using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
@@ -71,16 +71,16 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         public override Parsing.Parser CreateParser()
         {
-            return new SqlParser.SqlParser();
+            return new Sql.Parsing.SqlParser();
         }
 
         /// <summary>
         /// Creates a validator object that can validate queries this class can handle.
         /// </summary>
         /// <returns></returns>
-        public override SqlValidator CreateValidator()
+        public override Sql.Validation.SqlValidator CreateValidator()
         {
-            return new SqlParser.SqlValidator();
+            return new Sql.Validation.SqlValidator();
         }
 
         /// <summary>
@@ -88,9 +88,9 @@ namespace Jhu.Graywulf.Jobs.Query
         /// this class can handle.
         /// </summary>
         /// <returns></returns>
-        public override SqlNameResolver CreateNameResolver()
+        public override Sql.NameResolution.SqlNameResolver CreateNameResolver()
         {
-            return new SqlParser.SqlNameResolver();
+            return new Sql.NameResolution.SqlNameResolver();
         }
 
         /// <summary>

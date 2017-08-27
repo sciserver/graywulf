@@ -5,12 +5,12 @@ using System.Linq;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
-using Jhu.Graywulf.SqlCodeGen;
+using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Sql.NameResolution;
 
-namespace Jhu.Graywulf.SqlCodeGen.Test
+namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
 {
     [TestClass]
     public class MySqlCodeGeneratorTest
@@ -30,16 +30,16 @@ namespace Jhu.Graywulf.SqlCodeGen.Test
 
         private SelectStatement CreateSelect(string query)
         {
-            var p = new SqlParser.SqlParser();
-            var select = (SelectStatement)p.Execute(new SelectStatement(), query);
+            var p = new SqlParser();
+            var script = p.Execute<StatementBlock>(query);
 
             SqlNameResolver nr = new SqlNameResolver();
             nr.DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
             nr.DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName;
             nr.SchemaManager = CreateSchemaManager();
-            nr.Execute(select);
+            nr.Execute(script);
 
-            return select;
+            return script.FindDescendantRecursive<SelectStatement>();
         }
 
         private string GenerateCode(string query, bool resolved)

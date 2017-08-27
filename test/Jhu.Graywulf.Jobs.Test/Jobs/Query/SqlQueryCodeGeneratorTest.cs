@@ -9,9 +9,9 @@ using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
-using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
-using Jhu.Graywulf.SqlCodeGen.SqlServer;
+using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
 using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Schema;
 
@@ -32,9 +32,9 @@ namespace Jhu.Graywulf.Jobs.Query
             StopLogger();
         }
 
-        protected virtual SqlParser.SqlParser Parser
+        protected virtual SqlParser Parser
         {
-            get { return new SqlParser.SqlParser(); }
+            get { return new SqlParser(); }
         }
 
         protected virtual SelectStatement Parse(string sql)
@@ -241,15 +241,17 @@ namespace Jhu.Graywulf.Jobs.Query
             q.ExecutionMode = ExecutionMode.SingleServer;
 
             var cg = new SqlQueryCodeGenerator(q);
-            var ts = q.SelectStatement.QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
+            var ts = q.ParsingTree.FindDescendantRecursive<SelectStatement>().QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
 
             // Column to compute the statistics on, not partitioning!
-            ts.TableReference.Statistics = new Graywulf.SqlParser.TableStatistics()
+            var stat = new TableStatistics()
             {
                 BinCount = 200,
                 KeyColumn = Expression.Create(new ColumnReference("dec", DataTypes.SqlFloat)),
                 KeyColumnDataType = DataTypes.SqlFloat
             };
+
+            q.TableStatistics.Add(ts, stat);
 
             var cmd = cg.GetTableStatisticsCommand(ts, null);
 

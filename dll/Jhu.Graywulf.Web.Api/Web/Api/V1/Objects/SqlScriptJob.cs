@@ -10,7 +10,6 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Jobs.ExportTables;
-using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.Web.UI;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;

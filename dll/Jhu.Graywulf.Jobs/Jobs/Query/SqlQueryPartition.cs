@@ -13,9 +13,10 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
-using Jhu.Graywulf.SqlParser;
-using Jhu.Graywulf.SqlCodeGen;
-using Jhu.Graywulf.SqlCodeGen.SqlServer;
+using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Sql.NameResolution;
+using Jhu.Graywulf.Sql.CodeGeneration;
+using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
 
@@ -150,7 +151,9 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 var sc = GetSchemaManager();
 
-                foreach (var tr in SelectStatement.QueryExpression.EnumerateSourceTableReferences(true))
+                // TODO: add support for multiple statements
+
+                foreach (var tr in ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateSourceTableReferences(true))
                 {
                     if (tr.IsCachable && !remoteTableReferences.ContainsKey(tr.UniqueName) &&
                         IsRemoteDataset(sc.Datasets[tr.DatasetName]))
@@ -275,7 +278,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             // Source query will be run on the code database to have
             // access to UDTs
-            var source = CodeGenerator.GetExecuteQuery(SelectStatement);
+            var source = CodeGenerator.GetExecuteQuery(ParsingTree);
             source.Dataset = CodeDataset;
             return source;
         }

@@ -198,8 +198,8 @@ namespace Jhu.Graywulf.Web.Api.V1
         private Schema.Table ParserTableName(Schema.DatasetBase dataset, string tableName)
         {
             // Use a SQL parser to extract table name parts from the string
-            var parser = new SqlParser.SqlParser();
-            var tn = (SqlParser.TableOrViewName)parser.Execute(new SqlParser.TableOrViewName(), tableName);
+            var parser = new Sql.Parsing.SqlParser();
+            var tn = (Sql.Parsing.TableOrViewName)parser.Execute(new Sql.Parsing.TableOrViewName(), tableName);
             var tr = tn.TableReference;
             tr.SubstituteDefaults(FederationContext.SchemaManager, dataset.Name);
 

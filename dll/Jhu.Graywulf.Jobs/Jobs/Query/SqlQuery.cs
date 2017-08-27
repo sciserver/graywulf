@@ -12,8 +12,8 @@ using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.SqlParser;
-using Jhu.Graywulf.SqlCodeGen;
+using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Sql.CodeGeneration;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
 
@@ -42,11 +42,6 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Points to the output table of the query.
         /// </summary>
         private Table output;
-
-        /// <summary>
-        /// Holds table statistics gathered for all the tables in the query
-        /// </summary>
-        private List<ITableSource> tableSourceStatistics;
 
         /// <summary>
         /// Holds the individual partitions. Usually many, but for simple queries
@@ -99,12 +94,6 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         [IgnoreDataMember]
-        public List<ITableSource> TableSourceStatistics
-        {
-            get { return tableSourceStatistics; }
-        }
-
-        [IgnoreDataMember]
         public List<SqlQueryPartition> Partitions
         {
             get { return partitions; }
@@ -116,7 +105,12 @@ namespace Jhu.Graywulf.Jobs.Query
         [IgnoreDataMember]
         public virtual bool IsPartitioned
         {
-            get { return SelectStatement.IsPartitioned; }
+            get {
+                // TODO: modify this
+                //return ParsingTree.IsPartitioned;
+
+                return false;
+            }
         }
 
         [IgnoreDataMember]
@@ -155,7 +149,6 @@ namespace Jhu.Graywulf.Jobs.Query
             this.isDestinationTableInitialized = false;
             this.output = null;
 
-            this.tableSourceStatistics = new List<ITableSource>();
             this.partitions = new List<SqlQueryPartition>();
 
             this.partitioningTable = null;
@@ -168,7 +161,6 @@ namespace Jhu.Graywulf.Jobs.Query
             this.isDestinationTableInitialized = old.isDestinationTableInitialized;
             this.output = old.output;
 
-            this.tableSourceStatistics = new List<ITableSource>();
             this.partitions = new List<SqlQueryPartition>(old.partitions.Select(p => (SqlQueryPartition)p.Clone()));
 
             this.partitioningTable = old.partitioningTable;
@@ -194,7 +186,7 @@ namespace Jhu.Graywulf.Jobs.Query
         protected override void FinishInterpret(bool forceReinitialize)
         {
             // Retrieve target table information
-            IntoClause into = SelectStatement.FindDescendantRecursive<IntoClause>();
+            IntoClause into = ParsingTree.FindDescendantRecursive<IntoClause>();
             if (into != null)
             {
                 var sm = GetSchemaManager();
@@ -223,7 +215,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             // Perform validation on the query string
             var validator = QueryFactory.CreateValidator();
-            validator.Execute(SelectStatement);
+            validator.Execute(ParsingTree);
 
             // TODO: add additional validation here
             Destination.CheckTableExistence();
@@ -240,24 +232,26 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         public virtual void CollectTablesForStatistics()
         {
-            TableSourceStatistics.Clear();
+            TableStatistics.Clear();
+
+            // TODO: add multi-statement support
 
             if (IsPartitioned)
             {
                 // Partitioning is always done on the table specified right after the FROM keyword
                 // TODO: what if more than one QS?
-                var qs = SelectStatement.QueryExpression.EnumerateQuerySpecifications().FirstOrDefault();
+                var qs = ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateQuerySpecifications().FirstOrDefault();
                 var ts = (SimpleTableSource)qs.EnumerateSourceTables(false).First();
-                var tr = ts.TableReference;
-
-                tr.Statistics = new SqlParser.TableStatistics();
 
                 // TODO: modify this when expression output type functions are implemented
                 // and figure out data type directly from expression
-                tr.Statistics.KeyColumn = ts.PartitioningKeyExpression;
-                tr.Statistics.KeyColumnDataType = ts.PartitioningKeyDataType;
+                var stat = new TableStatistics()
+                {
+                    KeyColumn = ts.PartitioningKeyExpression,
+                    KeyColumnDataType = ts.PartitioningKeyDataType,
+                };
 
-                TableSourceStatistics.Add(ts);
+                TableStatistics.Add(ts, stat);
             }
         }
 
@@ -292,7 +286,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="binSize"></param>
         public void ComputeTableStatistics(ITableSource tableSource, DatasetBase statisticsDataset)
         {
-            var stat = tableSource.TableReference.Statistics;
+            var stat = TableStatistics[tableSource];
 
             using (var cmd = CodeGenerator.GetTableStatisticsCommand(tableSource, statisticsDataset))
             {
@@ -371,6 +365,8 @@ namespace Jhu.Graywulf.Jobs.Query
             // Partitioning is only supperted using Graywulf mode, single server mode always
             // falls back to a single partition
 
+            // TODO: add multi-statement support
+
             int partitionCount = DeterminePartitionCount();
 
             switch (ExecutionMode)
@@ -381,7 +377,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     }
                     break;
                 case ExecutionMode.Graywulf:
-                    if (!SelectStatement.IsPartitioned)
+                    if (!IsPartitioned)
                     {
                         OnGeneratePartitions(1, null);
                     }
@@ -397,13 +393,15 @@ namespace Jhu.Graywulf.Jobs.Query
                         // In certaint cases all tables of the query are remote tables which
                         // means no statistics are generated at all. In this case a single
                         // partition will be used.
-                        if (TableSourceStatistics == null || TableSourceStatistics.Count == 0)
+                        if (TableStatistics == null || TableStatistics.Count == 0)
                         {
                             OnGeneratePartitions(1, null);
                         }
                         else
                         {
-                            var stat = TableSourceStatistics[0].TableReference.Statistics;
+                            // TODO: how to pick the first table? What's the first table?
+
+                            var stat = TableStatistics.Values.FirstOrDefault();
                             OnGeneratePartitions(partitionCount, stat);
                         }
                     }
@@ -418,7 +416,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="partitionCount"></param>
         /// <param name="stat"></param>
-        protected virtual void OnGeneratePartitions(int partitionCount, Jhu.Graywulf.SqlParser.TableStatistics stat)
+        protected virtual void OnGeneratePartitions(int partitionCount, TableStatistics stat)
         {
             // TODO: fix issue with repeating keys!
             // Maybe just throw those partitions away?

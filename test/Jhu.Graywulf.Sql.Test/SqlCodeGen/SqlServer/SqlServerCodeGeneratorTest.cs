@@ -6,13 +6,9 @@ using System.IO;
 using System.Data;
 using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.SqlParser;
-using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.Schema.SqlServer;
-using Jhu.Graywulf.SqlCodeGen.SqlServer;
+using Jhu.Graywulf.Sql.NameResolution;
 
-namespace Jhu.Graywulf.SqlCodeGen.SqlServer
+namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 {
     [TestClass]
     public class SqlServerCodeGeneratorTest : SqlServerCodeGeneratorTestBase

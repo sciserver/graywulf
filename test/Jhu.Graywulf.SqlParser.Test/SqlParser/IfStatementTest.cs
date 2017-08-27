@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 
-namespace Jhu.Graywulf.SqlParser
+namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
     public class IfStatementTest
@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.SqlParser
         private IfStatement Parse(string query)
         {
             var p = new SqlParser();
-            return (IfStatement)p.Execute(new IfStatement(), query);
+            return p.Execute<IfStatement>(query);
         }
 
         [TestMethod]
