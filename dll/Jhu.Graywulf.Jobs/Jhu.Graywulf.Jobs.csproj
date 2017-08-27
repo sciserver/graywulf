@@ -190,6 +190,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SqlQueryScripts.resx</DependentUpon>
     </Compile>
+    <Compile Include="Jobs\Query\TableStatistics.cs" />
     <Compile Include="Jobs\SqlScript\ExecuteScript.cs" />
     <Compile Include="Jobs\SqlScript\ISqlScriptJob.cs" />
     <Compile Include="Jobs\SqlScript\SqlScriptJob.cs" />

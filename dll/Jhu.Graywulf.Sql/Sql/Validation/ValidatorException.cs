@@ -5,7 +5,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Parsing;
 
-namespace Jhu.Graywulf.SqlParser
+namespace Jhu.Graywulf.Sql.Validation
 {
     [Serializable]
     public class ValidatorException : Exception

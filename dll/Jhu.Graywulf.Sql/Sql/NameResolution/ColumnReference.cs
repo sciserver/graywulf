@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
@@ -106,7 +106,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             if (columnDescription.IsKey)
             {
-                this.columnContext = Graywulf.SqlParser.ColumnContext.PrimaryKey;
+                this.columnContext = ColumnContext.PrimaryKey;
             }
 
             // TODO: copy metadata here
@@ -134,7 +134,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.isStar = false;
             this.isComplexExpression = false;
             this.selectListIndex = -1;
-            this.columnContext = Graywulf.SqlParser.ColumnContext.None;
+            this.columnContext = ColumnContext.None;
         }
 
         private void CopyMembers(ColumnReference old)

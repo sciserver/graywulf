@@ -7,7 +7,7 @@ using Jhu.Graywulf.Parsing.Generator;
 
 namespace Jhu.Graywulf.Sql.Parser.Grammar
 {
-    [Grammar(Namespace = "Jhu.Graywulf.SqlParser", ParserName = "SqlParser",
+    [Grammar(Namespace = "Jhu.Graywulf.Sql.Parsing", ParserName = "SqlParser",
         Comparer = "StringComparer.InvariantCultureIgnoreCase", RootToken = "StatementBlock")]
     public class SqlGrammar : Jhu.Graywulf.Parsing.Generator.Grammar
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
@@ -20,7 +20,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private bool isComputed;
 
         private List<ColumnReference> columnReferences;
-        private SqlParser.TableStatistics statistics;
 
         #endregion
 
@@ -122,13 +121,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get { return columnReferences; }
         }
-
-        public SqlParser.TableStatistics Statistics
-        {
-            get { return statistics; }
-            set { statistics = value; }
-        }
-
+        
         public TableReference()
         {
             InitializeMembers();
@@ -148,8 +141,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.isUdf = false;
             this.isSubquery = false;
             this.isComputed = false;
-
-            this.statistics = null;
         }
 
         public TableReference(TableOrView table, string alias, bool copyColumns)
@@ -161,8 +152,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.isUdf = false;
             this.isSubquery = false;
             this.isComputed = false;
-
-            this.statistics = null;
 
             this.columnReferences = new List<ColumnReference>();
 
@@ -231,7 +220,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.isComputed = false;
 
             this.columnReferences = new List<ColumnReference>();
-            this.statistics = null;
         }
 
         private void CopyMembers(TableReference old)
@@ -254,8 +242,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 };
                 this.columnReferences.Add(ncr);
             }
-
-            this.statistics = old.statistics == null ? null : new SqlParser.TableStatistics(old.statistics);
         }
 
         public void InterpretTableSource(Node tableSource)
