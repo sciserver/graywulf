@@ -246,7 +246,7 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 // Partitioning is always done on the table specified right after the FROM keyword
                 // TODO: what if more than one QS?
-                var qs = SelectStatement.EnumerateQuerySpecifications().FirstOrDefault();
+                var qs = SelectStatement.QueryExpression.EnumerateQuerySpecifications().FirstOrDefault();
                 var ts = (SimpleTableSource)qs.EnumerateSourceTables(false).First();
                 var tr = ts.TableReference;
 

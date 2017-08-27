@@ -687,7 +687,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var sc = GetSchemaManager();
             var dss = new Dictionary<string, GraywulfDataset>(SchemaManager.Comparer);
 
-            foreach (var tr in SelectStatement.EnumerateSourceTableReferences(true))
+            foreach (var tr in SelectStatement.QueryExpression.EnumerateSourceTableReferences(true))
             {
                 if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
                 {

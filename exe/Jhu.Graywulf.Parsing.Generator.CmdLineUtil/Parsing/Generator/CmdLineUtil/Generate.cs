@@ -52,24 +52,16 @@ namespace Jhu.Graywulf.Parsing.Generator.CmdLineUtil
 
             using (var outfile = new StreamWriter(output))
             {
-                try
-                {
-                    var a = Assembly.LoadFrom(grammarAssembly);
-                    var t = a.GetType(grammarType);
+                var a = Assembly.LoadFrom(grammarAssembly);
+                var t = a.GetType(grammarType);
 
-                    var g = new ParserGenerator();
-                    g.Execute(outfile, t);
-
-                }
-                catch (Exception ex)
+                if (t == null)
                 {
-                    if (System.Diagnostics.Debugger.IsAttached)
-                    {
-                        System.Diagnostics.Debugger.Break();
-                    }
-                    
-                    Console.WriteLine("ERROR: {0}", ex.Message);
+                    throw new Exception(String.Format("Type '{0}' not found in assembly '{1}'.", grammarType, a.FullName));
                 }
+
+                var g = new ParserGenerator();
+                g.Execute(outfile, t);
             }
 
             Console.WriteLine("Parser classes generated in {0} sec.", (DateTime.Now - start).TotalSeconds);

@@ -103,7 +103,7 @@ namespace Jhu.Graywulf.Jobs.Query
         protected virtual void RewriteForExecute(SelectStatement selectStatement)
         {
             int i = 0;
-            foreach (var qs in selectStatement.EnumerateQuerySpecifications())
+            foreach (var qs in selectStatement.QueryExpression.EnumerateQuerySpecifications())
             {
                 RewriteForExecute(qs, i);
                 i++;
@@ -262,7 +262,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 case ExecutionMode.SingleServer:
                     throw new InvalidOperationException();
                 case ExecutionMode.Graywulf:
-                    foreach (var qs in ss.EnumerateQuerySpecifications())
+                    foreach (var qs in ss.QueryExpression.EnumerateQuerySpecifications())
                     {
                         foreach (var ts in qs.EnumerateSourceTables(true))
                         {
@@ -365,7 +365,7 @@ namespace Jhu.Graywulf.Jobs.Query
                         // Nothing to do here
                         break;
                     case ExecutionMode.Graywulf:
-                        foreach (var qs in ss.EnumerateQuerySpecifications())
+                        foreach (var qs in ss.QueryExpression.EnumerateQuerySpecifications())
                         {
                             // Replace remote table references with temp table references
                             foreach (TableReference tr in qs.EnumerateSourceTableReferences(true))

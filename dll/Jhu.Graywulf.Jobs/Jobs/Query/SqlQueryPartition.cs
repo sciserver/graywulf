@@ -150,7 +150,7 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 var sc = GetSchemaManager();
 
-                foreach (var tr in SelectStatement.EnumerateSourceTableReferences(true))
+                foreach (var tr in SelectStatement.QueryExpression.EnumerateSourceTableReferences(true))
                 {
                     if (tr.IsCachable && !remoteTableReferences.ContainsKey(tr.UniqueName) &&
                         IsRemoteDataset(sc.Datasets[tr.DatasetName]))

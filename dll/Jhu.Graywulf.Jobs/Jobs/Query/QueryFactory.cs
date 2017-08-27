@@ -97,7 +97,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return q;
         }
 
-        public abstract ParserLib.Parser CreateParser();
+        public abstract Parsing.Parser CreateParser();
 
         public abstract SqlParser.SqlValidator CreateValidator();
 

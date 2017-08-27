@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Creates a parser object that produces a parsing tree this class can handle.
         /// </summary>
         /// <returns></returns>
-        public override ParserLib.Parser CreateParser()
+        public override Parsing.Parser CreateParser()
         {
             return new SqlParser.SqlParser();
         }

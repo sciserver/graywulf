@@ -25,6 +25,7 @@ namespace Jhu.Graywulf.Parsing.Generator.CmdLineUtil
             catch (ArgumentParserException ex)
             {
                 Console.WriteLine("Error: {0}", ex.Message);
+                Console.WriteLine(ex.StackTrace);
                 Console.WriteLine();
 
                 ArgumentParser.PrintUsage(verbs, Console.Out);
