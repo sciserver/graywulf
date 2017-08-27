@@ -149,9 +149,136 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             foreach (var statement in script.EnumerateDescendants<Statement>(true))
             {
-
+                ResolveStatement(statement);
             }
         }
+
+        private void ResolveStatement(Statement statement)
+        {
+            var s = statement.SpecificStatement;
+
+            // Call recursively for sub-statements
+            foreach (var ss in s.EnumerateSubStatements())
+            {
+                ResolveStatement(ss);
+            }
+
+            if (s.IsResolvable)
+            {
+                // Resolve current statement
+                ResolveStatement((dynamic)s);
+            }
+        }
+
+        #region Statement resolution dispatch functions
+
+        private void ResolveStatement(WhileStatement statement)
+        {
+            // Resolve boolean expression
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(ReturnStatement statement)
+        {
+            // it might have a query in the parameter
+            throw new NotImplementedException();
+        }
+        
+        private void ResolveStatement(IfStatement statement)
+        {
+            // Resolve boolean expression
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(ThrowStatement statement)
+        {
+            // Resolve variables
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(DeclareCursorStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(SetCursorStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(CursorOperationStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(FetchStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(DeclareVariableStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(SetVariableStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(DeclareTableStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(CreateTableStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        // TODO: add alter table here
+
+        private void ResolveStatement(DropTableStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(TruncateTableStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(CreateIndexStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(DropIndexStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(SelectStatement statement)
+        {
+            ResolveSelectStatement(statement, 0);
+        }
+
+        private void ResolveStatement(InsertStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(UpdateStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(DeleteStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
 
         // TODO: make this protected once full script support is implemented
         public void ResolveSelectStatement(SelectStatement select, int depth)

@@ -38,9 +38,6 @@ web/Jhu.Graywulf.Web.UI/Web.config
 
 ## Linked from other projects
 
-
-
-
 ## Parser class is generated on build
 dll/Jhu.Graywulf.Sql/SqlParser/SqlParser.g.cs
 
@@ -235,7 +232,6 @@ AppPackages/
 
 
 # Others
-sql/
 *.Cache
 ClientBin/
 [Ss]tyle[Cc]op.*

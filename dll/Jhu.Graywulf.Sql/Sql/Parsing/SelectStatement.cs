@@ -10,8 +10,14 @@ namespace Jhu.Graywulf.Sql.Parsing
     /// <summary>
     /// Implements a SELECT statement including the ORDER BY clause
     /// </summary>
-    public partial class SelectStatement : ISelect
+    public partial class SelectStatement : IStatement, ISelect
     {
+
+        public bool IsResolvable
+        {
+            get { return true; }
+        }
+
         public QueryExpression QueryExpression
         {
             get { return FindDescendant<QueryExpression>(); }
@@ -54,6 +60,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             var qe = QueryExpression.Create(qs);
 
             return Create(qe);
+        }
+
+        public IEnumerable<Statement> EnumerateSubStatements()
+        {
+            yield break;
         }
     }
 }
