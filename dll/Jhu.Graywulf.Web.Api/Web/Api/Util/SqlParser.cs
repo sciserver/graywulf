@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Web.Api.Util
 {

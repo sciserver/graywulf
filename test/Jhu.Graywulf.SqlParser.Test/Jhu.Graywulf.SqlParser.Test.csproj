@@ -52,6 +52,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SqlParser\ArithmeticOperatorTest.cs" />
+    <Compile Include="SqlParser\NameResolver\ScalarVariableTest.cs" />
+    <Compile Include="SqlParser\NameResolver\SelectStatementTest.cs" />
+    <Compile Include="SqlParser\NameResolver\SqlNameResolverTestBase.cs" />
     <Compile Include="SqlParser\RankingFunctionCallTest.cs" />
     <Compile Include="SqlParser\SubqueryTest.cs" />
     <Compile Include="SqlParser\CommonTableExpressionTest.cs" />
@@ -89,7 +92,6 @@
     <Compile Include="SqlParser\SearchConditionTest.cs" />
     <Compile Include="SqlParser\SelectListTest.cs" />
     <Compile Include="SqlParser\SelectStatementTest.cs" />
-    <Compile Include="SqlParser\SqlNameResolverTest.cs" />
     <Compile Include="SqlParser\SqlParserTest.cs" />
     <Compile Include="SqlParser\TableHintTest.cs" />
     <Compile Include="SqlParser\TableOrViewNameTest.cs" />

@@ -6,6 +6,7 @@ using System.IO;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.SqlCodeGen
 {

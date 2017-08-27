@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.SqlParser;
 
-namespace Jhu.Graywulf.SqlParser
+namespace Jhu.Graywulf.Sql.NameResolution
 {
     public class TableReference : DatabaseObjectReference
     {
@@ -19,7 +20,7 @@ namespace Jhu.Graywulf.SqlParser
         private bool isComputed;
 
         private List<ColumnReference> columnReferences;
-        private TableStatistics statistics;
+        private SqlParser.TableStatistics statistics;
 
         #endregion
 
@@ -122,7 +123,7 @@ namespace Jhu.Graywulf.SqlParser
             get { return columnReferences; }
         }
 
-        public TableStatistics Statistics
+        public SqlParser.TableStatistics Statistics
         {
             get { return statistics; }
             set { statistics = value; }
@@ -244,6 +245,7 @@ namespace Jhu.Graywulf.SqlParser
 
             // Deep copy of column references
             this.columnReferences = new List<ColumnReference>();
+
             foreach (var cr in old.columnReferences)
             {
                 var ncr = new ColumnReference(cr)
@@ -252,7 +254,8 @@ namespace Jhu.Graywulf.SqlParser
                 };
                 this.columnReferences.Add(ncr);
             }
-            this.statistics = old.statistics == null ? null : new TableStatistics(old.statistics);
+
+            this.statistics = old.statistics == null ? null : new SqlParser.TableStatistics(old.statistics);
         }
 
         public void InterpretTableSource(Node tableSource)

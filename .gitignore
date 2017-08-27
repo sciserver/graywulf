@@ -42,7 +42,7 @@ web/Jhu.Graywulf.Web.UI/Web.config
 
 
 ## Parser class is generated on build
-dll/Jhu.Graywulf.Sql/SqlParser/SqlParser.cs
+dll/Jhu.Graywulf.Sql/SqlParser/SqlParser.g.cs
 
 ## Web templates and scripts are linked from the shared directory or
 ## installed by nuget

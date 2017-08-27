@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.SqlCodeGen.MySql

@@ -7,6 +7,7 @@ using System.Data;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 {

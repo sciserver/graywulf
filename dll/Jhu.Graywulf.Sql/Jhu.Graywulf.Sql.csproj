@@ -104,30 +104,19 @@
     <Compile Include="SqlParser\ColumnExpression.cs" />
     <Compile Include="SqlParser\ColumnIdentifier.cs" />
     <Compile Include="SqlParser\ColumnName.cs" />
-    <Compile Include="SqlParser\ColumnReference.cs" />
     <Compile Include="SqlParser\CommentOrWhitespace.cs" />
     <Compile Include="SqlParser\ComputedTableSource.cs" />
-    <Compile Include="SqlParser\DatabaseObjectReference.cs" />
     <Compile Include="SqlParser\DatasetName.cs" />
     <Compile Include="SqlParser\Enum.cs" />
-    <Compile Include="SqlParser\ExceptionMessages.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ExceptionMessages.resx</DependentUpon>
-    </Compile>
     <Compile Include="SqlParser\Expression.cs" />
     <Compile Include="SqlParser\FromClause.cs" />
     <Compile Include="SqlParser\FunctionArguments.cs" />
     <Compile Include="SqlParser\FunctionCall.cs" />
     <Compile Include="SqlParser\FunctionIdentifier.cs" />
     <Compile Include="SqlParser\FunctionName.cs" />
-    <Compile Include="SqlParser\FunctionReference.cs" />
     <Compile Include="SqlParser\FunctionTableSource.cs" />
-    <Compile Include="SqlParser\IColumnReference.cs" />
-    <Compile Include="SqlParser\IFunctionReference.cs" />
     <Compile Include="SqlParser\IntoClause.cs" />
     <Compile Include="SqlParser\ISelect.cs" />
-    <Compile Include="SqlParser\ITableReference.cs" />
     <Compile Include="SqlParser\ITableSource.cs" />
     <Compile Include="SqlParser\JoinedTable.cs" />
     <Compile Include="SqlParser\JoinType.cs" />
@@ -145,7 +134,6 @@
     <Compile Include="SqlParser\LogicalExpressions\UnaryExpression.cs" />
     <Compile Include="SqlParser\LogicalNot.cs" />
     <Compile Include="SqlParser\LogicalOperator.cs" />
-    <Compile Include="SqlParser\NameResolverException.cs" />
     <Compile Include="SqlParser\NodeExtensions.cs" />
     <Compile Include="SqlParser\Predicate.cs" />
     <Compile Include="SqlParser\QueryExpression.cs" />
@@ -158,10 +146,8 @@
     <Compile Include="SqlParser\SelectList.cs" />
     <Compile Include="SqlParser\SelectStatement.cs" />
     <Compile Include="SqlParser\SimpleTableSource.cs" />
-    <Compile Include="SqlParser\SqlNameResolver.cs" />
     <Compile Include="SqlParser\SqlParser.cs" />
     <Compile Include="SqlParser\SqlParser.g.cs" />
-    <Compile Include="SqlParser\SqlValidator.cs" />
     <Compile Include="SqlParser\StringConstant.cs" />
     <Compile Include="SqlParser\Subquery.cs" />
     <Compile Include="SqlParser\SubqueryTableSource.cs" />
@@ -169,7 +155,6 @@
     <Compile Include="SqlParser\TableHint.cs" />
     <Compile Include="SqlParser\TableName.cs" />
     <Compile Include="SqlParser\TableOrViewName.cs" />
-    <Compile Include="SqlParser\TableReference.cs" />
     <Compile Include="SqlParser\TableSource.cs" />
     <Compile Include="SqlParser\TableSourceExpression.cs" />
     <Compile Include="SqlParser\TableStatistics.cs" />
@@ -177,17 +162,31 @@
     <Compile Include="SqlParser\UdfIdentifier.cs" />
     <Compile Include="SqlParser\UdtFunctionCall.cs" />
     <Compile Include="SqlParser\UdtFunctionIdentifier.cs" />
-    <Compile Include="SqlParser\Util.cs" />
-    <Compile Include="SqlParser\ValidatorException.cs" />
     <Compile Include="SqlParser\VariableTableSource.cs" />
     <Compile Include="SqlParser\WhereClause.cs" />
     <Compile Include="SqlParser\Whitespace.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="SqlParser\ExceptionMessages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <Compile Include="Sql\NameResolution\ColumnReference.cs" />
+    <Compile Include="Sql\NameResolution\DatabaseObjectReference.cs" />
+    <Compile Include="Sql\NameResolution\ExceptionMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Sql\NameResolution\FunctionReference.cs" />
+    <Compile Include="Sql\NameResolution\IColumnReference.cs" />
+    <Compile Include="Sql\NameResolution\IFunctionReference.cs" />
+    <Compile Include="Sql\NameResolution\ITableReference.cs" />
+    <Compile Include="Sql\NameResolution\NameResolverException.cs" />
+    <Compile Include="Sql\NameResolution\SqlNameResolver.cs" />
+    <Compile Include="Sql\NameResolution\TableReference.cs" />
+    <Compile Include="Sql\NameResolution\Util.cs" />
+    <Compile Include="Sql\Validation\ExceptionMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Sql\Validation\SqlValidator.cs" />
+    <Compile Include="Sql\Validation\ValidatorException.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
@@ -209,6 +208,17 @@
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\NameResolution\ExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sql\Validation\ExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\build\Jhu.Graywulf.Build.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.SqlCodeGen.PostgreSql
 {

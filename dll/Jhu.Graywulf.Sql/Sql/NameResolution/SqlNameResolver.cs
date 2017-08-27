@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.SqlParser;
 
-namespace Jhu.Graywulf.SqlParser
+namespace Jhu.Graywulf.Sql.NameResolution
 {
     public class SqlNameResolver
     {
@@ -16,7 +17,7 @@ namespace Jhu.Graywulf.SqlParser
             "AVG", "MIN", "CHECKSUM_AGG", "SUM", "COUNT", "STDEV", "COUNT_BIG", "STDEVP", "GROUPING", "VAR", "GROUPING_ID", "VARP", "MAX",
 
             "RANK", "NTILE", "DENSE_RANK", "ROW_NUMBER",
- 
+
             "CAST", "CONVERT", "PARSE", "TRY_CAST", "TRY_CONVERT", "TRY_PARSE",
 
             "SYSDATETIME", "SYSDATETIMEOFFSET", "SYSUTCDATETIME", "CURRENT_TIMESTAMP", "GETDATE", "GETUTCDATE", "DATENAME", "DATEPART", "DAY", "MONTH", "YEAR",
@@ -27,20 +28,20 @@ namespace Jhu.Graywulf.SqlParser
 
             "ABS", "DEGREES", "RAND", "ACOS", "EXP", "ROUND", "ASIN", "FLOOR", "SIGN", "ATAN", "LOG", "SIN", "ATN2", "LOG10", "SQRT", "CEILING",
             "PI", "SQUARE", "COS", "POWER", "TAN", "COT", "RADIANS",
- 
+
             "INDEX_COL", "APP_NAME", "INDEXKEY_PROPERTY", "APPLOCK_MODE", "INDEXPROPERTY", "APPLOCK_TEST", "ASSEMBLYPROPERTY", "OBJECT_DEFINITION",
             "COL_LENGTH", "OBJECT_ID", "COL_NAME", "OBJECT_NAME", "COLUMNPROPERTY", "OBJECT_SCHEMA_NAME", "DATABASE_PRINCIPAL_ID", "OBJECTPROPERTY",
             "DATABASEPROPERTYEX", "OBJECTPROPERTYEX", "DB_ID", "ORIGINAL_DB_NAME", "DB_NAME", "PARSENAME", "FILE_ID", "SCHEMA_ID", "FILE_IDEX",
             "SCHEMA_NAME", "FILE_NAME", "SCOPE_IDENTITY", "FILEGROUP_ID", "SERVERPROPERTY", "FILEGROUP_NAME", "STATS_DATE", "FILEGROUPPROPERTY",
             "TYPE_ID", "FILEPROPERTY", "TYPE_NAME", "FULLTEXTCATALOGPROPERTY", "TYPEPROPERTY", "FULLTEXTSERVICEPROPERTY",
- 
-            "CERTENCODED", "PWDCOMPARE", "CERTPRIVATEKEY", "PWDENCRYPT", "CURRENT_USER", "SCHEMA_ID", "DATABASE_PRINCIPAL_ID", "SCHEMA_NAME", 
-            "SESSION_USER", "SUSER_ID", "SUSER_SID", "HAS_PERMS_BY_NAME", "SUSER_SNAME", "IS_MEMBER", "SYSTEM_USER", "IS_ROLEMEMBER", "SUSER_NAME", 
+
+            "CERTENCODED", "PWDCOMPARE", "CERTPRIVATEKEY", "PWDENCRYPT", "CURRENT_USER", "SCHEMA_ID", "DATABASE_PRINCIPAL_ID", "SCHEMA_NAME",
+            "SESSION_USER", "SUSER_ID", "SUSER_SID", "HAS_PERMS_BY_NAME", "SUSER_SNAME", "IS_MEMBER", "SYSTEM_USER", "IS_ROLEMEMBER", "SUSER_NAME",
             "IS_SRVROLEMEMBER", "USER_ID", "ORIGINAL_LOGIN", "USER_NAME", "PERMISSIONS",
- 
+
             "ASCII", "LTRIM", "SOUNDEX", "CHAR", "NCHAR", "SPACE", "CHARINDEX", "PATINDEX", "STR", "CONCAT", "QUOTENAME", "STUFF", "DIFFERENCE",
-            "REPLACE", "SUBSTRING", "FORMAT", "REPLICATE", "UNICODE", "LEFT", "REVERSE", "UPPER", "LEN", "RIGHT", "LOWER", "RTRIM", 
- 
+            "REPLACE", "SUBSTRING", "FORMAT", "REPLICATE", "UNICODE", "LEFT", "REVERSE", "UPPER", "LEN", "RIGHT", "LOWER", "RTRIM",
+
             "ERROR_SEVERITY", "ERROR_STATE", "FORMATMESSAGE", "GETANSINULL", "GET_FILESTREAM_TRANSACTION_CONTEXT", "HOST_ID", "BINARY_CHECKSUM",
             "HOST_NAME", "CHECKSUM", "ISNULL", "CONNECTIONPROPERTY", "ISNUMERIC", "CONTEXT_INFO", "MIN_ACTIVE_ROWVERSION", "CURRENT_REQUEST_ID",
             "NEWID", "ERROR_LINE", "NEWSEQUENTIALID", "ERROR_MESSAGE", "ROWCOUNT_BIG", "ERROR_NUMBER", "XACT_STATE", "ERROR_PROCEDURE",
@@ -50,7 +51,11 @@ namespace Jhu.Graywulf.SqlParser
 
         #region Property storage variables
 
+        // The schema manager is used to resolve identifiers that are not local to the script,
+        // i.e. database, table, columns etc. names
         private SchemaManager schemaManager;
+
+
 
         private string defaultTableDatasetName;
         private string defaultFunctionDatasetName;
@@ -111,12 +116,7 @@ namespace Jhu.Graywulf.SqlParser
         /// Executes the name resolution over a query
         /// </summary>
         /// <param name="selectStatement"></param>
-        public void Execute(SelectStatement selectStatement)
-        {
-            ResolveSelectStatement(selectStatement, 0);
-        }
-        
-        protected void ResolveSelectStatement(ISelect select, int depth)
+        public void Execute(StatementBlock script)
         {
             // SqlParser builds the parsing tree and tags many nodes with TableReference and ColumnReference objects.
             // At this point these references only contain information directly available from the query, but names are
@@ -139,9 +139,23 @@ namespace Jhu.Graywulf.SqlParser
             // 5. Resolve table aliases
             // 6. Assign default column aliases
 
-            SubstituteFunctionDefaults((Node)select);
-            ResolveFunctionReferences((Node)select);
+            SubstituteFunctionDefaults((Node)script);
+            ResolveFunctionReferences((Node)script);
 
+            ResolveStatementBlock(script);
+        }
+
+        protected void ResolveStatementBlock(StatementBlock script)
+        {
+            foreach (var statement in script.EnumerateDescendants<Statement>(true))
+            {
+
+            }
+        }
+
+        // TODO: make this protected once full script support is implemented
+        public void ResolveSelectStatement(SelectStatement select, int depth)
+        {
             var qe = select.QueryExpression;
 
             ResolveQueryExpression(qe, depth);
@@ -150,6 +164,11 @@ namespace Jhu.Graywulf.SqlParser
             var orderby = select.OrderByClause;
 
             ResolveOrderByClause(orderby, firstqs);
+        }
+
+        protected void ResolveSubquery(Subquery subquery, int depth)
+        {
+            throw new NotImplementedException();
         }
 
         protected void ResolveQueryExpression(QueryExpression qe, int depth)
@@ -185,7 +204,7 @@ namespace Jhu.Graywulf.SqlParser
             // expressions
             foreach (var sq in qs.EnumerateSubqueries())
             {
-                ResolveSelectStatement(sq, depth + 1);
+                ResolveSubquery(sq, depth + 1);
             }
 
             // Substitute default dataset names and schema names

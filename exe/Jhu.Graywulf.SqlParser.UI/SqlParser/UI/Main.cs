@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Parser.Test
                     nr.SchemaManager = sm;
 
                     nr.DefaultTableDatasetName = "MYDB";
-                    nr.Execute((SqlParser.SelectStatement)rootNode);
+                    nr.Execute((SqlParser.StatementBlock)rootNode);
 
                     //List<SqlParser.TableReference> rt = new List<SqlParser.TableReference>(qs.e);
                     List<SqlParser.SearchConditionReference> pc = new List<SqlParser.SearchConditionReference>(qs.EnumerateConditions());
@@ -99,11 +99,11 @@ namespace Jhu.Graywulf.Parser.Test
             }
         }
 
-        private void RefreshColumnList(Jhu.Graywulf.SqlParser.ITableReference tr)
+        private void RefreshColumnList(Sql.NameResolution.ITableReference tr)
         {
             columns.Items.Clear();
 
-            foreach (SqlParser.ColumnReference cr in tr.TableReference.ColumnReferences)
+            foreach (var cr in tr.TableReference.ColumnReferences)
             {
                 ListViewItem ni;
 
@@ -255,7 +255,7 @@ namespace Jhu.Graywulf.Parser.Test
 
             var name = l.GetType().Name;
 
-            if (l is Jhu.Graywulf.SqlParser.ITableReference)
+            if (l is Sql.NameResolution.ITableReference)
             {
                 name += " : ITableReference";
             }
@@ -326,9 +326,9 @@ SELECT * FROM alma
 
         private void tree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (e.Node.Tag is Jhu.Graywulf.SqlParser.ITableReference)
+            if (e.Node.Tag is Sql.NameResolution.ITableReference)
             {
-                RefreshColumnList((Jhu.Graywulf.SqlParser.ITableReference)e.Node.Tag);
+                RefreshColumnList((Sql.NameResolution.ITableReference)e.Node.Tag);
             }
         }
     }

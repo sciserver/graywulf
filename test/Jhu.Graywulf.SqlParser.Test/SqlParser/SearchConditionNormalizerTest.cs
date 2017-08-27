@@ -29,15 +29,15 @@ namespace Jhu.Graywulf.SqlParser.Test
         private SelectStatement CreateSelect(string query)
         {
             SqlParser p = new SqlParser();
-            var select = (SelectStatement)p.Execute(new SelectStatement(), query);
+            var script = p.Execute<StatementBlock>(query);
 
             SqlNameResolver nr = new SqlNameResolver();
             nr.DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
             nr.DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName;
             nr.SchemaManager = CreateSchemaManager();
-            nr.Execute(select);
+            nr.Execute(script);
 
-            return select;
+            return script.FindDescendantRecursive<SelectStatement>();
         }
 
         private string[] GetWhereClauses(string query)

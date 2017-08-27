@@ -5,7 +5,7 @@ using System.Text;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Schema;
 
-namespace Jhu.Graywulf.SqlParser
+namespace Jhu.Graywulf.Sql.NameResolution
 {
     public abstract class DatabaseObjectReference
     {

@@ -10,6 +10,7 @@ using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.SqlCodeGen.SqlServer;
 using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Schema;
