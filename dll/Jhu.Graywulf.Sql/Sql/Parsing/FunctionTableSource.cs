@@ -14,6 +14,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<TableValuedFunctionCall>(); }
         }
 
+        public DatabaseObjectReference DatabaseObjectReference
+        {
+            get { return FunctionCall.TableReference; }
+        }
+
         public TableReference TableReference
         {
             get { return FunctionCall.TableReference; }

@@ -5,7 +5,6 @@ using System.Text;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 
-
 namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class QuerySpecification

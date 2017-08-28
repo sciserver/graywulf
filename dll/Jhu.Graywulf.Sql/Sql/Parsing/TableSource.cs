@@ -14,6 +14,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindSpecificTableSource(); }
         }
 
+        public DatabaseObjectReference DatabaseObjectReference
+        {
+            get { return SpecificTableSource.TableReference; }
+        }
+
         public virtual TableReference TableReference
         {
             get { return SpecificTableSource.TableReference; }

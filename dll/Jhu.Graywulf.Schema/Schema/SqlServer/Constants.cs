@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data;
+using System.Data.SqlClient;
 using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Schema.SqlServer
@@ -86,5 +88,39 @@ namespace Jhu.Graywulf.Schema.SqlServer
         public const string TypeNameSqlVariant = "sql_variant";
         public const string TypeNameTimestamp = "timestamp";
         public const string TypeNameUniqueIdentifier = "uniqueidentifier";
+
+        public static readonly Dictionary<string, SqlDbType> SqlDataTypes = new Dictionary<string, SqlDbType>(SchemaManager.Comparer)
+        {
+            { TypeNameTinyInt, SqlDbType.TinyInt },
+            { TypeNameSmallInt, SqlDbType.SmallInt },
+            { TypeNameInt, SqlDbType.Int },
+            { TypeNameBigInt, SqlDbType.BigInt },
+            { TypeNameBit, SqlDbType.Bit },
+            { TypeNameDecimal, SqlDbType.Decimal },
+            { TypeNameSmallMoney, SqlDbType.SmallMoney },
+            { TypeNameMoney, SqlDbType.Money },
+            { TypeNameNumeric, SqlDbType.Decimal },
+            { TypeNameReal, SqlDbType.Real },
+            { TypeNameFloat, SqlDbType.Float },
+            { TypeNameDate, SqlDbType.Date },
+            { TypeNameTime, SqlDbType.Time },
+            { TypeNameSmallDateTime , SqlDbType.SmallDateTime },
+            { TypeNameDateTime, SqlDbType.DateTime },
+            { TypeNameDateTime2, SqlDbType.DateTime2 },
+            { TypeNameDateTimeOffset, SqlDbType.DateTimeOffset },
+            { TypeNameChar, SqlDbType.Char },
+            { TypeNameVarChar, SqlDbType.VarChar },
+            { TypeNameText, SqlDbType.Text },
+            { TypeNameNChar, SqlDbType.NChar },
+            { TypeNameNVarChar, SqlDbType.NVarChar },
+            { TypeNameNText, SqlDbType.NText },
+            { TypeNameXml, SqlDbType.Xml },
+            { TypeNameBinary, SqlDbType.Binary },
+            { TypeNameVarBinary, SqlDbType.VarBinary },
+            { TypeNameImage, SqlDbType.Image },
+            { TypeNameSqlVariant, SqlDbType.Variant },
+            { TypeNameTimestamp, SqlDbType.Timestamp },
+            { TypeNameUniqueIdentifier, SqlDbType.UniqueIdentifier }
+        };
     }
 }

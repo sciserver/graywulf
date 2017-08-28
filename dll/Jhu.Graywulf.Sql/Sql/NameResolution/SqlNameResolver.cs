@@ -55,8 +55,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         // i.e. database, table, columns etc. names
         private SchemaManager schemaManager;
 
-
-
         private string defaultTableDatasetName;
         private string defaultFunctionDatasetName;
 
@@ -149,148 +147,170 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             foreach (var statement in script.EnumerateDescendants<Statement>(true))
             {
-                ResolveStatement(statement);
+                ResolveStatement(script, statement);
             }
         }
 
-        private void ResolveStatement(Statement statement)
+        private void ResolveStatement(StatementBlock script, Statement statement)
         {
             var s = statement.SpecificStatement;
 
             // Call recursively for sub-statements
             foreach (var ss in s.EnumerateSubStatements())
             {
-                ResolveStatement(ss);
+                ResolveStatement(script, ss);
             }
 
             if (s.IsResolvable)
             {
                 // Resolve current statement
-                ResolveStatement((dynamic)s);
+                ResolveStatement(script, (dynamic)s);
             }
         }
 
         #region Statement resolution dispatch functions
 
-        private void ResolveStatement(WhileStatement statement)
+        private void ResolveStatement(StatementBlock script, WhileStatement statement)
         {
-            // Resolve boolean expression
-            throw new NotImplementedException();
+            ResolveBooleanExpression(statement.Condition);
         }
 
-        private void ResolveStatement(ReturnStatement statement)
+        private void ResolveStatement(StatementBlock script, ReturnStatement statement)
         {
             // it might have a query in the parameter
             throw new NotImplementedException();
         }
-        
-        private void ResolveStatement(IfStatement statement)
+
+        private void ResolveStatement(StatementBlock script, IfStatement statement)
         {
-            // Resolve boolean expression
-            throw new NotImplementedException();
+            ResolveBooleanExpression(statement.Condition);
         }
 
-        private void ResolveStatement(ThrowStatement statement)
+        private void ResolveStatement(StatementBlock script, ThrowStatement statement)
         {
             // Resolve variables
             throw new NotImplementedException();
         }
 
-        private void ResolveStatement(DeclareCursorStatement statement)
+        private void ResolveStatement(StatementBlock script, DeclareCursorStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveStatement(SetCursorStatement statement)
+        private void ResolveStatement(StatementBlock script, SetCursorStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveStatement(CursorOperationStatement statement)
+        private void ResolveStatement(StatementBlock script, CursorOperationStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveStatement(FetchStatement statement)
+        private void ResolveStatement(StatementBlock script, FetchStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveStatement(DeclareVariableStatement statement)
+        private void ResolveStatement(StatementBlock script, DeclareVariableStatement statement)
+        {
+            foreach (var vd in statement.EnumerateDescendantsRecursive<VariableDeclaration>())
+            {
+                ResolveVariableDeclaration(script, vd);
+            }
+        }
+
+        private void ResolveVariableDeclaration(StatementBlock script, VariableDeclaration vd)
+        {
+            if (!script.VariableReferences.ContainsKey(vd.VariableReference.Name))
+            {
+                script.VariableReferences.Add(vd.VariableReference.Name, vd.VariableReference);
+            }
+            else
+            {
+                throw NameResolutionError.DuplicateVariableName(vd);
+            }
+        }
+
+        private void ResolveStatement(StatementBlock script, SetVariableStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveStatement(SetVariableStatement statement)
+        private void ResolveStatement(StatementBlock script, DeclareTableStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveStatement(DeclareTableStatement statement)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ResolveStatement(CreateTableStatement statement)
+        private void ResolveStatement(StatementBlock script, CreateTableStatement statement)
         {
             throw new NotImplementedException();
         }
 
         // TODO: add alter table here
 
-        private void ResolveStatement(DropTableStatement statement)
+        private void ResolveStatement(StatementBlock script, DropTableStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveStatement(TruncateTableStatement statement)
+        private void ResolveStatement(StatementBlock script, TruncateTableStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveStatement(CreateIndexStatement statement)
+        private void ResolveStatement(StatementBlock script, CreateIndexStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveStatement(DropIndexStatement statement)
+        private void ResolveStatement(StatementBlock script, DropIndexStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveStatement(SelectStatement statement)
+        private void ResolveStatement(StatementBlock script, SelectStatement statement)
         {
-            ResolveSelectStatement(statement, 0);
+            ResolveSelectStatement(script, statement, 0);
         }
 
-        private void ResolveStatement(InsertStatement statement)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ResolveStatement(UpdateStatement statement)
+        private void ResolveStatement(StatementBlock script, InsertStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveStatement(DeleteStatement statement)
+        private void ResolveStatement(StatementBlock script, UpdateStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResolveStatement(StatementBlock script, DeleteStatement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+        #region Boolean expression resolution
+
+        private void ResolveBooleanExpression(BooleanExpression condition)
         {
             throw new NotImplementedException();
         }
 
         #endregion
 
+
         // TODO: make this protected once full script support is implemented
-        public void ResolveSelectStatement(SelectStatement select, int depth)
+        public void ResolveSelectStatement(StatementBlock script, SelectStatement select, int depth)
         {
             var qe = select.QueryExpression;
 
-            ResolveQueryExpression(qe, depth);
+            ResolveQueryExpression(script, qe, depth);
 
             var firstqs = qe.FindDescendant<QuerySpecification>();
             var orderby = select.OrderByClause;
 
-            ResolveOrderByClause(orderby, firstqs);
+            ResolveOrderByClause(script, orderby, firstqs);
         }
 
         protected void ResolveSubquery(Subquery subquery, int depth)
@@ -298,12 +318,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             throw new NotImplementedException();
         }
 
-        protected void ResolveQueryExpression(QueryExpression qe, int depth)
+        protected void ResolveQueryExpression(StatementBlock script, QueryExpression qe, int depth)
         {
             // Resolve query specifications in the FROM clause
             foreach (var qs in qe.EnumerateDescendants<QuerySpecification>())
             {
-                ResolveQuerySpecification(qs, depth);
+                ResolveQuerySpecification(script, qs, depth);
             }
 
             // Copy select list columns from the very first query specification.
@@ -318,7 +338,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// query specification
         /// </summary>
         /// <param name="qs"></param>
-        protected void ResolveQuerySpecification(QuerySpecification qs, int depth)
+        protected void ResolveQuerySpecification(StatementBlock script, QuerySpecification qs, int depth)
         {
             // At this point the table and column references are all parsed
             // from the query but no name resolution and cross-identification
@@ -348,8 +368,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // Substitute SELECT * expressions
             SubstituteStars(qs);
 
-            // Resolve column references of each occurance
-            ResolveColumnReferences(qs);
+            // Resolve variables and column references of each occurance
+            ResolveVariables(script, qs);
 
             // Copy resultset columns to the appropriate collection
             CopyResultsColumns(qs);
@@ -361,13 +381,20 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        protected void ResolveOrderByClause(OrderByClause orderBy, QuerySpecification firstqs)
+        protected void ResolveOrderByClause(StatementBlock script, OrderByClause orderBy, QuerySpecification firstqs)
         {
             if (orderBy != null)
             {
                 ResolveTableReferences(firstqs, orderBy, ColumnContext.OrderBy);
-                ResolveColumnReferences(firstqs, orderBy, ColumnContext.OrderBy);
+                ResolveVariables(script, firstqs, orderBy, ColumnContext.OrderBy);
             }
+        }
+
+        // ----------------------------------
+
+        private void ResolveDataTypeReferences()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -398,7 +425,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // Make sure that table key is used only once
                 if (qs.SourceTableReferences.ContainsKey(tablekey))
                 {
-                    throw CreateException(ExceptionMessages.DuplicateTableAlias, null, tablekey, tr.Node);
+                    throw NameResolutionError.DuplicateTableAlias(tablekey, tr.Node);
                 }
                 else
                 {
@@ -416,11 +443,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
                         }
                         catch (KeyNotFoundException ex)
                         {
-                            throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, ntr.DatasetName, ntr.Node);
+                            throw NameResolutionError.UnresolvableDatasetReference(ex, ntr);
                         }
                         catch (SchemaException ex)
                         {
-                            throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, ntr.DatasetName, ntr.Node);
+                            throw NameResolutionError.UnresolvableDatasetReference(ex, ntr);
                         }
 
                         ntr.DatabaseObject = ds.GetObject(ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName);
@@ -486,6 +513,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // where the column is not a complex expression, resolution might be successful by
             // column name only.
 
+            // TODO: add support for variables
+
             if (!node.TableReference.IsUndefined)
             {
                 TableReference ntr = null;
@@ -517,7 +546,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     {
                         if (!schemaManager.Datasets.ContainsKey(node.TableReference.DatasetName))
                         {
-                            throw CreateException(ExceptionMessages.UnresolvableDatasetReference, null, node.TableReference.DatasetName, (Node)node);
+                            throw NameResolutionError.UnresolvableDatasetReference(node);
                         }
                     }
 
@@ -529,7 +558,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                         {
                             if (q != 0)
                             {
-                                throw CreateException(ExceptionMessages.AmbigousTableReference, null, node.TableReference.DatabaseObjectName, (Node)node);
+                                throw NameResolutionError.AmbigousTableReference(node);
                             }
 
                             ntr = tr;
@@ -540,7 +569,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (ntr == null)
                 {
-                    throw CreateException(ExceptionMessages.UnresolvableTableReference, null, node.TableReference.DatabaseObjectName, (Node)node);
+                    throw NameResolutionError.UnresolvableTableReference(node);
                 }
 
                 node.TableReference = ntr;
@@ -566,9 +595,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        private void ResolveColumnReferences(QuerySpecification qs)
+        private void ResolveVariables(StatementBlock script, QuerySpecification qs)
         {
-            ResolveColumnReferences(qs, (Node)qs, ColumnContext.None);
+            ResolveVariables(script, qs, (Node)qs, ColumnContext.None);
         }
 
         /// <summary>
@@ -577,7 +606,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         /// <param name="qs"></param>
         /// <param name="n"></param>
-        private void ResolveColumnReferences(QuerySpecification qs, Node n, ColumnContext context)
+        private void ResolveVariables(StatementBlock script, QuerySpecification qs, Node n, ColumnContext context)
         {
             context = GetColumnContext(n, context);
 
@@ -589,14 +618,39 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     if (o is Node)
                     {
-                        ResolveColumnReferences(qs, (Node)o, context);   // Recursive call
+                        ResolveVariables(script, qs, (Node)o, context);   // Recursive call
                     }
                 }
             }
 
-            if (n is IColumnReference)
+            // TODO: extend this to CLR static function calls
+
+            if (n is IVariableReference)
+            {
+                ResolveScalarVariableReference(script, (IVariableReference)n);
+            }
+            else if (n is IColumnReference)
             {
                 ResolveColumnReference(qs, (IColumnReference)n, context);
+            }
+        }
+
+        private void ResolveScalarVariableReference(StatementBlock script, IVariableReference vr)
+        {
+            // TODO: extend this to UDTs
+
+            if (vr.VariableReference.IsCursor || vr.VariableReference.IsTable)
+            {
+                throw NameResolutionError.ScalarVariableExpected(vr);
+            }
+
+            if (script.VariableReferences.ContainsKey(vr.VariableReference.Name))
+            {
+                vr.VariableReference = script.VariableReferences[vr.VariableReference.Name];
+            }
+            else
+            {
+                throw NameResolutionError.UnresolvableVariableReference(vr);
             }
         }
 
@@ -625,7 +679,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                             {
                                 if (q != 0)
                                 {
-                                    throw CreateException(ExceptionMessages.AmbigousColumnReference, null, cr.ColumnReference.ColumnName, (Node)cr);
+                                    throw NameResolutionError.AmbigousColumnReference(cr);
                                 }
 
                                 ncr = ccr;
@@ -644,7 +698,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                         {
                             if (q != 0)
                             {
-                                throw CreateException(ExceptionMessages.AmbigousColumnReference, null, cr.ColumnReference.ColumnName, (Node)cr);
+                                throw NameResolutionError.AmbigousColumnReference(cr);
                             }
 
                             ncr = ccr;
@@ -655,7 +709,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (q == 0)
                 {
-                    throw CreateException(ExceptionMessages.UnresolvableColumnReference, null, cr.ColumnReference.ColumnName, (Node)cr);
+                    throw NameResolutionError.UnresolvableColumnReference(cr);
                 }
 
                 // Make copy here and preserve alias!
@@ -754,7 +808,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 if (!IsSystemFunctionName(node.FunctionReference.SystemFunctionName))
                 {
-                    throw CreateException(ExceptionMessages.UnknownFunctionName, null, node.FunctionReference.SystemFunctionName, (Node)node);
+                    throw NameResolutionError.UnknownFunctionName(node);
                 }
             }
             else
@@ -764,7 +818,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     if (!schemaManager.Datasets.ContainsKey(node.FunctionReference.DatasetName))
                     {
-                        throw CreateException(ExceptionMessages.UnresolvableDatasetReference, null, node.FunctionReference.DatasetName, (Node)node);
+                        throw NameResolutionError.UnresolvableDatasetReference(node);
                     }
                 }
 
@@ -774,7 +828,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (dbo == null)
                 {
-                    throw CreateException(ExceptionMessages.UnresolvableTableReference, null, node.FunctionReference.DatabaseObjectName, (Node)node);
+                    throw NameResolutionError.UnresolvableFunctionReference(node);
                 }
 
                 node.FunctionReference.DatabaseObject = dbo;
@@ -852,7 +906,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 catch (KeyNotFoundException ex)
                 {
-                    throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, tr.DatasetName, tr.Node);
+                    throw NameResolutionError.UnresolvableDatasetReference(ex, tr);
                 }
             }
         }
@@ -876,7 +930,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 catch (KeyNotFoundException ex)
                 {
-                    throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, fi.FunctionReference.DatasetName, fi);
+                    throw NameResolutionError.UnresolvableDatasetReference(ex, fi);
                 }
             }
         }
@@ -907,34 +961,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 cr.SelectListIndex = index++;
                 qs.ResultsTableReference.ColumnReferences.Add(cr);
             }
-        }
-
-        /// <summary>
-        /// Creates and parameterizes and exception to be thrown by the name resolver.
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="innerException"></param>
-        /// <param name="objectName"></param>
-        /// <param name="node"></param>
-        /// <returns></returns>
-        protected Exception CreateException(string message, Exception innerException, string objectName, Node node)
-        {
-            string msg;
-            var id = node.FindDescendantRecursive<Identifier>();
-
-            if (id != null)
-            {
-                msg = String.Format(message, objectName, id.Line + 1, id.Col + 1);
-            }
-            else
-            {
-                msg = String.Format(message, objectName, "?", "?");
-            }
-
-            NameResolverException ex = new NameResolverException(msg, innerException);
-            ex.Token = id;
-
-            return ex;
         }
 
         /// <summary>

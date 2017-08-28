@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public interface IFunctionReference : IDatabaseObjectReference
+    public interface IVariableReference
     {
-        FunctionReference FunctionReference { get; set; }
+        VariableReference VariableReference { get; set; }
     }
 }

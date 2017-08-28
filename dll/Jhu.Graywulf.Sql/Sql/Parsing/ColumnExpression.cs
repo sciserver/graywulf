@@ -17,6 +17,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { columnReference = value; }
         }
 
+        public DatabaseObjectReference DatabaseObjectReference
+        {
+            get { return columnReference.TableReference; }
+        }
+
         /// <summary>
         /// Gets or sets the table reference associated with this column expression
         /// </summary>

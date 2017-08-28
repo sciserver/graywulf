@@ -11,6 +11,11 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         private TableReference tableReference;
 
+        public DatabaseObjectReference DatabaseObjectReference
+        {
+            get { return tableReference; }
+        }
+
         public TableReference TableReference
         {
             get { return tableReference; }

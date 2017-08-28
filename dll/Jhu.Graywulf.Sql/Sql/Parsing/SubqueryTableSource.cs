@@ -14,6 +14,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<Subquery>().QueryExpression; }
         }
 
+        public DatabaseObjectReference DatabaseObjectReference
+        {
+            get { return QueryExpression.TableReference; }
+        }
+
         public TableReference TableReference
         {
             get { return QueryExpression.TableReference; }

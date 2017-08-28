@@ -112,6 +112,10 @@
     <Compile Include="Sql\LogicalExpressions\UnaryExpression.cs" />
     <Compile Include="Sql\NameResolution\ColumnReference.cs" />
     <Compile Include="Sql\NameResolution\DatabaseObjectReference.cs" />
+    <Compile Include="Sql\NameResolution\IDatabaseObjectReference.cs" />
+    <Compile Include="Sql\NameResolution\NameResolutionError.cs" />
+    <Compile Include="Sql\NameResolution\VariableReference.cs" />
+    <Compile Include="Sql\NameResolution\DataTypeReference.cs" />
     <Compile Include="Sql\NameResolution\Enum.cs" />
     <Compile Include="Sql\NameResolution\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -120,14 +124,18 @@
     </Compile>
     <Compile Include="Sql\NameResolution\FunctionReference.cs" />
     <Compile Include="Sql\NameResolution\IColumnReference.cs" />
+    <Compile Include="Sql\NameResolution\IDataTypeReference.cs" />
     <Compile Include="Sql\NameResolution\IFunctionReference.cs" />
     <Compile Include="Sql\NameResolution\ITableReference.cs" />
+    <Compile Include="Sql\NameResolution\IVariableReference.cs" />
     <Compile Include="Sql\NameResolution\NameResolverException.cs" />
     <Compile Include="Sql\NameResolution\SqlNameResolver.cs" />
     <Compile Include="Sql\NameResolution\TableReference.cs" />
     <Compile Include="Sql\NameResolution\Util.cs" />
     <Compile Include="Sql\Parsing\Argument.cs" />
     <Compile Include="Sql\Parsing\ArgumentList.cs" />
+    <Compile Include="Sql\Parsing\DataType.cs" />
+    <Compile Include="Sql\Parsing\UserVariable.cs" />
     <Compile Include="Sql\Parsing\DropIndexStatement.cs" />
     <Compile Include="Sql\Parsing\CreateIndexStatement.cs" />
     <Compile Include="Sql\Parsing\DeleteStatement.cs" />
@@ -150,6 +158,7 @@
     <Compile Include="Sql\Parsing\ReturnStatement.cs" />
     <Compile Include="Sql\Parsing\ContinueStatement.cs" />
     <Compile Include="Sql\Parsing\BreakStatement.cs" />
+    <Compile Include="Sql\Parsing\VariableDeclaration.cs" />
     <Compile Include="Sql\Parsing\WhileStatement.cs" />
     <Compile Include="Sql\Parsing\BooleanExpression.cs" />
     <Compile Include="Sql\Parsing\BooleanExpressionBrackets.cs" />

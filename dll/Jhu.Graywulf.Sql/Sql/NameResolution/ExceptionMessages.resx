@@ -132,8 +132,14 @@
   <data name="DuplicateTableAlias" xml:space="preserve">
     <value>Duplicate table alias '{0}' found at ({1},{2}).</value>
   </data>
+  <data name="DuplicateVariableName" xml:space="preserve">
+    <value>Duplicate variable name '{0}' found at ({1},{2}).</value>
+  </data>
   <data name="FunctionCallNotAllowed" xml:space="preserve">
     <value>System function calls are not allowed as table sources. Use user-defined function instead.</value>
+  </data>
+  <data name="ScalarVariableExpected" xml:space="preserve">
+    <value>Scalar variable or variable with user-defined type expected at ({1},{2}).</value>
   </data>
   <data name="StarColumnNotAllowed" xml:space="preserve">
     <value>Stars (*) in column expressions are not allowed but found at ({1},{2}).</value>
@@ -147,10 +153,16 @@
   <data name="UnresolvableDatasetReference" xml:space="preserve">
     <value>Unresolvable dataset name '{0}' found at ({1},{2}).</value>
   </data>
+  <data name="UnresolvableFunctionReference" xml:space="preserve">
+    <value>Unresolvable function name '{0}' found at ({1},{2}).</value>
+  </data>
   <data name="UnresolvableTableReference" xml:space="preserve">
     <value>Unresolvable table or view name '{0}' found at ({1},{2}).</value>
   </data>
   <data name="UnresolvableUdfReference" xml:space="preserve">
     <value>Unresolvable function name '{0}' found at ({1},{2}).</value>
+  </data>
+  <data name="UnresolvableVariableReference" xml:space="preserve">
+    <value>Unresolvable variable name '{0}' found at ({1},{2}).</value>
   </data>
 </root>

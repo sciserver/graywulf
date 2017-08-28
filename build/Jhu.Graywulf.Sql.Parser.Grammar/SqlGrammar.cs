@@ -159,7 +159,14 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> Null = () => Keyword("NULL");
 
         public static Expression<Rule> AnyVariable = () =>
-            Must(ColumnIdentifier, SystemVariable, Variable);
+            Must
+            (
+                ColumnIdentifier, 
+                SystemVariable, 
+                UserVariable
+            );
+
+        public static Expression<Rule> UserVariable = () => Variable;
 
         #endregion
         #region Boolean expressions
@@ -388,7 +395,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                         )
                     )
                 ),
-                May(Sequence(CommentOrWhitespace, May(Sequence(Keyword("NOT"), CommentOrWhitespace)), Keyword("NULL")))
+                May(Sequence(May(CommentOrWhitespace), May(Sequence(Keyword("NOT"), CommentOrWhitespace)), Keyword("NULL")))
             );
 
         public static Expression<Rule> DataTypeSize = () =>
@@ -437,7 +444,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> UdtFunctionIdentifier = () =>
             Sequence
             (
-                Variable,
+                UserVariable,
                 May(CommentOrWhitespace),
                 Dot,        // Need to add :: ?
                 May(CommentOrWhitespace),
@@ -653,15 +660,15 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 May(
                     Sequence(
                         CommentOrWhitespace,
-                        Must(Number, Variable),
+                        Must(Number, UserVariable),
                         May(CommentOrWhitespace),
                         Comma,
                         May(CommentOrWhitespace),
-                        Must(StringConstant, Variable),
+                        Must(StringConstant, UserVariable),
                         May(CommentOrWhitespace),
                         Comma,
                         May(CommentOrWhitespace),
-                        Must(Number, Variable),
+                        Must(Number, UserVariable),
                         May(CommentOrWhitespace)
                     )
                 )
@@ -687,7 +694,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             Sequence
             (
                 May(CommentOrWhitespace),
-                Variable,
+                UserVariable,
                 May(Sequence(May(CommentOrWhitespace), Comma, VariableList))
             );
 
@@ -695,7 +702,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             Sequence
             (
                 Keyword("DECLARE"),
-                CommentOrWhitespace,
+                May(CommentOrWhitespace),
                 VariableDeclarationList
             );
 
@@ -709,7 +716,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> VariableDeclaration = () =>
             Sequence
             (
-                Variable,
+                UserVariable,
                 May(Sequence(CommentOrWhitespace, Keyword("AS"))),
                 CommentOrWhitespace,
                 Must(
@@ -736,7 +743,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             (
                 Keyword("SET"),
                 CommentOrWhitespace,
-                Variable,
+                UserVariable,
                 May(CommentOrWhitespace),
                 ValueAssignmentOperator,
                 May(CommentOrWhitespace),
@@ -761,7 +768,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             (
                 Keyword("DECLARE"),
                 CommentOrWhitespace,
-                Must(Cursor, Variable),
+                Must(Cursor, UserVariable),
                 CommentOrWhitespace,
                 CursorDefinition
             );
@@ -771,7 +778,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             (
                 Keyword("SET"),
                 CommentOrWhitespace,
-                Variable,
+                UserVariable,
                 May(CommentOrWhitespace),
                 Equals1,
                 May(CommentOrWhitespace),
@@ -805,7 +812,7 @@ FOR select_statement
             (
                 Must(Keyword("OPEN"), Keyword("CLOSE"), Keyword("DEALLOCATE")),
                 CommentOrWhitespace,
-                Must(Cursor, Variable)
+                Must(Cursor, UserVariable)
             );
 
         public static Expression<Rule> FetchStatement = () =>
@@ -825,14 +832,14 @@ FOR select_statement
                         (
                             Must(Keyword("ABSOLUTE"), Keyword("RELATIVE")),
                             CommentOrWhitespace,
-                            Must(Number, Variable)
+                            Must(Number, UserVariable)
                         )
                     )
                 ),
                 CommentOrWhitespace,
                 Keyword("FROM"),
                 CommentOrWhitespace,
-                Must(Cursor, Variable),
+                Must(Cursor, UserVariable),
                 May
                 (
                     Sequence
@@ -850,7 +857,7 @@ FOR select_statement
             (
                 Keyword("DECLARE"),
                 CommentOrWhitespace,
-                Variable,
+                UserVariable,
                 CommentOrWhitespace,
                 Keyword("TABLE"),
                 May(CommentOrWhitespace),
@@ -978,7 +985,7 @@ FOR select_statement
         public static Expression<Rule> ColumnExpression = () =>
             Must
             (
-                Sequence(Variable, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Expression),
+                Sequence(UserVariable, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Expression),
                 Sequence(ColumnAlias, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Expression),
                 Sequence(Expression, May(Sequence(May(Sequence(CommentOrWhitespace, Keyword("AS"))), CommentOrWhitespace, ColumnAlias)))
             );
@@ -999,7 +1006,7 @@ FOR select_statement
             (
                 Must
                 (
-                    Variable,
+                    UserVariable,
                     TableOrViewName
                 // TODO: temp table?
                 ),
@@ -1093,7 +1100,7 @@ FOR select_statement
         public static Expression<Rule> VariableTableSource = () =>
             Sequence
             (
-                Variable,
+                UserVariable,
                 May(Sequence(May(CommentOrWhitespace), May(Sequence(Keyword("AS"), May(CommentOrWhitespace))), TableAlias))
             );
 
@@ -1401,7 +1408,7 @@ FOR select_statement
                 (
                     Sequence
                     (
-                        Variable,
+                        UserVariable,
                         May(CommentOrWhitespace),
                         Equals1,
                         May(CommentOrWhitespace),
@@ -1409,7 +1416,7 @@ FOR select_statement
                     ),
                     Must
                     (
-                        Variable,
+                        UserVariable,
                         ColumnName
                     )
                 ),

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public interface ITableReference
+    public interface ITableReference : IDatabaseObjectReference
     {
         TableReference TableReference { get; set; }
     }

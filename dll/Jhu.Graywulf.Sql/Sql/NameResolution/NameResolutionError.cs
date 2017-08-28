@@ -1,0 +1,111 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Jhu.Graywulf.Parsing;
+using Jhu.Graywulf.Sql.Parsing;
+
+namespace Jhu.Graywulf.Sql.NameResolution
+{
+    static class NameResolutionError
+    {
+        /// <summary>
+        /// Creates and parameterizes and exception to be thrown by the name resolver.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="innerException"></param>
+        /// <param name="objectName"></param>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private static NameResolverException CreateException(string message, Exception innerException, string objectName, Node node)
+        {
+            string msg;
+            var id = node.FindDescendantRecursive<Identifier>();
+
+            if (id != null)
+            {
+                msg = String.Format(message, objectName, id.Line + 1, id.Col + 1);
+            }
+            else
+            {
+                msg = String.Format(message, objectName, "?", "?");
+            }
+
+            NameResolverException ex = new NameResolverException(msg, innerException);
+            ex.Token = id;
+
+            return ex;
+        }
+
+        public static NameResolverException DuplicateTableAlias(string alias, Node node)
+        {
+            return CreateException(ExceptionMessages.DuplicateTableAlias, null, alias, node);
+        }
+
+        public static NameResolverException UnresolvableDatasetReference(IDatabaseObjectReference node)
+        {
+            return UnresolvableDatasetReference(null, node);
+        }
+
+        public static NameResolverException UnresolvableDatasetReference(Exception innerException, IDatabaseObjectReference node)
+        {
+            return CreateException(ExceptionMessages.UnresolvableDatasetReference, innerException, node.DatabaseObjectReference.DatasetName, (Node)node);
+        }
+
+        public static NameResolverException UnresolvableDatasetReference(DatabaseObjectReference node)
+        {
+            return UnresolvableDatasetReference(null, node);
+        }
+
+        public static NameResolverException UnresolvableDatasetReference(Exception innerException, DatabaseObjectReference node)
+        {
+            return CreateException(ExceptionMessages.UnresolvableDatasetReference, innerException, node.DatasetName, node.Node);
+        }
+
+        public static NameResolverException AmbigousTableReference(ITableReference node)
+        {
+            return CreateException(ExceptionMessages.AmbigousTableReference, null, node.TableReference.DatabaseObjectName, (Node)node);
+        }
+
+        public static NameResolverException UnresolvableTableReference(ITableReference node)
+        {
+            return CreateException(ExceptionMessages.UnresolvableTableReference, null, node.TableReference.DatabaseObjectName, (Node)node);
+        }
+
+        public static NameResolverException UnresolvableColumnReference(IColumnReference node)
+        {
+            return CreateException(ExceptionMessages.UnresolvableColumnReference, null, node.ColumnReference.ColumnName, (Node)node);
+        }
+
+        public static NameResolverException AmbigousColumnReference(IColumnReference node)
+        {
+            return CreateException(ExceptionMessages.AmbigousColumnReference, null, node.ColumnReference.ColumnName, (Node)node);
+        }
+
+        public static NameResolverException UnknownFunctionName(IFunctionReference node)
+        {
+            return CreateException(ExceptionMessages.UnknownFunctionName, null, node.FunctionReference.SystemFunctionName, (Node)node);
+        }
+
+        public static NameResolverException UnresolvableFunctionReference(IFunctionReference node)
+        {
+            return CreateException(ExceptionMessages.UnresolvableFunctionReference, null, node.FunctionReference.DatabaseObjectName, (Node)node);
+        }
+
+        public static NameResolverException UnresolvableVariableReference(IVariableReference node)
+        {
+            return CreateException(ExceptionMessages.UnresolvableVariableReference, null, node.VariableReference.Name, (Node)node);
+        }
+
+        public static NameResolverException DuplicateVariableName(IVariableReference node)
+        {
+            return CreateException(ExceptionMessages.DuplicateVariableName, null, node.VariableReference.Name, (Node)node);
+        }
+
+        public static NameResolverException ScalarVariableExpected(IVariableReference node)
+        {
+            return CreateException(ExceptionMessages.ScalarVariableExpected, null, node.VariableReference.Name, (Node)node);
+        }
+    }
+}

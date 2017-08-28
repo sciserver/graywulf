@@ -13,6 +13,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<FunctionIdentifier>(); }
         }
 
+        public DatabaseObjectReference DatabaseObjectReference
+        {
+            get { return FunctionIdentifier.FunctionReference; }
+        }
+
         public FunctionReference FunctionReference 
         {
             get { return FunctionIdentifier.FunctionReference; }

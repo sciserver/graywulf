@@ -37,6 +37,12 @@ namespace Jhu.Graywulf.Components
             this.dict2 = new Dictionary<T2, T1>();
         }
 
+        public Map(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2)
+        {
+            this.dict1 = new Dictionary<T1, T2>(comparer1);
+            this.dict2 = new Dictionary<T2, T1>(comparer2);
+        }
+
         public void Add(T1 v1, T2 v2)
         {
             dict1.Add(v1, v2);

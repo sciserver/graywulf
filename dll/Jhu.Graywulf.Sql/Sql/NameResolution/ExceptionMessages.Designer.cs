@@ -106,11 +106,29 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate variable name &apos;{0}&apos; found at ({1},{2})..
+        /// </summary>
+        internal static string DuplicateVariableName {
+            get {
+                return ResourceManager.GetString("DuplicateVariableName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to System function calls are not allowed as table sources. Use user-defined function instead..
         /// </summary>
         internal static string FunctionCallNotAllowed {
             get {
                 return ResourceManager.GetString("FunctionCallNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scalar variable or variable with user-defined type expected at ({1},{2})..
+        /// </summary>
+        internal static string ScalarVariableExpected {
+            get {
+                return ResourceManager.GetString("ScalarVariableExpected", resourceCulture);
             }
         }
         
@@ -151,6 +169,15 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unresolvable function name &apos;{0}&apos; found at ({1},{2})..
+        /// </summary>
+        internal static string UnresolvableFunctionReference {
+            get {
+                return ResourceManager.GetString("UnresolvableFunctionReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unresolvable table or view name &apos;{0}&apos; found at ({1},{2})..
         /// </summary>
         internal static string UnresolvableTableReference {
@@ -165,6 +192,15 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         internal static string UnresolvableUdfReference {
             get {
                 return ResourceManager.GetString("UnresolvableUdfReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unresolvable variable name &apos;{0}&apos; found at ({1},{2})..
+        /// </summary>
+        internal static string UnresolvableVariableReference {
+            get {
+                return ResourceManager.GetString("UnresolvableVariableReference", resourceCulture);
             }
         }
     }

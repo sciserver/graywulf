@@ -121,7 +121,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get { return columnReferences; }
         }
-        
+
         public TableReference()
         {
             InitializeMembers();
@@ -184,29 +184,26 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         public TableReference(SubqueryTableSource ts)
+            : this()
         {
-            InitializeMembers();
             InterpretTableSource(ts);
         }
 
         public TableReference(ColumnIdentifier ci)
             : this()
         {
-            InitializeMembers();
             InterpretColumnIdentifier(ci);
         }
 
         public TableReference(TableOrViewName ti)
             : this()
         {
-            InitializeMembers();
             InterpretTableOrViewName(ti);
         }
 
         public TableReference(TableValuedFunctionCall tvf)
             : this()
         {
-            InitializeMembers();
             InterpretTableValuedFunctionCall(tvf);
         }
 

@@ -21,6 +21,131 @@ namespace Jhu.Graywulf.Schema
             return Create(type, length, 0, 0, false);
         }
 
+        public static DataType Create(SqlDbType type, int length, byte precision, byte scale, bool isNullable)
+        {
+            DataType dt;
+
+            switch (type)
+            {
+                case System.Data.SqlDbType.BigInt:
+                    dt = DataTypes.SqlBigInt;
+                    break;
+                case System.Data.SqlDbType.Binary:
+                    dt = DataTypes.SqlBinary;
+                    break;
+                case System.Data.SqlDbType.Bit:
+                    dt = DataTypes.SqlBit;
+                    break;
+                case System.Data.SqlDbType.Char:
+                    dt = DataTypes.SqlChar;
+                    break;
+                case System.Data.SqlDbType.Date:
+                    dt = DataTypes.SqlDate;
+                    break;
+                case System.Data.SqlDbType.DateTime:
+                    dt = DataTypes.SqlDateTime;
+                    break;
+                case System.Data.SqlDbType.DateTime2:
+                    dt = DataTypes.SqlDateTime2;
+                    break;
+                case System.Data.SqlDbType.DateTimeOffset:
+                    dt = DataTypes.SqlDateTimeOffset;
+                    break;
+                case System.Data.SqlDbType.Decimal:
+                    dt = DataTypes.SqlDecimal;
+                    break;
+                case System.Data.SqlDbType.Float:
+                    dt = DataTypes.SqlFloat;
+                    break;
+                case System.Data.SqlDbType.Image:
+                    dt = DataTypes.SqlImage;
+                    break;
+                case System.Data.SqlDbType.Int:
+                    dt = DataTypes.SqlInt;
+                    break;
+                case System.Data.SqlDbType.Money:
+                    dt = DataTypes.SqlMoney;
+                    break;
+                case System.Data.SqlDbType.NChar:
+                    dt = DataTypes.SqlNChar;
+                    break;
+                case System.Data.SqlDbType.NText:
+                    dt = DataTypes.SqlNText;
+                    break;
+                case System.Data.SqlDbType.NVarChar:
+                    dt = DataTypes.SqlNVarChar;
+                    break;
+                case System.Data.SqlDbType.Real:
+                    dt = DataTypes.SqlReal;
+                    break;
+                case System.Data.SqlDbType.SmallDateTime:
+                    dt = DataTypes.SqlSmallDateTime;
+                    break;
+                case System.Data.SqlDbType.SmallInt:
+                    dt = DataTypes.SqlSmallInt;
+                    break;
+                case System.Data.SqlDbType.SmallMoney:
+                    dt = DataTypes.SqlSmallMoney;
+                    break;
+                case System.Data.SqlDbType.Text:
+                    dt = DataTypes.SqlText;
+                    break;
+                case System.Data.SqlDbType.Time:
+                    dt = DataTypes.SqlTime;
+                    break;
+                case System.Data.SqlDbType.Timestamp:
+                    dt = DataTypes.SqlTimestamp;
+                    break;
+                case System.Data.SqlDbType.TinyInt:
+                    dt = DataTypes.SqlTinyInt;
+                    break;
+                case System.Data.SqlDbType.UniqueIdentifier:
+                    dt = DataTypes.SqlUniqueIdentifier;
+                    break;
+                case System.Data.SqlDbType.VarBinary:
+                    dt = DataTypes.SqlVarBinary;
+                    break;
+                case System.Data.SqlDbType.VarChar:
+                    dt = DataTypes.SqlVarChar;
+                    break;
+                case System.Data.SqlDbType.Variant:
+                    dt = DataTypes.SqlVariant;
+                    break;
+                case System.Data.SqlDbType.Xml:
+                    dt = DataTypes.SqlXml;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            if (dt.HasLength)
+            {
+                dt.Length = length;
+            }
+
+            if (dt.HasPrecision)
+            {
+                // TODO: this is a little bit fishy but right now it will do it
+                if (precision == 0 && length > 0)
+                {
+                    dt.Precision = (byte)length;
+                }
+                else if (precision != 0)
+                {
+                    dt.precision = precision;
+                }
+            }
+
+            if (dt.HasScale && scale != 0)
+            {
+                dt.Scale = scale;
+            }
+
+            dt.IsNullable = isNullable;
+
+            return dt;
+        }
+
         /// <summary>
         /// Creates data type descriptor from a .Net type
         /// </summary>
@@ -249,13 +374,25 @@ namespace Jhu.Graywulf.Schema
                 {
                     return ObjectName;
                 }
+                else if (HasPrecision && !HasScale)
+                {
+                    return String.Format("{0}({1})", ObjectName, precision);
+                }
+                else if (HasScale && !HasPrecision)
+                {
+                    return String.Format("{0}({1})", ObjectName, scale);
+                }
+                else if (HasScale && HasPrecision)
+                {
+                    return String.Format("{0}({1}, {2})", ObjectName, precision, scale);
+                }
                 else if (IsMaxLength)
                 {
-                    return System.String.Format("{0}(max)", ObjectName);
+                    return String.Format("{0}(max)", ObjectName);
                 }
                 else
                 {
-                    return System.String.Format("{0}({1})", ObjectName, length);
+                    return String.Format("{0}({1})", ObjectName, length);
                 }
             }
         }

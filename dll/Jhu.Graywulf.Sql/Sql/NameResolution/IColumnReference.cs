@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public interface IColumnReference
+    public interface IColumnReference : IDatabaseObjectReference
     {
         ColumnReference ColumnReference { get; set; }
     }
