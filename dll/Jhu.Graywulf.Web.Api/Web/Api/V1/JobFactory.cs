@@ -58,6 +58,9 @@ namespace Jhu.Graywulf.Web.Api.V1
                 if (jobInstanceFactory == null)
                 {
                     jobInstanceFactory = new JobInstanceFactory(RegistryContext);
+
+                    // By default, filter jobs on current user's guid
+                    jobInstanceFactory.UserGuid = RegistryContext.UserReference.Guid;
                 }
 
                 return jobInstanceFactory;
