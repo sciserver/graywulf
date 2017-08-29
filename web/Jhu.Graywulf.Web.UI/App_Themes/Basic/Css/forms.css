@@ -20,6 +20,14 @@ table.DetailsForm {
     font-size: 14px;
 }
 
+
+div.FormFrame {
+    border: 1px solid #C0C0C0;
+    background-color: #FFFFFF;
+    box-shadow: 0px 12px 6px -6px #c0c0c0;
+    padding: 8px;
+}
+
 table.FormTable {
     width: 100%;
 }

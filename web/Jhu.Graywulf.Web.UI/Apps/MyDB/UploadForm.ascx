@@ -9,7 +9,7 @@
             <input type="file" id="importedFile" name="importedFile" runat="server" class="FormField"
                 style="width: 420px" />
             <asp:RequiredFieldValidator runat="server" ControlToValidate="importedFile"
-                Display="Dynamic" ErrorMessage="<br/ >A file must be selected" />
+                Display="Dynamic" ErrorMessage="<br />A file must be selected" />
         </td>
     </tr>
     <tr runat="server" id="fileSizeWarning">
