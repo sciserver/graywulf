@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Web;
 using System.Web.UI;
+using System.Text;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
 
@@ -81,8 +82,13 @@ namespace Jhu.Graywulf.Web.UI.Controls
 
         public override void RenderControl(HtmlTextWriter writer)
         {
+            var text = new StringBuilder(Text);
+            string url = Page.Request.Url.Authority + VirtualPathUtility.ToAbsolute("~");
+
+            text.Replace("[$ApplicationUrl]", url);
+
             writer.Write(String.Format("<script type=\"syntaxhighlighter\" class=\"brush: {0};\"><![CDATA[\r\n", Brush.ToLowerInvariant()));
-            writer.Write(Text);
+            writer.Write(text.ToString());
             writer.Write("]]></script>");
 
             base.RenderControl(writer);
