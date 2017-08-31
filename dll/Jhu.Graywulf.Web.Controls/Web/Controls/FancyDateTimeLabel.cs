@@ -3,7 +3,7 @@ using System.Web.UI.WebControls;
 
 namespace Jhu.Graywulf.Web.Controls
 {
-    public class FancyDateLabel : Label
+    public class FancyDateTimeLabel : Label
     {
         public DateTime? Value
         {
@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Web.Controls
             set
             {
                 ViewState["Value"] = value;
-                Text = Jhu.Graywulf.Util.DateFormatter.FancyFormat(value);
+                Text = Jhu.Graywulf.Util.DateTimeFormatter.FancyFormat(value);
             }
         }
     }

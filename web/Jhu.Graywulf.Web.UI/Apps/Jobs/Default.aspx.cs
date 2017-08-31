@@ -100,6 +100,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
                 var job = (Job)e.Item.DataItem;
                 var detailsPlaceholder = (PlaceHolder)e.Item.FindControl("detailsPlaceholder");
                 var error = (ErrorDetails)e.Item.FindControl("errorDetails");
+                var duration = (Web.Controls.FancyTimeSpanLabel)e.Item.FindControl("duration");
 
                 error.Job = job;
 
@@ -124,6 +125,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
                 else
                 {
                     details = (JobDetails)LoadControl("JobDetails.ascx");
+                }
+
+                if (job.DateFinished != DateTime.MinValue)
+                {
+                    duration.Value = job.DateFinished - job.DateStarted;
+                }
+                else
+                {
+                    duration.Value = TimeSpan.MinValue;
                 }
 
                 details.Job = job;

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Util
 {
-    public static class DateFormatter
+    public static class DateTimeFormatter
     {
         public static string Format(DateTime? value)
         {

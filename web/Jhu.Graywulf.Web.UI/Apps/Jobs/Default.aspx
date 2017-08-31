@@ -45,6 +45,7 @@
                         <span style="width: 140px">submitted</span>
                         <span style="width: 140px">started</span>
                         <span style="width: 140px">finished</span>
+                        <span style="width: 100px">duration</span>
                         <span class="gw-list-span">comments</span>
                     </div>
                 </div>
@@ -82,9 +83,10 @@
                                 <jgwc:DetailsButton runat="server" Style="width: 32px" />
                                 <asp:Label runat="server" Text='<%# Eval("Type") %>' Width="64px" />
                                 <asp:Label runat="server" Text='<%# Eval("Queue") %>' Width="64px" />
-                                <jgwc:FancyDateLabel runat="server" Value='<%# Eval("DateCreated") %>' Width="140px" />
-                                <jgwc:FancyDateLabel runat="server" Value='<%# Eval("DateStarted") %>' Width="140px" />
-                                <jgwc:FancyDateLabel runat="server" Value='<%# Eval("DateFinished") %>' Width="140px" />
+                                <jgwc:FancyDateTimeLabel runat="server" Value='<%# Eval("DateCreated") %>' Width="140px" />
+                                <jgwc:FancyDateTimeLabel runat="server" Value='<%# Eval("DateStarted") %>' Width="140px" />
+                                <jgwc:FancyDateTimeLabel runat="server" Value='<%# Eval("DateFinished") %>' Width="140px" />
+                                <jgwc:FancyTimeSpanLabel runat="server" ID="duration" Width="100px" />
                                 <asp:Label runat="server" Text='<%# Eval("Comments") %>' CssClass="gw-list-span" />
                             </div>
                             <asp:PlaceHolder runat="server" ID="detailsPlaceholder" />
