@@ -12,6 +12,7 @@
     </div>
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="middle">
+
     <asp:Panel runat="server" ID="iframePanel" Visible="false" CssClass="dock-container dock-fill">
         <iframe runat="server" id="iframe" class="dock-fill" style="border: 0;"></iframe>
     </asp:Panel>
