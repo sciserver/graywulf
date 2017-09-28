@@ -256,36 +256,43 @@ namespace Jhu.Graywulf.SqlParser
                 }
                 else
                 {
-                    var ntr = new TableReference(tr);
-
-                    if (!ntr.IsSubquery && !ntr.IsComputed)
-                    {
-                        // Load table description from underlying schema
-                        // Attempt to load dataset and throw exception of name cannot be resolved
-                        DatasetBase ds;
-
-                        try
-                        {
-                            ds = schemaManager.Datasets[ntr.DatasetName];
-                        }
-                        catch (KeyNotFoundException ex)
-                        {
-                            throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, ntr.DatasetName, ntr.Node);
-                        }
-                        catch (SchemaException ex)
-                        {
-                            throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, ntr.DatasetName, ntr.Node);
-                        }
-
-                        ntr.DatabaseObject = ds.GetObject(ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName);
-
-                        // Load column descriptions for the table
-                        ntr.LoadColumnReferences(schemaManager);
-                    }
+                    var ntr = ResolveSourceTableReference(tr);
 
                     qs.SourceTableReferences.Add(tablekey, ntr);
                 }
             }
+        }
+
+        public TableReference ResolveSourceTableReference(TableReference tr)
+        {
+            var ntr = new TableReference(tr);
+
+            if (!ntr.IsSubquery && !ntr.IsComputed)
+            {
+                // Load table description from underlying schema
+                // Attempt to load dataset and throw exception of name cannot be resolved
+                DatasetBase ds;
+
+                try
+                {
+                    ds = schemaManager.Datasets[ntr.DatasetName];
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, ntr.DatasetName, ntr.Node);
+                }
+                catch (SchemaException ex)
+                {
+                    throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, ntr.DatasetName, ntr.Node);
+                }
+
+                ntr.DatabaseObject = ds.GetObject(ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName);
+
+                // Load column descriptions for the table
+                ntr.LoadColumnReferences(schemaManager);
+            }
+
+            return ntr;
         }
 
         /// <summary>
@@ -296,6 +303,11 @@ namespace Jhu.Graywulf.SqlParser
         private void ResolveTableReferences(QuerySpecification qs)
         {
             ResolveTableReferences(qs, (Node)qs, ColumnContext.None);
+        }
+
+        public void ResolveTableReferences(Node n, ColumnContext context)
+        {
+            ResolveTableReferences(null, n, context);
         }
 
         /// <summary>
@@ -342,62 +354,7 @@ namespace Jhu.Graywulf.SqlParser
 
             if (!node.TableReference.IsUndefined)
             {
-                TableReference ntr = null;
-                string alias = null;
-
-                if (node.TableReference.Alias != null)
-                {
-                    // if table alias found explicitly
-                    alias = node.TableReference.Alias;
-                }
-                else if (node.TableReference.DatasetName == null &&
-                        node.TableReference.DatabaseName == null &&
-                        node.TableReference.SchemaName == null &&
-                        node.TableReference.DatabaseObjectName != null &&
-                        qs.SourceTableReferences.ContainsKey(node.TableReference.DatabaseObjectName))
-                {
-                    // if only table name found and that's an alias
-                    alias = node.TableReference.DatabaseObjectName;
-                }
-
-                if (alias != null)
-                {
-                    ntr = qs.SourceTableReferences[alias];
-                }
-                else
-                {
-                    // Check if dataset specified and make sure it's valid
-                    if (node.TableReference.DatasetName != null)
-                    {
-                        if (!schemaManager.Datasets.ContainsKey(node.TableReference.DatasetName))
-                        {
-                            throw CreateException(ExceptionMessages.UnresolvableDatasetReference, null, node.TableReference.DatasetName, (Node)node);
-                        }
-                    }
-
-                    // if only a table name found and that's not an alias -> must be a table
-                    int q = 0;
-                    foreach (var tr in qs.SourceTableReferences.Values)
-                    {
-                        if (tr.Compare(node.TableReference))
-                        {
-                            if (q != 0)
-                            {
-                                throw CreateException(ExceptionMessages.AmbigousTableReference, null, node.TableReference.DatabaseObjectName, (Node)node);
-                            }
-
-                            ntr = tr;
-                            q++;
-                        }
-                    }
-                }
-
-                if (ntr == null)
-                {
-                    throw CreateException(ExceptionMessages.UnresolvableTableReference, null, node.TableReference.DatabaseObjectName, (Node)node);
-                }
-
-                node.TableReference = ntr;
+                node.TableReference = ResolveTableReference(qs, node);
             }
 
             // If we are inside a table hint, make sure the reference is to the current table
@@ -418,6 +375,72 @@ namespace Jhu.Graywulf.SqlParser
                     throw CreateException(ExceptionMessages.DifferentTableReferenceInHintNotAllowed, (Node)node);
                 }
             }
+        }
+
+        private TableReference ResolveTableReference(ITableReference node)
+        {
+            return ResolveTableReference(null, node);
+        }
+
+        private TableReference ResolveTableReference(QuerySpecification qs, ITableReference node)
+        {
+            TableReference ntr = null;
+            string alias = null;
+
+            if (node.TableReference.Alias != null)
+            {
+                // if table alias found explicitly
+                alias = node.TableReference.Alias;
+            }
+            else if (qs != null &&
+                    node.TableReference.DatasetName == null &&
+                    node.TableReference.DatabaseName == null &&
+                    node.TableReference.SchemaName == null &&
+                    node.TableReference.DatabaseObjectName != null &&
+                    qs.SourceTableReferences.ContainsKey(node.TableReference.DatabaseObjectName))
+            {
+                // if only table name found and that's an alias
+                alias = node.TableReference.DatabaseObjectName;
+            }
+
+            if (qs != null && alias != null)
+            {
+                ntr = qs.SourceTableReferences[alias];
+            }
+            else
+            {
+                // Check if dataset specified and make sure it's valid
+                if (node.TableReference.DatasetName != null)
+                {
+                    if (!schemaManager.Datasets.ContainsKey(node.TableReference.DatasetName))
+                    {
+                        throw CreateException(ExceptionMessages.UnresolvableDatasetReference, null, node.TableReference.DatasetName, (Node)node);
+                    }
+                }
+
+                // if only a table name found and that's not an alias -> must be a table
+                int q = 0;
+                foreach (var tr in qs.SourceTableReferences.Values)
+                {
+                    if (tr.Compare(node.TableReference))
+                    {
+                        if (q != 0)
+                        {
+                            throw CreateException(ExceptionMessages.AmbigousTableReference, null, node.TableReference.DatabaseObjectName, (Node)node);
+                        }
+
+                        ntr = tr;
+                        q++;
+                    }
+                }
+            }
+
+            if (ntr == null)
+            {
+                throw CreateException(ExceptionMessages.UnresolvableTableReference, null, node.TableReference.DatabaseObjectName, (Node)node);
+            }
+
+            return ntr;
         }
 
         private void ResolveColumnReferences(QuerySpecification qs)

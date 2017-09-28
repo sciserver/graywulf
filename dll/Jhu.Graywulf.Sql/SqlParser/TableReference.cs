@@ -197,6 +197,8 @@ namespace Jhu.Graywulf.SqlParser
         {
             InitializeMembers();
             InterpretTableSource(ts);
+
+            this.Node = ts;
         }
 
         public TableReference(ColumnIdentifier ci)
@@ -204,6 +206,8 @@ namespace Jhu.Graywulf.SqlParser
         {
             InitializeMembers();
             InterpretColumnIdentifier(ci);
+
+            this.Node = ci;
         }
 
         public TableReference(TableOrViewName ti)
@@ -211,6 +215,8 @@ namespace Jhu.Graywulf.SqlParser
         {
             InitializeMembers();
             InterpretTableOrViewName(ti);
+
+            this.Node = ti;
         }
 
         public TableReference(TableValuedFunctionCall tvf)
@@ -218,6 +224,8 @@ namespace Jhu.Graywulf.SqlParser
         {
             InitializeMembers();
             InterpretTableValuedFunctionCall(tvf);
+
+            this.Node = tvf;
         }
 
         private void InitializeMembers()
@@ -446,7 +454,6 @@ namespace Jhu.Graywulf.SqlParser
             }
             else
             {
-                // TODO: move this to name resolver instead
                 throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableTableReference, DatabaseObjectName, Node.Line, Node.Col));
             }
 

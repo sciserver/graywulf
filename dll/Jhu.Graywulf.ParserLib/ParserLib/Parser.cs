@@ -43,6 +43,8 @@ namespace Jhu.Graywulf.ParserLib
 
         public Token Execute(Token rootToken, string code)
         {
+            // TODO: set line and col values
+
             this.pos = 0;
             this.checkpoints = new Stack<ParserCheckpoint>();
             this.code = code;
