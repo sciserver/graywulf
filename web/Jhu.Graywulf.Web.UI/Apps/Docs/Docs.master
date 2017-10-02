@@ -15,7 +15,7 @@
 </asp:Content>
 <asp:Content ID="Content3" ContentPlaceHolderID="middle" runat="server">
     <div class="dock-fill" style="overflow: auto;">
-        <div class="gw-docs-page">
+        <div class="container gw-docs-page">
         <asp:ContentPlaceHolder runat="server" ID="Text" />
         </div>
     </div>

@@ -49,7 +49,8 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\ByteSizeFormatter.cs" />
-    <Compile Include="Util\DateFormatter.cs" />
+    <Compile Include="Util\DateTimeFormatter.cs" />
+    <Compile Include="Util\TimeSpanFormatter.cs" />
     <Compile Include="Util\UrlFormatter.cs" />
     <Compile Include="Web\Controls\BoundByteSizeField.cs" />
     <Compile Include="Web\Controls\BoundDateTimeField.cs" />
@@ -62,6 +63,8 @@
     <Compile Include="Web\Controls\DocsTreeVisitor.cs" />
     <Compile Include="Web\Controls\Enum.cs" />
     <Compile Include="Web\Controls\FancyByteSizeLabel.cs" />
+    <Compile Include="Web\Controls\FancyDateTimeLabel.cs" />
+    <Compile Include="Web\Controls\FancyTimeSpanLabel.cs" />
     <Compile Include="Web\Controls\HtmlIncluder.cs" />
     <Compile Include="Web\Controls\HtmlLabel.cs" />
     <Compile Include="Web\Controls\Int32ArrayConverter.cs" />
@@ -82,7 +85,6 @@
     <Compile Include="Web\Controls\ToolbarElement.cs" />
     <Compile Include="Web\Controls\ToolbarSpan.cs" />
     <Compile Include="Web\Controls\UsageBar.cs" />
-    <Compile Include="Web\Controls\FancyDateLabel.cs" />
     <Compile Include="Web\Controls\DocsTreeVisitorEventArgs.cs" />
     <Compile Include="Web\Scripts\BootstrapLightbox.cs" />
     <Compile Include="Web\Scripts\Bootstrap.cs" />

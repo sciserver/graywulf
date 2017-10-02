@@ -429,36 +429,43 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 else
                 {
-                    var ntr = new TableReference(tr);
-
-                    if (!ntr.IsSubquery && !ntr.IsComputed)
-                    {
-                        // Load table description from underlying schema
-                        // Attempt to load dataset and throw exception of name cannot be resolved
-                        DatasetBase ds;
-
-                        try
-                        {
-                            ds = schemaManager.Datasets[ntr.DatasetName];
-                        }
-                        catch (KeyNotFoundException ex)
-                        {
-                            throw NameResolutionError.UnresolvableDatasetReference(ex, ntr);
-                        }
-                        catch (SchemaException ex)
-                        {
-                            throw NameResolutionError.UnresolvableDatasetReference(ex, ntr);
-                        }
-
-                        ntr.DatabaseObject = ds.GetObject(ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName);
-
-                        // Load column descriptions for the table
-                        ntr.LoadColumnReferences(schemaManager);
-                    }
+                    var ntr = ResolveSourceTableReference(tr);
 
                     qs.SourceTableReferences.Add(tablekey, ntr);
                 }
             }
+        }
+
+        public TableReference ResolveSourceTableReference(TableReference tr)
+        {
+            var ntr = new TableReference(tr);
+
+            if (!ntr.IsSubquery && !ntr.IsComputed)
+            {
+                // Load table description from underlying schema
+                // Attempt to load dataset and throw exception of name cannot be resolved
+                DatasetBase ds;
+
+                try
+                {
+                    ds = schemaManager.Datasets[ntr.DatasetName];
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw NameResolutionError.UnresolvableDatasetReference(ex, ntr);
+                }
+                catch (SchemaException ex)
+                {
+                    throw NameResolutionError.UnresolvableDatasetReference(ex, ntr);
+                }
+
+                ntr.DatabaseObject = ds.GetObject(ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName);
+
+                // Load column descriptions for the table
+                ntr.LoadColumnReferences(schemaManager);
+            }
+
+            return ntr;
         }
 
         /// <summary>
@@ -469,6 +476,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void ResolveTableReferences(QuerySpecification qs)
         {
             ResolveTableReferences(qs, (Node)qs, ColumnContext.None);
+        }
+
+        public void ResolveTableReferences(Node n, ColumnContext context)
+        {
+            ResolveTableReferences(null, n, context);
         }
 
         /// <summary>

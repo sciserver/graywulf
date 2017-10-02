@@ -16,56 +16,18 @@ namespace Jhu.Graywulf.Web.UI.Controls
     /// in the documentation
     /// </summary>
     [DefaultProperty("Text"), ParseChildren(false), PersistChildren(true), ToolboxData("<{0}:CodeView runat=server></{0}:CodeView>"), ControlValueProperty("Text")]
-    public class Query : System.Web.UI.WebControls.WebControl, ITextControl
+    public class Query : SyntaxHighlight
     {
         private Button edit;
-        private bool textSetByAddParsedSubObject;
-
-        [Bindable(true), Localizable(true), PersistenceMode(PersistenceMode.InnerDefaultProperty)]
-        public string Text
-        {
-            get { return (string)ViewState["Text"] ?? ""; }
-            set { ViewState["Text"] = value; }
-        }
 
         public Query()
         {
-            base.Load += Page_Load;
-            base.PreRender += Page_PreRender;
         }
 
-        protected override void AddParsedSubObject(object obj)
+        protected override void Page_Load(object sender, EventArgs e)
         {
-            if (this.HasControls())
-            {
-                base.AddParsedSubObject(obj);
-            }
-            else if (obj is LiteralControl)
-            {
-                if (this.textSetByAddParsedSubObject)
-                {
-                    this.Text = this.Text + ((LiteralControl)obj).Text;
-                }
-                else
-                {
-                    this.Text = ((LiteralControl)obj).Text;
-                }
-                this.textSetByAddParsedSubObject = true;
-            }
-            else
-            {
-                string text = this.Text;
-                if (text.Length != 0)
-                {
-                    this.Text = string.Empty;
-                    base.AddParsedSubObject(new LiteralControl(text));
-                }
-                base.AddParsedSubObject(obj);
-            }
-        }
+            base.Page_Load(sender, e);
 
-        protected void Page_Load(object sender, EventArgs e)
-        {
             edit = new Button();
             edit.CssClass = "FormButton";
             edit.Text = "Try this query";
@@ -78,28 +40,17 @@ namespace Jhu.Graywulf.Web.UI.Controls
             this.Controls.Add(p);
         }
 
-        protected void Page_PreRender(object sender, EventArgs e)
+        protected override void Page_PreRender(object sender, EventArgs e)
         {
-            ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "core", VirtualPathUtility.ToAbsolute("~/Scripts/SyntaxHighlighter/scripts/shCore.js"));
-            ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "autoloader", VirtualPathUtility.ToAbsolute("~/Scripts/SyntaxHighlighter/scripts/shAutoLoader.js"));
-            ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "brushsql", VirtualPathUtility.ToAbsolute("~/Scripts/SyntaxHighlighter/scripts/shBrushSql.js"));
+            if (String.IsNullOrWhiteSpace(Brush)) Brush = "Sql";
 
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "all", "SyntaxHighlighter.all();", true);
+            base.Page_PreRender(sender, e);
         }
 
         void edit_Click(object sender, EventArgs e)
         {
             Util.QueryEditorUtil.SetQueryInSession(this.Page, Text, null, true);
             Page.Response.Redirect(Jhu.Graywulf.Web.UI.Apps.Query.Default.GetUrl(), false);
-        }
-
-        public override void RenderControl(HtmlTextWriter writer)
-        {
-            writer.Write(String.Format("<script type=\"syntaxhighlighter\" class=\"brush: {0};\"><![CDATA[\r\n", "sql"));
-            writer.Write(Text);
-            writer.Write("]]></script>");
-
-            base.RenderControl(writer);
         }
     }
 }

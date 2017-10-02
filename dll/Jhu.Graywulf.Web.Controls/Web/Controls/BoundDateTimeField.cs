@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Web.Controls
             }
             else
             {
-                return Util.DateFormatter.Format((DateTime)value);
+                return Util.DateTimeFormatter.Format((DateTime)value);
             }
         }
     }

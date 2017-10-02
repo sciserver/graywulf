@@ -8,10 +8,10 @@
     <jgwuc:Dropdown runat="server" ID="logo" />
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="userStatus">
-    <jgwuc:UserStatus ID="UserStatus" runat="server" />
+    <jgwuc:UserStatus runat="server" ID="userStatus" />
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="menu">
-    <jgwuc:Menu runat="server" />
+    <jgwuc:Menu runat="server" ID="menu" />
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="toolbar">
     <asp:ContentPlaceHolder runat="server" ID="toolbar" />
@@ -20,5 +20,5 @@
     <asp:ContentPlaceHolder runat="server" ID="middle" />
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="footer">
-    <jgwuc:Footer runat="server" />
+    <jgwuc:Footer runat="server" ID="footer" />
 </asp:Content>

@@ -31,13 +31,22 @@ namespace Jhu.Graywulf.Web.UI.Masters {
         protected global::Jhu.Graywulf.Web.UI.Controls.Dropdown logo;
         
         /// <summary>
-        /// UserStatus control.
+        /// userStatus control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Controls.UserStatus UserStatus;
+        protected global::Jhu.Graywulf.Web.UI.Controls.UserStatus userStatus;
+        
+        /// <summary>
+        /// menu control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Controls.Menu menu;
         
         /// <summary>
         /// toolbar control.
@@ -56,5 +65,14 @@ namespace Jhu.Graywulf.Web.UI.Masters {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ContentPlaceHolder middle;
+        
+        /// <summary>
+        /// footer control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Controls.Footer footer;
     }
 }

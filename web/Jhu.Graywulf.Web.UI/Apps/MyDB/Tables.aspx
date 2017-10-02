@@ -51,8 +51,8 @@
                         <asp:Label runat="server" Text='<%# Eval("DisplayName") %>' CssClass="gw-list-span" />
                         <asp:Label runat="server" Text='<%# Eval("Statistics.RowCount") %>' Width="100px" />
                         <jgwc:FancyByteSizeLabel runat="server" Value='<%# Eval("Statistics.DataSpace") %>' Width="100px" />
-                        <jgwc:FancyDateLabel runat="server" Value='<%# Eval("Metadata.DateCreated") %>' Width="140px" />
-                        <jgwc:FancyDateLabel runat="server" Value='<%# Eval("Metadata.DateModified") %>' Width="140px" />
+                        <jgwc:FancyDateTimeLabel runat="server" Value='<%# Eval("Metadata.DateCreated") %>' Width="140px" />
+                        <jgwc:FancyDateTimeLabel runat="server" Value='<%# Eval("Metadata.DateModified") %>' Width="140px" />
                     </div>
                     <div class="gw-list-row gw-details-panel">
                         <span style="width: 32px"></span>
