@@ -23,6 +23,7 @@
                     <asp:Label ID="objectTypeListLabel" runat="server" Text="Object category:" /><br />
                     <asp:DropDownList ID="objectTypeList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ObjectTypeList_SelectedIndexChanged" />
                 </div>
+                <asp:LinkButton runat="server" ID="objectListButton" Text="object list" OnCommand="SchemaView_Command" CommandName="databaseObjectList" />
                 <div runat="server" id="databaseObjectListDiv" class="span">
                     <asp:Label ID="databaseObjectListLabel" runat="server" Text="Object:" /><br />
                     <asp:DropDownList ID="databaseObjectList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DatabaseObjectList_SelectedIndexChanged" />

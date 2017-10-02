@@ -323,6 +323,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                             ShowDatasetView(ParseDataset((string)e.CommandArgument));
                         }
                         break;
+                    case SchemaView.DatabaseObjectList:
+                        ShowDatabaseObjectListView(SelectedDataset, SelectedObjectType);
+                        break;
                     case SchemaView.DatabaseObject:
                         ShowDatabaseObjectView(ParseDatabaseObject((string)e.CommandArgument), SelectedView);
                         break;
@@ -503,6 +506,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                     SelectedDataset.LoadAllObjects(SelectedObjectType, SelectedDataset.IsMutable);
                     databaseObjectListView.Items = SelectedDataset.GetAllObjects(SelectedObjectType).OrderBy(o => o, new DatabaseObjectLexicographicComparer());
                     databaseObjectListView.Visible = true;
+                    objectListButton.CssClass = "selected";
                     break;
                 case SchemaView.DatabaseObject:
                     databaseObjectView.Item = SelectedDatabaseObject;
@@ -530,6 +534,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
             datasetButton.Visible = ds != null;
             objectTypeListDiv.Visible = ds != null;
+            objectListButton.Visible = ot != DatabaseObjectType.Unknown;
             databaseObjectListDiv.Visible = ot != DatabaseObjectType.Unknown;
 
             datasetList.SelectedValue = ds?.Name;
@@ -590,6 +595,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
             datasetListButton.CssClass = "";
             datasetButton.CssClass = "";
+            objectListButton.CssClass = "";
             summaryButton.CssClass = "";
             columnsButton.CssClass = "";
             indexesButton.CssClass = "";
