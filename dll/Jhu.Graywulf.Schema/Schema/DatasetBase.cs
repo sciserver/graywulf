@@ -392,8 +392,8 @@ namespace Jhu.Graywulf.Schema
                 "{0}|{1}|{2}|{3}|{4}",
                 objectType,
                 datasetName,
-                databaseName,
-                schemaName,
+                databaseName ?? DatabaseName,
+                schemaName ?? DefaultSchemaName,
                 objectName);
         }
 
