@@ -110,7 +110,7 @@ ul.FormField {
 }
 
     ul.FormField li {
-        width: 140px;
+        min-width: 140px;
         display: inline-block;
         white-space: nowrap;
     }
