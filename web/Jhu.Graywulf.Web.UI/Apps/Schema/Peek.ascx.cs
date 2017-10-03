@@ -10,23 +10,29 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.SqlCodeGen;
 using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.Data;
+using System.Web.UI;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Schema
 {
-    public partial class Peek : FederationPageBase
+    public partial class Peek : SchemaItemView<TableOrView>
     {
         public static string GetUrl(string objid)
         {
-            return String.Format("~/Apps/Schema/Peek.aspx?objid={0}", objid);
+            return Default.GetUrl(Default.SchemaView.Peek, objid);
         }
 
-        protected void Page_Load(object sender, EventArgs e)
+        public override void UpdateView()
         {
         }
 
-        protected void RenderTable()
+        protected override void Render(HtmlTextWriter writer)
         {
-            var tableOrView = (schema::TableOrView)FederationContext.SchemaManager.GetDatabaseObjectByKey(Request.QueryString["objid"]);
+            RenderTable(writer);
+        }
+
+        protected void RenderTable(TextWriter writer)
+        {
+            var tableOrView = Item;
             var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(tableOrView.Dataset);
             var sql = codegen.GenerateSelectStarQuery(tableOrView, 100);
             IDbConnection cn = null;
@@ -61,7 +67,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
                 using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
                 {
-                    RenderTable(Response.Output, dr);
+                    RenderTable(writer, dr);
                 }
             }
 
@@ -70,6 +76,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         private void RenderTable(TextWriter writer, ISmartDataReader dr)
         {
+            writer.WriteLine("<div class=\"dock-fill dock-scroll\">");
             writer.WriteLine("<table border=\"1\" cellspacing=\"0\" style=\"border-collapse:collapse\">");
 
             // header
@@ -102,6 +109,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
             // Footer
             writer.WriteLine("</table>");
+            writer.WriteLine("</div>");
         }
     }
 }

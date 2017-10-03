@@ -172,7 +172,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink peekButton;
+        protected global::System.Web.UI.WebControls.LinkButton peekButton;
         
         /// <summary>
         /// datasetListView control.
@@ -236,6 +236,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::Jhu.Graywulf.Web.UI.Apps.Schema.IndexesView indexesView;
+        
+        /// <summary>
+        /// peekView control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.Peek peekView;
         
         /// <summary>
         /// introForm control.
