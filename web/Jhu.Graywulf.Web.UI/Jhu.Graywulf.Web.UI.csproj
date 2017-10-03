@@ -458,12 +458,12 @@
     <Compile Include="Apps\Schema\ParametersView.ascx.designer.cs">
       <DependentUpon>ParametersView.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\Schema\Peek.aspx.cs">
-      <DependentUpon>Peek.aspx</DependentUpon>
+    <Compile Include="Apps\Schema\Peek.ascx.cs">
+      <DependentUpon>Peek.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Apps\Schema\Peek.aspx.designer.cs">
-      <DependentUpon>Peek.aspx</DependentUpon>
+    <Compile Include="Apps\Schema\Peek.ascx.designer.cs">
+      <DependentUpon>Peek.ascx</DependentUpon>
     </Compile>
     <Compile Include="Apps\Schema\SchemaItemView.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -605,7 +605,7 @@
     <Content Include="Apps\Schema\Default.aspx" />
     <Content Include="Apps\Schema\IndexesView.ascx" />
     <Content Include="Apps\Schema\ParametersView.ascx" />
-    <Content Include="Apps\Schema\Peek.aspx" />
+    <Content Include="Apps\Schema\Peek.ascx" />
     <Content Include="App_Themes\Basic\Css\codemirror.css" />
     <Content Include="App_Themes\Basic\Css\docs.css" />
     <Content Include="App_Themes\Basic\Css\forms.css" />

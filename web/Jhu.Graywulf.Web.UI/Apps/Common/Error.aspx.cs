@@ -24,6 +24,13 @@ namespace Jhu.Graywulf.Web.UI.Apps.Common
                     ex = (Exception)Session[Jhu.Graywulf.Web.UI.Constants.SessionException];
                 }
 
+#if BREAKDEBUG
+                if (ex != null && System.Diagnostics.Debugger.IsAttached)
+                {
+                    System.Diagnostics.Debugger.Break();
+                }
+#endif
+
                 if (ex != null)
                 {
                     Message.Text = ex.Message;

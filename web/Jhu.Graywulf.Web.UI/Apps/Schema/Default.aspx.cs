@@ -18,7 +18,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             DatabaseObjectList,
             Columns,
             Parameters,
-            Indexes
+            Indexes,
+            Peek
         }
 
         public static string GetUrl()
@@ -34,6 +35,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         public static string GetUrl(string objid)
         {
             return GetUrl(SchemaView.Default, null, null, objid);
+        }
+
+        public static string GetUrl(SchemaView view, string objid)
+        {
+            return GetUrl(view, null, null, objid);
         }
 
         public static string GetUrl(SchemaView view, DatasetBase dataset, DatabaseObjectType objtype, DatabaseObject dbobj)
@@ -323,6 +329,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                             ShowDatasetView(ParseDataset((string)e.CommandArgument));
                         }
                         break;
+                    case SchemaView.DatabaseObjectList:
+                        ShowDatabaseObjectListView(SelectedDataset, SelectedObjectType);
+                        break;
                     case SchemaView.DatabaseObject:
                         ShowDatabaseObjectView(ParseDatabaseObject((string)e.CommandArgument), SelectedView);
                         break;
@@ -503,6 +512,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                     SelectedDataset.LoadAllObjects(SelectedObjectType, SelectedDataset.IsMutable);
                     databaseObjectListView.Items = SelectedDataset.GetAllObjects(SelectedObjectType).OrderBy(o => o, new DatabaseObjectLexicographicComparer());
                     databaseObjectListView.Visible = true;
+                    objectListButton.CssClass = "selected";
                     break;
                 case SchemaView.DatabaseObject:
                     databaseObjectView.Item = SelectedDatabaseObject;
@@ -524,12 +534,18 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                     parametersView.Visible = true;
                     parametersButton.CssClass = "selected";
                     break;
+                case SchemaView.Peek:
+                    peekView.Item = (TableOrView)SelectedDatabaseObject;
+                    peekView.Visible = true;
+                    peekButton.CssClass = "selected";
+                    break;
                 default:
                     throw new NotImplementedException();
             }
 
             datasetButton.Visible = ds != null;
             objectTypeListDiv.Visible = ds != null;
+            objectListButton.Visible = ot != DatabaseObjectType.Unknown;
             databaseObjectListDiv.Visible = ot != DatabaseObjectType.Unknown;
 
             datasetList.SelectedValue = ds?.Name;
@@ -551,9 +567,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 columnsButton.Visible = (dbobj is IColumns);
                 indexesButton.Visible = (dbobj is IIndexes);
                 parametersButton.Visible = (dbobj is IParameters);
-
                 peekButton.Visible = (dbobj is TableOrView);
-                peekButton.NavigateUrl = Peek.GetUrl(dbobj.UniqueKey);
             }
             else
             {
@@ -578,6 +592,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             columnsView.Visible = false;
             parametersView.Visible = false;
             indexesView.Visible = false;
+            peekView.Visible = false;
 
             objectTypeListDiv.Visible = false;
             databaseObjectListDiv.Visible = false;
@@ -590,10 +605,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
             datasetListButton.CssClass = "";
             datasetButton.CssClass = "";
+            objectListButton.CssClass = "";
             summaryButton.CssClass = "";
             columnsButton.CssClass = "";
             indexesButton.CssClass = "";
             parametersButton.CssClass = "";
+            peekButton.CssClass = "";
         }
 
         private void ShowDatasetListView()
@@ -640,6 +657,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                     break;
                 case SchemaView.Parameters:
                     if (!(dbobj is IParameters))
+                    {
+                        goto default;
+                    }
+                    break;
+                case SchemaView.Peek:
+                    if (!(dbobj is TableOrView))
                     {
                         goto default;
                     }

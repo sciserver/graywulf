@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 var primaryKey = (HyperLink)e.Item.FindControl("primaryKey");
                 var drop = (HyperLink)e.Item.FindControl("drop");
 
-                schema.NavigateUrl = Schema.Default.GetUrl(objid);
+                schema.NavigateUrl = Schema.ColumnsView.GetUrl(objid);
                 peek.NavigateUrl = Schema.Peek.GetUrl(objid);
                 export.NavigateUrl = MyDB.Export.GetUrl(objid);
                 rename.NavigateUrl = MyDB.Rename.GetUrl(objid);

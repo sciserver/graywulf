@@ -8,6 +8,7 @@
 <%@ Register Src="DatasetView.ascx" TagName="Dataset" TagPrefix="view" %>
 <%@ Register Src="IndexesView.ascx" TagName="Indexes" TagPrefix="view" %>
 <%@ Register Src="ParametersView.ascx" TagName="Parameters" TagPrefix="view" %>
+<%@ Register Src="Peek.ascx" TagName="Peek" TagPrefix="view" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="toolbar">
     <asp:UpdatePanel runat="server">
@@ -23,6 +24,7 @@
                     <asp:Label ID="objectTypeListLabel" runat="server" Text="Object category:" /><br />
                     <asp:DropDownList ID="objectTypeList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ObjectTypeList_SelectedIndexChanged" />
                 </div>
+                <asp:LinkButton runat="server" ID="objectListButton" Text="object list" OnCommand="SchemaView_Command" CommandName="databaseObjectList" />
                 <div runat="server" id="databaseObjectListDiv" class="span">
                     <asp:Label ID="databaseObjectListLabel" runat="server" Text="Object:" /><br />
                     <asp:DropDownList ID="databaseObjectList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DatabaseObjectList_SelectedIndexChanged" />
@@ -32,7 +34,7 @@
                 <asp:LinkButton runat="server" ID="parametersButton" Text="parameters" OnCommand="ViewButton_Command" CommandName="Parameters" />
                 <asp:LinkButton runat="server" ID="columnsButton" Text="columns" OnCommand="ViewButton_Command" CommandName="Columns" />
                 <asp:LinkButton runat="server" ID="indexesButton" Text="indexes" OnCommand="ViewButton_Command" CommandName="Indexes" />
-                <asp:HyperLink runat="server" ID="peekButton" Text="peek" />
+                <asp:LinkButton runat="server" ID="peekButton" Text="peek" OnCommand="ViewButton_Command" CommandName="Peek" />
             </div>
         </ContentTemplate>
     </asp:UpdatePanel>
@@ -54,6 +56,7 @@
             <view:Columns ID="columnsView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
             <view:Parameters ID="parametersView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
             <view:Indexes ID="indexesView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
+            <view:Peek ID="peekView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
             <jgwuc:Form runat="server" ID="introForm" SkinID="Schema" Text="Getting started with the schema browser">
                 <FormTemplate>
                     <ul>
