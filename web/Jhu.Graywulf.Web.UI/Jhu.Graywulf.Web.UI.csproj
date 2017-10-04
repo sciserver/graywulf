@@ -156,13 +156,6 @@
       <DependentUpon>Feedback.aspx</DependentUpon>
     </Compile>
     <Compile Include="Apps\Docs\App.cs" />
-    <Compile Include="Apps\Docs\Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Apps\Docs\Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Apps\Docs\Docs.master.cs">
       <DependentUpon>Docs.master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -383,6 +376,13 @@
     <Compile Include="Apps\Query\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Query\Examples\Examples.master.cs">
+      <DependentUpon>Examples.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Query\Examples\Examples.master.designer.cs">
+      <DependentUpon>Examples.master</DependentUpon>
+    </Compile>
     <Compile Include="Apps\Query\Progress.aspx.cs">
       <DependentUpon>Progress.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -558,7 +558,6 @@
     <Content Include="Apps\Common\Error.aspx" />
     <Content Include="Apps\Common\Status.aspx" />
     <Content Include="Apps\Common\Feedback.aspx" />
-    <Content Include="Apps\Docs\Default.aspx" />
     <Content Include="Apps\Docs\Toolbar.js" />
     <Content Include="Apps\Docs\Docs.master" />
     <Content Include="Apps\Docs\Toolbar.ascx" />
@@ -1246,6 +1245,8 @@
   <ItemGroup>
     <Content Include="App_Themes\Basic\style.less" />
     <Content Include="build.config" />
+    <Content Include="Apps\Query\Examples\Examples.master" />
+    <Content Include="Apps\Query\Examples\Web.config" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>

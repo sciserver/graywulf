@@ -22,6 +22,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query {
         protected global::System.Web.UI.UpdatePanel toolbarPanel;
         
         /// <summary>
+        /// examples control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink examples;
+        
+        /// <summary>
         /// commentsLabel control.
         /// </summary>
         /// <remarks>

@@ -182,18 +182,26 @@ namespace Jhu.Graywulf.Web.UI.Apps.Docs
             }
         }
 
+        private string rootPath;
+
+        public string RootPath
+        {
+            get { return rootPath; }
+            set { rootPath = value; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             var smv = new SiteMapVisitor(buttonPlaceHolder)
             {
-                RootPath = App.AssetsPath,
+                RootPath = rootPath,
                 CurrentPath = Page.AppRelativeVirtualPath
             };
             smv.Execute();
 
             var nmv = new NavigationMapVisitor()
             {
-                RootPath = App.AssetsPath,
+                RootPath = rootPath,
                 CurrentPath = Page.AppRelativeVirtualPath
             };
             nmv.Execute();

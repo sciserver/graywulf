@@ -5,6 +5,7 @@
     <asp:UpdatePanel ID="toolbarPanel" runat="server">
         <ContentTemplate>
             <div class="toolbar">
+                <asp:HyperLink ID="examples" runat="server" Text="examples" NavigateUrl="~/Assets/Docs/04_query/99_examples.aspx" />
                 <div class="span">
                     <asp:Label ID="commentsLabel" runat="server" Text="Query job comments:" /><br />
                     <asp:TextBox ID="comments" runat="server"></asp:TextBox>
