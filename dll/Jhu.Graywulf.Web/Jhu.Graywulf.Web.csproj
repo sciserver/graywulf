@@ -133,6 +133,7 @@
     <Compile Include="Web\UI\ApplicationBase.cs" />
     <Compile Include="Web\UI\CheckPageBase.cs" />
     <Compile Include="Web\UI\Constants.cs" />
+    <Compile Include="Web\UI\Enum.cs" />
     <Compile Include="Web\UI\MasterPageBase.cs" />
     <Compile Include="Web\UI\MenuButton.cs" />
     <Compile Include="Web\UI\PageBase.cs" />

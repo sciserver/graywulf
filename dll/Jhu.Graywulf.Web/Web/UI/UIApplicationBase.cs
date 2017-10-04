@@ -130,9 +130,9 @@ namespace Jhu.Graywulf.Web.UI
             HostingEnvironment.RegisterVirtualPathProvider(virtualPathProvider);
             RegisterScripts();
             RegisterControls();
-            RegisterButtons();
             RegisterServices();
             RegisterApps();
+            RegisterButtons();
         }
 
         protected virtual void Session_Start(object sender, EventArgs e)
@@ -193,12 +193,12 @@ namespace Jhu.Graywulf.Web.UI
 
         protected virtual void RegisterButtons()
         {
-            var button = new MenuButton()
+            var home = new MenuButton()
             {
                 Text = "Home",
                 NavigateUrl = Constants.PageUrlDefault,
             };
-            RegisterMenuButton(button);
+            RegisterMenuButton(home, MenuButtonPosition.First);
         }
 
         protected void RegisterService(Type type)
@@ -222,7 +222,46 @@ namespace Jhu.Graywulf.Web.UI
 
         public void RegisterMenuButton(MenuButton button)
         {
-            menuButtons.Add(button);
+            RegisterMenuButton(button, MenuButtonPosition.Last, null);
+        }
+
+        public void RegisterMenuButton(MenuButton button, MenuButtonPosition position)
+        {
+            RegisterMenuButton(button, position, null);
+        }
+
+        public void RegisterMenuButton(MenuButton button, MenuButtonPosition position, string relativeTo)
+        {
+            MenuButton relative;
+            int relativeIndex = 0;
+
+            if (relativeTo != null)
+            {
+                relative = menuButtons.FirstOrDefault(b => b.Key == relativeTo);
+
+                if (relative != null)
+                {
+                    relativeIndex = menuButtons.IndexOf(relative);
+                }
+            }
+            
+            switch (position)
+            {
+                case MenuButtonPosition.First:
+                    menuButtons.Insert(0, button);
+                    break;
+                case MenuButtonPosition.Last:
+                    menuButtons.Add(button);
+                    break;
+                case MenuButtonPosition.Before:
+                    menuButtons.Insert(relativeIndex, button);
+                    break;
+                case MenuButtonPosition.After:
+                    menuButtons.Insert(relativeIndex + 1, button);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         public void RegisterFooterButton(MenuButton button)
