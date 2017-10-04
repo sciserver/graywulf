@@ -11,12 +11,13 @@
             <ul>
                 <li>The error has been recorded in the log.</li>
                 <li>If the error seems permanent, you can
-                    <asp:HyperLink runat="Server" ID="FeedbackLink">send an inquiry</asp:HyperLink>
+                    <asp:LinkButton runat="Server" ID="inquiryLink" OnClick="Inquiry_Click">send an inquiry</asp:LinkButton>
                     to the site administrators.</li>
             </ul>
         </FormTemplate>
         <ButtonsTemplate>
-            <asp:Button runat="server" ID="Ok" Text="Ok" CssClass="FormButton" OnClick="Ok_Click" />
+            <asp:Button runat="server" ID="ok" Text="Ok" CssClass="FormButton" OnClick="Ok_Click" />
+            <asp:Button runat="server" ID="inquiry" Text="Send inquiry" CssClass="FormButton" OnClick="Inquiry_Click" />
         </ButtonsTemplate>
     </jgwuc:Form>
 </asp:Content>
