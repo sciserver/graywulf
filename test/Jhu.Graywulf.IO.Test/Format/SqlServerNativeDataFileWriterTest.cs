@@ -103,5 +103,27 @@ namespace Jhu.Graywulf.Format
                 }
             }
         }
+
+        [TestMethod]
+        public void EmptyTableTest()
+        {
+            var uri = GetTestUniqueFileUri(".dat.zip");
+
+            using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
+            {
+                using (var cn = IOTestDataset.OpenConnection())
+                {
+                    using (var cmd = new SmartCommand(IOTestDataset, cn.CreateCommand()))
+                    {
+                        cmd.CommandText = "SELECT * FROM EmptyTable";
+
+                        using (var dr = cmd.ExecuteReader())
+                        {
+                            nat.WriteFromDataReader(dr);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

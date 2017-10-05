@@ -14,12 +14,17 @@ namespace Jhu.Graywulf.IO.Tasks
     [TestClass]
     public class ExportTableTest : TestClassBase
     {
-        private IExportTable GetTableExportTask(string path, bool remote)
+        protected IExportTable CreateTableExportTask(string path, bool remote)
+        {
+            return CreateTableExportTask(path, "SELECT * FROM SampleData", remote);
+        }
+
+        protected IExportTable CreateTableExportTask(string path, string query, bool remote)
         {
             var source = new SourceTableQuery()
             {
                 Dataset = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString),
-                Query = "SELECT * FROM SampleData"
+                Query = query
             };
             
             var destination = new DelimitedTextDataFile()
@@ -46,8 +51,21 @@ namespace Jhu.Graywulf.IO.Tasks
         [TestMethod]
         public void ExportTest()
         {
-            var path = "TableExportTest_ExportTest.csv";
-            var dfe = GetTableExportTask(path, false);
+            var path = GetTestUniqueName() + ".csv";
+            var dfe = CreateTableExportTask(path, false);
+
+            dfe.Execute();
+
+            Assert.IsTrue(File.Exists(path));
+            File.Delete(path);
+        }
+
+        [TestMethod]
+        public void ExportEmptyTableTest()
+        {
+            var path = GetTestUniqueName() + ".csv";
+            var query = "SELECT * FROM EmptyTable";
+            var dfe = CreateTableExportTask(path, query, false);
 
             dfe.Execute();
 
@@ -58,8 +76,8 @@ namespace Jhu.Graywulf.IO.Tasks
         [TestMethod]
         public void ExportToUncTest()
         {
-            var path = String.Format(@"\\{0}\{1}\{2}.csv", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, "TableExportTest_ExportToUncTest");
-            var dfe = GetTableExportTask(path, false);
+            var path = String.Format(@"\\{0}\{1}\{2}.csv", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, GetTestUniqueName());
+            var dfe = CreateTableExportTask(path, false);
 
             dfe.Execute();
 
@@ -75,7 +93,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 RemoteServiceTester.Instance.EnsureRunning();
 
                 var path = String.Format(@"\\{0}\{1}\{2}.csv", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, "TableExportTest_RemoteExportTest");
-                var dfe = GetTableExportTask(path, false);
+                var dfe = CreateTableExportTask(path, false);
 
                 dfe.Execute();
 
