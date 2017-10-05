@@ -270,7 +270,14 @@ namespace Jhu.Graywulf.Web.UI
 
             Server.ClearError();
 
-            Response.Redirect(Constants.PageUrlError, false);
+            // Redirect is only possible if response is buffered
+            // Do not redirect when downloading data via streams
+            // File output will be corrupt and no error will be
+            // reported to the user.
+            if (!Response.HeadersWritten)
+            {
+                Response.Redirect(Constants.PageUrlError, false);
+            }
         }
 
         #endregion
