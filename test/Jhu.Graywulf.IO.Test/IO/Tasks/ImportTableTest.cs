@@ -116,13 +116,37 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         [TestMethod]
-        public void ImportFromHttpTest()
+        public void ImportFromHttpTestHelper(string url)
         {
-            var path = @"http://localhost/graywulf_io_test/csv_numbers.csv";
+            var path = url;
             var it = GetImportTableTask(path, false, false);
             var t = ExecuteImportTableTask(it);
             Assert.AreEqual(5, t.Columns.Count);
             DropTable(t);
+        }
+
+        [TestMethod]
+        public void ImportFromHttpTest()
+        {
+            ImportFromHttpTestHelper(@"http://localhost/graywulf_io_test/csv_numbers.csv");
+        }
+
+        [TestMethod]
+        public void ImportFromHttpTest2()
+        {
+            ImportFromHttpTestHelper(@"http://localhost/~graywulf_io_test/csv_numbers.csv");
+        }
+
+        [TestMethod]
+        public void ImportFromHttpTest3()
+        {
+            ImportFromHttpTestHelper(@"http://localhost/graywulf-io-test/csv_numbers.csv");
+        }
+
+        [TestMethod]
+        public void ImportFromHttpTest4()
+        {
+            ImportFromHttpTestHelper(@"http://localhost/graywulf-io-test/csv-numbers.csv");
         }
     }
 }

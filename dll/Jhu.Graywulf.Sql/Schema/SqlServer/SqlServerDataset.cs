@@ -205,6 +205,12 @@ namespace Jhu.Graywulf.Schema.SqlServer
         /// <returns></returns>
         protected override string QuoteIdentifier(string identifier)
         {
+            // TODO: verify identifier quoting everywhere, because
+            // escaping within [] might not be covered
+            // also check if it can be changed from [] to ""
+
+            identifier = identifier.Replace("]", "]]");
+
             return String.Format("[{0}]", identifier);
         }
 
@@ -1544,8 +1550,6 @@ WHERE s.name = @schemaName AND o.name = @objectName
             // the the schema.objectname or objectname format.
             // No database name should be specified.
 
-            var sql = @"sp_rename";
-
             // FullyQualifiedName cannot be used here because that contains DB name.
             string oldname;
 
@@ -1561,28 +1565,17 @@ WHERE s.name = @schemaName AND o.name = @objectName
                     QuoteIdentifier(databaseObject.ObjectName));
             }
 
-            string newname;
-
-            if (String.IsNullOrEmpty(schemaName))
-            {
-                newname = QuoteIdentifier(objectName);
-            }
-            else
-            {
-                newname = String.Format(
-                    "{0}.{1}",
-                    QuoteIdentifier(schemaName),
-                    QuoteIdentifier(objectName));
-            }
+            // TODO: sp_rename only support renaming object, not moving between
+            // schemas. Use ALTER SCHEMA here if schema name is to be changed.
 
             using (var cn = OpenConnectionInternal())
             {
-                using (var cmd = new SqlCommand(sql, cn))
+                using (var cmd = new SqlCommand(@"sp_rename", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     cmd.Parameters.Add("@objname", SqlDbType.NVarChar, 776).Value = oldname;
-                    cmd.Parameters.Add("@newname", SqlDbType.NVarChar, 776).Value = newname;
+                    cmd.Parameters.Add("@newname", SqlDbType.NVarChar, 776).Value = objectName;
 
                     cmd.ExecuteNonQuery();
                 }
