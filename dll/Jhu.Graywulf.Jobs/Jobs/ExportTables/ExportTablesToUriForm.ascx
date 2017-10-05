@@ -13,7 +13,7 @@
             <asp:RequiredFieldValidator runat="server" ControlToValidate="uri" Display="Dynamic"
                 ErrorMessage="<br />The URI field is required" />
             <asp:RegularExpressionValidator runat="server" ControlToValidate="uri" Display="Dynamic"
-                ErrorMessage="<br />Invalid URI format" ValidationExpression="(http|https|ftp)://([\w-]+\.)+[\w-]+(/[\w- ./?%&=~#]*)?" />
+                ErrorMessage="<br />Invalid URI format" ValidationExpression="(https?|ftp)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?" />
         </td>
     </tr>
 </table>
