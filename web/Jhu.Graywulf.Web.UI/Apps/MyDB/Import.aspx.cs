@@ -190,7 +190,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 Queue = JobQueue.Long,
             };
 
-            new JobsService().SubmitJob(job);
+            new JobsService(FederationContext).SubmitJob(job);
         }
     }
 }
