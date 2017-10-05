@@ -12,12 +12,16 @@ namespace Jhu.Graywulf.Web.UI.Apps.Docs
 
         public override void RegisterButtons(UIApplicationBase application)
         {
-            base.RegisterButtons(application);
+            application.RegisterMenuButton(new MenuButton()
+            {
+                Text = "docs",
+                NavigateUrl = AssetsPath + "/00_index.aspx"
+            });
 
             application.RegisterFooterButton(new MenuButton()
             {
                 Text = "help",
-                NavigateUrl = "~/Apps/Docs"
+                NavigateUrl = AssetsPath + "/00_index.aspx"
             });
         }
     }

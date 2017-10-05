@@ -13,13 +13,13 @@ namespace Jhu.Graywulf.Web.UI.Apps.Docs {
     public partial class Docs {
         
         /// <summary>
-        /// Toolbar control.
+        /// toolbar control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Docs.Toolbar Toolbar;
+        protected global::Jhu.Graywulf.Web.UI.Apps.Docs.Toolbar toolbar;
         
         /// <summary>
         /// Text control.

@@ -31,21 +31,30 @@ namespace Jhu.Graywulf.Web.UI.Apps.Common {
         protected global::System.Web.UI.WebControls.Label Message;
         
         /// <summary>
-        /// FeedbackLink control.
+        /// inquiryLink control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink FeedbackLink;
+        protected global::System.Web.UI.WebControls.LinkButton inquiryLink;
         
         /// <summary>
-        /// Ok control.
+        /// ok control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Ok;
+        protected global::System.Web.UI.WebControls.Button ok;
+        
+        /// <summary>
+        /// inquiry control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button inquiry;
     }
 }

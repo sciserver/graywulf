@@ -1,0 +1,17 @@
+﻿<%@ Master Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true" CodeBehind="Examples.master.cs"
+    Inherits="Jhu.Graywulf.Web.UI.Apps.Query.Examples.Examples" %>
+
+<%@ Register Src="~/Apps/Docs/Toolbar.ascx" TagPrefix="uc1" TagName="Toolbar" %>
+
+<asp:Content runat="server" ContentPlaceHolderID="head">
+</asp:Content>
+<asp:Content runat="server" ContentPlaceHolderID="toolbar">
+    <uc1:Toolbar runat="server" ID="toolbar" />
+</asp:Content>
+<asp:Content ID="Content3" ContentPlaceHolderID="middle" runat="server">
+    <div class="dock-fill" style="overflow: auto;">
+        <div class="container gw-docs-page">
+        <asp:ContentPlaceHolder runat="server" ID="Text" />
+        </div>
+    </div>
+</asp:Content>

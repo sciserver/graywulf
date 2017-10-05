@@ -34,7 +34,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Common
                 if (ex != null)
                 {
                     Message.Text = ex.Message;
-                    FeedbackLink.NavigateUrl = Feedback.GetErrorReportUrl();
                 }
             }
         }
@@ -42,6 +41,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.Common
         protected void Ok_Click(object sender, EventArgs e)
         {
             Response.Redirect("~/", false);
+        }
+
+        protected void Inquiry_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(Feedback.GetErrorReportUrl(), false);
         }
     }
 }

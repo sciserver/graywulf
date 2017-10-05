@@ -366,6 +366,31 @@ testline
         }
 
         [TestMethod]
+        public void EmptyTableTest()
+        {
+            var w = new StringWriter();
+
+            using (var cn = IOTestDataset.OpenConnection())
+            {
+                using (var cmd = new SmartCommand(IOTestDataset, cn.CreateCommand()))
+                {
+                    cmd.CommandText = "SELECT EmptyTable.* FROM EmptyTable";
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        var csv = new DelimitedTextDataFile(w);
+                        csv.WriteFromDataReader(dr);
+                    }
+                }
+            }
+
+            Assert.AreEqual(
+@"#float,double,decimal,nvarchar(50),bigint,int,tinyint,smallint,bit,ntext,char,datetime,guid
+",
+                w.ToString());
+        }
+
+        [TestMethod]
         public void SimpleWriterAllTypesTest()
         {
             var w = new StringWriter();
