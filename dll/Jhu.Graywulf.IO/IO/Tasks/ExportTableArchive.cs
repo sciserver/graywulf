@@ -169,7 +169,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     // Open the destination file that will be written into the archive
                     // and copy the table into the file
 
-                    // TODO: figure out whether destination table supports multiple resultsets
+                    // TODO: figure out whether destination file supports multiple resultsets
                     // or new files need to be created for every single resultset
 
                     destinations[i].Open(BaseStream, DataFileMode.Write);
