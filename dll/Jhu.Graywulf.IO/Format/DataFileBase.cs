@@ -556,10 +556,18 @@ namespace Jhu.Graywulf.Format
 
         internal IArchiveEntry CreateArchiveEntry(string filename, long length)
         {
+            // There's two cases here. If it is a file that's written into an archive,
+            // but the archive was opened independently then the file name is probably
+            // correct. If the current file opened the archive, then the file name
+            // probably contains the extension of the archive so we should strip it.
+            if (Compression == DataFileCompression.Automatic || Compression != DataFileCompression.None)
+            {
+                filename = Path.GetFileNameWithoutExtension(filename);
+            }
+
             var arch = (IArchiveOutputStream)BaseStream;
             var entry = arch.CreateFileEntry(filename, length);
             arch.WriteNextEntry(entry);
-
             return entry;
         }
 
