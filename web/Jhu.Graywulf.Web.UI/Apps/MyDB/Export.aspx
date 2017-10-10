@@ -25,7 +25,7 @@
                         OnSelectionChanged="SourceTableForm_SelectionChanged" />
 
                     <jgwc:FileFormatForm runat="server" ID="fileFormatForm" FileMode="Write" Required="true"
-                        OnSelectionChanged="FileFormatForm_SelectionChanged" />
+                        OnSelectionChanged="FileFormatForm_SelectionChanged" AutoPostBack="true" />
                     <jgwc:CompressionForm runat="server" ID="compressionForm"
                         OnSelectionChanged="CompressionForm_SelectionChanged" />
 
