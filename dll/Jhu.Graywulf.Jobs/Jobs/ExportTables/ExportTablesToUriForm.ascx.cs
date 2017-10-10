@@ -25,6 +25,12 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             set { uri.Text = value.OriginalString; }
         }
 
+        public Uri CustomizableUri
+        {
+            get { return Uri; }
+            set { Uri = value; }
+        }
+
         public Credentials Credentials
         {
             get
@@ -56,6 +62,16 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                     password.Text = String.Empty;
                 }
             }
+        }
+
+        protected void Page_Init(object sender, EventArgs e)
+        {
+            uriFormatValidator.ValidationExpression = Jhu.Graywulf.IO.Constants.UrlPattern;
+        }
+
+        public void GenerateDefaultUri(string filename)
+        {
+            uri.Text = "ftp://myftp.edu/upload/" + filename;
         }
     }
 }

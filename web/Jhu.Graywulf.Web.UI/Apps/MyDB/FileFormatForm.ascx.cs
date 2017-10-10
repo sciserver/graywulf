@@ -12,6 +12,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
     public partial class FileFormatForm : FederationUserControlBase
     {
+        public event EventHandler SelectionChanged;
+
         public DataFileMode FileMode
         {
             get { return (DataFileMode)(ViewState["FileMode"] ?? DataFileMode.Read); }
@@ -24,12 +26,33 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             set { ViewState["Required"] = value; }
         }
 
+        public string FileFormat
+        {
+            get { return fileFormatList.SelectedValue; }
+        }
+
+        public string LastFileFormat
+        {
+            get { return (string)ViewState["LastFileFormat"]; }
+            set { ViewState["LastFileFormat"] = value;  }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
                 RefreshFileFormatLists();
             }
+        }
+
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            LastFileFormat = FileFormat;
+        }
+
+        protected void FileFormatList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SelectionChanged?.Invoke(sender, e);
         }
 
         protected void RefreshFileFormatLists()
@@ -97,6 +120,5 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             var file = FederationContext.FileFormatFactory.CreateFileFromMimeType(fileFormatList.SelectedValue);
             return file;
         }
-
     }
 }

@@ -11,8 +11,6 @@ namespace Jhu.Graywulf.Util
         /// <summary>
         /// Converts a path to a file:// uri
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
         public static Uri FromFilePath(string path)
         {
             path = path.Replace('\\', '/');
@@ -20,12 +18,20 @@ namespace Jhu.Graywulf.Util
             if (path.StartsWith(@"//"))
             {
                 // This is a UNC path, replace \ with / and remove one of the starting /-s
+                // The format is file://server/test.txt
                 path = path.Substring(2);
                 return new Uri(String.Format("{0}{1}{2}", Uri.UriSchemeFile, Uri.SchemeDelimiter, path));
             }
-            if (Path.IsPathRooted(path))
+            else if (path.StartsWith("/"))
             {
-                // This is a local patch starting with a volume letter
+                // This is an absolute path without drive letter
+                // The format is file:///test.txt
+                return new Uri(String.Format("{0}{1}{2}", Uri.UriSchemeFile, Uri.SchemeDelimiter, path));
+            }
+            else if (Path.IsPathRooted(path))
+            {
+                // This is a local path starting with a volume letter
+                // The format is file:///C:/test.txt
                 return new Uri(String.Format("{0}{1}/{2}", Uri.UriSchemeFile, Uri.SchemeDelimiter, path));
             }
             else
@@ -35,56 +41,80 @@ namespace Jhu.Graywulf.Util
             }
         }
 
+        /// <summary>
+        /// Converts a relative or a file:// uri to a local or UNC path.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
         public static string ToFilePath(Uri uri)
         {
-            // TODO: replace / with \ ?
             if (!uri.IsAbsoluteUri)
             {
-                return uri.ToString();
+                return uri.ToString().Replace("/", "\\");
             }
             else if (!uri.IsFile)
             {
                 throw new ArgumentException("Uri is not a local or UNC file.", "uri");
             }
-            else if (uri.IsUnc)
-            {
-                return String.Format("//{0}/{1}", uri.Host, uri.GetComponents(UriComponents.Path, UriFormat.Unescaped));
-            }
             else
             {
-                return uri.GetComponents(UriComponents.Path, UriFormat.Unescaped);
+                return uri.LocalPath.Replace("/", "\\");
             }
         }
 
-        // TODO: merge this with ToFilePath... Or maybe just use localpath?
-        public static string ToPath(Uri uri)
+        /// <summary>
+        /// Returns the path from any URI
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public static string GetPath(Uri uri)
         {
+            string path;
+
             if (!uri.IsAbsoluteUri)
             {
-                return uri.ToString();
+                path = uri.ToString();
+
+                int idx1 = path.IndexOf('?');
+                int idx2 = path.IndexOf('#');
+
+                if (idx1 > 0)
+                {
+                    path = path.Substring(0, idx1);
+                }
+                else if (idx2 > 0)
+                {
+                    path = path.Substring(0, idx2);
+                }
+                else if (idx1 == 0 || idx2 == 0)
+                {
+                    path = String.Empty;
+                }
             }
             else
             {
-                return uri.GetComponents(UriComponents.Path, UriFormat.Unescaped);
+                path = uri.LocalPath;
             }
+
+            return path;
         }
 
-        public static string ToFileName(Uri uri)
+        /// <summary>
+        /// Gets the file name part from any URI, ie, the very last part of the
+        /// path (can be empty string if it is a directory) but before the ? or #
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public static string GetFilename(Uri uri)
         {
-            var path = ToPath(uri);
+            var path = GetPath(uri);
             return Path.GetFileName(path);
         }
 
-        public static string ToFileNameWithoutExtension(Uri uri)
+        public static string GetFileNameWithoutExtension(Uri uri)
         {
-            var path = ToPath(uri);
+            var path = GetPath(uri);
             return Path.GetFileNameWithoutExtension(path);
-        }
-
-        public static string ToExtension(Uri uri)
-        {
-            var path = ToPath(uri);
-            return Path.GetExtension(path);
         }
 
         public static Uri Combine(Uri baseUri, string relativeUri)
@@ -101,6 +131,13 @@ namespace Jhu.Graywulf.Util
             }
         }
 
+        /// <summary>
+        /// Combines two URIs into a single one assuming the first part ends
+        /// in a path without query and fragments.
+        /// </summary>
+        /// <param name="baseUri"></param>
+        /// <param name="relativeUri"></param>
+        /// <returns></returns>
         public static Uri Combine(Uri baseUri, Uri relativeUri)
         {
             if (baseUri == null || relativeUri.IsAbsoluteUri)

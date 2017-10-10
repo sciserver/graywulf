@@ -289,6 +289,42 @@ namespace Jhu.Graywulf.Web.UI
         }
 
         #endregion
+        #region Session storage
+
+        protected Guid PushSessionItem(object value)
+        {
+            var guid = Guid.NewGuid();
+            var items = (Dictionary<Guid, object>)Session[Constants.SessionItems];
+
+            if (items == null)
+            {
+                items = new Dictionary<Guid, object>();
+            }
+
+            items.Add(guid, value);
+            Session[Constants.SessionItems] = items;
+
+            return guid;
+        }
+
+        protected object PopSessionItem(Guid guid)
+        {
+            var items = (Dictionary<Guid, object>)Session[Constants.SessionItems];
+
+            if (items == null)
+            {
+                return null;
+            }
+            else
+            {
+                var item = items[guid];
+                items.Remove(guid);
+                Session[Constants.SessionItems] = items;
+                return item;
+            }
+        }
+
+        #endregion
         #region Browser address bar URL override
 
         public void OverrideUrl(string overrideUrl)

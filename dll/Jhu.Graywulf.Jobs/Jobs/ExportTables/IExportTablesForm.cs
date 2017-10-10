@@ -10,6 +10,10 @@ namespace Jhu.Graywulf.Jobs.ExportTables
     {
         Uri Uri { get; set; }
 
+        Uri CustomizableUri { get; set; }
+
         Credentials Credentials { get; set; }
+
+        void GenerateDefaultUri(string filename);
     }
 }

@@ -18,6 +18,8 @@ namespace Jhu.Graywulf.Web.UI
 
         public const string ApplicationFormDataCache = "Jhu.Graywulf.Web.FormDataCache";
 
+        public const string SessionItems = "Jhu.Graywulf.Web.SessionItems";
+
         public const string SessionRegistryDatabase = "Jhu.Graywulf.Registry.Database";
         public const string SessionPrincipal = "Jhu.Graywulf.Security.Principal";
         public const string SessionTempPrincipal = "Jhu.Graywulf.Security.TempUser";

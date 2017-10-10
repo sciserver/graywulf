@@ -10,6 +10,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
     public partial class SourceTableForm : FederationUserControlBase
     {
+        public event EventHandler SelectionChanged;
+
         public string DatasetName
         {
             get { return datasetList.DatasetName; }
@@ -20,14 +22,46 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             get { return datasetList.Dataset; }
         }
 
-        public string TableID
-        {
-            get { return tableList.TableID; }
-        }
-
         public Jhu.Graywulf.Schema.Table Table
         {
             get { return tableList.Table; }
+        }
+
+        public Jhu.Graywulf.Schema.Table LastTable
+        {
+            get
+            {
+                var key = (string)ViewState["LastTable"];
+
+                if (key != null)
+                {
+                    return (Jhu.Graywulf.Schema.Table)FederationContext.SchemaManager.GetDatabaseObjectByKey(key);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                string key;
+
+                if (value != null)
+                {
+                    key = value.UniqueKey;
+                }
+                else
+                {
+                    key = null;
+                }
+
+                ViewState["LastTable"] = key;
+            }
+        }
+
+        protected void TableList_SelectedTableChanged(object sender, EventArgs e)
+        {
+            SelectionChanged?.Invoke(sender, e);
         }
     }
 }

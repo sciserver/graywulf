@@ -72,6 +72,7 @@
     <Compile Include="Util\ServiceControllerTest.cs" />
     <Compile Include="Util\TypeNameFormatterTest.cs" />
     <Compile Include="Util\ConfigXmlMergerTest.cs" />
+    <Compile Include="Util\UriConverterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">

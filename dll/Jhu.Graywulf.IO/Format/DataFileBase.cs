@@ -589,7 +589,7 @@ namespace Jhu.Graywulf.Format
         {
             // TODO: where to get name from if uri is not set?
             // TODO: remove compressed file's extension?
-            this.name = uri == null ? "" : Util.UriConverter.ToFileNameWithoutExtension(uri).Replace(".", "_");
+            this.name = uri == null ? "" : Util.UriConverter.GetFileNameWithoutExtension(uri).Replace(".", "_");
             this.metadata = null;    // TODO: set metadata
         }
 

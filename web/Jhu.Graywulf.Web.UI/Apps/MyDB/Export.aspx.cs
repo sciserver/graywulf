@@ -79,7 +79,22 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 }
             }
         }
-        
+
+        protected void SourceTableForm_SelectionChanged(object sender, EventArgs e)
+        {
+            UpdateUri();
+        }
+
+        protected void FileFormatForm_SelectionChanged(object sender, EventArgs e)
+        {
+            UpdateUri();
+        }
+
+        protected void CompressionForm_SelectionChanged(object sender, EventArgs e)
+        {
+            UpdateUri();
+        }
+
         protected void Ok_Click(object sender, EventArgs e)
         {
             if (IsValid)
@@ -134,6 +149,82 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             }
         }
 
+        private void UpdateUri()
+        {
+            var sf = FederationContext.StreamFactory;
+            var ff = FederationContext.FileFormatFactory;
+
+            foreach (IExportTablesForm form in exportForms.Values)
+            {
+                var uri = form.CustomizableUri;
+
+                if (String.IsNullOrWhiteSpace(uri.ToString()))
+                {
+                    string tableName;
+                    tableName = sourceTableForm.Table.TableName;
+
+                    string extension;
+                    DataFileBase format;
+                    ff.TryCreateFileFromMimeType(fileFormatForm.FileFormat, out format);
+                    extension = format?.Description.Extension ?? String.Empty;
+
+                    DataFileCompression compression;
+                    compression = compressionForm.Compression;
+
+                    // generate new file name
+                    var path = StreamFactory.CombineFileExtensions("", tableName, extension, DataFileArchival.None, compression);
+                    form.GenerateDefaultUri(path);
+                }
+                else
+                {
+                    string path, filename, extension;
+                    DataFileArchival archival;
+                    DataFileCompression compression;
+                    StreamFactory.GetFileExtensions(uri, out path, out filename, out extension, out archival, out compression);
+
+                    if (sourceTableForm.LastTable == null ||
+                        sourceTableForm.Table.UniqueKey != sourceTableForm.LastTable.UniqueKey &&
+                        filename == sourceTableForm.LastTable.TableName)
+                    {
+                        filename = sourceTableForm.Table.TableName;
+                    }
+
+                    if (compressionForm.Compression != compressionForm.LastCompression &&
+                        compression == compressionForm.LastCompression)
+                    {
+                        compression = compressionForm.Compression;
+                    }
+
+                    if (fileFormatForm.FileFormat != fileFormatForm.LastFileFormat)
+                    {
+                        DataFileBase last, current;
+
+                        ff.TryCreateFileFromMimeType(fileFormatForm.LastFileFormat, out last);
+                        ff.TryCreateFileFromMimeType(fileFormatForm.FileFormat, out current);
+                        
+                        if (current != null &&
+                            (last == null || extension == last.Description.Extension))
+                        {
+                            extension = current.Description.Extension;
+                        }
+                    }
+
+                    path = StreamFactory.CombineFileExtensions(path, filename, extension, archival, compression);
+
+                    if (uri.IsAbsoluteUri)
+                    {
+                        var ub = new UriBuilder(uri);
+                        ub.Path = path;
+                        form.CustomizableUri = ub.Uri;
+                    }
+                    else
+                    {
+                        form.CustomizableUri = new Uri(path, UriKind.RelativeOrAbsolute);
+                    }
+                }
+            }
+        }
+
         private void ExportViaBrowser()
         {
             // TODO: add support for multi-table downloads
@@ -141,10 +232,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             var compression = compressionForm.Compression;
             var file = fileFormatForm.GetDataFile();
             var table = sourceTableForm.Table;
-            
-            var uri = new Uri(table.ObjectName + file.Description.Extension, UriKind.RelativeOrAbsolute);
-            uri = FederationContext.StreamFactory.AppendCompressionExtension(uri, compression);
-            file.Uri = uri;
+            var uri = StreamFactory.CombineFileExtensions("", table.ObjectName, file.Description.Extension, DataFileArchival.None, compression);
+            file.Uri = new Uri(uri, UriKind.Relative);
             file.Compression = compression;
 
             var task = new ExportTable()
@@ -152,36 +241,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 BatchName = table.ObjectName,
                 Source = SourceTableQuery.Create(table),
                 Destination = file,
-                StreamFactoryType = RegistryContext.Federation.StreamFactory,
-                FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
+                StreamFactoryType = FederationContext.Federation.StreamFactory,
+                FileFormatFactoryType = FederationContext.Federation.FileFormatFactory,
             };
 
-            // Set response headers
-            Response.BufferOutput = false;
-
-            if (compression != DataFileCompression.None)
-            {
-                Response.ContentType = Jhu.Graywulf.IO.Constants.CompressionMimeTypes[compression];
-            }
-            else
-            {
-                Response.ContentType = file.Description.MimeType;
-            }
-
-            Response.AppendHeader("Content-Disposition", "attachment; filename=" + uri.ToString());
-
-            // Run export
-            var sf = FederationContext.StreamFactory;
-            using (var stream = sf.Open(Response.OutputStream, DataFileMode.Write, compression, DataFileArchival.None))
-            {
-                file.Open(stream, DataFileMode.Write);
-                task.Execute();
-                stream.Flush();
-            }
-
-            Response.End();
+            var guid = PushSessionItem(task);
+            Response.Redirect(Download.GetUrl(guid), false);
         }
-        
+
         private void ScheduleExportJob()
         {
             var form = (IExportTablesForm)exportForms[exportMethod.SelectedValue];
@@ -191,9 +258,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             var format = fileFormatForm.GetFormat();
             var compression = compressionForm.Compression;
             var table = sourceTableForm.Table;
-
-            // Append compression extension, if necessary
-            uri = FederationContext.StreamFactory.AppendCompressionExtension(uri, compression);
 
             var job = new ExportJob()
             {

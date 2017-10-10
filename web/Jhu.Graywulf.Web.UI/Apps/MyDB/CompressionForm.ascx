@@ -1,4 +1,5 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="CompressionForm.ascx.cs" Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.CompressionForm" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="CompressionForm.ascx.cs"
+    Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.CompressionForm" %>
 
 <table runat="server" class="FormTable">
     <tr>
@@ -6,7 +7,8 @@
             <asp:Label runat="server" ID="compressionListLabel">Compression:</asp:Label>
         </td>
         <td class="FormField">
-            <asp:DropDownList runat="server" ID="compressionList" CssClass="FormField">
+            <asp:DropDownList runat="server" ID="compressionList" CssClass="FormField" OnSelectedIndexChanged="CompressionList_SelectedIndexChanged"
+                AutoPostBack="true">
                 <asp:ListItem Text="none" Value="None" Selected="True" />
                 <asp:ListItem Text="gzip" Value="GZip" />
                 <asp:ListItem Text="bzip2" Value="BZip2" />

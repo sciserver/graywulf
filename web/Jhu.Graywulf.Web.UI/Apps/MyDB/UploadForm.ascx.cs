@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             // Check if uploaded file is an archive
             var archival = FederationContext.StreamFactory.GetArchivalMethod(uri);
             var compression = FederationContext.StreamFactory.GetCompressionMethod(uri);
-            var batchName = Util.UriConverter.ToFileNameWithoutExtension(uri).Replace('.', '_');
+            var batchName = Util.UriConverter.GetFileNameWithoutExtension(uri).Replace('.', '_');
 
             if (archival == DataFileArchival.None)
             {
