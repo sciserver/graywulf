@@ -218,7 +218,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
 
                 var task = RemoteServiceHelper.CreateObject<IImportTableArchive>(host, true);
 
-                task.BatchName = Util.UriConverter.ToFileNameWithoutExtension(this.uri);
+                task.BatchName = Util.UriConverter.GetFileNameWithoutExtension(this.uri);
                 task.Uri = this.uri;
                 task.Credentials = this.credentials;
                 task.Destination = this.destinations[0];

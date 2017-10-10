@@ -351,7 +351,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="identifier"></param>
         /// <returns></returns>
-        protected abstract string QuoteIdentifier(string identifier);
+        public abstract string QuoteIdentifier(string identifier);
 
         /// <summary>
         /// When overloaded in derived classes, returns the fully resolved name of the dataset.

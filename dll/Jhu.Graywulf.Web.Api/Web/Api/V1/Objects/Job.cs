@@ -353,10 +353,11 @@ namespace Jhu.Graywulf.Web.Api.V1
         public static V1.FileFormat GetFileFormat(RegistryContext context, Uri uri)
         {
             var ff = FileFormatFactory.Create(context.Federation.FileFormatFactory);
-            string filename, extension;
+            string path, filename, extension;
+            DataFileArchival archival;
             DataFileCompression compression;
             DataFileBase file;
-            ff.GetFileExtensions(uri, out filename, out extension, out compression);
+            StreamFactory.GetFileExtensions(uri, out path, out filename, out extension, out archival, out compression);
 
             if (ff.TryCreateFileFromExtension(extension, out file))
             {

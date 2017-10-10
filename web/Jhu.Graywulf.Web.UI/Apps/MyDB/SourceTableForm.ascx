@@ -19,7 +19,8 @@
             <asp:Label runat="server" ID="tableListLabel">Source table:</asp:Label>
         </td>
         <td class="FormField">
-            <jgwu:TableList runat="server" id="tableList" CssClass="FormField"  DefaultRequestField="objid" />
+            <jgwu:TableList runat="server" id="tableList" CssClass="FormField"  DefaultRequestField="objid"
+                OnSelectedTableChanged="TableList_SelectedTableChanged" AutoPostBack="true" />
         </td>
     </tr>
 </table>

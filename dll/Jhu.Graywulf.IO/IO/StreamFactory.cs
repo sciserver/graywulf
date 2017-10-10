@@ -59,6 +59,7 @@ namespace Jhu.Graywulf.IO
         }
 
         #endregion
+        #region Private member variables
 
         private Uri uri;
         private Credentials credentials;
@@ -67,6 +68,9 @@ namespace Jhu.Graywulf.IO
         private DataFileArchival archival;
         private int bufferSize;
         private FileOptions options;
+
+        #endregion
+        #region Properties
 
         /// <summary>
         /// Gets or sets the URI to open
@@ -126,6 +130,7 @@ namespace Jhu.Graywulf.IO
             set { options = value; }
         }
 
+        #endregion
         #region Constructors and initialzers
 
         /// <summary>
@@ -148,41 +153,6 @@ namespace Jhu.Graywulf.IO
             this.archival = DataFileArchival.Automatic;
             this.bufferSize = 0x10000;  // 64k
             this.options = FileOptions.None;
-        }
-
-        #endregion
-        #region Uri verification
-
-        /// <summary>
-        /// Returns true if the URI is safe for general user access.
-        /// </summary>
-        /// <returns></returns>
-        /// <remarks>As most operations run under a service account, user access
-        /// to the file system is needs to be controlled manually. This function
-        /// returns false for all URIs targeting the file system.</remarks>
-        public virtual bool IsUriSchemeSafe(Uri uri)
-        {
-            if (uri.IsFile || !uri.IsAbsoluteUri)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public virtual bool IsUriSchemeSupported(Uri uri)
-        {
-            var c = StringComparer.InvariantCultureIgnoreCase;
-
-            if (c.Compare(uri.Scheme, Uri.UriSchemeFile) == 0 ||
-                c.Compare(uri.Scheme, Uri.UriSchemeHttp) == 0 ||
-                c.Compare(uri.Scheme, Uri.UriSchemeHttps) == 0 ||
-                c.Compare(uri.Scheme, Uri.UriSchemeFtp) == 0)
-            {
-                return true;
-            }
-
-            return false;
         }
 
         #endregion
@@ -641,70 +611,98 @@ namespace Jhu.Graywulf.IO
         }
 
         #endregion
-        #region Utility functions
+        #region Uri verification
 
-        private DataFileCompression GetCompressionMethod()
+        /// <summary>
+        /// Returns true if the URI is safe for general user access.
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>As most operations run under a service account, user access
+        /// to the file system is needs to be controlled manually. This function
+        /// returns false for all URIs targeting the file system.</remarks>
+        public virtual bool IsUriSchemeSafe(Uri uri)
         {
-            DataFileCompression cm;
-
-            if (uri != null && compression == DataFileCompression.Automatic)
+            if (uri.IsFile || !uri.IsAbsoluteUri)
             {
-                cm = GetCompressionMethod(uri);
-            }
-            else
-            {
-                cm = compression;
+                return false;
             }
 
-            return cm;
+            return true;
+        }
+
+        public virtual bool IsUriSchemeSupported(Uri uri)
+        {
+            var c = StringComparer.InvariantCultureIgnoreCase;
+
+            if (c.Compare(uri.Scheme, Uri.UriSchemeFile) == 0 ||
+                c.Compare(uri.Scheme, Uri.UriSchemeHttp) == 0 ||
+                c.Compare(uri.Scheme, Uri.UriSchemeHttps) == 0 ||
+                c.Compare(uri.Scheme, Uri.UriSchemeFtp) == 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
+        #region URI manipulation functions
+
+        public static void GetFileExtensions(Uri uri, out string path, out string filename, out string extension, out DataFileArchival archivalMethod, out DataFileCompression compressionMethod)
+        {
+            GetFileExtensions(Util.UriConverter.GetPath(uri), out path, out filename, out extension, out archivalMethod, out compressionMethod);
         }
 
         /// <summary>
-        /// If compression is set to automatic, figures out compression
-        /// method from the file extension
+        /// Returns the file extension by stripping of the extension of the
+        /// compressed file, if any.
         /// </summary>
-        /// <returns></returns>
-        public virtual DataFileCompression GetCompressionMethod(Uri uri)
+        public static void GetFileExtensions(string uri, out string path, out string filename, out string extension, out DataFileArchival archivalMethod, out DataFileCompression compressionMethod)
         {
             // TODO: We could use mime type here if stream comes from HTTP
+            path = uri; ;
+            filename = Path.GetFileName(path);
+            extension = null;
+            archivalMethod = DataFileArchival.None;
+            compressionMethod = DataFileCompression.None;
 
-            var path = Util.UriConverter.ToPath(uri);
-
-            var extension = Path.GetExtension(path).ToLowerInvariant();
-            DataFileCompression cm;
-
-            switch (extension)
+            // Handle at most three extensions, ie. csv.tar.gz
+            var extensions = new string[3];
+            for (int i = 0; i < extensions.Length; i++)
             {
-                case Constants.FileExtensionGz:
-                    cm = DataFileCompression.GZip;
-                    break;
-                case Constants.FileExtensionBz2:
-                    cm = DataFileCompression.BZip2;
-                    break;
-                case Constants.FileExtensionZip:
-                    cm = DataFileCompression.Zip;
-                    break;
-                default:
-                    cm = DataFileCompression.None;
-                    break;
-            }
+                extensions[i] = Path.GetExtension(filename);
+                filename = Path.GetFileNameWithoutExtension(filename);
 
-            return cm;
-        }
-
-        public virtual Uri AppendCompressionExtension(Uri uri, DataFileCompression compression)
-        {
-            if (compression != DataFileCompression.None && compression != DataFileCompression.Automatic)
-            {
-                var cm = GetCompressionMethod(uri);
-
-                if (cm != compression)
+                // Archival method is determined from any of the extensions
+                // TODO: handle the ambigous case of specifying more than one extension, iw. tar.zip
+                if (!String.IsNullOrWhiteSpace(extensions[i]) &&
+                    Constants.ArchivalExtensions.ContainsKey(extensions[i]))
                 {
-                    return new Uri(uri.ToString() + Constants.CompressionExtensions[compression], UriKind.RelativeOrAbsolute);
+                    archivalMethod = Constants.ArchivalExtensions[extensions[i]];
                 }
             }
+            
+            // The first extension determines the compression method
+            int j = 0;
+            filename = Path.GetFileName(path);
+            if (!String.IsNullOrWhiteSpace(extensions[j]) && Constants.CompressionExtensions.ContainsKey(extensions[j]))
+            {
+                compressionMethod = Constants.CompressionExtensions[extensions[j]];
+                filename = Path.GetFileNameWithoutExtension(filename);
+                j++;
+            }
 
-            return uri;
+            // The next extension can be the archival method, i.e. tar.gz
+            if (!String.IsNullOrWhiteSpace(extensions[j]) && Constants.ArchivalExtensions.ContainsKey(extensions[j]))
+            {
+                filename = Path.GetFileNameWithoutExtension(filename);
+                j++;
+            }
+
+            // The last extension is the actual file format extension
+            extension = extensions[j];
+            filename = Path.GetFileNameWithoutExtension(filename);
+            path = (Path.GetDirectoryName(path) ?? "/").Replace("\\", "/");
         }
 
         protected DataFileArchival GetArchivalMethod()
@@ -729,28 +727,59 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         public virtual DataFileArchival GetArchivalMethod(Uri uri)
         {
-            var path = Util.UriConverter.ToPath(uri);
+            string path, filename, extension;
             DataFileArchival am;
+            DataFileCompression cm;
 
-            var firstExtension = Path.GetExtension(path);
-            var secondExtension = Path.GetExtension(Path.GetFileNameWithoutExtension(path));
+            GetFileExtensions(uri, out path, out filename, out extension, out am, out cm);
+            return am;
+        }
 
-            if (StringComparer.InvariantCultureIgnoreCase.Compare(firstExtension, Constants.FileExtensionZip) == 0)
+        private DataFileCompression GetCompressionMethod()
+        {
+            DataFileCompression cm;
+
+            if (uri != null && compression == DataFileCompression.Automatic)
             {
-                am = DataFileArchival.Zip;
-            }
-            else if (
-                StringComparer.InvariantCultureIgnoreCase.Compare(firstExtension, Constants.FileExtensionTar) == 0 ||
-                StringComparer.InvariantCultureIgnoreCase.Compare(secondExtension, Constants.FileExtensionTar) == 0)
-            {
-                am = DataFileArchival.Tar;
+                cm = GetCompressionMethod(uri);
             }
             else
             {
-                am = DataFileArchival.None;
+                cm = compression;
             }
 
-            return am;
+            return cm;
+        }
+
+        /// <summary>
+        /// If compression is set to automatic, figures out compression
+        /// method from the file extension
+        /// </summary>
+        /// <returns></returns>
+        public virtual DataFileCompression GetCompressionMethod(Uri uri)
+        {
+            string path, filename, extension;
+            DataFileArchival am;
+            DataFileCompression cm;
+
+            GetFileExtensions(uri, out path, out filename, out extension, out am, out cm);
+            return cm;
+        }
+        
+        public static string CombineFileExtensions(string path, string filename, string extension, DataFileArchival archivalMethod, DataFileCompression compressionMethod)
+        {
+            var uri = Path.Combine(path, filename).Replace("\\", "/");
+            uri += extension;
+
+            // Only append tar here, zip is appened at next step
+            if (archivalMethod == DataFileArchival.Tar)
+            {
+                uri += Constants.FileExtensionTar;
+            }
+
+            uri += Constants.CompressionExtensions[compressionMethod];
+
+            return uri;
         }
 
         #endregion

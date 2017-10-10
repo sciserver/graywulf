@@ -8,8 +8,67 @@ using Jhu.Graywulf.IO;
 namespace Jhu.Graywulf.IO
 {
     [TestClass]
-    public class StreamFactoryTest
+    public class StreamFactoryTest : Jhu.Graywulf.Test.TestClassBase
     {
+        [TestMethod]
+        public void GetFileExtensionsTest()
+        {
+            var sf = StreamFactory.Create(null);
+
+            string path, filename, extension;
+            DataFileArchival am;
+            DataFileCompression cm;
+
+            StreamFactory.GetFileExtensions(new Uri("file:///"), out path, out filename, out extension, out am, out cm);
+            Assert.AreEqual("/", path);
+            Assert.AreEqual("", filename);
+            Assert.AreEqual("", extension);
+            Assert.AreEqual(DataFileArchival.None, am);
+            Assert.AreEqual(DataFileCompression.None, cm);
+
+            StreamFactory.GetFileExtensions(new Uri("file:///dir/"), out path, out filename, out extension, out am, out cm);
+            Assert.AreEqual("/dir", path);
+            Assert.AreEqual("", filename);
+            Assert.AreEqual("", extension);
+            Assert.AreEqual(DataFileArchival.None, am);
+            Assert.AreEqual(DataFileCompression.None, cm);
+
+            StreamFactory.GetFileExtensions(new Uri("file:///dir/file"), out path, out filename, out extension, out am, out cm);
+            Assert.AreEqual("/dir", path);
+            Assert.AreEqual("file", filename);
+            Assert.AreEqual("", extension);
+            Assert.AreEqual(DataFileArchival.None, am);
+            Assert.AreEqual(DataFileCompression.None, cm);
+
+            StreamFactory.GetFileExtensions(new Uri("file:///dir/file.txt"), out path, out filename, out extension, out am, out cm);
+            Assert.AreEqual("/dir", path);
+            Assert.AreEqual("file", filename);
+            Assert.AreEqual(".txt", extension);
+            Assert.AreEqual(DataFileArchival.None, am);
+            Assert.AreEqual(DataFileCompression.None, cm);
+
+            StreamFactory.GetFileExtensions(new Uri("file:///dir/file.txt.gz"), out path, out filename, out extension, out am, out cm);
+            Assert.AreEqual("/dir", path);
+            Assert.AreEqual("file", filename);
+            Assert.AreEqual(".txt", extension);
+            Assert.AreEqual(DataFileArchival.None, am);
+            Assert.AreEqual(DataFileCompression.GZip, cm);
+
+            StreamFactory.GetFileExtensions(new Uri("file:///dir/file.txt.tar.gz"), out path, out filename, out extension, out am, out cm);
+            Assert.AreEqual("/dir", path);
+            Assert.AreEqual("file", filename);
+            Assert.AreEqual(".txt", extension);
+            Assert.AreEqual(DataFileArchival.Tar, am);
+            Assert.AreEqual(DataFileCompression.GZip, cm);
+
+            StreamFactory.GetFileExtensions(new Uri("file:///dir/file.txt.zip"), out path, out filename, out extension, out am, out cm);
+            Assert.AreEqual("/dir", path);
+            Assert.AreEqual("file", filename);
+            Assert.AreEqual(".txt", extension);
+            Assert.AreEqual(DataFileArchival.Zip, am);
+            Assert.AreEqual(DataFileCompression.Zip, cm);
+        }
+
         [TestMethod]
         public void GetCompressionMethodTest()
         {
@@ -35,11 +94,25 @@ namespace Jhu.Graywulf.IO
         }
 
         [TestMethod]
+        public void CombineFileExtensionsTest()
+        {
+            Assert.AreEqual("/", StreamFactory.CombineFileExtensions("/", "", "", DataFileArchival.None, DataFileCompression.None));
+            Assert.AreEqual("/file", StreamFactory.CombineFileExtensions("/", "file", "", DataFileArchival.None, DataFileCompression.None));
+            Assert.AreEqual("/file.txt", StreamFactory.CombineFileExtensions("/", "file", ".txt", DataFileArchival.None, DataFileCompression.None));
+            Assert.AreEqual("/file.gz", StreamFactory.CombineFileExtensions("/", "file", "", DataFileArchival.None, DataFileCompression.GZip));
+            Assert.AreEqual("/file.txt.gz", StreamFactory.CombineFileExtensions("/", "file", ".txt", DataFileArchival.None, DataFileCompression.GZip));
+            Assert.AreEqual("/file.test.txt.gz", StreamFactory.CombineFileExtensions("/", "file.test", ".txt", DataFileArchival.None, DataFileCompression.GZip));
+            Assert.AreEqual("/file.txt.tar.gz", StreamFactory.CombineFileExtensions("/", "file", ".txt", DataFileArchival.Tar, DataFileCompression.GZip));
+            Assert.AreEqual("/file.txt.zip", StreamFactory.CombineFileExtensions("/", "file", ".txt", DataFileArchival.Zip, DataFileCompression.Zip));
+        }
+
+        [TestMethod]
         public void ReadRelativePathFileTest()
         {
             var sf = StreamFactory.Create(null);
+            var path = GetTestFilePath("graywulf/test/files/csv_numbers.csv");
 
-            using (var s = sf.Open(new Uri("../../../graywulf/test/files/csv_numbers.csv", UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
             {
                 s.ReadByte();
             }
@@ -49,8 +122,9 @@ namespace Jhu.Graywulf.IO
         public void WriteRelativePathFileTest()
         {
             var sf = StreamFactory.Create(null);
+            var path = GetTestFilePath("graywulf/test/files/writetest.csv");
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.csv", UriKind.Relative), null, DataFileMode.Write))
+            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
             {
                 s.WriteByte(0);
             }
@@ -60,8 +134,9 @@ namespace Jhu.Graywulf.IO
         public void ReadGzFileTest()
         {
             var sf = StreamFactory.Create(null);
+            var path = GetTestFilePath("graywulf/test/files/csv_numbers.csv.gz");
 
-            using (var s = sf.Open(new Uri("../../../graywulf/test/files/csv_numbers.csv.gz", UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
             {
                 s.ReadByte();
             }
@@ -71,8 +146,9 @@ namespace Jhu.Graywulf.IO
         public void WriteGzFileTest()
         {
             var sf = StreamFactory.Create(null);
+            var path = GetTestFilePath("graywulf/test/files/writetest.csv.gz");
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.csv.gz", UriKind.Relative), null, DataFileMode.Write))
+            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
             {
                 s.WriteByte(0);
             }
@@ -82,8 +158,9 @@ namespace Jhu.Graywulf.IO
         public void ReadBz2FileTest()
         {
             var sf = StreamFactory.Create(null);
+            var path = GetTestFilePath("graywulf/test/files/csv_numbers.csv.bz2");
 
-            using (var s = sf.Open(new Uri("../../../graywulf/test/files/csv_numbers.csv.bz2", UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
             {
                 s.ReadByte();
             }
@@ -93,8 +170,9 @@ namespace Jhu.Graywulf.IO
         public void WriteBz2FileTest()
         {
             var sf = StreamFactory.Create(null);
+            var path = GetTestFilePath("graywulf/test/files/writetest.csv.bz2");
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.csv.bz2", UriKind.Relative), null, DataFileMode.Write))
+            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
             {
                 s.WriteByte(0);
             }
@@ -104,8 +182,9 @@ namespace Jhu.Graywulf.IO
         public void ReadZipFileTest()
         {
             var sf = StreamFactory.Create(null);
+            var path = GetTestFilePath("graywulf/test/files/csv_numbers.zip");
 
-            using (var s = sf.Open(new Uri("../../../graywulf/test/files/csv_numbers.zip", UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
             {
                 Assert.IsTrue(s is IArchiveInputStream);
 
@@ -123,8 +202,9 @@ namespace Jhu.Graywulf.IO
         public void WriteZipFileTest()
         {
             var sf = StreamFactory.Create(null);
+            var path = GetTestFilePath("graywulf/test/files/writetest.zip");
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.zip", UriKind.Relative), null, DataFileMode.Write))
+            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
             {
                 Assert.IsTrue(s is IArchiveOutputStream);
 
@@ -143,8 +223,9 @@ namespace Jhu.Graywulf.IO
         public void ReadTarGzFileTest()
         {
             var sf = StreamFactory.Create(null);
+            var path = GetTestFilePath("graywulf/test/files/csv_numbers.tar.gz");
 
-            using (var s = sf.Open(new Uri("../../../graywulf/test/files/csv_numbers.tar.gz", UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
             {
                 Assert.IsTrue(s is IArchiveInputStream);
 
@@ -162,8 +243,9 @@ namespace Jhu.Graywulf.IO
         public void WriteTarGzFileTest()
         {
             var sf = StreamFactory.Create(null);
+            var path = GetTestFilePath("graywulf/test/files/writetest.tar.gz");
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.tar.gz", UriKind.Relative), null, DataFileMode.Write))
+            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
             {
                 Assert.IsTrue(s is IArchiveOutputStream);
 

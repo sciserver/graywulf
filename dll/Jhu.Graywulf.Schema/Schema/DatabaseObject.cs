@@ -107,8 +107,9 @@ namespace Jhu.Graywulf.Schema
         {
             get
             {
-                return (String.IsNullOrWhiteSpace(schemaName) ? "" : (schemaName + ".")) +
-                    objectName;
+                return 
+                    (String.IsNullOrWhiteSpace(schemaName) ? "" : (dataset.QuoteIdentifier(schemaName) + ".")) +
+                    dataset.QuoteIdentifier(objectName);
             }
         }
 

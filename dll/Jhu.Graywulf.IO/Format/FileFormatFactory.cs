@@ -177,7 +177,11 @@ namespace Jhu.Graywulf.Format
 
         public bool TryCreateFile(Uri uri, out string filename, out string extension, out DataFileCompression compression, out DataFileBase file)
         {
-            GetFileExtensions(uri, out filename, out extension, out compression);
+            // TODO: pull out path, archival etc?
+            string path;
+            DataFileArchival archival;
+
+            StreamFactory.GetFileExtensions(uri, out path, out filename, out extension, out archival, out compression);
 
             if (TryCreateFileFromExtension(extension, out file))
             {
@@ -296,30 +300,7 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
-
-        /// <summary>
-        /// Returns the file extension by stripping of the extension of the
-        /// compressed file, if any.
-        /// </summary>
-        public virtual void GetFileExtensions(Uri uri, out string filename, out string extension, out DataFileCompression compressionMethod)
-        {
-            var path = Util.UriConverter.ToPath(uri);    // This isn't always a file path, so it's the safest to do now
-            extension = Path.GetExtension(path);
-
-            if (Jhu.Graywulf.IO.Constants.CompressionExtensions.ContainsKey(extension))
-            {
-                compressionMethod = Jhu.Graywulf.IO.Constants.CompressionExtensions[extension];
-                
-                filename = Path.GetFileNameWithoutExtension(path);
-                extension = Path.GetExtension(filename);
-            }
-            else
-            {
-                compressionMethod = DataFileCompression.None;
-                filename = Path.GetFileName(path);
-            }
-        }
-
+        
         public DataFileBase CreateFile(Uri uri)
         {
             string filename, extension;

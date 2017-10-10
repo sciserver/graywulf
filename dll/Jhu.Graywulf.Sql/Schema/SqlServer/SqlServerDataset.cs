@@ -203,7 +203,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
         /// </summary>
         /// <param name="identifier"></param>
         /// <returns></returns>
-        protected override string QuoteIdentifier(string identifier)
+        public override string QuoteIdentifier(string identifier)
         {
             // TODO: verify identifier quoting everywhere, because
             // escaping within [] might not be covered

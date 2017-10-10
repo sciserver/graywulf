@@ -198,7 +198,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
                 task.Sources = sources;
                 task.Destinations = destinations;
-                task.BatchName = Util.UriConverter.ToFileNameWithoutExtension(uri);
+                task.BatchName = Util.UriConverter.GetFileNameWithoutExtension(uri);
                 task.Uri = uri;
                 task.Credentials = credentials;
                 task.FileFormatFactoryType = fileFormatFactoryType;

@@ -28,6 +28,10 @@ namespace Jhu.Graywulf.IO
 
         public const string ResultsetNameToken = "[$ResultsetName]";
 
+        public const string UrlPattern = @"(https?|ftp)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?";
+        public const string UrlPathPattern = @"([^\s/?\.#-]+\.?)+(/[^\s]*)?";
+
+
         public static readonly Map<string, DataFileCompression> CompressionExtensions = new Map<string, DataFileCompression>(StringComparer.InvariantCultureIgnoreCase)
         {
             { String.Empty, DataFileCompression.None  },
@@ -42,6 +46,13 @@ namespace Jhu.Graywulf.IO
             { MimeTypeBz2, DataFileCompression.BZip2 },
             { MimeTypeGz, DataFileCompression.GZip },
             { MimeTypeZip, DataFileCompression.Zip },
+        };
+
+        public static readonly Map<string, DataFileArchival> ArchivalExtensions = new Map<string, DataFileArchival>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            { String.Empty, DataFileArchival.None },
+            { FileExtensionTar, DataFileArchival.Tar },
+            { FileExtensionZip, DataFileArchival.Zip },
         };
     }
 }

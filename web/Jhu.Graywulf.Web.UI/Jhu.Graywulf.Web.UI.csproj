@@ -270,6 +270,13 @@
     <Compile Include="Apps\MyDB\DestinationTableForm.ascx.designer.cs">
       <DependentUpon>DestinationTableForm.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\MyDB\Download.aspx.cs">
+      <DependentUpon>Download.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\Download.aspx.designer.cs">
+      <DependentUpon>Download.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Apps\MyDB\Drop.aspx.cs">
       <DependentUpon>Drop.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -577,6 +584,7 @@
     <Content Include="Apps\MyDB\DatasetList.ascx" />
     <Content Include="Apps\MyDB\Default.aspx" />
     <Content Include="Apps\MyDB\DestinationTableForm.ascx" />
+    <Content Include="Apps\MyDB\Download.aspx" />
     <Content Include="Apps\MyDB\Drop.aspx" />
     <Content Include="Apps\MyDB\Export.aspx" />
     <Content Include="Apps\MyDB\ImportOptionsForm.ascx" />

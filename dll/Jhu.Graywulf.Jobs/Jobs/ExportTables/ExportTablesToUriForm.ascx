@@ -9,16 +9,16 @@
             <asp:Label runat="server" ID="uriLabel">URI:</asp:Label>&nbsp;&nbsp;
         </td>
         <td class="FormField" style="width: 420px">
-            <asp:TextBox runat="server" ID="uri" CssClass="FormField" Width="420px" />
+            <asp:TextBox runat="server" ID="uri" CssClass="FormField" Width="100%" />
             <asp:RequiredFieldValidator runat="server" ControlToValidate="uri" Display="Dynamic"
                 ErrorMessage="<br />The URI field is required" />
-            <asp:RegularExpressionValidator runat="server" ControlToValidate="uri" Display="Dynamic"
-                ErrorMessage="<br />Invalid URI format" ValidationExpression="(https?|ftp)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?" />
+            <asp:RegularExpressionValidator runat="server" ID="uriFormatValidator" ControlToValidate="uri" Display="Dynamic"
+                ErrorMessage="<br />Invalid URI format" />
         </td>
     </tr>
 </table>
 <p>
-    To save data to a remote server, you may need to specify credentials:
+    To save data to a remote server you may need to provide your credentials:
 </p>
 <table runat="server" class="FormTable">
     <tr>

@@ -113,7 +113,7 @@ namespace Jhu.Graywulf.Schema.MySql
         #endregion
         #region Fully resolved names and keys
 
-        protected override string QuoteIdentifier(string identifier)
+        public override string QuoteIdentifier(string identifier)
         {
             return String.Format("`{0}`", identifier);
         }
