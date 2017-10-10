@@ -14,6 +14,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
     {
         public event EventHandler SelectionChanged;
 
+        public bool AutoPostBack
+        {
+            get { return fileFormatList.AutoPostBack; }
+            set { fileFormatList.AutoPostBack = value; }
+        }
+
         public DataFileMode FileMode
         {
             get { return (DataFileMode)(ViewState["FileMode"] ?? DataFileMode.Read); }
