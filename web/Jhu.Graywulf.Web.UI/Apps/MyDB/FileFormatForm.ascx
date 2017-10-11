@@ -8,7 +8,7 @@
         <td class="FormField">
             <asp:DropDownList runat="server" ID="fileFormatList" CssClass="FormField" OnSelectedIndexChanged="FileFormatList_SelectedIndexChanged" />
             <asp:RequiredFieldValidator runat="server" ID="fileFormatListRequiredValidator" Display="Dynamic" ControlToValidate="fileFormatList"
-                ErrorMessage="<br />File format must be selected." />
+                ErrorMessage="<br />File format must be selected." EnableClientScript="false" />
         </td>
     </tr>
 </table>
