@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         private Dictionary<string, VariableReference> variableReferences;
 
         #endregion
-        #region properties
+        #region Properties
 
         public bool IsResolvable
         {
