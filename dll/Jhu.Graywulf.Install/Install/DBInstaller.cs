@@ -156,6 +156,8 @@ namespace Jhu.Graywulf.Install
         /// </summary>
         public void CreateDatabase()
         {
+            // TODO: implement logic to skip creating the database if already exists.
+
             var dbname = connectionString.InitialCatalog;
             var s = GetSmoServer();
             var db = new smo::Database(s, dbname);

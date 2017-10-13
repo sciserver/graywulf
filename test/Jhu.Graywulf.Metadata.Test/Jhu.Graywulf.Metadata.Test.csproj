@@ -73,6 +73,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
   </ItemGroup>
