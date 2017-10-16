@@ -221,7 +221,7 @@ namespace Jhu.Graywulf.Entities
 
         [TestMethod]
         [ExpectedException(typeof(AccessDeniedException))]
-        public void LoadDeniedest()
+        public void LoadDeniedTest()
         {
             int id;
 
