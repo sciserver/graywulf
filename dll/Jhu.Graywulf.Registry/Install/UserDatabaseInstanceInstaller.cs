@@ -31,8 +31,8 @@ namespace Jhu.Graywulf.Install
 
             // Load server instances that can store user databases
             var ef = new EntityFactory(RegistryContext);
-            var serverInstances = ef.FindAll<ServerInstance>()
-                .Where(i =>
+            var serverInstances = ef.FindAll<ServerInstance>().ToArray();
+            serverInstances = serverInstances.Where(i =>
                     i.ServerVersionReference.Guid == databaseVersion.ServerVersionReference.Guid &&
                     i.Machine.DeploymentState == DeploymentState.Deployed &&
                     i.Machine.RunningState == RunningState.Running)

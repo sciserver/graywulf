@@ -80,6 +80,12 @@ namespace Jhu.Graywulf.Schema
 
         #endregion
 
+        /// <summary>
+        /// Makes sure that the user database is physically created on the 
+        /// corresponding database server.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="dataset"></param>
         protected abstract void EnsureUserDatabaseExists(User user, SqlServerDataset dataset);
 
         protected abstract void EnsureUserDatabaseConfigured(User user, SqlServerDataset dataset);

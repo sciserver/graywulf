@@ -200,7 +200,7 @@ DECLARE @guids TABLE (Guid uniqueidentifier PRIMARY KEY)
 
 INSERT INTO @guids
 SELECT Entity.Guid
-FROM Entity
+FROM Entity {0}
 INNER JOIN EntityReference ref ON ref.EntityGuid = Entity.Guid
 WHERE ref.ReferencedEntityGuid = @Guid AND
 	(@ShowHidden = 1 OR Entity.Hidden = 0) AND
@@ -218,6 +218,8 @@ SELECT EntityReference.*
 FROM @guids g
 INNER JOIN EntityReference ON EntityReference.EntityGuid = g.Guid";
 
+            sql = String.Format(sql, GetTableHint());
+
             var cmd = RegistryContext.CreateTextCommand(sql);
             cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
             cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
@@ -232,25 +234,33 @@ INNER JOIN EntityReference ON EntityReference.EntityGuid = g.Guid";
         public IEnumerable<T> FindConnection<T>(Entity parent, Entity to, int? referenceType)
             where T : Entity, new()
         {
-            // TODO: rewrite this to return entity references
-            // and do smart paging
-
             var sql = @"
-WITH q AS
-(
-	SELECT Entity.*, [{0}].*
-	FROM Entity {1}
-	INNER JOIN [{0}] ON [{0}].EntityGuid = Entity.Guid
-    INNER JOIN EntityReference ON EntityReference.EntityGuid = Entity.Guid
-	WHERE 
-        Entity.ParentGuid = @ParentGuid AND
-		EntityReference.ReferencedEntityGuid = @EntityGuidTo AND
-		(@ReferenceType IS NULL OR EntityReference.ReferenceType = @ReferenceType) AND
-		(@ShowHidden = 1 OR Entity.Hidden = 0) AND
-		(@ShowDeleted = 1 OR Entity.Deleted = 0)
-)
-SELECT q.* FROM q
-ORDER BY Number";
+DECLARE @guids TABLE (Guid uniqueidentifier PRIMARY KEY)
+
+INSERT INTO @guids
+SELECT Entity.Guid
+FROM Entity {1}
+INNER JOIN [{0}] ON [{0}].EntityGuid = Entity.Guid
+INNER JOIN EntityReference ON EntityReference.EntityGuid = Entity.Guid
+WHERE 
+    Entity.ParentGuid = @ParentGuid AND
+	EntityReference.ReferencedEntityGuid = @EntityGuidTo AND
+	(@ReferenceType IS NULL OR EntityReference.ReferenceType = @ReferenceType) AND
+	(@ShowHidden = 1 OR Entity.Hidden = 0) AND
+	(@ShowDeleted = 1 OR Entity.Deleted = 0)
+ORDER BY Entity.Number
+OFFSET ISNULL(@From, 0) ROWS
+FETCH NEXT ISNULL(@Max, 0x7FFFFFFF) ROWS ONLY;
+
+SELECT Entity.*, [{0}].*
+FROM @guids g
+INNER JOIN Entity ON Entity.Guid = g.Guid
+INNER JOIN [{0}] ON [{0}].EntityGuid = Entity.Guid
+ORDER BY Entity.Number
+
+SELECT EntityReference.*
+FROM @guids g
+INNER JOIN EntityReference ON EntityReference.EntityGuid = g.Guid";
 
             var childrentype = Constants.EntityTypeMap[typeof(T)];
             sql = String.Format(sql, childrentype, GetTableHint());
@@ -259,6 +269,8 @@ ORDER BY Number";
             cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
             cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
             cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
+            cmd.Parameters.Add("@From", SqlDbType.Int).Value = DBNull.Value;
+            cmd.Parameters.Add("@Max", SqlDbType.Int).Value = DBNull.Value;
             cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
             cmd.Parameters.Add("@EntityGuidTo", SqlDbType.UniqueIdentifier).Value = to.Guid;
             cmd.Parameters.Add("@ReferenceType", SqlDbType.Int).Value = referenceType.HasValue ? (object)referenceType.Value : DBNull.Value;

@@ -156,6 +156,12 @@ namespace Jhu.Graywulf.Install
                 diskVolumes.AddRange(dataDiskVolumes);
             }
 
+            if (diskVolumes == null || diskVolumes.Count == 0)
+            {
+                // TODO ***
+                throw new Exception("Cannot create database, no disk volumes found.");
+            }
+
             int q = 0;
             bool primary;
             int filecount = fg.FileGroup.FileCount != 0 ? fg.FileGroup.FileCount : diskVolumes.Count;

@@ -20,12 +20,17 @@ namespace Jhu.Graywulf.Schema
         {
         }
 
-        protected override void EnsureUserDatabaseExists(User user, SqlServerDataset dataset)
+        protected void EnsureUserDatabaseInstanceExists(User user)
         {
             // TODO: update this to support multiple user databases
-            
             var udii = new UserDatabaseInstanceInstaller(RegistryContext);
             udii.EnsureUserDatabaseInstanceExists(user, FederationContext.Federation.UserDatabaseVersion);
+        }
+
+        protected override void EnsureUserDatabaseExists(User user, SqlServerDataset dataset)
+        {
+            // TODO
+            // Here we silently assume that the database is physically created
         }
 
         protected override void EnsureUserDatabaseConfigured(User user, SqlServerDataset dataset)
@@ -36,6 +41,13 @@ namespace Jhu.Graywulf.Schema
         protected override Dictionary<string, SqlServerDataset> OnGetUserDatabases(User user)
         {
             var di = FederationContext.Federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
+
+            if (di == null)
+            {
+                EnsureUserDatabaseInstanceExists(user);
+                di = FederationContext.Federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
+            }
+
             var ds = di.GetDataset();
 
             ds.Name = Registry.Constants.UserDbName;
