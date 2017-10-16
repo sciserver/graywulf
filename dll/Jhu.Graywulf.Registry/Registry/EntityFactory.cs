@@ -195,14 +195,12 @@ INNER JOIN EntityReference ON EntityReference.EntityGuid = g.Guid
 
         public IEnumerable<Entity> FindReferencing(Entity e)
         {
-            // TODO: test this
-
             var sql = @"
 DECLARE @guids TABLE (Guid uniqueidentifier PRIMARY KEY)
 
 INSERT INTO @guids
 SELECT Entity.Guid
-FROM Entity {1}
+FROM Entity
 INNER JOIN EntityReference ref ON ref.EntityGuid = Entity.Guid
 WHERE ref.ReferencedEntityGuid = @Guid AND
 	(@ShowHidden = 1 OR Entity.Hidden = 0) AND
@@ -220,7 +218,7 @@ SELECT EntityReference.*
 FROM @guids g
 INNER JOIN EntityReference ON EntityReference.EntityGuid = g.Guid";
 
-            var cmd = RegistryContext.CreateStoredProcedureCommand(sql);
+            var cmd = RegistryContext.CreateTextCommand(sql);
             cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
             cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
             cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
