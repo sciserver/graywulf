@@ -48,7 +48,7 @@
     font-size: 12px;
 }
 
-/* Fonts */
+/*#region Fonts */
 
 body, li, p {
     .fontText();
@@ -68,8 +68,8 @@ a:hover {
     text-decoration: underline;
 }
 
-
-/* Layout */
+/*#endregion */
+/*#region Layout */
 
 html, body {
     height: 100%;
@@ -166,17 +166,8 @@ div.LayoutProgress {
     z-index: 100;
 }
 
-#PlotCanvasContainer {
-    position: relative;
-}
-
-#refreshCanvasButton {
-    position: absolute;
-    left: 22px;
-    top: 22px;
-}
-
-/* Header */
+/*#endregion */
+/*#region Header */
 
 .gw-header-dropdown {
     line-height: 1;
@@ -220,7 +211,8 @@ div.LayoutProgress {
     background: @colorDarker;
 }
 
-/* Menu and toolbar */
+/*#endregion */
+/*#region Menu and toolbar */
 
 .bar(@backgroundColor) {
     display: flex;
@@ -255,7 +247,8 @@ div.LayoutProgress {
     box-sizing: content-box;
 }
 
-/* Menu */
+/*#endregion */
+/*#region Menu */
 
 div.menu {
     .bar(@colorLight);
@@ -281,7 +274,8 @@ div.menu .span {
     width: 100%;
 }
 
-/* Toolbar */
+/*#endregion */
+/*#region Toolbar */
 
 div.toolbar {
     .bar(@colorLighter);
@@ -295,6 +289,7 @@ div.toolbar div {
 div.toolbar a {
     .barButton(120px, 42px, @colorDark, @colorLighter, @colorBlack);
     .fontMenu();
+    cursor: pointer;
 }
 
 div.toolbar a.selected {
@@ -319,6 +314,10 @@ div.toolbar .span {
     width: 100%;
 }
 
+div.toolbar .separator {
+    .barElement(1px, 42px, @colorDark, @colorLighter, @colorBlack);
+}
+
 div.toolbar div input[type="text"],
 div.toolbar div select {
     .fontToolbar();
@@ -326,7 +325,41 @@ div.toolbar div select {
     border: 2px solid @colorDark;
 }
 
-/* Message bar */
+div.toolbar .dropdown ul {
+    background-color: @colorDark;
+    color: @colorLighter;
+    padding: 0px;
+}
+
+div.toolbar .dropdown ul li {
+    .fontMenu();
+    padding: 0px;
+    color: @colorBlack;
+    text-align: left;
+}
+
+div.toolbar .dropdown ul li a {
+    background-color: @colorDark;
+    margin: 0px;
+    border: 0px;
+    padding: @gutter;
+    width: 100%;
+    text-align: left;
+}
+
+div.toolbar .dropdown ul li a:hover {
+    background-color: @colorToolbarHover;
+    background-image: none;
+    filter: none;
+    color: @colorWhite;
+}
+
+div.toolbar .dropdown ul li input {
+    margin: @gutter;
+}
+
+/*#endregion */
+/*#region Message bar */
 
 div.gw-messagebar {
     .font();
@@ -345,7 +378,8 @@ span.gw-messagebar-button {
     border-right: solid 8px transparent;
 }
 
-/* Lists */
+/*#endregion */
+/*#region Lists */
 
 .gw-list-item() {
     .font();
@@ -444,7 +478,8 @@ div.gw-details-panel {
     display: none;
 }
 
-/* Box list */
+/*#endregion */
+/*#region Box list */
 
 div.gw-box-frame-top {
     border-top: @gw-list-border;
@@ -496,7 +531,153 @@ span.gw-box-span {
     flex-grow: 1 !important;
 }
 
-/* Docs and schema */
+/*#endregion */
+/*#region Modal forms */
+
+div.gw-form {
+    background-color: @colorWhite;
+    border: 1px solid @colorDark;
+    box-shadow: 0px 12px 6px -6px #c0c0c0;
+    padding: @gutter;
+    right: auto;
+    bottom: auto;
+}
+
+div.gw-form > table {
+    border-collapse: collapse;
+    width: 720px;
+    background-color: #FFFFFF;
+}
+
+td.gw-form-title {
+    .font();
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid @colorDarker;
+    margin-bottom: @gutter;
+    padding-bottom: @gutter;
+}
+
+td.gw-form-icon {
+    width: 140px;
+    padding-right: 40px;
+    padding-top: 32px;
+    padding-left: 24px;
+    vertical-align: top;
+}
+
+td.gw-form {
+    padding-top: 16px;
+    padding-bottom: 32px;
+    padding-right: 32px;
+    vertical-align: top;
+    min-height: 320px;
+}
+
+td.gw-form ul, td.gw-form p {
+    margin-top: 10px;
+    margin-bottom: 6px;
+}
+
+td.gw-form > table, table.gw-form {
+    width: 100%;
+}
+
+td.gw-form-label {
+    width: 180px;
+    vertical-align: top;
+    padding-top: @gutter;
+}
+
+td.gw-form-field {
+    width: auto;
+    vertical-align: top;
+    padding-top: 8px;
+}
+
+td.gw-form-field input[type="checkbox"],
+td.gw-form-field input[type="radio"] {
+    margin-top: 0px;
+    margin-left: @gutter;
+    margin-right: @gutter;
+}
+
+td.gw-form-field input[type="text"],
+td.gw-form-field select,
+td.gw-form-field textarea,
+td.gw-form-field div {
+    .font();
+    font-size: 14px;
+    border: 1px solid @colorBlack;
+    width: 200px;
+}
+
+td.gw-form-field textarea {
+    width: 100%;
+}
+
+td.gw-form-field .narrow {
+    width: 120px !important;
+}
+
+td.gw-form-field .wide {
+    width: 100% !important;
+}
+
+p.gw-form-details {
+    border-top: 1px solid #C0C0C0;
+    text-align: right;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+td.gw-form-buttons {
+    .font();
+    font-size: 16px;
+    font-weight: bold;
+    border-top: 1px solid #C0C0C0;
+    margin-bottom: @gutter;
+    padding-top: (2 * @gutter);
+    padding-bottom: @gutter;
+    text-align: center;
+    height: 64px;
+}
+
+td.gw-form-buttons input[type=button],
+td.gw-form-buttons input[type=submit] {
+    .font();
+    font-weight: bold;
+    font-size: 14px;
+    border: 2px solid #C0C0C0;
+    height: 26px;
+    width: 120px;
+}
+
+/*#endregion */
+/*#region tabs */
+
+ul.gw-tabs {
+    margin: 0px !important;
+}
+
+ul.gw-tabs li a {
+    .font();
+    padding: @gutter;
+    border: 1px solid #C0C0C0;
+    border-radius: 0px;
+}
+
+div.tab-content {
+    border-left: 1px solid #C0C0C0;
+    border-right: 1px solid #C0C0C0;
+    border-bottom: 1px solid #C0C0C0;
+    border-radius: 0px;
+    padding: @gutter;
+}
+
+/*#endregion */
+/*#region Docs and schema */
 
 .fontDocs() {
     .font();
@@ -564,3 +745,5 @@ a.thumbnail > div.caption {
 .syntaxhighlighter {
     overflow: hidden !important;
 }
+
+/*#endregion */
