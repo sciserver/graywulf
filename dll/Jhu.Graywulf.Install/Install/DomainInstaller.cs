@@ -29,9 +29,12 @@ namespace Jhu.Graywulf.Install
 
         private void GenerateWebConfig()
         {
+            // TODO: this is not used but could be in the future.
+            // web.config resource has been removed.
+
             // Load web.config template from resource
             var webConfig = new XmlDocument();
-            webConfig.LoadXml(Scripts.web_config);
+            //webConfig.LoadXml(Scripts.web_config);
 
             // Generate a machine key
             var mknode = (XmlElement)webConfig.SelectSingleNode("/configuration/system.web/machineKey");

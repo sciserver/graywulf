@@ -61,23 +61,27 @@ namespace Jhu.Graywulf.Install {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /****** Object:  Schema [dev]    Script Date: 09/25/2013 17:23:22 ******/
-        ///CREATE SCHEMA [dev] AUTHORIZATION [dbo]
+        ///   Looks up a localized string similar to IF SCHEMA_ID(&apos;dev&apos;) IS NULL
+        ///EXEC(&apos;CREATE SCHEMA [dev] AUTHORIZATION [dbo]&apos;)
+        ///
         ///GO
-        ////****** Object:  Table [dbo].[EventData]    Script Date: 09/25/2013 17:23:24 ******/
-        ///SET ANSI_NULLS ON
+        ///
+        ///---------------------------------------------------------------
+        ///
+        ///IF OBJECT_ID(&apos;[dbo].[Event]&apos;) IS NOT NULL
+        ///DROP TABLE [dbo].[Event]
+        ///
         ///GO
-        ///SET QUOTED_IDENTIFIER ON
-        ///GO
-        ///CREATE TABLE [dbo].[EventData](
-        ///	[EventId] [bigint] NOT NULL,
-        ///	[Key] [nvarchar](50) NOT NULL,
-        ///	[Data] [sql_variant] NOT NULL,
-        /// CONSTRAINT [PK_EventLogData] PRIMARY KEY CLUSTERED 
+        ///
+        ///CREATE TABLE [dbo].[Event]
         ///(
-        ///	[EventId] ASC,
-        ///	[Key] ASC
-        ///)WITH (PAD_INDEX  = OFF, STATISTICS_N [rest of string was truncated]&quot;;.
+        ///	[ID] [bigint] IDENTITY(1,1) NOT NULL,
+        ///	[UserGuid] [uniqueidentifier] NULL,
+        ///	[UserName] [varchar](255) NULL,
+        ///	[TaskName] [varchar](255) NULL,
+        ///	[JobGuid] [uniqueidentifier] NULL,
+        ///	[JobName] [varchar](255) NULL,
+        ///	[SessionGuid] [uniqueidentifier] N [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Jhu_Graywulf_Logging {
             get {
@@ -114,20 +118,19 @@ namespace Jhu.Graywulf.Install {
         ///
         ///-- USER DEFINE TYPES --
         ///
+        ///IF TYPE_ID(&apos;[dbo].[DeploymentState]&apos;) IS NOT NULL
+        ///DROP TYPE [dbo].[DeploymentState]
+        ///
+        ///GO
+        ///
         ///CREATE TYPE [dbo].[DeploymentState]
         ///EXTERNAL NAME [Jhu.Graywulf.Registry.Enum].[Jhu.Graywulf.Registry.Sql.DeploymentState]
         ///
         ///GO
         ///
+        ///----------------------------------------------------------------
         ///
-        ///CREATE TYPE [dbo].[JobExecutionState]
-        ///EXTERNAL NAME [Jhu.Graywulf.Registry.Enum].[Jhu.Graywulf.Registry.Sql.JobExecutionState]
-        ///
-        ///GO
-        ///
-        ///
-        ///CREATE TYPE [dbo].[RunningState]
-        ///EXTERNAL NAME [J [rest of string was truncated]&quot;;.
+        ///IF TYPE_ID(&apos;[dbo].[JobExecuti [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Jhu_Graywulf_Registry_Logic {
             get {
@@ -149,33 +152,16 @@ namespace Jhu.Graywulf.Install {
         ///	[EntityType] [int] NOT NULL,
         ///	[Number] [int] NOT NULL,
         ///	[Name] [nvarchar](128) NOT NULL,
+        ///	[DisplayName] [nvarchar](128) NOT NULL,
         ///	[Version] [nvarchar](25) NOT NULL,
         ///	[System] [bit] NOT NULL,
         ///	[Hidden] [bit] NOT NULL,
         ///	[ReadOnly] [bit] NOT NULL,
-        ///	[Primary] [bit] NOT NULL,
-        ///	[Deleted] [bit] NOT NULL,
-        ///	[L [rest of string was truncated]&quot;;.
+        ///	[Primary] [bit]  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Jhu_Graywulf_Registry_Tables {
             get {
                 return ResourceManager.GetString("Jhu_Graywulf_Registry_Tables", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;configuration&gt;
-        ///  &lt;system.web&gt;
-        ///    &lt;authentication mode=&quot;Forms&quot;&gt;
-        ///      &lt;forms name=&quot;.ASPXFORMSAUTH&quot; loginUrl=&quot;/gwauth/SignIn.aspx&quot; enableCrossAppRedirects=&quot;true&quot; path=&quot;/&quot; /&gt;
-        ///    &lt;/authentication&gt;
-        ///    &lt;machineKey validation=&quot;SHA1&quot; decryption=&quot;AES&quot; /&gt;
-        ///  &lt;/system.web&gt;
-        ///&lt;/configuration&gt;.
-        /// </summary>
-        internal static string web_config {
-            get {
-                return ResourceManager.GetString("web.config", resourceCulture);
             }
         }
     }
