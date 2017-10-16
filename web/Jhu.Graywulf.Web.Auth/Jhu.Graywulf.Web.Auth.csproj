@@ -89,6 +89,10 @@
     <Content Include="Scripts\Bootstrap\js\npm.js" />
     <Content Include="Scripts\jQuery\jquery-2.2.4.js" />
     <Content Include="Scripts\jQuery\jquery-2.2.4.min.js" />
+    <Content Include="Templates\ActivationEmail.xml" />
+    <Content Include="Templates\ErrorFeedbackEmail.xml" />
+    <Content Include="Templates\FeedbackEmail.xml" />
+    <Content Include="Templates\RequestResetEmail.xml" />
     <Content Include="Web.config" />
     <Content Include="Scripts\jQuery\jquery-2.2.4.min.map" />
   </ItemGroup>
