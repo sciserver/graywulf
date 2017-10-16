@@ -16,15 +16,15 @@ function New-Link($path, $target) {
 }
 
 function Add-Master($name) {
-	New-Link "${ProjectDir}App_Masters\$name" "${SolutionDir}graywulf\web\Jhu.Graywulf.Web.UI\App_Masters\$name"
+	New-Link "${ProjectDir}App_Masters\$name" "${SolutionDir}modules\graywulf\web\Jhu.Graywulf.Web.UI\App_Masters\$name"
 }
 
 function Add-Theme($name) {
-	New-Link "${ProjectDir}App_Themes\$name" "${SolutionDir}graywulf\web\Jhu.Graywulf.Web.UI\App_Themes\$name"
+	New-Link "${ProjectDir}App_Themes\$name" "${SolutionDir}modules\graywulf\web\Jhu.Graywulf.Web.UI\App_Themes\$name"
 }
 
 function Add-App($name) {
-	New-Link "${ProjectDir}Apps\$name" "${SolutionDir}graywulf\web\Jhu.Graywulf.Web.UI\Apps\$name"
+	New-Link "${ProjectDir}Apps\$name" "${SolutionDir}modules\graywulf\web\Jhu.Graywulf.Web.UI\Apps\$name"
 }
 
 function Add-Script($package, $name) {
