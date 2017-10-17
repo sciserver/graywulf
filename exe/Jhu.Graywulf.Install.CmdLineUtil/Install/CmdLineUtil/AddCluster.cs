@@ -14,7 +14,8 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
         protected string adminUsername;
         protected string adminEmail;
         protected string adminPassword;
-        protected bool createNode;
+        protected bool createDefaultController;
+        protected bool createDefaultNode;
 
         [Parameter(Name = "ClusterName", Description = "Name of the cluster", Required = true)]
         public string ClusterName
@@ -44,11 +45,18 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
             set { adminPassword = value; }
         }
 
-        [Option(Name = "CreateNode", Description = "Generate first server node")]
-        public bool CreateNode
+        [Option(Name = "CreateDefaultController", Description = "Generate default controller")]
+        public bool CreateDefaultController
         {
-            get { return createNode; }
-            set { createNode = value; }
+            get { return createDefaultController; }
+            set { createDefaultController = value; }
+        }
+
+        [Option(Name = "CreateDefaultNode", Description = "Generate default server node")]
+        public bool CreateDefaultNode
+        {
+            get { return createDefaultNode; }
+            set { createDefaultNode = value; }
         }
 
         public AddCluster()
@@ -62,7 +70,8 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
             this.adminUsername = Constants.ClusterAdminUserName;
             this.adminEmail = Constants.ClusterAdminUserEmail;
             this.adminPassword = Constants.ClusterAdminUserPassword;
-            this.createNode = true;
+            this.createDefaultController = false;
+            this.createDefaultNode = false;
         }
 
         protected override string OnGetConnectionString()
@@ -87,7 +96,8 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
                     AdminUserName = adminUsername,
                     AdminEmail = adminEmail,
                     AdminPassword = adminPassword,
-                    CreateNode = createNode,
+                    CreateDefaultController = createDefaultController,
+                    CreateDefaultNode = createDefaultNode,
                 };
                 i.Install();
             }

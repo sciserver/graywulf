@@ -14,7 +14,8 @@ namespace Jhu.Graywulf.Install
         private string adminUserName;
         private string adminEmail;
         private string adminPassword;
-        private bool createNode;
+        private bool createDefaultController;
+        private bool createDefaultNode;
         
         Cluster cluster;
 
@@ -48,10 +49,16 @@ namespace Jhu.Graywulf.Install
             set { adminPassword = value; }
         }
 
-        public bool CreateNode
+        public bool CreateDefaultController
         {
-            get { return createNode; }
-            set { createNode = value; }
+            get { return createDefaultController; }
+            set { createDefaultController = value; }
+        }
+
+        public bool CreateDefaultNode
+        {
+            get { return createDefaultNode; }
+            set { createDefaultNode = value; }
         }
 
         public ClusterInstaller(RegistryContext context)
@@ -75,7 +82,8 @@ namespace Jhu.Graywulf.Install
             this.adminUserName = Constants.ClusterAdminUserName;
             this.adminEmail = Constants.ClusterAdminUserEmail;
             this.adminPassword = Constants.ClusterAdminUserPassword;
-            this.createNode = true; ;
+            this.createDefaultController = false;
+            this.createDefaultNode = false;
 
             this.cluster = null;
         }
@@ -132,7 +140,7 @@ namespace Jhu.Graywulf.Install
             };
             tempdd.Save();
 
-            if (createNode)
+            if (createDefaultNode)
             {
                 ServerVersion nodeServerVersion;
                 GenerateNode(system, out nodeServerVersion);
@@ -220,18 +228,25 @@ namespace Jhu.Graywulf.Install
             };
             controllerServerVersion.Save();
 
-            controllerMachine = new Machine(controllerMachineRole)
+            if (createDefaultController)
             {
-                Name = Constants.ControllerMachineName,
-            };
-            controllerMachine.Save();
+                controllerMachine = new Machine(controllerMachineRole)
+                {
+                    Name = Constants.ControllerMachineName,
+                };
+                controllerMachine.Save();
 
-            var controllerServerInstance = new ServerInstance(controllerMachine)
+                var controllerServerInstance = new ServerInstance(controllerMachine)
+                {
+                    Name = Constants.ServerInstanceName,
+                    ServerVersion = controllerServerVersion,
+                };
+                controllerServerInstance.Save();
+            }
+            else
             {
-                Name = Constants.ServerInstanceName,
-                ServerVersion = controllerServerVersion,
-            };
-            controllerServerInstance.Save();
+                controllerMachine = null;
+            }
         }
 
         private void GenerateNode(bool system, out ServerVersion nodeServerVersion)

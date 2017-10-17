@@ -71,16 +71,12 @@ namespace Jhu.Graywulf.Install
         }
 
         #endregion
-        
+
         /// <summary>
-        /// 
+        /// Loads the default database version for the TEMP database
         /// </summary>
-        /// <param name="name"></param>
-        /// <remarks>
-        /// This function is primarily used by the test routine, as federations are
-        /// not often created with default settings
-        /// </remarks>
-        public Federation Install(string name)
+        /// <returns></returns>
+        protected virtual DatabaseVersion GetTempDatabaseVersion()
         {
             cluster.LoadMachineRoles(false);
 
@@ -95,25 +91,53 @@ namespace Jhu.Graywulf.Install
             var tempdbdd = sharedfederation.DatabaseDefinitions[Constants.TempDbName];
             tempdbdd.LoadDatabaseVersions(false);
 
+            var tempDatabaseVersion = tempdbdd.DatabaseVersions[Constants.TempDbName];
+
+            return tempDatabaseVersion;
+        }
+
+        protected virtual MachineRole GetControllerMachineRole()
+        {
             var controllerRole = cluster.MachineRoles[Constants.ControllerMachineRoleName];
             controllerRole.LoadServerVersions(false);
             controllerRole.LoadMachines(false);
+            return controllerRole;
+        }
 
-            var controller = controllerRole.Machines[Constants.ControllerMachineName];
-            controller.LoadServerInstances(false);
-
+        protected virtual ServerVersion GetNodeServerVersion()
+        {
+            cluster.LoadMachineRoles(true);
             var nodeRole = cluster.MachineRoles[Constants.NodeMachineRoleName];
             nodeRole.LoadServerVersions(false);
+            var nodeServerVersion = nodeRole.ServerVersions[Constants.ServerVersionName];
+            return nodeServerVersion;
+        }
 
-            GenerateFederation(
-                name,
-                controllerRole,
-                tempdbdd.DatabaseVersions[Constants.TempDbName]);
+        protected virtual ServerVersion GetUserDatabaseServerVersion()
+        {
+            return GetNodeServerVersion();
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <remarks>
+        /// This function is primarily used by the test routine, as federations are
+        /// not often created with default settings
+        /// </remarks>
+        public Federation Install(string name)
+        {
+            GenerateCluster();
+
+            var tempDatabaseVersion = GetTempDatabaseVersion();
+            var controllerRole = GetControllerMachineRole();
+            var nodeServerVersion = GetNodeServerVersion();
+            var userDatabaseServerVersion = GetUserDatabaseServerVersion();
+
+            GenerateFederation(name, controllerRole, tempDatabaseVersion);
             GenerateDefaultSettings();
-
-            // Generate MyDB, CodeDB and jobs
-            GenerateDefaultChildren(controllerRole.ServerVersions[Constants.ServerVersionName], nodeRole.ServerVersions[Constants.ServerVersionName]);
+            GenerateDefaultChildren(userDatabaseServerVersion, nodeServerVersion);
 
             return federation;
         }
@@ -125,11 +149,16 @@ namespace Jhu.Graywulf.Install
             ServerVersion userDatabaseServerVersion,
             ServerVersion nodeServerVersion)
         {
+            GenerateCluster();
             GenerateFederation(name, controllerRole, tempDatabaseVersion);
             GenerateDefaultSettings();
             GenerateDefaultChildren(userDatabaseServerVersion, nodeServerVersion);
 
             return federation;
+        }
+
+        protected virtual void GenerateCluster()
+        {
         }
 
         protected virtual void GenerateFederation(
