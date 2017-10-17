@@ -94,7 +94,17 @@ namespace Jhu.Graywulf.Schema
                 if (!ReservedDatabaseDefinitions.Contains(dd.Name))
                 {
                     // This will retrieve the dataset from the cache or force loading it
-                    var ds = Datasets[dd.Name];
+                    DatasetBase ds;
+
+                    try
+                    {
+                        ds = Datasets[dd.Name];
+                    }
+                    catch (Exception ex)
+                    {
+                        ds = UnavailableDataset.Create(dd.Name, ex);
+                    }
+
                     yield return new KeyValuePair<string, DatasetBase>(ds.Name, ds);
                 }
             }
@@ -253,6 +263,7 @@ namespace Jhu.Graywulf.Schema
 
             if (includeCodeDb)
             {
+
                 res.Add(Datasets[Graywulf.Registry.Constants.CodeDbName]);
             }
 

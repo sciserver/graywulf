@@ -132,9 +132,17 @@ namespace Jhu.Graywulf.Components
                 }
 
                 TValue value;
-                if (!TryGetValueInternal(key, out value))
+                Exception exception;
+                if (!TryGetValueInternal(key, out value, out exception))
                 {
-                    throw new KeyNotFoundException();
+                    if (exception != null)
+                    {
+                        throw exception;
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException("The key was not found in the dictionary.");
+                    }
                 }
 
                 return value;
@@ -172,7 +180,8 @@ namespace Jhu.Graywulf.Components
             }
 
             TValue value;
-            return TryGetValueInternal(key, out value);
+            Exception exception;
+            return TryGetValueInternal(key, out value, out exception);
         }
 
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
@@ -240,7 +249,8 @@ namespace Jhu.Graywulf.Components
             }
 
             TValue res;
-            if (!TryGetValueInternal(key, out res))
+            Exception exception;
+            if (!TryGetValueInternal(key, out res, out exception))
             {
                 TryAddInternal(key, valueFactory(key), false, out res);
             }
@@ -260,7 +270,8 @@ namespace Jhu.Graywulf.Components
                 throw new ArgumentNullException("key");
             }
 
-            return TryGetValueInternal(key, out value);
+            Exception exception;
+            return TryGetValueInternal(key, out value, out exception);
         }
 
         public bool TryAdd(TKey key, TValue value)
@@ -308,29 +319,42 @@ namespace Jhu.Graywulf.Components
 
         #region Internal logic
 
-        private bool TryGetValueInternal(TKey key, out TValue value)
+        private bool TryGetValueInternal(TKey key, out TValue value, out Exception exception)
         {
             if (!localStore.TryGetValue(key, out value))
             {
-                if (!TryLoadValueInternal(key, out value))
+                if (!TryLoadValueInternal(key, out value, out exception))
                 {
                     return false;
                 }
             }
 
+            exception = null;
             return true;
         }
 
-        private bool TryLoadValueInternal(TKey key, out TValue value)
+        private bool TryLoadValueInternal(TKey key, out TValue value, out Exception exception)
         {
-            if (OnItemLoading(key, out value))
+            bool res = false;
+            value = default(TValue);
+            exception = null;
+
+            try
+            {
+                res = OnItemLoading(key, out value);
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+                return false;
+            };
+
+            if (res)
             {
                 // Try to add to the collection but it's not a problem
                 // if it cannot be added, it just means that the item with
                 // the same key already exists (has been added very recently)
-
                 TryAddInternal(key, value, false, out value);
-
                 return true;
             }
             else
@@ -450,7 +474,7 @@ namespace Jhu.Graywulf.Components
                     Key = key
                 };
 
-                // Call event handler
+                // Call event handler, might throw exception
                 ItemLoading(this, e);
 
                 if (e.IsCancelled)

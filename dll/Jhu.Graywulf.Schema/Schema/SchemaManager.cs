@@ -154,7 +154,7 @@ namespace Jhu.Graywulf.Schema
                     e.Value = LoadDataset(e.Key);
                     e.IsFound = true;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     e.IsFound = false;
                 }
