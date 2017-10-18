@@ -89,7 +89,10 @@ namespace Jhu.Graywulf.Registry
         {
             // Console.Error.Write("Resolving references of {0}... ", entity.Name);
 
-            entity.IsDeserializing = false;     // Allows saving entity references
+            // Allow saving entity references
+            entity.IsDeserializing = false;
+            entity.IsEntityReferencesLoaded = true;
+
             ResolveNameReferences(entity);
             SaveEntity(entity);
         }
@@ -151,11 +154,9 @@ namespace Jhu.Graywulf.Registry
                 if (!r.IsEmpty)
                 {
                     // Make sure entity reference is loaded by retrieving its value
-                    var o = r.Value;
+                    r.Resolve();
                 }
             }
-
-            entity.IsEntityReferencesLoaded = true;
         }
     }
 }

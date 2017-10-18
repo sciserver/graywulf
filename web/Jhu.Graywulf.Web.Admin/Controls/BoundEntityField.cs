@@ -31,6 +31,10 @@ namespace Jhu.Graywulf.Web.Admin.Controls
         {
             var entity = (Entity)DataBinder.Eval(DataBinder.GetDataItem(controlContainer), DataField);
 
+            if (entity == null)
+            {
+                return "[null]";
+            }
             if (expression == null)
             {
                 return entity.Name;

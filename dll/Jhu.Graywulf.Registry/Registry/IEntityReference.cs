@@ -30,5 +30,7 @@ namespace Jhu.Graywulf.Registry
         bool IsEmpty { get; }
 
         IEntityReference Clone();
+
+        void Resolve();
     }
 }
