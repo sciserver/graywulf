@@ -28,6 +28,8 @@ namespace Jhu.Graywulf.Schema
     [DataContract(Namespace = "")]
     public abstract partial class DatasetBase : ICloneable, IDatasetSafe, IMetadata
     {
+        private object syncRoot = new object();
+
         #region Property storage member variables
 
         [NonSerialized]
@@ -35,6 +37,9 @@ namespace Jhu.Graywulf.Schema
 
         [NonSerialized]
         private bool isMutable;
+
+        [NonSerialized]
+        private bool isRestrictedSchema;
 
         [NonSerialized]
         private string name;
@@ -46,10 +51,16 @@ namespace Jhu.Graywulf.Schema
         private string connectionString;
 
         [NonSerialized]
+        private bool failOnError;
+
+        [NonSerialized]
+        private bool captureError;
+
+        [NonSerialized]
         private bool isInError;
 
         [NonSerialized]
-        private string errorMessage;
+        private Exception lastException;
 
         [NonSerialized]
         private DatabaseObjectCollection<DataType> userDefinedTypes;
@@ -90,13 +101,33 @@ namespace Jhu.Graywulf.Schema
         }
 
         /// <summary>
-        /// Reserved for future use
+        /// Gets or sets whether the dataset is mutable by the user.
         /// </summary>
+        /// <remarks>
+        /// TODO: will need to change behavior once schema permissions are
+        /// implemented
+        /// </remarks>
         [DataMember]
         public bool IsMutable
         {
             get { return isMutable; }
             set { isMutable = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the dataset is locked to a single schema
+        /// and no object from other schemas are accessible. This is used when
+        /// the database is mutable but shared among users.
+        /// </summary>
+        /// <remarks>
+        /// TODO: Behavior will need to be updated once schema permissions are
+        /// implemented.
+        /// </remarks>
+        [DataMember]
+        public bool IsRestrictedSchema
+        {
+            get { return isRestrictedSchema; }
+            set { isRestrictedSchema = value; }
         }
 
         /// <summary>
@@ -150,6 +181,20 @@ namespace Jhu.Graywulf.Schema
         }
 
         [IgnoreDataMember]
+        public bool FailOnError
+        {
+            get { return failOnError; }
+            set { failOnError = value; }
+        }
+
+        [IgnoreDataMember]
+        public bool CaptureError
+        {
+            get { return captureError; }
+            set { captureError = value; }
+        }
+
+        [IgnoreDataMember]
         public bool IsInError
         {
             get { return isInError; }
@@ -157,10 +202,10 @@ namespace Jhu.Graywulf.Schema
         }
 
         [IgnoreDataMember]
-        public string ErrorMessage
+        public Exception LastException
         {
-            get { return errorMessage; }
-            set { errorMessage = value; }
+            get { return lastException; }
+            set { lastException = value; }
         }
 
         [IgnoreDataMember]
@@ -262,13 +307,16 @@ namespace Jhu.Graywulf.Schema
         {
             this.isCacheable = false;
             this.isMutable = false;
+            this.isRestrictedSchema = false;
             this.name = String.Empty;
             this.defaultSchemaName = String.Empty;
 
             this.connectionString = null;
 
+            this.failOnError = true;
+            this.captureError = false;
             this.isInError = false;
-            this.errorMessage = null;
+            this.lastException = null;
 
             this.userDefinedTypes = new DatabaseObjectCollection<DataType>(this);
             this.tables = new DatabaseObjectCollection<Table>(this);
@@ -291,13 +339,16 @@ namespace Jhu.Graywulf.Schema
         {
             this.isCacheable = old.isCacheable;
             this.isMutable = old.isMutable;
+            this.isRestrictedSchema = old.isRestrictedSchema;
             this.name = old.name;
             this.defaultSchemaName = old.defaultSchemaName;
 
             this.connectionString = old.connectionString;
 
-            this.isInError = old.isInError;
-            this.errorMessage = old.errorMessage;
+            this.failOnError = old.failOnError;
+            this.captureError = old.captureError;
+            this.isInError = old.IsInError;
+            this.lastException = old.lastException;
 
             // No deep copy here
             this.userDefinedTypes = new DatabaseObjectCollection<DataType>(this);
@@ -507,9 +558,11 @@ namespace Jhu.Graywulf.Schema
             obj.Dataset = this;
             GetNamePartsFromObjectUniqueKey(obj, e.Key);
 
+            EnsureSchemaValid(obj);
+
             try
             {
-                LoadDatabaseObject<T>(obj);
+                OnLoadDatabaseObject<T>(obj);
 
                 e.Value = obj;
                 e.Key = GetObjectUniqueKey(obj);
@@ -519,13 +572,15 @@ namespace Jhu.Graywulf.Schema
             {
                 e.IsFound = false;
             }
-        }
+            catch (Exception ex)
+            {
+                HandleException(ex);
 
-        private void OnAllObjectLoading<T>(object sender, AllItemsLoadingEventArgs<string, T> e)
-            where T : DatabaseObject, new()
-        {
-            e.Items = LoadAllObjects<T>();
-            e.IsCancelled = false;
+                if (!captureError)
+                {
+                    throw;
+                }
+            }
         }
 
         /// <summary>
@@ -533,10 +588,18 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="databaseObject"></param>
-        protected abstract void LoadDatabaseObject<T>(T databaseObject)
+        protected abstract void OnLoadDatabaseObject<T>(T databaseObject)
             where T : DatabaseObject, new();
 
-        internal abstract bool IsObjectExisting(DatabaseObject databaseObject);
+        private void OnAllObjectLoading<T>(object sender, AllItemsLoadingEventArgs<string, T> e)
+            where T : DatabaseObject, new()
+        {
+            TryOperation(() =>
+            {
+                e.Items = OnLoadAllObjects<T>();
+                e.IsCancelled = false;
+            });
+        }
 
         /// <summary>
         /// When overloaded in derived classes, loads all objects of a certain kind
@@ -544,8 +607,20 @@ namespace Jhu.Graywulf.Schema
         /// <typeparam name="T"></typeparam>
         /// <param name="databaseName"></param>
         /// <returns></returns>
-        protected abstract IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>()
+        protected abstract IEnumerable<KeyValuePair<string, T>> OnLoadAllObjects<T>()
             where T : DatabaseObject, new();
+
+        internal bool IsObjectExisting(DatabaseObject databaseObject)
+        {
+            EnsureSchemaValid(databaseObject.SchemaName);
+
+            return TryOperation(() =>
+            {
+                return OnIsObjectExisting(databaseObject);
+            });
+        }
+
+        internal abstract bool OnIsObjectExisting(DatabaseObject databaseObject);
 
         public void LoadAllObjects(DatabaseObjectType objectType, bool forceReload)
         {
@@ -604,39 +679,124 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal abstract IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject databaseObject);
+        internal IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject databaseObject)
+        {
+            EnsureSchemaValid(databaseObject);
+
+            return TryOperation(() =>
+            {
+                return OnLoadColumns(databaseObject);
+            });
+        }
+
+        /// <summary>
+        /// When overloaded in derived classes, loads all columns of a database object
+        /// </summary>
+        /// <param name="databaseObject"></param>
+        /// <returns></returns>
+        internal abstract IEnumerable<KeyValuePair<string, Column>> OnLoadColumns(DatabaseObject databaseObject);
+
+        internal IEnumerable<KeyValuePair<string, Index>> LoadIndexes(DatabaseObject databaseObject)
+        {
+            EnsureSchemaValid(databaseObject);
+
+            return TryOperation(() =>
+            {
+                return OnLoadIndexes(databaseObject);
+            });
+        }
 
         /// <summary>
         /// When overloaded in derived classes, loads all indexes belonging to a table or view
         /// </summary>
         /// <param name="tableOrView"></param>
         /// <returns></returns>
-        internal abstract IEnumerable<KeyValuePair<string, Index>> LoadIndexes(DatabaseObject databaseObject);
+        internal abstract IEnumerable<KeyValuePair<string, Index>> OnLoadIndexes(DatabaseObject databaseObject);
+
+        internal IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index)
+        {
+            EnsureSchemaValid(index);
+
+            return TryOperation(() =>
+            {
+                return OnLoadIndexColumns(index);
+            });
+        }
 
         /// <summary>
         /// When overloaded in derived classes, loads all columns covered by and index
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal abstract IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index);
+        internal abstract IEnumerable<KeyValuePair<string, IndexColumn>> OnLoadIndexColumns(Index index);
+
+        internal IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject databaseObject)
+        {
+            EnsureSchemaValid(databaseObject);
+
+            return TryOperation(() =>
+            {
+                return OnLoadParameters(databaseObject);
+            });
+        }
 
         /// <summary>
         /// When overloaded in derived classes, loads parameters of a function or stored procedure
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal abstract IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject databaseObject);
+        internal abstract IEnumerable<KeyValuePair<string, Parameter>> OnLoadParameters(DatabaseObject databaseObject);
 
         #endregion
         #region Metadata functions
 
-        protected abstract DatasetMetadata LoadDatasetMetadata();
+        private DatasetMetadata LoadDatasetMetadata()
+        {
+            return TryOperation(() =>
+            {
+                return OnLoadDatasetMetadata();
+            });
+        }
 
-        internal protected abstract DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject);
+        protected abstract DatasetMetadata OnLoadDatasetMetadata();
 
-        internal abstract void SaveDatabaseObjectMetadata(DatabaseObject databaseObject);
+        internal DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
+        {
+            EnsureSchemaValid(databaseObject);
 
-        internal abstract void DropDatabaseObjectMetadata(DatabaseObject databaseObject);
+            return TryOperation(() =>
+            {
+                return OnLoadDatabaseObjectMetadata(databaseObject);
+            });
+        }
+
+        internal protected abstract DatabaseObjectMetadata OnLoadDatabaseObjectMetadata(DatabaseObject databaseObject);
+
+        internal void SaveDatabaseObjectMetadata(DatabaseObject databaseObject)
+        {
+            EnsureMutable(databaseObject);
+            EnsureSchemaValid(databaseObject);
+
+            TryOperation(() =>
+            {
+                OnSaveDatabaseObjectMetadata(databaseObject);
+            });
+        }
+
+        internal abstract void OnSaveDatabaseObjectMetadata(DatabaseObject databaseObject);
+
+        internal void DropDatabaseObjectMetadata(DatabaseObject databaseObject)
+        {
+            EnsureMutable(databaseObject);
+            EnsureSchemaValid(databaseObject);
+
+            TryOperation(() =>
+            {
+                OnDropDatabaseObjectMetadata(databaseObject);
+            });
+        }
+
+        internal abstract void OnDropDatabaseObjectMetadata(DatabaseObject databaseObject);
 
         /// <summary>
         /// Loads metadata of a variable (parameter, column, return value, etc.).
@@ -659,20 +819,80 @@ namespace Jhu.Graywulf.Schema
             }
         }
 
-        protected abstract void LoadAllColumnMetadata(DatabaseObject databaseObject);
+        protected void LoadAllColumnMetadata(DatabaseObject databaseObject)
+        {
+            EnsureSchemaValid(databaseObject);
 
-        protected abstract void LoadAllParameterMetadata(DatabaseObject databaseObject);
+            TryOperation(() =>
+            {
+                OnLoadAllColumnMetadata(databaseObject);
+            });
+        }
 
-        internal abstract void SaveAllVariableMetadata(DatabaseObject databaseObject);
+        protected abstract void OnLoadAllColumnMetadata(DatabaseObject databaseObject);
 
-        internal abstract void DropAllVariableMetadata(DatabaseObject databaseObject);
+        protected void LoadAllParameterMetadata(DatabaseObject databaseObject)
+        {
+            EnsureSchemaValid(databaseObject);
+
+            TryOperation(() =>
+            {
+                OnLoadAllParameterMetadata(databaseObject);
+            });
+        }
+
+        protected abstract void OnLoadAllParameterMetadata(DatabaseObject databaseObject);
+
+        internal void SaveAllVariableMetadata(DatabaseObject databaseObject)
+        {
+            EnsureMutable(databaseObject);
+            EnsureSchemaValid(databaseObject);
+
+            TryOperation(() =>
+            {
+                OnSaveAllVariableMetadata(databaseObject);
+            });
+        }
+
+        internal abstract void OnSaveAllVariableMetadata(DatabaseObject databaseObject);
+
+        internal void DropAllVariableMetadata(DatabaseObject databaseObject)
+        {
+            EnsureMutable(databaseObject);
+            EnsureSchemaValid(databaseObject);
+
+            TryOperation(() =>
+            {
+                OnDropAllVariableMetadata(databaseObject);
+            });
+        }
+
+        internal abstract void OnDropAllVariableMetadata(DatabaseObject databaseObject);
 
         #endregion
         #region Statistics function
 
-        protected abstract DatasetStatistics LoadDatasetStatistics();
+        protected DatasetStatistics LoadDatasetStatistics()
+        {
+            return TryOperation(() =>
+            {
+                return OnLoadDatasetStatistics();
+            });
+        }
 
-        internal abstract TableStatistics LoadTableStatistics(TableOrView tableOrView);
+        protected abstract DatasetStatistics OnLoadDatasetStatistics();
+
+        internal TableStatistics LoadTableStatistics(TableOrView tableOrView)
+        {
+            EnsureSchemaValid(tableOrView);
+
+            return TryOperation(() =>
+            {
+                return OnLoadTableStatistics(tableOrView);
+            });
+        }
+
+        internal abstract TableStatistics OnLoadTableStatistics(TableOrView tableOrView);
 
         #endregion
         #region Object modification functions
@@ -685,24 +905,32 @@ namespace Jhu.Graywulf.Schema
             }
         }
 
+        protected virtual void EnsureSchemaValid(DatabaseObject databaseObject)
+        {
+            var schema = databaseObject.SchemaName ?? databaseObject.Dataset.DefaultSchemaName;
+            EnsureSchemaValid(schema);
+        }
+
+        protected virtual void EnsureSchemaValid(string schemaName)
+        {
+        }
+
         internal void RenameObject(DatabaseObject obj, string schemaName, string objectName)
         {
+            EnsureMutable(obj);
+            EnsureSchemaValid(schemaName);
+
             LogOperation(
-                "Renaming {0} {1}.{2} to {3}.{4} in database {5}:{6}.", 
+                "Renaming {0} {1}.{2} to {3}.{4} in database {5}:{6}.",
                 Constants.DatabaseObjectsName_Singular[obj.ObjectType],
                 obj.SchemaName, obj.ObjectName,
                 schemaName, objectName,
                 obj.DatasetName, obj.DatabaseName);
 
-            try
+            TryOperation(() =>
             {
                 OnRenameObject(obj, schemaName, objectName);
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-                throw ex;
-            }
+            });
         }
 
         /// <summary>
@@ -725,15 +953,10 @@ namespace Jhu.Graywulf.Schema
                 table.SchemaName, table.ObjectName,
                 table.DatasetName, table.DatabaseName);
 
-            try
+            TryOperation(() =>
             {
                 OnCreateTable(table, createPrimaryKey, createIndexes);
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-                throw ex;
-            }
+            });
         }
 
         internal abstract void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes);
@@ -746,15 +969,10 @@ namespace Jhu.Graywulf.Schema
                 obj.SchemaName, obj.ObjectName,
                 obj.DatasetName, obj.DatabaseName);
 
-            try
+            TryOperation(() =>
             {
                 OnDropObject(obj);
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-                throw ex;
-            }
+            });
         }
 
         /// <summary>
@@ -775,15 +993,10 @@ namespace Jhu.Graywulf.Schema
                 index.DatabaseObject.SchemaName, index.DatabaseObject.ObjectName,
                 index.DatabaseObject.DatasetName, index.DatabaseObject.DatabaseName);
 
-            try
+            TryOperation(() =>
             {
                 OnCreateIndex(index);
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-                throw ex;
-            }
+            });
         }
 
         internal abstract void OnCreateIndex(Index index);
@@ -796,15 +1009,10 @@ namespace Jhu.Graywulf.Schema
                 index.DatabaseObject.SchemaName, index.DatabaseObject.ObjectName,
                 index.DatabaseObject.DatasetName, index.DatabaseObject.DatabaseName);
 
-            try
+            TryOperation(() =>
             {
                 OnDropIndex(index);
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-                throw ex;
-            }
+            });
         }
 
         internal abstract void OnDropIndex(Index index);
@@ -816,57 +1024,15 @@ namespace Jhu.Graywulf.Schema
                 table.SchemaName, table.ObjectName,
                 table.DatasetName, table.DatabaseName);
 
-            try
+            TryOperation(() =>
             {
                 OnTruncateTable(table);
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-                throw ex;
-            }
+            });
         }
 
         internal abstract void OnTruncateTable(Table table);
 
         #endregion
-
-        protected void ThrowInvalidDataTypeNameException(DataType dataType)
-        {
-            string message;
-            message = ExceptionMessages.InvalidDataTypeName;
-            throw new SchemaException(String.Format(message, dataType.ToString()));
-        }
-
-        protected void ThrowInvalidObjectNameException(DatabaseObject databaseObject)
-        {
-            string message;
-
-            switch (Constants.DatabaseObjectTypes[databaseObject.GetType()])
-            {
-                case DatabaseObjectType.Table:
-                    message = ExceptionMessages.InvalidTableName;
-                    break;
-                case DatabaseObjectType.View:
-                    message = ExceptionMessages.InvalidViewName;
-                    break;
-                case DatabaseObjectType.TableValuedFunction:
-                    message = ExceptionMessages.InvalidTableValuedFunctionName;
-                    break;
-                case DatabaseObjectType.ScalarFunction:
-                    message = ExceptionMessages.InvalidScalarFunctionName;
-                    break;
-                case DatabaseObjectType.StoredProcedure:
-                    message = ExceptionMessages.InvalidStoredProcedureName;
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            throw new SchemaException(String.Format(message, databaseObject.ToString()));
-        }
-
-        public abstract string GetSpecializedConnectionString(string connectionString, bool integratedSecurity, string username, string password, bool enlist);
 
         #region Column and data type mapping functions
 
@@ -898,7 +1064,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="dr"></param>
         /// <returns></returns>
-        protected virtual DataType CreateDataType(DataRow dr)
+        protected virtual DataType MapDataType(DataRow dr)
         {
             // This is just a fall-back implementation that uses .Net types.
             // As not all .Net types are supported by the database servers,
@@ -922,11 +1088,11 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        protected abstract DataType CreateDataType(string name);
+        protected abstract DataType MapDataType(string name);
 
-        internal DataType CreateDataType(string name, int length, byte scale, byte precision, bool isNullable)
+        internal DataType MapDataType(string name, int length, byte scale, byte precision, bool isNullable)
         {
-            var dt = CreateDataType(name);
+            var dt = MapDataType(name);
 
             if (dt.HasLength)
             {
@@ -978,7 +1144,7 @@ namespace Jhu.Graywulf.Schema
                 // not part of the select list.
                 if (dr[SchemaTableOptionalColumn.IsHidden] == DBNull.Value || !(bool)dr[SchemaTableOptionalColumn.IsHidden])
                 {
-                    columns.Add(CreateColumn(dr));
+                    columns.Add(MapColumn(dr));
                 }
             }
 
@@ -990,7 +1156,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="dr"></param>
         /// <returns></returns>
-        private Column CreateColumn(DataRow dr)
+        private Column MapColumn(DataRow dr)
         {
             var column = new Column()
             {
@@ -1000,13 +1166,15 @@ namespace Jhu.Graywulf.Schema
                 IsKey = dr[SchemaTableColumn.IsKey] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsKey],  //
                 IsHidden = dr[SchemaTableOptionalColumn.IsHidden] == DBNull.Value ? false : (bool)dr[SchemaTableOptionalColumn.IsHidden],
 
-                DataType = CreateDataType(dr),
+                DataType = MapDataType(dr),
             };
 
             return column;
         }
 
         #endregion
+
+        public abstract string GetSpecializedConnectionString(string connectionString, bool integratedSecurity, string username, string password, bool enlist);
 
         public abstract IDbConnection OpenConnection();
 
@@ -1022,7 +1190,72 @@ namespace Jhu.Graywulf.Schema
             this.metadata.Clear();
         }
 
-        #region Logging
+        #region Logging and error handling
+
+        private void TryOperation(Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+
+                if (!captureError)
+                {
+                    throw;
+                }
+            }
+        }
+
+        private T TryOperation<T>(Func<T> func)
+        {
+            try
+            {
+                return func();
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+
+                if (!captureError)
+                {
+                    throw;
+                }
+                else
+                {
+                    return default(T);
+                }
+            }
+        }
+
+        private void HandleException(Exception ex)
+        {
+            // TODO: sort out permanent and transient errors here
+            // and only set dataset into failing state if the
+            // error is permanent.
+
+            LogError(ex);
+
+            lock (syncRoot)
+            {
+                this.lastException = ex;
+
+                if (failOnError)
+                {
+                    this.IsInError = true;
+                }
+
+#if BREAKDEBUG
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                System.Diagnostics.Debugger.Break();
+            }
+#endif
+
+            }
+        }
 
         internal Logging.Event LogError(Exception ex)
         {

@@ -345,6 +345,7 @@ namespace Jhu.Graywulf.Registry
         private void CopyMembers(Federation old)
         {
             this.schemaManager = old.schemaManager;
+            this.userDatabaseFactory = old.userDatabaseFactory;
             this.queryFactory = old.queryFactory;
             this.fileFormatFactory = old.fileFormatFactory;
             this.streamFactory = old.streamFactory;

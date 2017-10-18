@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Schema
             {
                 Name = name,
                 IsInError = true,
-                ErrorMessage = ex?.Message
+                LastException = ex
             };
         }
 
@@ -40,87 +40,87 @@ namespace Jhu.Graywulf.Schema
             throw new NotImplementedException();
         }
 
-        protected override void LoadDatabaseObject<T>(T databaseObject)
+        protected override void OnLoadDatabaseObject<T>(T databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override bool IsObjectExisting(DatabaseObject databaseObject)
+        internal override bool OnIsObjectExisting(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        protected override IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>()
+        protected override IEnumerable<KeyValuePair<string, T>> OnLoadAllObjects<T>()
         {
             throw new NotImplementedException();
         }
 
-        internal override IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject databaseObject)
+        internal override IEnumerable<KeyValuePair<string, Column>> OnLoadColumns(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index)
+        internal override IEnumerable<KeyValuePair<string, IndexColumn>> OnLoadIndexColumns(Index index)
         {
             throw new NotImplementedException();
         }
 
-        internal override IEnumerable<KeyValuePair<string, Index>> LoadIndexes(DatabaseObject databaseObject)
+        internal override IEnumerable<KeyValuePair<string, Index>> OnLoadIndexes(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject databaseObject)
+        internal override IEnumerable<KeyValuePair<string, Parameter>> OnLoadParameters(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        protected override DatasetMetadata LoadDatasetMetadata()
+        protected override DatasetMetadata OnLoadDatasetMetadata()
         {
             throw new NotImplementedException();
         }
 
-        protected internal override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
+        protected internal override DatabaseObjectMetadata OnLoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void SaveDatabaseObjectMetadata(DatabaseObject databaseObject)
+        internal override void OnSaveDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void DropDatabaseObjectMetadata(DatabaseObject databaseObject)
+        internal override void OnDropDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        protected override void LoadAllColumnMetadata(DatabaseObject databaseObject)
+        protected override void OnLoadAllColumnMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        protected override void LoadAllParameterMetadata(DatabaseObject databaseObject)
+        protected override void OnLoadAllParameterMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void SaveAllVariableMetadata(DatabaseObject databaseObject)
+        internal override void OnSaveAllVariableMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void DropAllVariableMetadata(DatabaseObject databaseObject)
+        internal override void OnDropAllVariableMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        protected override DatasetStatistics LoadDatasetStatistics()
+        protected override DatasetStatistics OnLoadDatasetStatistics()
         {
             throw new NotImplementedException();
         }
 
-        internal override TableStatistics LoadTableStatistics(TableOrView tableOrView)
+        internal override TableStatistics OnLoadTableStatistics(TableOrView tableOrView)
         {
             throw new NotImplementedException();
         }
@@ -160,12 +160,12 @@ namespace Jhu.Graywulf.Schema
             throw new NotImplementedException();
         }
 
-        protected override DataType CreateDataType(DataRow dr)
+        protected override DataType MapDataType(DataRow dr)
         {
-            return base.CreateDataType(dr);
+            return base.MapDataType(dr);
         }
 
-        protected override DataType CreateDataType(string name)
+        protected override DataType MapDataType(string name)
         {
             throw new NotImplementedException();
         }

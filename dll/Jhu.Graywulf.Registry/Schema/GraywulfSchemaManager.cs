@@ -30,6 +30,13 @@ namespace Jhu.Graywulf.Schema
         };
 
         private FederationContext federationContext;
+        private bool captureError;
+
+        public bool CaptureError
+        {
+            get { return captureError; }
+            set { captureError = value; }
+        }
 
         #region Constructors and initializers
 
@@ -66,6 +73,7 @@ namespace Jhu.Graywulf.Schema
         private void InitializeMembers(StreamingContext context)
         {
             this.federationContext = null;
+            this.captureError = false;
         }
 
         #endregion
@@ -85,6 +93,8 @@ namespace Jhu.Graywulf.Schema
 
         protected override IEnumerable<KeyValuePair<string, DatasetBase>> LoadAllDatasets()
         {
+            var res = new Dictionary<string, Schema.DatasetBase>();
+
             federationContext.Federation.LoadDatabaseDefinitions(true);
 
             // Load database definitions
@@ -105,7 +115,7 @@ namespace Jhu.Graywulf.Schema
                         ds = UnavailableDataset.Create(dd.Name, ex);
                     }
 
-                    yield return new KeyValuePair<string, DatasetBase>(ds.Name, ds);
+                    res.Add(ds.Name, ds);
                 }
             }
 
@@ -119,9 +129,22 @@ namespace Jhu.Graywulf.Schema
                 {
                     var ds = CreateDataset(rd);
 
-                    yield return new KeyValuePair<string, DatasetBase>(ds.Name, ds);
+                    res.Add(ds.Name, ds);
                 }
             }
+
+            // Load metadata of all datasets here to make sure failures are detected on time
+
+            System.Threading.Tasks.Parallel.ForEach(res.Values, ds =>
+            {
+                if (!ds.IsInError)
+                {
+                    // Force loading and caching the meta data
+                    var m = ds.Metadata;
+                }
+            });
+
+            return res;
         }
 
         /// <summary>
@@ -167,7 +190,9 @@ namespace Jhu.Graywulf.Schema
             ds.Name = dd.Name;
             ds.DatabaseDefinitionReference.Value = dd;
             ds.IsCacheable = true;
+            ds.CaptureError = captureError;
 
+            // TODO: implement fall-back to other server
             ds.CacheSchemaConnectionString();
 
             return ds;
@@ -195,6 +220,7 @@ namespace Jhu.Graywulf.Schema
                 Name = rd.Name,
                 IsOnLinkedServer = false,
                 IsCacheable = true,
+                CaptureError = captureError
             };
 
             ds.ConnectionString = ds.GetSpecializedConnectionString(
@@ -213,6 +239,7 @@ namespace Jhu.Graywulf.Schema
             {
                 Name = rd.Name,
                 IsCacheable = true,
+                CaptureError = captureError
             };
 
             ds.ConnectionString = ds.GetSpecializedConnectionString(
@@ -232,6 +259,7 @@ namespace Jhu.Graywulf.Schema
                 Name = rd.Name,
                 IsCacheable = true,
                 DefaultSchemaName = "public",
+                CaptureError = captureError
             };
 
             ds.ConnectionString = ds.GetSpecializedConnectionString(
@@ -263,7 +291,6 @@ namespace Jhu.Graywulf.Schema
 
             if (includeCodeDb)
             {
-
                 res.Add(Datasets[Graywulf.Registry.Constants.CodeDbName]);
             }
 

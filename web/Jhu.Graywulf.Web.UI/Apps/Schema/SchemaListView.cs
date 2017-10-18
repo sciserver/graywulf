@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 var item = (T)di.DataItem;
                 var img = (Image)e.Item.FindControl("icon");
 
-                if (item != null && !String.IsNullOrWhiteSpace(item.Metadata.Icon))
+                if (!String.IsNullOrWhiteSpace(item?.Metadata?.Icon))
                 {
                     img.ImageUrl = GetIconUrl(item.Metadata);
                 }

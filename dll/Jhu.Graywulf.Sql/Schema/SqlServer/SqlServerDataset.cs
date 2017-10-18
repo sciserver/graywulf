@@ -28,9 +28,6 @@ namespace Jhu.Graywulf.Schema.SqlServer
         [NonSerialized]
         protected bool isRemoteDataset;
 
-        [NonSerialized]
-        protected bool isRestrictedSchema;
-
         #endregion
         #region Properties
 
@@ -43,13 +40,6 @@ namespace Jhu.Graywulf.Schema.SqlServer
         {
             get { return isOnLinkedServer; }
             set { isOnLinkedServer = value; }
-        }
-
-        [DataMember]
-        public bool IsRestrictedSchema
-        {
-            get { return isRestrictedSchema; }
-            set { isRestrictedSchema = value; }
         }
 
         [IgnoreDataMember]
@@ -174,7 +164,6 @@ namespace Jhu.Graywulf.Schema.SqlServer
 
             this.isOnLinkedServer = false;
             this.isRemoteDataset = false;
-            this.isRestrictedSchema = false;
         }
 
         /// <summary>
@@ -187,7 +176,6 @@ namespace Jhu.Graywulf.Schema.SqlServer
 
             this.isOnLinkedServer = old.isOnLinkedServer;
             this.isRemoteDataset = old.isRemoteDataset;
-            this.isRestrictedSchema = old.isRestrictedSchema;
         }
 
         public override object Clone()
@@ -261,16 +249,9 @@ namespace Jhu.Graywulf.Schema.SqlServer
         #endregion
         #region Schema objects
 
-        protected internal override void EnsureMutable(DatabaseObject databaseObject)
+        protected override void EnsureSchemaValid(string schemaName)
         {
-            base.EnsureMutable(databaseObject);
-
-            EnsureSchemaValid(databaseObject.SchemaName ?? databaseObject.Dataset.DefaultSchemaName);
-        }
-
-        protected virtual void EnsureSchemaValid(string schemaName)
-        {
-            if (isRestrictedSchema && SchemaManager.Comparer.Compare(schemaName, DefaultSchemaName) != 0)
+            if (IsRestrictedSchema && SchemaManager.Comparer.Compare(schemaName, DefaultSchemaName) != 0)
             {
                 throw new InvalidOperationException("Operation valid on mutable schemas only.");    // *** TODO
             }
@@ -278,13 +259,12 @@ namespace Jhu.Graywulf.Schema.SqlServer
 
         private void SetSchemaNameParameter(SqlCommand cmd, string schemaName)
         {
-            if (isRestrictedSchema && String.IsNullOrWhiteSpace(schemaName))
+            if (IsRestrictedSchema && String.IsNullOrWhiteSpace(schemaName))
             {
                 schemaName = DefaultSchemaName;
+                EnsureSchemaValid(schemaName);
             }
-
-            EnsureSchemaValid(schemaName);
-
+            
             cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = String.IsNullOrWhiteSpace(schemaName) ? (object)DBNull.Value : (object)schemaName;
         }
 
@@ -345,7 +325,7 @@ WHERE
             if (dataType.IsAlias)
             {
                 // This is a type alias, so fill in base type info
-                var dt = CreateDataType(dr.GetString(2), dr.GetInt16(3), dr.GetByte(4), dr.GetByte(5), dr.GetBoolean(6));
+                var dt = MapDataType(dr.GetString(2), dr.GetInt16(3), dr.GetByte(4), dr.GetByte(5), dr.GetBoolean(6));
 
                 dataType.Type = dt.Type;
                 dataType.SqlDbType = dt.SqlDbType;
@@ -391,7 +371,7 @@ WHERE
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="databaseObject"></param>
-        protected override void LoadDatabaseObject<T>(T databaseObject)
+        protected override void OnLoadDatabaseObject<T>(T databaseObject)
         {
             if (databaseObject is DataType)
             {
@@ -426,11 +406,11 @@ WHERE
                         // No records
                         if (q == 0)
                         {
-                            ThrowInvalidDataTypeNameException(dataType);
+                            throw Error.InvalidDataTypeName(dataType);
                         }
                         else if (q > 1)
                         {
-                            throw new SchemaException("ambigous name"); // TODO
+                            throw Error.AmbigousDataTypeName(dataType);
                         }
                     }
                 }
@@ -477,21 +457,19 @@ WHERE o.type IN ({0}) AND
                         // No records
                         if (q == 0)
                         {
-                            ThrowInvalidObjectNameException(databaseObject);
+                            throw Error.InvalidObjectName(databaseObject);
                         }
                         else if (q > 1)
                         {
-                            throw new SchemaException("ambigous name"); // TODO
+                            throw Error.AmbigousObjectName(databaseObject);
                         }
                     }
                 }
             }
         }
 
-        internal override bool IsObjectExisting(DatabaseObject databaseObject)
+        internal override bool OnIsObjectExisting(DatabaseObject databaseObject)
         {
-            EnsureSchemaValid(databaseObject.SchemaName);
-
             var sql = String.Format(
                 @"SELECT OBJECT_ID('{0}')",
                 GetObjectFullyResolvedName(databaseObject));
@@ -511,7 +489,7 @@ WHERE o.type IN ({0}) AND
         /// <typeparam name="T"></typeparam>
         /// <param name="databaseName"></param>
         /// <returns></returns>
-        protected override IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>()
+        protected override IEnumerable<KeyValuePair<string, T>> OnLoadAllObjects<T>()
         {
             if (typeof(T) == typeof(DataType))
             {
@@ -592,7 +570,7 @@ WHERE o.type IN ({0})
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject databaseObject)
+        internal override IEnumerable<KeyValuePair<string, Column>> OnLoadColumns(DatabaseObject databaseObject)
         {
             string sql;
 
@@ -696,7 +674,7 @@ ORDER BY c.column_id
                             }
                             else
                             {
-                                cd.DataType = CreateDataType(
+                                cd.DataType = MapDataType(
                                     dr.GetString(3),
                                     Convert.ToInt32(dr.GetValue(5)),
                                     Convert.ToByte(dr.GetValue(6)),
@@ -726,7 +704,7 @@ ORDER BY c.column_id
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Index>> LoadIndexes(DatabaseObject databaseObject)
+        internal override IEnumerable<KeyValuePair<string, Index>> OnLoadIndexes(DatabaseObject databaseObject)
         {
             string sql;
 
@@ -810,7 +788,7 @@ WHERE   i.type IN (1, 2)";
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index)
+        internal override IEnumerable<KeyValuePair<string, IndexColumn>> OnLoadIndexColumns(Index index)
         {
             // TODO: maybe add UDT support to index column types...
 
@@ -944,7 +922,7 @@ ORDER BY ic.key_ordinal";
                             }
                             else
                             {
-                                ic.DataType = CreateDataType(
+                                ic.DataType = MapDataType(
                                     dr.GetString(6),
                                     Convert.ToInt32(dr.GetValue(8)),
                                     Convert.ToByte(dr.GetValue(9)),
@@ -964,7 +942,7 @@ ORDER BY ic.key_ordinal";
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject databaseObject)
+        internal override IEnumerable<KeyValuePair<string, Parameter>> OnLoadParameters(DatabaseObject databaseObject)
         {
             var sql = @"
 SELECT p.parameter_id, p.name, p.is_output, 
@@ -1011,7 +989,7 @@ ORDER BY p.parameter_id";
                             }
                             else
                             {
-                                par.DataType = CreateDataType(
+                                par.DataType = MapDataType(
                                     dr.GetString(4),
                                     Convert.ToInt32(dr.GetValue(6)),
                                     Convert.ToByte(dr.GetValue(7)),
@@ -1033,7 +1011,7 @@ ORDER BY p.parameter_id";
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal protected override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
+        internal protected override DatabaseObjectMetadata OnLoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             var meta = new DatabaseObjectMetadata();
 
@@ -1211,12 +1189,12 @@ ORDER BY 1";
             }
         }
 
-        internal override void DropDatabaseObjectMetadata(DatabaseObject databaseObject)
+        internal override void OnDropDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void SaveDatabaseObjectMetadata(DatabaseObject databaseObject)
+        internal override void OnSaveDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
@@ -1225,7 +1203,7 @@ ORDER BY 1";
         /// Loads column metadata for every column of a database object.
         /// </summary>
         /// <param name="databaseObject"></param>
-        protected override void LoadAllColumnMetadata(DatabaseObject databaseObject)
+        protected override void OnLoadAllColumnMetadata(DatabaseObject databaseObject)
         {
             var sql = @"
 SELECT c.name, p.name metaname, p.value
@@ -1245,7 +1223,7 @@ ORDER BY c.name, p.name";
         /// Loads parameter metadata of all parameters belonging to an object.
         /// </summary>
         /// <param name="databaseObject"></param>
-        protected override void LoadAllParameterMetadata(DatabaseObject databaseObject)
+        protected override void OnLoadAllParameterMetadata(DatabaseObject databaseObject)
         {
             // TODO: test this
 
@@ -1323,12 +1301,12 @@ ORDER BY c.name, p.name";
             }
         }
 
-        internal override void DropAllVariableMetadata(DatabaseObject databaseObject)
+        internal override void OnDropAllVariableMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void SaveAllVariableMetadata(DatabaseObject databaseObject)
+        internal override void OnSaveAllVariableMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
@@ -1341,7 +1319,7 @@ ORDER BY c.name, p.name";
         /// Loads statistics of the dataset.
         /// </summary>
         /// <returns></returns>
-        protected override DatasetStatistics LoadDatasetStatistics()
+        protected override DatasetStatistics OnLoadDatasetStatistics()
         {
             var sql = @"
 -- Raw data space in 8K pages
@@ -1394,7 +1372,7 @@ WHERE f.type = 1
             }
         }
 
-        protected override DatasetMetadata LoadDatasetMetadata()
+        protected override DatasetMetadata OnLoadDatasetMetadata()
         {
             var meta = new DatasetMetadata();
 
@@ -1478,7 +1456,7 @@ WHERE p.class = 0 -- DATABASE
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override TableStatistics LoadTableStatistics(TableOrView databaseObject)
+        internal override TableStatistics OnLoadTableStatistics(TableOrView databaseObject)
         {
             var sql = @"
 -- Data space
@@ -1543,9 +1521,6 @@ WHERE s.name = @schemaName AND o.name = @objectName
 
         internal override void OnRenameObject(DatabaseObject databaseObject, string schemaName, string objectName)
         {
-            EnsureMutable(databaseObject);
-            EnsureSchemaValid(schemaName);
-
             // The stored procedure sp_name expects the old name
             // the the schema.objectname or objectname format.
             // No database name should be specified.
@@ -1726,7 +1701,7 @@ END",
         /// </summary>
         /// <param name="dr"></param>
         /// <returns></returns>
-        protected override DataType CreateDataType(DataRow dr)
+        protected override DataType MapDataType(DataRow dr)
         {
             Type type;
             string name;
@@ -1736,10 +1711,10 @@ END",
 
             GetDataTypeDetails(dr, out type, out name, out length, out precision, out scale, out isNullable);
 
-            return CreateDataType(name, length, scale, precision, isNullable);
+            return MapDataType(name, length, scale, precision, isNullable);
         }
 
-        protected override DataType CreateDataType(string name)
+        protected override DataType MapDataType(string name)
         {
             // Try to interpret as SQL Server type. Certain aliases are not in the
             // enum, so handle them separately.
@@ -2049,6 +2024,5 @@ END",
         {
             return OpenConnectionInternal();
         }
-
     }
 }

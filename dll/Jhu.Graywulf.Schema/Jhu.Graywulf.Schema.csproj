@@ -93,6 +93,7 @@
     <Compile Include="Schema\DataTypes.cs" />
     <Compile Include="Schema\DoubleComplex.cs" />
     <Compile Include="Schema\Enum.cs" />
+    <Compile Include="Schema\Error.cs" />
     <Compile Include="Schema\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

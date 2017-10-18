@@ -109,7 +109,7 @@ namespace Jhu.Graywulf.Schema
                     catch (Exception ex)
                     {
                         ds.IsInError = true;
-                        ds.ErrorMessage = ex.Message;
+                        ds.LastException = ex;
                     }
                 }
 

@@ -31,6 +31,13 @@ namespace Jhu.Graywulf.Registry
             }
             catch (Exception ex)
             {
+#if BREAKDEBUG
+                if (global::System.Diagnostics.Debugger.IsAttached)
+                {
+                    global::System.Diagnostics.Debugger.Break();
+                }
+#endif
+
                 if (!supressError)
                 {
                     throw;

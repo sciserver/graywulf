@@ -70,6 +70,24 @@ namespace Jhu.Graywulf.Schema {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ambigous data type name &apos;{0}&apos;..
+        /// </summary>
+        public static string AmbigousDataTypeName {
+            get {
+                return ResourceManager.GetString("AmbigousDataTypeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ambigous object name &apos;{0}&apos;..
+        /// </summary>
+        public static string AmbigousObjectName {
+            get {
+                return ResourceManager.GetString("AmbigousObjectName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid dataset name: &apos;{0}&apos;..
         /// </summary>
         public static string InvalidDatasetName {

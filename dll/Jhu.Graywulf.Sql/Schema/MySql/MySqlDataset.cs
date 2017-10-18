@@ -149,7 +149,7 @@ namespace Jhu.Graywulf.Schema.MySql
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
-        protected override void LoadDatabaseObject<T>(T obj)
+        protected override void OnLoadDatabaseObject<T>(T obj)
         {
             string sql;
 
@@ -200,18 +200,18 @@ WHERE routine_schema LIKE @databaseName AND routine_name LIKE @objectName AND ro
                         // No records
                         if (q == 0)
                         {
-                            ThrowInvalidObjectNameException(obj);
+                            throw Error.InvalidObjectName(obj);
                         }
                         else if (q > 1)
                         {
-                            throw new SchemaException("ambigous name"); // TODO
+                            throw Error.AmbigousObjectName(obj);
                         }
                     }
                 }
             }
         }
 
-        internal override bool IsObjectExisting(DatabaseObject databaseObject)
+        internal override bool OnIsObjectExisting(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
@@ -220,7 +220,7 @@ WHERE routine_schema LIKE @databaseName AND routine_name LIKE @objectName AND ro
         /// Loads all objects of a certain kind
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        protected override IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>()
+        protected override IEnumerable<KeyValuePair<string, T>> OnLoadAllObjects<T>()
         {
             var sql = @"
 SELECT routine_name AS `object_name`, routine_type AS `object_type`
@@ -279,7 +279,7 @@ WHERE table_schema LIKE @databaseName AND table_type IN({0})";
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject obj)
+        internal override IEnumerable<KeyValuePair<string, Column>> OnLoadColumns(DatabaseObject obj)
         {
             var sql = @"
 SELECT ordinal_position,
@@ -309,7 +309,7 @@ WHERE table_schema LIKE @databaseName AND table_name LIKE @tableName;";
                                 Name = dr.GetString(1),
                             };
 
-                            cd.DataType = CreateDataType(
+                            cd.DataType = MapDataType(
                                 dr.GetString(2),
                                 dr.GetInt64(3) > Int32.MaxValue ? Int32.MaxValue : Convert.ToInt32(dr.GetInt64(3)),
                                 Convert.ToByte(dr.GetValue(4)),
@@ -328,7 +328,7 @@ WHERE table_schema LIKE @databaseName AND table_name LIKE @tableName;";
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Index>> LoadIndexes(DatabaseObject obj)
+        internal override IEnumerable<KeyValuePair<string, Index>> OnLoadIndexes(DatabaseObject obj)
         {
             var sql = @"  
 SELECT s.index_name, s.non_unique
@@ -373,7 +373,7 @@ GROUP BY 1;";
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index)
+        internal override IEnumerable<KeyValuePair<string, IndexColumn>> OnLoadIndexColumns(Index index)
         {
             var sql = @"
 SELECT c.column_name,
@@ -411,7 +411,7 @@ WHERE t.table_schema LIKE @databaseName AND kcu.table_name LIKE @tableName AND k
                                 IsIdentity = dr.IsDBNull(7) ? false : true
                             };
 
-                            ic.DataType = CreateDataType(
+                            ic.DataType = MapDataType(
                                 dr.GetString(3),
                                 dr.GetInt64(4) > Int32.MaxValue ? Int32.MaxValue : Convert.ToInt32(dr.GetInt64(4)),
                                 Convert.ToByte(dr.GetValue(5)),
@@ -430,7 +430,7 @@ WHERE t.table_schema LIKE @databaseName AND kcu.table_name LIKE @tableName AND k
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject obj)
+        internal override IEnumerable<KeyValuePair<string, Parameter>> OnLoadParameters(DatabaseObject obj)
         {
             var sql = @"
 SELECT p.ordinal_position,
@@ -487,7 +487,7 @@ ORDER BY 1;";
                                 DefaultValue = null,
                             };
 
-                            par.DataType = CreateDataType(
+                            par.DataType = MapDataType(
                                 dr.GetString(3),
                                 Convert.ToInt32(dr.GetValue(4)),
                                 Convert.ToByte(dr.GetValue(5)),
@@ -501,7 +501,7 @@ ORDER BY 1;";
             }
         }
 
-        internal protected override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
+        internal protected override DatabaseObjectMetadata OnLoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             var sql = @"
 SELECT table_comment comment 
@@ -534,17 +534,17 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             }
         }
 
-        internal override void DropDatabaseObjectMetadata(DatabaseObject databaseObject)
+        internal override void OnDropDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void SaveDatabaseObjectMetadata(DatabaseObject databaseObject)
+        internal override void OnSaveDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        protected override void LoadAllColumnMetadata(DatabaseObject databaseObject)
+        protected override void OnLoadAllColumnMetadata(DatabaseObject databaseObject)
         {
             var sql = @"
 SELECT column_name, column_comment
@@ -554,7 +554,7 @@ WHERE table_schema LIKE @databaseName AND table_name LIKE @objectName ;";
             LoadAllVariableMetadata(sql, databaseObject, ((IColumns)databaseObject).Columns);
         }
 
-        protected override void LoadAllParameterMetadata(DatabaseObject databaseObject)
+        protected override void OnLoadAllParameterMetadata(DatabaseObject databaseObject)
         {
             var sql = @"
 SELECT p.parameter_name, r.routine_comment
@@ -600,17 +600,17 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
                 }
             }
         }
-        internal override void DropAllVariableMetadata(DatabaseObject databaseObject)
+        internal override void OnDropAllVariableMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void SaveAllVariableMetadata(DatabaseObject databaseObject)
+        internal override void OnSaveAllVariableMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override TableStatistics LoadTableStatistics(TableOrView tableOrView)
+        internal override TableStatistics OnLoadTableStatistics(TableOrView tableOrView)
         {
             throw new NotImplementedException();
         }
@@ -689,12 +689,12 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             throw new NotImplementedException();
         }
 
-        protected override DatasetStatistics LoadDatasetStatistics()
+        protected override DatasetStatistics OnLoadDatasetStatistics()
         {
             throw new NotImplementedException();
         }
 
-        protected override DatasetMetadata LoadDatasetMetadata()
+        protected override DatasetMetadata OnLoadDatasetMetadata()
         {
             // *** TODO: implement
             // Where to get metadata from? Registry?
@@ -719,7 +719,7 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
         /// </summary>
         /// <param name="dr"></param>
         /// <returns></returns>
-        protected override DataType CreateDataType(DataRow dr)
+        protected override DataType MapDataType(DataRow dr)
         {
             Type type;
             string name;
@@ -729,10 +729,10 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
 
             GetDataTypeDetails(dr, out type, out name, out length, out precision, out scale, out isNullable);
 
-            return CreateDataType(name, length, scale, precision, isNullable);
+            return MapDataType(name, length, scale, precision, isNullable);
         }
 
-        protected override DataType CreateDataType(string name)
+        protected override DataType MapDataType(string name)
         {
             switch (name.ToLowerInvariant().Trim())
             {

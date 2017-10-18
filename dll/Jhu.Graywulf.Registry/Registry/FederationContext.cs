@@ -67,6 +67,10 @@ namespace Jhu.Graywulf.Registry
                 {
                     schemaManager = GraywulfSchemaManager.Create(this);
 
+                    // Modify this to throw exception on all schema errors
+                    // KeyNotFound exceptions will still be thrown
+                    schemaManager.CaptureError = true;
+
                     if (registryUser != null)
                     {
                         schemaManager.AddUserDatabases(registryUser);
