@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Globalization;
 using System.Xml;
+using System.Xml.Serialization;
 using System.Collections;
 using System.Data;
 using System.Runtime.Serialization;
@@ -322,6 +323,15 @@ namespace Jhu.Graywulf.Format
                         throw new NotImplementedException();
                 }
             }
+        }
+
+        #endregion
+        #region XML utility functions
+
+        public T Deserialize<T>()
+        {
+            var s = new XmlSerializer(typeof(T));
+            return (T)s.Deserialize(XmlReader);
         }
 
         #endregion

@@ -103,7 +103,7 @@ namespace Jhu.Graywulf.Format
                 // If column names are in the first line, use them to generate names
                 if (File.ColumnNamesInFirstLine)
                 {
-                    ReadNextRowParts(out parts, false);
+                    OnReadNextRowParts(out parts, false);
                     DetectColumnsFromParts(parts, true, out columns, out columnTypePrecedence);
                 }
 
@@ -112,7 +112,7 @@ namespace Jhu.Graywulf.Format
                 // Try to figure out the type of columns from the first n rows
                 // Try to read some rows to detect
                 int q = 0;
-                while (q < File.AutoDetectColumnsCount && ReadNextRowParts(out parts, true))
+                while (q < File.AutoDetectColumnsCount && OnReadNextRowParts(out parts, true))
                 {
                     if (q == 0 && columns == null)
                     {
@@ -137,7 +137,7 @@ namespace Jhu.Graywulf.Format
                 // if it contains the column names
                 if (File.ColumnNamesInFirstLine)
                 {
-                    ReadNextRowParts(out parts, false);
+                    OnReadNextRowParts(out parts, false);
                 }
 
                 CreateColumns(columns);

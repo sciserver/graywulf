@@ -107,7 +107,7 @@ namespace Jhu.Graywulf.Format
         /// <remarks>
         /// This function supports quoted strings.
         /// </remarks>
-        protected override bool ReadNextRowParts(out string[] parts, bool skipComments)
+        protected override bool OnReadNextRowParts(out string[] parts, bool skipComments)
         {
             string line;
             List<string> res = new List<string>();

@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.Format
             throw new NotImplementedException();
         }
 
-        protected override bool ReadNextRowParts(out string[] parts, bool skipComments)
+        protected override bool OnReadNextRowParts(out string[] parts, bool skipComments)
         {
             throw new NotImplementedException();
         }

@@ -134,13 +134,13 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Read functions
 
-        protected abstract bool ReadNextRowParts(out string[] parts, bool skipComments);
+        protected abstract bool OnReadNextRowParts(out string[] parts, bool skipComments);
 
         protected internal override bool OnReadNextRow(object[] values)
         {
             string[] parts;
 
-            if (ReadNextRowParts(out parts, true))
+            if (OnReadNextRowParts(out parts, true))
             {
 
                 // Now parse the parts
