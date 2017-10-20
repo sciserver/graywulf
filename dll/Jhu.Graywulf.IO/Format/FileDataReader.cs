@@ -101,7 +101,7 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Constructors and initializers
 
-        internal FileDataReader(DataFileBase file)
+        internal protected FileDataReader(DataFileBase file)
         {
             InizializeMembers();
 
