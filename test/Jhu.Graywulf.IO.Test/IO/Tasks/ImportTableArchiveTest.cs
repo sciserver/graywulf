@@ -60,7 +60,7 @@ namespace Jhu.Graywulf.IO.Tasks
             it.Destination = destination;
             it.Options = new ImportTableOptions()
             {
-                GenerateIdentityColumn = generateIdentityColumn
+                GenerateIdentityColumn = generateIdentityColumn,
             };
 
             return it;
@@ -106,12 +106,12 @@ namespace Jhu.Graywulf.IO.Tasks
             switch (type)
             {
                 case ArchiveType.SingleFile:
-                    path = GetTestFilePath(@"graywulf\test\files\csv_numbers.zip");
+                    path = GetTestFilePath(@"modules\graywulf\test\files\csv_numbers.zip");
                     tableNamePattern = GetTestUniqueName();
                     columnCount = new[] { 5 };
                     break;
                 case ArchiveType.MultipleFiles:
-                    path = GetTestFilePath(@"graywulf\test\files\archive.zip");
+                    path = GetTestFilePath(@"modules\graywulf\test\files\archive.zip");
                     tableNamePattern = GetTestUniqueName() + "_[$ResultsetName]";
                     columnCount = new[] { 5, 2 };
                     break;

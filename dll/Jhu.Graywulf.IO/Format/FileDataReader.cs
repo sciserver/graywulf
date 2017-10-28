@@ -6,6 +6,8 @@ using System.Data;
 using System.Data.Common;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Data;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Format
 {
@@ -135,7 +137,12 @@ namespace Jhu.Graywulf.Format
 
         public override bool NextResult()
         {
-            if (file.ReadNextBlock() != null)
+            return NextResultAsync(CancellationToken.None).Result;
+        }
+
+        public override async Task<bool> NextResultAsync(CancellationToken cancellationToken)
+        {
+            if (await file.ReadNextBlockAsync() != null)
             {
                 blockCounter++;
                 return true;
@@ -153,12 +160,19 @@ namespace Jhu.Graywulf.Format
         /// <returns></returns>
         public override bool Read()
         {
+            return ReadAsync(CancellationToken.None).Result;
+        }
+
+        public override async Task<bool> ReadAsync(CancellationToken cancellationToken)
+        {
             if (rowCounter == -1 && columnIndex == null)
             {
                 InitializeColumns();
             }
 
-            if (file.CurrentBlock.OnReadNextRow(rowValues))
+            var hasNextRow = await file.CurrentBlock.OnReadNextRowAsync(rowValues);
+
+            if (hasNextRow)
             {
                 rowCounter++;
 

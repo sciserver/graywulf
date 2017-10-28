@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Text;
 using System.IO;
 using System.Runtime.Serialization;
@@ -78,12 +77,13 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        protected internal override void OnReadHeader()
+        protected internal override Task OnReadHeaderAsync()
         {
             // Nothing to do here
+            return Task.CompletedTask;
         }
 
-        protected internal override bool OnReadNextRow(object[] values)
+        protected internal override async Task<bool> OnReadNextRowAsync(object[] values)
         {
             try
             {
@@ -101,14 +101,16 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        protected internal override void OnReadToFinish()
+        protected internal override Task OnReadToFinishAsync()
         {
             // Nothing to do here
+            return Task.CompletedTask;
         }
 
-        protected internal override void OnReadFooter()
+        protected internal override Task OnReadFooterAsync()
         {
             // Nothing to do here
+            return Task.CompletedTask;
         }
 
         protected override void OnWriteHeader()

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.IO;
 
 namespace Jhu.Graywulf.IO
@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.IO
         /// <param name="inputReader"></param>
         /// <returns></returns>
         /// 
-        public string ReadLine()
+        public async Task<string> ReadLineAsync()
         {
             // See if there are lines in the buffer (prefetched for column detection)
             // If so, use lines in buffer, otherwise read from the stream
@@ -83,7 +83,7 @@ namespace Jhu.Graywulf.IO
             }
             else
             {
-                string line = baseReader.ReadLine();
+                string line = await baseReader.ReadLineAsync();
 
                 // Store in buffer if it's turned on
                 if (lineBufferOn)
@@ -101,11 +101,11 @@ namespace Jhu.Graywulf.IO
         /// Skips a given number of lines.
         /// </summary>
         /// <param name="count"></param>
-        public void SkipLines(int count)
+        public async Task SkipLinesAsync(int count)
         {
             for (int i = 0; i < count; i++)
             {
-                ReadLine();
+                await ReadLineAsync();
             }
         }
 

@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
-using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.Format;
+using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Format
 {
@@ -59,22 +55,22 @@ namespace Jhu.Graywulf.Format
 
         #endregion
 
-        protected internal override void OnReadHeader()
+        protected internal override Task OnReadHeaderAsync()
         {
             throw new NotImplementedException();
         }
 
-        protected override bool OnReadNextRowParts(out string[] parts, bool skipComments)
+        protected override Task<bool> OnReadNextRowPartsAsync(IList<string> parts, bool skipComments)
         {
             throw new NotImplementedException();
         }
 
-        protected internal override void OnReadToFinish()
+        protected internal override Task OnReadToFinishAsync()
         {
             throw new NotImplementedException();
         }
 
-        protected internal override void OnReadFooter()
+        protected internal override Task OnReadFooterAsync()
         {
             throw new NotImplementedException();
         }

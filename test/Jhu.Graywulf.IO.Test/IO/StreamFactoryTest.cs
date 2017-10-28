@@ -110,7 +110,7 @@ namespace Jhu.Graywulf.IO
         public void ReadRelativePathFileTest()
         {
             var sf = StreamFactory.Create(null);
-            var path = GetTestFilePath("graywulf/test/files/csv_numbers.csv");
+            var path = GetTestFilePath("modules/graywulf/test/files/csv_numbers.csv");
 
             using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
             {
@@ -122,7 +122,7 @@ namespace Jhu.Graywulf.IO
         public void WriteRelativePathFileTest()
         {
             var sf = StreamFactory.Create(null);
-            var path = GetTestFilePath("graywulf/test/files/writetest.csv");
+            var path = GetTestFilePath("modules/graywulf/test/files/writetest.csv");
 
             using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
             {
@@ -134,7 +134,7 @@ namespace Jhu.Graywulf.IO
         public void ReadGzFileTest()
         {
             var sf = StreamFactory.Create(null);
-            var path = GetTestFilePath("graywulf/test/files/csv_numbers.csv.gz");
+            var path = GetTestFilePath("modules/graywulf/test/files/csv_numbers.csv.gz");
 
             using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
             {
@@ -146,7 +146,7 @@ namespace Jhu.Graywulf.IO
         public void WriteGzFileTest()
         {
             var sf = StreamFactory.Create(null);
-            var path = GetTestFilePath("graywulf/test/files/writetest.csv.gz");
+            var path = GetTestFilePath("modules/graywulf/test/files/writetest.csv.gz");
 
             using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
             {
@@ -158,7 +158,7 @@ namespace Jhu.Graywulf.IO
         public void ReadBz2FileTest()
         {
             var sf = StreamFactory.Create(null);
-            var path = GetTestFilePath("graywulf/test/files/csv_numbers.csv.bz2");
+            var path = GetTestFilePath("modules/graywulf/test/files/csv_numbers.csv.bz2");
 
             using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
             {
@@ -170,7 +170,7 @@ namespace Jhu.Graywulf.IO
         public void WriteBz2FileTest()
         {
             var sf = StreamFactory.Create(null);
-            var path = GetTestFilePath("graywulf/test/files/writetest.csv.bz2");
+            var path = GetTestFilePath("modules/graywulf/test/files/writetest.csv.bz2");
 
             using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
             {
@@ -182,7 +182,7 @@ namespace Jhu.Graywulf.IO
         public void ReadZipFileTest()
         {
             var sf = StreamFactory.Create(null);
-            var path = GetTestFilePath("graywulf/test/files/csv_numbers.zip");
+            var path = GetTestFilePath("modules/graywulf/test/files/csv_numbers.zip");
 
             using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
             {
@@ -202,7 +202,7 @@ namespace Jhu.Graywulf.IO
         public void WriteZipFileTest()
         {
             var sf = StreamFactory.Create(null);
-            var path = GetTestFilePath("graywulf/test/files/writetest.zip");
+            var path = GetTestFilePath("modules/graywulf/test/files/writetest.zip");
 
             using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
             {
@@ -223,7 +223,7 @@ namespace Jhu.Graywulf.IO
         public void ReadTarGzFileTest()
         {
             var sf = StreamFactory.Create(null);
-            var path = GetTestFilePath("graywulf/test/files/csv_numbers.tar.gz");
+            var path = GetTestFilePath("modules/graywulf/test/files/csv_numbers.tar.gz");
 
             using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
             {
@@ -243,7 +243,7 @@ namespace Jhu.Graywulf.IO
         public void WriteTarGzFileTest()
         {
             var sf = StreamFactory.Create(null);
-            var path = GetTestFilePath("graywulf/test/files/writetest.tar.gz");
+            var path = GetTestFilePath("modules/graywulf/test/files/writetest.tar.gz");
 
             using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
             {

@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.IO.Tasks
         [TestMethod]
         public void ImportTest()
         {
-            var path = GetTestFilePath(@"graywulf\test\files\csv_numbers.csv");
+            var path = GetTestFilePath(@"modules\graywulf\test\files\csv_numbers.csv");
 
             var it = GetImportTableTask(path, false, false);
             var t = ExecuteImportTableTask(it);
@@ -93,7 +93,7 @@ namespace Jhu.Graywulf.IO.Tasks
         [TestMethod]
         public void ImportGenerateIdentityTest()
         {
-            var path = GetTestFilePath(@"graywulf\test\files\csv_numbers.csv");
+            var path = GetTestFilePath(@"modules\graywulf\test\files\csv_numbers.csv");
             var it = GetImportTableTask(path, false, false);
             var t = ExecuteImportTableTask(it);
             Assert.AreEqual(5, t.Columns.Count);
@@ -107,7 +107,7 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var path = GetTestFilePath(@"graywulf\test\files\csv_numbers.csv");
+                var path = GetTestFilePath(@"modules\graywulf\test\files\csv_numbers.csv");
                 var it = GetImportTableTask(path, false, false);
                 var t = ExecuteImportTableTask(it);
                 Assert.AreEqual(5, t.Columns.Count);
@@ -141,12 +141,6 @@ namespace Jhu.Graywulf.IO.Tasks
         public void ImportFromHttpTest3()
         {
             ImportFromHttpTestHelper(@"http://localhost/graywulf-io-test/csv_numbers.csv");
-        }
-
-        [TestMethod]
-        public void ImportFromHttpTest4()
-        {
-            ImportFromHttpTestHelper(@"http://localhost/graywulf-io-test/csv-numbers.csv");
         }
     }
 }

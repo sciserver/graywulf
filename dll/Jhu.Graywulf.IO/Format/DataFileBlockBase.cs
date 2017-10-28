@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using Jhu.Graywulf.Schema;
@@ -252,8 +251,9 @@ namespace Jhu.Graywulf.Format
         /// When implemented in derived classes, reads the header of the file
         /// block and extracts columns and metadata.
         /// </summary>
-        protected internal abstract void OnReadHeader();
+        protected internal abstract Task OnReadHeaderAsync();
 
+        // TODO: add comments and rename to more meaningful
         protected internal virtual void OnSetMetadata(int blockCounter)
         {
             Name = blockCounter == 0 ? "" : blockCounter.ToString();
@@ -266,18 +266,18 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        protected internal abstract bool OnReadNextRow(object[] values);
+        protected internal abstract Task<bool> OnReadNextRowAsync(object[] values);
 
         /// <summary>
         /// When implemented in a derived class, reads all remaining data rows
         /// and advanced the file to the begining of the next file block.
         /// </summary>
-        protected internal abstract void OnReadToFinish();
+        protected internal abstract Task OnReadToFinishAsync();
 
         /// <summary>
         /// When overriden in derived classes, reads the file block footer.
         /// </summary>
-        protected internal abstract void OnReadFooter();
+        protected internal abstract Task OnReadFooterAsync();
 
         #endregion
         #region Write functions

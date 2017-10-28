@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using System.Data;
 using System.IO;
 using System.Xml;
@@ -629,7 +628,7 @@ namespace Jhu.Graywulf.Format
         /// <remarks>
         /// Blocks can be predefined, in case data columns are set externally.
         /// </remarks>
-        public DataFileBlockBase ReadNextBlock()
+        public async Task<DataFileBlockBase> ReadNextBlockAsync()
         {
             if (blockCounter == -1)
             {
@@ -642,8 +641,8 @@ namespace Jhu.Graywulf.Format
                 // If we are not at the beginning of the file, read to the end of the
                 // block, read the block footer and position stream on the beginning
                 // of the next file block
-                blocks[blockCounter].OnReadToFinish();
-                blocks[blockCounter].OnReadFooter();
+                await blocks[blockCounter].OnReadToFinishAsync();
+                await blocks[blockCounter].OnReadFooterAsync();
             }
 
             try
@@ -672,7 +671,9 @@ namespace Jhu.Graywulf.Format
                 // See if there's a new block in the file.
                 if (nextBlock != null)
                 {
-                    nextBlock.OnReadHeader();
+                    await nextBlock.OnReadHeaderAsync();
+
+                    // TODO: theres' something to do here, see OnSetMetadata abstract
                     nextBlock.OnSetMetadata(blockCounter);
                     return nextBlock;
                 }

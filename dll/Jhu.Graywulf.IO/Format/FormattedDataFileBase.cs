@@ -112,8 +112,8 @@ namespace Jhu.Graywulf.Format
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.encoding = null;
-            this.culture = null;
+            this.encoding = System.Text.Encoding.UTF8;
+            this.culture = System.Globalization.CultureInfo.InvariantCulture;
             this.numberStyle = NumberStyles.Float;
             this.dateTimeStyle = DateTimeStyles.None;
             this.nullStyle = NullStyles.NullText;

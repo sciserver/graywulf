@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Text;
 using System.Globalization;
 using System.Runtime.Serialization;
@@ -106,7 +106,7 @@ namespace Jhu.Graywulf.Format
         /// <param name="parts"></param>
         /// <param name="columns"></param>
         /// <param name="columnTypePredence"></param>
-        protected void DetectColumnTypes(string[] parts, Column[] columns, int[] columnTypePredence)
+        protected void DetectColumnTypes(IList<string> parts, Column[] columns, int[] columnTypePredence)
         {
             for (int i = 0; i < columns.Length; i++)
             {
@@ -134,15 +134,15 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Read functions
 
-        protected abstract bool OnReadNextRowParts(out string[] parts, bool skipComments);
+        protected abstract Task<bool> OnReadNextRowPartsAsync(IList<string> parts, bool skipComments);
 
-        protected internal override bool OnReadNextRow(object[] values)
+        protected internal override async Task<bool> OnReadNextRowAsync(object[] values)
         {
-            string[] parts;
+            var parts = new List<string>();
+            var hasNextRow = await OnReadNextRowPartsAsync(parts, true);
 
-            if (OnReadNextRowParts(out parts, true))
+            if (hasNextRow)
             {
-
                 // Now parse the parts
                 int pi = 0;
                 for (int i = 0; i < Columns.Count; i++)

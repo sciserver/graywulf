@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.IO;
@@ -60,10 +59,10 @@ namespace Jhu.Graywulf.Format
         /// otherwise parts are only counted, columns are created for each and automatically generated
         /// names are used.
         /// </remarks>
-        protected void DetectColumnsFromParts(string[] parts, bool useNames, out Column[] columns, out int[] columnTypePrecedence)
+        protected void DetectColumnsFromParts(IList<string> parts, bool useNames, out Column[] columns, out int[] columnTypePrecedence)
         {
-            columns = new Column[parts.Length];
-            columnTypePrecedence = new int[parts.Length];
+            columns = new Column[parts.Count];
+            columnTypePrecedence = new int[parts.Count];
 
             for (int i = 0; i < columns.Length; i++)
             {
@@ -83,7 +82,7 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Read functions
 
-        protected internal override void OnReadHeader()
+        protected internal override async Task OnReadHeaderAsync()
         {
             // Make sure it's the first line
             if (File.BufferedReader.LineCounter > 0)
@@ -96,30 +95,30 @@ namespace Jhu.Graywulf.Format
                 // Buffering is needed to detect columns automatically
                 File.BufferedReader.StartLineBuffer();
 
-                string[] parts;
+                var parts = new List<string>();
                 Column[] columns = null;      // detected columns
                 int[] columnTypePrecedence = null;
 
                 // If column names are in the first line, use them to generate names
                 if (File.ColumnNamesInFirstLine)
                 {
-                    OnReadNextRowParts(out parts, false);
+                    await OnReadNextRowPartsAsync(parts, false);
                     DetectColumnsFromParts(parts, true, out columns, out columnTypePrecedence);
                 }
 
-                File.BufferedReader.SkipLines(File.SkipLinesCount);
+                await File.BufferedReader.SkipLinesAsync(File.SkipLinesCount);
 
                 // Try to figure out the type of columns from the first n rows
                 // Try to read some rows to detect
                 int q = 0;
-                while (q < File.AutoDetectColumnsCount && OnReadNextRowParts(out parts, true))
+                while (q < File.AutoDetectColumnsCount && await OnReadNextRowPartsAsync(parts, true))
                 {
                     if (q == 0 && columns == null)
                     {
                         DetectColumnsFromParts(parts, false, out columns, out columnTypePrecedence);
                     }
 
-                    if (columns.Length != parts.Length)
+                    if (columns.Length != parts.Count)
                     {
                         throw new FileFormatException();    // TODO
                     }
@@ -137,7 +136,7 @@ namespace Jhu.Graywulf.Format
                 // if it contains the column names
                 if (File.ColumnNamesInFirstLine)
                 {
-                    OnReadNextRowParts(out parts, false);
+                    await OnReadNextRowPartsAsync(parts, false);
                 }
 
                 CreateColumns(columns);
@@ -148,17 +147,19 @@ namespace Jhu.Graywulf.Format
             }
 
             // Skip the first few lines of the file
-            File.BufferedReader.SkipLines(File.SkipLinesCount);
+            await File.BufferedReader.SkipLinesAsync(File.SkipLinesCount);
         }
 
-        protected internal override void OnReadFooter()
+        protected internal override Task OnReadFooterAsync()
         {
             // No footer in text files
+            return Task.CompletedTask;
         }
 
-        protected internal override void OnReadToFinish()
+        protected internal override Task OnReadToFinishAsync()
         {
             // No need to read to the end if no more blocks
+            return Task.CompletedTask;
         }
 
         #endregion

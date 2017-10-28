@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
@@ -107,22 +109,21 @@ namespace Jhu.Graywulf.Format
         /// <remarks>
         /// This function supports quoted strings.
         /// </remarks>
-        protected override bool OnReadNextRowParts(out string[] parts, bool skipComments)
+        protected override async Task<bool> OnReadNextRowPartsAsync(IList<string> parts, bool skipComments)
         {
             string line;
-            List<string> res = new List<string>();
-
             int ci = 0;
             bool inquote = false;
             string part = String.Empty;
 
+            parts.Clear();
+
             while (true)
             {
-                line = File.BufferedReader.ReadLine();
+                line = await File.BufferedReader.ReadLineAsync();
 
                 if (line == null)
                 {
-                    parts = null;
                     return false;
                 }
 
@@ -148,7 +149,7 @@ namespace Jhu.Graywulf.Format
                 {
                     if (inquote && ci == line.Length)   // Inside a quote and end of line reached
                     {
-                        line = File.BufferedReader.ReadLine();
+                        line = await File.BufferedReader.ReadLineAsync();
 
                         if (line == null)
                         {
@@ -159,12 +160,11 @@ namespace Jhu.Graywulf.Format
                     }
                     if (!inquote && ci == line.Length || File.ColumnSeparators.Contains(line[ci]))
                     {
-                        res.Add(part);
+                        parts.Add(part);
                         part = String.Empty;
 
                         if (ci == line.Length)  // Outside a quote and end of line reached
                         {
-                            parts = res.ToArray();
                             return true;
                         }
                     }
