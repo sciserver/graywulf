@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Format
 
                         using (var dr = cmd.ExecuteReader())
                         {
-                            nat.WriteFromDataReader(dr);
+                            nat.WriteFromDataReaderAsync(dr).Wait();
                         }
                     }
                 }
@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Format
 
                         using (var dr = cmd.ExecuteReader())
                         {
-                            nat.WriteFromDataReader(dr);
+                            nat.WriteFromDataReaderAsync(dr).Wait();
                         }
                     }
                 }
@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Format
 
                         using (var dr = cmd.ExecuteReader())
                         {
-                            nat.WriteFromDataReader(dr);
+                            nat.WriteFromDataReaderAsync(dr).Wait();
                         }
                     }
                 }
@@ -97,7 +97,7 @@ namespace Jhu.Graywulf.Format
 
                         using (var dr = cmd.ExecuteReader())
                         {
-                            nat.WriteFromDataReader(dr);
+                            nat.WriteFromDataReaderAsync(dr).Wait();
                         }
                     }
                 }
@@ -119,7 +119,7 @@ namespace Jhu.Graywulf.Format
 
                         using (var dr = cmd.ExecuteReader())
                         {
-                            nat.WriteFromDataReader(dr);
+                            nat.WriteFromDataReaderAsync(dr).Wait();
                         }
                     }
                 }

@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Data;
 using Jhu.Graywulf.IO;
+using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Format
 {
@@ -143,34 +144,38 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Read and write function
 
-        protected internal override void OnReadHeader()
+        protected internal override Task OnReadHeaderAsync()
         {
             // Do nothing
+            return Task.CompletedTask;
         }
 
-        protected override DataFileBlockBase OnReadNextBlock(DataFileBlockBase block)
+        protected override Task<DataFileBlockBase> OnReadNextBlockAsync(DataFileBlockBase block)
         {
-            return block ?? new SqlServerNativeDataFileBlock(this);
+            return Task.FromResult(block ?? new SqlServerNativeDataFileBlock(this));
         }
 
-        protected internal override void OnReadFooter()
-        {
-            // Do nothing
-        }
-
-        protected override void OnWriteHeader()
+        protected internal override Task OnReadFooterAsync()
         {
             // Do nothing
+            return Task.CompletedTask;
         }
 
-        protected override DataFileBlockBase OnCreateNextBlock(DataFileBlockBase block)
-        {
-            return block ?? new SqlServerNativeDataFileBlock(this);
-        }
-
-        protected override void OnWriteFooter()
+        protected override Task OnWriteHeaderAsync()
         {
             // Do nothing
+            return Task.CompletedTask;
+        }
+
+        protected override Task<DataFileBlockBase> OnCreateNextBlockAsync(DataFileBlockBase block)
+        {
+            return Task.FromResult(block ?? new SqlServerNativeDataFileBlock(this));
+        }
+
+        protected override Task OnWriteFooterAsync()
+        {
+            // Do nothing
+            return Task.CompletedTask;
         }
 
         protected override void OnBlockAppended(DataFileBlockBase block)

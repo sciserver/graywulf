@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Data;
 using Jhu.Graywulf.IO;
+using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Format
 {
@@ -296,10 +297,11 @@ namespace Jhu.Graywulf.Format
 
         #endregion
 
-        protected internal override void OnReadHeader()
+        protected internal override Task OnReadHeaderAsync()
         {
             // Do nothing in case of text files,
             // header will be read by the block
+            return Task.CompletedTask;
         }
 
         protected override void OnBlockAppended(DataFileBlockBase block)
@@ -312,14 +314,16 @@ namespace Jhu.Graywulf.Format
             }*/
         }
 
-        protected override void OnWriteHeader()
+        protected override Task OnWriteHeaderAsync()
         {
             // No file header, header is written by the first block
+            return Task.CompletedTask;
         }
 
-        protected override void OnWriteFooter()
+        protected override Task OnWriteFooterAsync()
         {
             // No footer in text files
+            return Task.CompletedTask;
         }
     }
 }

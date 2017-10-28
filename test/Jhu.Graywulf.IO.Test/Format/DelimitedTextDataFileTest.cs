@@ -352,7 +352,7 @@ testline
                     using (var dr = cmd.ExecuteReader())
                     {
                         var csv = new DelimitedTextDataFile(w);
-                        csv.WriteFromDataReader(dr);
+                        csv.WriteFromDataReaderAsync(dr).Wait();
                     }
                 }
             }
@@ -379,7 +379,7 @@ testline
                     using (var dr = cmd.ExecuteReader())
                     {
                         var csv = new DelimitedTextDataFile(w);
-                        csv.WriteFromDataReader(dr);
+                        csv.WriteFromDataReaderAsync(dr).Wait();
                     }
                 }
             }
@@ -404,7 +404,7 @@ testline
                     using (var dr = cmd.ExecuteReader())
                     {
                         var csv = new DelimitedTextDataFile(w);
-                        csv.WriteFromDataReader(dr);
+                        csv.WriteFromDataReaderAsync(dr).Wait();
                     }
                 }
             }
@@ -433,7 +433,7 @@ testline
 
                         using (var dr = cmd.ExecuteReader())
                         {
-                            csv.WriteFromDataReader(dr);
+                            csv.WriteFromDataReaderAsync(dr).Wait();
                         }
                     }
                 }

@@ -78,67 +78,67 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Writes the resource header into the stream.
         /// </summary>
-        protected override void OnWriteHeader()
+        protected override async Task OnWriteHeaderAsync()
         {
-            File.XmlWriter.WriteStartElement(Constants.HtmlKeywordTable);
-            File.XmlWriter.WriteStartElement(Constants.HtmlKeywordTHead);
+            await File.XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordTable, null);
+            await File.XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordTHead, null);
             
-            File.XmlWriter.WriteStartElement(Constants.HtmlKeywordTR);
+            await File.XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordTR, null);
 
             // Write columns
             for (int i = 0; i < Columns.Count; i++)
             {
-                File.XmlWriter.WriteElementString(Constants.HtmlKeywordTH, Columns[i].Name);
+                await File.XmlWriter.WriteElementStringAsync(null, Constants.HtmlKeywordTH, null, Columns[i].Name);
             }
 
-            File.XmlWriter.WriteEndElement();   // tr
-            File.XmlWriter.WriteStartElement(Constants.HtmlKeywordTR);
+            await File.XmlWriter.WriteEndElementAsync();   // tr
+            await File.XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordTR, null);
 
             // Write columns
             for (int i = 0; i < Columns.Count; i++)
             {
-                File.XmlWriter.WriteElementString(Constants.HtmlKeywordTH, Columns[i].DataType.TypeNameWithLength);
+                await File.XmlWriter.WriteElementStringAsync(null, Constants.HtmlKeywordTH, null, Columns[i].DataType.TypeNameWithLength);
             }
 
-            File.XmlWriter.WriteEndElement();   // tr
+            await File.XmlWriter.WriteEndElementAsync();   // tr
             
-            File.XmlWriter.WriteEndElement();   // thead
+            await File.XmlWriter.WriteEndElementAsync();   // thead
 
-            File.XmlWriter.WriteStartElement(Constants.HtmlKeywordTBody);
+            await File.XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordTBody, null);
         }
 
         /// <summary>
         /// Writes the next row into the stream.
         /// </summary>
         /// <param name="values"></param>
-        protected override void OnWriteNextRow(object[] values)
+        protected override async Task OnWriteNextRowAsync(object[] values)
         {
-            File.XmlWriter.WriteStartElement(Constants.HtmlKeywordTR);
+            await File.XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordTR, null);
             
             for (int i = 0; i < Columns.Count; i++)
             {
                 if (values[i] == DBNull.Value)
                 {
                     // Leave field blank
-                    File.XmlWriter.WriteStartElement(Constants.HtmlKeywordTD);
-                    File.XmlWriter.WriteEndElement();
+                    await File.XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordTD, null);
+                    await File.XmlWriter.WriteEndElementAsync();
                 }
                 else
                 {
-                    File.XmlWriter.WriteElementString(Constants.HtmlKeywordTD, ColumnFormatters[i](values[i], "{0}"));
+                    await File.XmlWriter.WriteElementStringAsync(null, Constants.HtmlKeywordTD, null, ColumnFormatters[i](values[i], "{0}"));
                 }
             }
             
-            File.XmlWriter.WriteEndElement();   // tr
+            await File.XmlWriter.WriteEndElementAsync();   // tr
         }
 
         /// <summary>
         /// Writers the resource footer into the stream.
         /// </summary>
-        protected override void OnWriteFooter()
+        protected override async Task OnWriteFooterAsync()
         {
-            File.XmlWriter.WriteEndElement();   // tbody
-            File.XmlWriter.WriteEndElement();   // table
+            await File.XmlWriter.WriteEndElementAsync();   // tbody
+            await File.XmlWriter.WriteEndElementAsync();   // table
         }
     }
 }

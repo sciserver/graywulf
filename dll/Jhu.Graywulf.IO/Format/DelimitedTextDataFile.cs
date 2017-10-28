@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Xml;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.IO;
+using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Format
 {
@@ -183,23 +184,24 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         /// <param name="block"></param>
         /// <returns></returns>
-        protected override DataFileBlockBase OnReadNextBlock(DataFileBlockBase block)
+        protected override Task<DataFileBlockBase> OnReadNextBlockAsync(DataFileBlockBase block)
         {
             // Only allow calling this function once
             if (!isFirstBlock)
             {
-                return null;
+                return Task.FromResult<DataFileBlockBase>(null);
             }
 
             isFirstBlock = false;
-
+            
             // Create a new block object, if necessary
-            return block ?? new DelimitedTextDataFileBlock(this);
+            return Task.FromResult(block ?? new DelimitedTextDataFileBlock(this));
         }
 
-        protected internal override void OnReadFooter()
+        protected internal override Task OnReadFooterAsync()
         {
             // No footer in csv files
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -209,7 +211,7 @@ namespace Jhu.Graywulf.Format
         /// <param name="dr"></param>
         /// <returns></returns>
         /// If next block
-        protected override DataFileBlockBase OnCreateNextBlock(DataFileBlockBase block)
+        protected override Task<DataFileBlockBase> OnCreateNextBlockAsync(DataFileBlockBase block)
         {
             if (!isFirstBlock)
             {
@@ -217,7 +219,7 @@ namespace Jhu.Graywulf.Format
                 // CSV files can contain a single file block only
             }
 
-            return block ?? new DelimitedTextDataFileBlock(this);
+            return Task.FromResult(block ?? new DelimitedTextDataFileBlock(this));
         }
 
         #endregion

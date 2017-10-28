@@ -164,10 +164,11 @@ namespace Jhu.Graywulf.Format
 
         #endregion
         #region Write functions
-
-        protected override void OnWriteFooter()
+        
+        protected override Task OnWriteFooterAsync()
         {
             // No footer in text files
+            return Task.CompletedTask;
         }
 
         #endregion

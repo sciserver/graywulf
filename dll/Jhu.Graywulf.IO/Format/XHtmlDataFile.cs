@@ -9,6 +9,7 @@ using System.Collections;
 using System.Data;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.IO;
+using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Format
 {
@@ -152,17 +153,17 @@ namespace Jhu.Graywulf.Format
             throw new NotImplementedException();
         }
 
-        protected internal override void OnReadHeader()
+        protected internal override Task OnReadHeaderAsync()
         {
             throw new NotImplementedException();
         }
 
-        protected override DataFileBlockBase OnReadNextBlock(DataFileBlockBase block)
+        protected override Task<DataFileBlockBase> OnReadNextBlockAsync(DataFileBlockBase block)
         {
             throw new NotImplementedException();
         }
 
-        protected internal override void OnReadFooter()
+        protected internal override Task OnReadFooterAsync()
         {
             throw new NotImplementedException();
         }
@@ -173,15 +174,15 @@ namespace Jhu.Graywulf.Format
         /// <remarks>
         /// Writes from VOTABLE until the RESOURCE tag.
         /// </remarks>
-        protected override void OnWriteHeader()
+        protected override async Task OnWriteHeaderAsync()
         {
-            XmlWriter.WriteStartElement(Constants.HtmlKeywordHtml);
-            XmlWriter.WriteStartElement(Constants.HtmlKeywordBody);
-            XmlWriter.WriteStartElement(Constants.HtmlKeywordHead);
+            await XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordHtml, null);
+            await XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordBody, null);
+            await XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordHead, null);
 
-            XmlWriter.WriteElementString(Constants.HtmlKeywordStyle, XHtmlDataFileResources.XHtmlDataFileStyle);
+            await XmlWriter.WriteElementStringAsync(null, Constants.HtmlKeywordStyle, null, XHtmlDataFileResources.XHtmlDataFileStyle);
 
-            XmlWriter.WriteEndElement();    // head
+            await XmlWriter.WriteEndElementAsync();    // head
         }
 
         /// <summary>
@@ -190,9 +191,9 @@ namespace Jhu.Graywulf.Format
         /// <param name="block"></param>
         /// <param name="dr"></param>
         /// <returns></returns>
-        protected override DataFileBlockBase OnCreateNextBlock(DataFileBlockBase block)
+        protected override Task<DataFileBlockBase> OnCreateNextBlockAsync(DataFileBlockBase block)
         {
-            return block ?? new XHtmlDataFileTable(this);
+            return Task.FromResult(block ?? new XHtmlDataFileTable(this));
         }
 
         /// <summary>
@@ -201,10 +202,10 @@ namespace Jhu.Graywulf.Format
         /// <remarks>
         /// Writes tags after the last RESOURCE tag till the closing VOTABLE
         /// </remarks>
-        protected override void OnWriteFooter()
+        protected override async Task OnWriteFooterAsync()
         {
-            XmlWriter.WriteEndElement();    // body
-            XmlWriter.WriteEndElement();    // html
+            await XmlWriter.WriteEndElementAsync();    // body
+            await XmlWriter.WriteEndElementAsync();    // html
         }
     }
 }

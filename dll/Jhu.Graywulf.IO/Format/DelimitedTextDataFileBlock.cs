@@ -196,8 +196,8 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        protected override void OnWriteHeader()
-        {            
+        protected override async Task OnWriteHeaderAsync()
+        {         
             var line = new StringBuilder();
 
             line.Append(File.Comment);
@@ -213,10 +213,10 @@ namespace Jhu.Graywulf.Format
                 line.Append(EscapeColumnName(Columns[i].Name));
             }
 
-            File.TextWriter.WriteLine(line.ToString());
+            await File.TextWriter.WriteLineAsync(line.ToString());
         }
 
-        protected override void OnWriteNextRow(object[] values)
+        protected override async Task OnWriteNextRowAsync(object[] values)
         {
             var line = new StringBuilder();
 
@@ -247,7 +247,7 @@ namespace Jhu.Graywulf.Format
                 }
             }
 
-            File.TextWriter.WriteLine(line.ToString());
+            await File.TextWriter.WriteLineAsync(line.ToString());
         }
 
     }

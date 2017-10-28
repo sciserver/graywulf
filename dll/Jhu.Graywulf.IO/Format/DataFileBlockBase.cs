@@ -282,7 +282,7 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Write functions
 
-        internal void Write(ISmartDataReader dr)
+        internal async Task WriteFromDataReaderAsync(ISmartDataReader dr)
         {
             // Apply type mappings to the data reader
 
@@ -322,50 +322,50 @@ namespace Jhu.Graywulf.Format
                 recordCount = buffer.Count;
 
                 // Now that the number of rows in known, the header can be written
-                OnWriteHeader();
+                await OnWriteHeaderAsync();
 
                 // Stream out rows from the buffer
                 foreach (var values in buffer)
                 {
-                    OnWriteNextRow(values);
+                    await OnWriteNextRowAsync(values);
                 }
             }
             else
             {
                 // We already know the number of rows, or the number of rows
                 // is not needed to write the header
-                OnWriteHeader();
+                await OnWriteHeaderAsync();
 
                 // Stream out data directly from the data reader.
                 var values = new object[dr.FieldCount];
                 while (dr.Read())
                 {
                     dr.GetValues(values);
-                    OnWriteNextRow(values);
+                    await OnWriteNextRowAsync(values);
                 }
             }
 
-            OnWriteFooter();
+            await OnWriteFooterAsync();
         }
 
         /// <summary>
         /// When implemented in derived classes, writes the header of the file
         /// block.
         /// </summary>
-        protected abstract void OnWriteHeader();
+        protected abstract Task OnWriteHeaderAsync();
 
         /// <summary>
         /// When implemented in derived classes, writes the next data row into
         /// the file block.
         /// </summary>
         /// <param name="values"></param>
-        protected abstract void OnWriteNextRow(object[] values);
+        protected abstract Task OnWriteNextRowAsync(object[] values);
 
         /// <summary>
         /// When implemented in derived classes, writes the footer of the
         /// file block.
         /// </summary>
-        protected abstract void OnWriteFooter();
+        protected abstract Task OnWriteFooterAsync();
 
         #endregion
     }

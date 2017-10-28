@@ -83,8 +83,10 @@ namespace Jhu.Graywulf.Format
             return Task.CompletedTask;
         }
 
-        protected internal override async Task<bool> OnReadNextRowAsync(object[] values)
+        protected internal override Task<bool> OnReadNextRowAsync(object[] values)
         {
+            // TODO: how to make this async with binary reader?
+
             try
             {
 
@@ -93,11 +95,11 @@ namespace Jhu.Graywulf.Format
                     columnReaders[i](File.NativeReader, out values[i], Columns[i].DataType);
                 }
 
-                return true;
+                return Task.FromResult(true);
             }
             catch (EndOfStreamException)
             {
-                return false;
+                return Task.FromResult(false);
             }
         }
 
@@ -113,32 +115,37 @@ namespace Jhu.Graywulf.Format
             return Task.CompletedTask;
         }
 
-        protected override void OnWriteHeader()
+        protected override Task OnWriteHeaderAsync()
         {
             // Nothing to do here
+            return Task.CompletedTask;
         }
 
-        protected override void OnWriteNextRow(object[] values)
+        protected override Task OnWriteNextRowAsync(object[] values)
         {
+            // TODO: how to make this async with binary writer?
+
             for (int i = 0; i < values.Length; i++)
             {
                 columnWriters[i](File.NativeWriter, values[i], Columns[i].DataType);
             }
+
+            return Task.CompletedTask;
         }
 
-        protected override void OnWriteFooter()
+        protected override async Task OnWriteFooterAsync()
         {
             // Native files are always stored in an archive as they consist of
             // multiple files
 
             if (File.GenerateSqlScripts)
             {
-                WriteCreateScript();
-                WriteBulkInsertScript();
+                await WriteCreateScriptAsync();
+                await WriteBulkInsertScriptAsync();
             }
         }
 
-        private void WriteTextFileEntry(string extension, string text)
+        private async Task WriteTextFileEntryAsync(string extension, string text)
         {
             var filename = Util.UriConverter.ToFilePath(File.Uri);
             var dir = Path.GetDirectoryName(filename);
@@ -153,7 +160,7 @@ namespace Jhu.Graywulf.Format
             var buffer = Encoding.UTF8.GetBytes(text);
 
             File.CreateArchiveEntry(filename, buffer.Length);
-            File.BaseStream.Write(buffer, 0, buffer.Length);
+            await File.BaseStream.WriteAsync(buffer, 0, buffer.Length);
             
             // Normally, this entry would need to be closed here but
             // it will get closed automatically when the next entry
@@ -161,7 +168,7 @@ namespace Jhu.Graywulf.Format
             // File.CloseArchiveEntry();
         }
 
-        private void WriteCreateScript()
+        private async Task WriteCreateScriptAsync()
         {
             var sql = new StringBuilder();
 
@@ -185,10 +192,10 @@ namespace Jhu.Graywulf.Format
             sql.AppendLine();
             sql.AppendLine(")");
 
-            WriteTextFileEntry("_create.sql", sql.ToString());
+            await WriteTextFileEntryAsync("_create.sql", sql.ToString());
         }
 
-        private void WriteBulkInsertScript()
+        private async Task WriteBulkInsertScriptAsync()
         {
             var filename = Util.UriConverter.ToFilePath(File.Uri);
             // Strip the extension of the archive
@@ -200,7 +207,7 @@ namespace Jhu.Graywulf.Format
             sql.AppendLine(String.Format("FROM '{0}.bcp'", filename));
             sql.AppendLine("WITH (DATAFILETYPE = 'native', TABLOCK)");
 
-            WriteTextFileEntry("_insert.sql", sql.ToString());
+            await WriteTextFileEntryAsync("_insert.sql", sql.ToString());
         }
 
         #region Value formatter functions

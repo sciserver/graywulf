@@ -337,6 +337,8 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <param name="destination"></param>
         private void CopyToFile(ISmartCommand cmd, DataFileBase destination, TableCopyResult result)
         {
+            // TODO: make it async
+
             // Wrap command into a cancellable task
             var guid = Guid.NewGuid();
             var ccmd = new CancelableDbCommand(cmd);
@@ -345,7 +347,7 @@ namespace Jhu.Graywulf.IO.Tasks
             // Pass data reader to the file formatter
             result.RecordsAffected = ccmd.ExecuteReader(dr =>
             {
-                destination.WriteFromDataReader((SmartDataReader)dr);
+                destination.WriteFromDataReaderAsync((SmartDataReader)dr).Wait();
             });
 
             UnregisterCancelable(guid);

@@ -582,8 +582,9 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// When overloaded in a derived class, reads the file header.
         /// </summary>
-        protected internal abstract void OnReadHeader();
+        protected internal abstract Task OnReadHeaderAsync();
 
+        // TODO: add comments and rename to more meaningful
         protected internal virtual void OnSetMetadata()
         {
             // TODO: where to get name from if uri is not set?
@@ -633,7 +634,7 @@ namespace Jhu.Graywulf.Format
             if (blockCounter == -1)
             {
                 // If this would be the very first block, read the file header first.
-                OnReadHeader();
+                await OnReadHeaderAsync();
                 OnSetMetadata();
             }
             else
@@ -656,12 +657,12 @@ namespace Jhu.Graywulf.Format
                 // manually created object, otherwise create one automatically.
                 if (blockCounter < blocks.Count)
                 {
-                    nextBlock = OnReadNextBlock(blocks[blockCounter]);
+                    nextBlock = await OnReadNextBlockAsync(blocks[blockCounter]);
                 }
                 else
                 {
                     // Create a new block automatically, if collection is not predefined
-                    nextBlock = OnReadNextBlock(null);
+                    nextBlock = await OnReadNextBlockAsync(null);
                     if (nextBlock != null)
                     {
                         blocks.Add(nextBlock);
@@ -680,7 +681,7 @@ namespace Jhu.Graywulf.Format
                 else
                 {
                     // If no more blocks, read file footer
-                    OnReadFooter();
+                    await OnReadFooterAsync();
                 }
             }
             catch (EndOfStreamException)
@@ -701,24 +702,24 @@ namespace Jhu.Graywulf.Format
         /// When overloaded in a derived class, reads the next block.
         /// </summary>
         /// <returns></returns>
-        protected abstract DataFileBlockBase OnReadNextBlock(DataFileBlockBase block);
+        protected abstract Task<DataFileBlockBase> OnReadNextBlockAsync(DataFileBlockBase block);
 
         /// <summary>
         /// When overloaded in a derived class, reads the file footer.
         /// </summary>
-        protected internal abstract void OnReadFooter();
+        protected internal abstract Task OnReadFooterAsync();
 
         /// <summary>
         /// When overloaded in a derived class, writers the file header.
         /// </summary>
-        protected abstract void OnWriteHeader();
+        protected abstract Task OnWriteHeaderAsync();
 
         /// <summary>
         /// Writes the next block into the file. Data is taken from the current
         /// results set of a data reader.
         /// </summary>
         /// <param name="dr"></param>
-        private void WriteNextBlock(ISmartDataReader dr)
+        private async Task WriteNextBlockAsync(ISmartDataReader dr)
         {
             blockCounter++;
 
@@ -728,12 +729,12 @@ namespace Jhu.Graywulf.Format
             // them, otherwise create a new one automatically.
             if (blockCounter < blocks.Count)
             {
-                nextBlock = OnCreateNextBlock(blocks[blockCounter]);
+                nextBlock = await OnCreateNextBlockAsync(blocks[blockCounter]);
             }
             else
             {
                 // Create a new block automatically, if collection is not predefined
-                nextBlock = OnCreateNextBlock(null);
+                nextBlock = await OnCreateNextBlockAsync(null);
                 if (nextBlock != null)
                 {
                     blocks.Add(nextBlock);
@@ -745,14 +746,14 @@ namespace Jhu.Graywulf.Format
             if (nextBlock != null)
             {
                 nextBlock.SetProperties(dr);
-                nextBlock.Write(dr);
+                await nextBlock.WriteFromDataReaderAsync(dr);
             }
         }
 
         /// <summary>
         /// When overriden in a derived class, writes the file footer.
         /// </summary>
-        protected abstract void OnWriteFooter();
+        protected abstract Task OnWriteFooterAsync();
 
         /// <summary>
         /// When overriden in a derived class, writes the next file block.
@@ -760,44 +761,44 @@ namespace Jhu.Graywulf.Format
         /// <param name="block"></param>
         /// <param name="dr"></param>
         /// <returns></returns>
-        protected abstract DataFileBlockBase OnCreateNextBlock(DataFileBlockBase block);
+        protected abstract Task<DataFileBlockBase> OnCreateNextBlockAsync(DataFileBlockBase block);
 
         #endregion
         #region DataReader and Writer functions
 
-        public void WriteFromDataCommand(ISmartCommand cmd)
+        public async Task WriteFromDataCommandAsync(ISmartCommand cmd)
         {
             using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
             {
-                WriteFromDataReader(dr, true);
+                await WriteFromDataReaderAsync(dr, true);
             }
         }
 
-        public void WriteFromDataReader(ISmartDataReader dr)
+        public async Task WriteFromDataReaderAsync(ISmartDataReader dr)
         {
-            WriteFromDataReader(dr, false);
+            await WriteFromDataReaderAsync(dr, false);
         }
 
         /// <summary>
         /// Writes the resultsets from a data reader into a file.
         /// </summary>
         /// <param name="dr"></param>
-        private void WriteFromDataReader(ISmartDataReader dr, bool multiple)
+        private async Task WriteFromDataReaderAsync(ISmartDataReader dr, bool multiple)
         {
             if (multiple && !this.Description.CanHoldMultipleDatasets)
             {
                 throw new InvalidOperationException("File can hold a single table only.");    // TODO
             }
 
-            OnWriteHeader();
+            await OnWriteHeaderAsync();
 
             do
             {
-                WriteNextBlock(dr);
+                await WriteNextBlockAsync(dr);
             }
             while (multiple && dr.NextResult());
 
-            OnWriteFooter();
+            await OnWriteFooterAsync();
         }
 
         #endregion
