@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Security.Principal;
-using System.Diagnostics;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.RemoteService;
@@ -54,14 +49,16 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
-                c.Execute();
+                using (var cancellationContext = new CancellationContext())
+                {
+                    var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
+                    c.ExecuteAsync().Wait();
 
-                Assert.IsFalse(c.IsCanceled);
-
+                    Assert.IsFalse(c.IsCancellationRequested);
+                }
             }
         }
-
+        
         [TestMethod]
         public void CancelRemoteExecuteTest()
         {
@@ -69,18 +66,22 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
-                c.Period = 10000;
+                using (var cancellationContext = new CancellationContext())
+                {
+                    var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
+                    c.Period = 10000;
 
-                var start = DateTime.Now;
-                c.BeginExecute();
+                    var start = DateTime.Now;
+                    var task = c.ExecuteAsync();
 
-                System.Threading.Thread.Sleep(1000);
-                c.Cancel();
+                    Thread.Sleep(1000);
+                    c.Cancel();
 
-                c.EndExecute();
-                Assert.IsTrue((DateTime.Now - start).TotalMilliseconds < 5000);
-                Assert.IsTrue(c.IsCanceled);
+                    task.Wait();
+
+                    Assert.IsTrue((DateTime.Now - start).TotalMilliseconds < 5000);
+                    Assert.IsTrue(c.IsCancellationRequested);
+                }
             }
         }
 
@@ -91,14 +92,17 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var c1 = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
-                var c2 = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
+                using (var cancellationContext = new CancellationContext())
+                {
+                    var c1 = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
+                    var c2 = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
 
-                c2.Period = 2;
-                c1.Period = 1;
+                    c2.Period = 2;
+                    c1.Period = 1;
 
-                Assert.AreEqual(1, c1.Period);
-                Assert.AreEqual(2, c2.Period);
+                    Assert.AreEqual(1, c1.Period);
+                    Assert.AreEqual(2, c2.Period);
+                }
             }
         }
     }

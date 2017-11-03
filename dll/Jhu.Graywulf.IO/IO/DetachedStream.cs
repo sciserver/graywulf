@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.IO
 {
@@ -113,9 +115,19 @@ namespace Jhu.Graywulf.IO
             return baseStream.BeginRead(buffer, offset, count, callback, state);
         }
 
-        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override int EndRead(IAsyncResult asyncResult)
         {
-            return baseStream.BeginWrite(buffer, offset, count, callback, state);
+            return baseStream.EndRead(asyncResult);
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            return baseStream.Read(buffer, offset, count);
+        }
+
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            return baseStream.ReadAsync(buffer, offset, count, cancellationToken);
         }
 
         public override void Close()
@@ -139,14 +151,24 @@ namespace Jhu.Graywulf.IO
             // Intentionally do not call Close on baseStream
         }
 
-        public override int EndRead(IAsyncResult asyncResult)
+        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
-            return baseStream.EndRead(asyncResult);
+            return baseStream.BeginWrite(buffer, offset, count, callback, state);
         }
 
         public override void EndWrite(IAsyncResult asyncResult)
         {
             baseStream.EndWrite(asyncResult);
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            baseStream.Write(buffer, offset, count);
+        }
+
+        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            return baseStream.WriteAsync(buffer, offset, count, cancellationToken);
         }
 
         public override void Flush()
@@ -163,14 +185,27 @@ namespace Jhu.Graywulf.IO
             }
         }
 
-        public override int Read(byte[] buffer, int offset, int count)
+        public override Task FlushAsync(CancellationToken cancellationToken)
         {
-            return baseStream.Read(buffer, offset, count);
+            try
+            {
+                return baseStream.FlushAsync(cancellationToken);
+            }
+            catch (Exception)
+            {
+            }
+
+            return Task.CompletedTask;
         }
 
         public override int ReadByte()
         {
             return baseStream.ReadByte();
+        }
+
+        public override void WriteByte(byte value)
+        {
+            baseStream.WriteByte(value);
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -183,14 +218,9 @@ namespace Jhu.Graywulf.IO
             baseStream.SetLength(value);
         }
 
-        public override void Write(byte[] buffer, int offset, int count)
+        public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
         {
-            baseStream.Write(buffer, offset, count);
-        }
-
-        public override void WriteByte(byte value)
-        {
-            baseStream.WriteByte(value);
+            return baseStream.CopyToAsync(destination, bufferSize, cancellationToken);
         }
     }
 }

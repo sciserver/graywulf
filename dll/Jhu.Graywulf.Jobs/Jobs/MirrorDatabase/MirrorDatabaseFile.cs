@@ -9,6 +9,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.IO.Tasks;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.MirrorDatabase
 {
@@ -27,7 +28,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         [RequiredArgument]
         public InArgument<bool> SkipExistingFile { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
@@ -47,15 +48,15 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                 // Load destination database instance
                 var di = ef.LoadEntity<DatabaseInstance>(destinationdatabaseinstanceguid);
                 di.LoadFileGroups(false);
-                
+
                 // Math source file with destination file
                 DatabaseInstanceFile df;
                 var sf = ef.LoadEntity<DatabaseInstanceFile>(sourcefileguid);
-                
+
                 DatabaseInstanceFileGroup fg = di.FileGroups[sf.DatabaseInstanceFileGroup.Name];
                 fg.LoadFiles(false);
                 df = fg.Files[sf.Name];
-                
+
                 DatabaseInstanceFile ssf = filecopydirection == Jhu.Graywulf.Registry.FileCopyDirection.Push ? sf : df;
                 hostname = ssf.DatabaseInstanceFileGroup.DatabaseInstance.ServerInstance.Machine.HostName.ResolvedValue;
 
@@ -67,24 +68,19 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                 EntityGuidTo.Set(activityContext, df.Guid);
             }
 
-            return delegate ()
+            if (!skipExistingFile ||
+                !File.Exists(destinationfilename) ||
+                new FileInfo(sourcefilename).Length != new FileInfo(destinationfilename).Length)
             {
-                if (!skipExistingFile ||
-                    !File.Exists(destinationfilename) ||
-                    new FileInfo(sourcefilename).Length != new FileInfo(destinationfilename).Length)
-                {
-                    var fc = RemoteServiceHelper.CreateObject<ICopyFile>(hostname, true);
+                var fc = RemoteServiceHelper.CreateObject<ICopyFile>(cancellationContext, hostname, true);
 
-                    fc.Source = sourcefilename;
-                    fc.Destination = destinationfilename;
-                    fc.Overwrite = true;
-                    fc.Method = FileCopyMethod.AsyncFileCopy;
+                fc.Source = sourcefilename;
+                fc.Destination = destinationfilename;
+                fc.Overwrite = true;
+                fc.Method = FileCopyMethod.AsyncFileCopy;
 
-                    RegisterCancelable(workflowInstanceId, activityInstanceId, fc);
-                    fc.Execute();
-                    UnregisterCancelable(workflowInstanceId, activityInstanceId, fc);
-                }
-            };
+                await fc.ExecuteAsync();
+            }
         }
     }
 }

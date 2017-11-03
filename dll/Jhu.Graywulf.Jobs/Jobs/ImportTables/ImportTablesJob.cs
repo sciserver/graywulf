@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.ImportTables
 {
@@ -17,7 +18,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
         [RequiredArgument]
         public InArgument<ImportTablesParameters> Parameters { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
@@ -37,25 +38,18 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                 }
             }
 
-            return delegate ()
+            // Create table importer
+            var importer = parameters.GetInitializedTableImportTask(cancellationContext);
+
+            try
             {
-                // Create table importer
-                var importer = parameters.GetInitializedTableImportTask();
-
-                RegisterCancelable(workflowInstanceId, activityInstanceId, importer);
-
-                try
-                {
-                    importer.Open();
-                    importer.Execute();
-                }
-                finally
-                {
-                    importer.Close();
-                }
-
-                UnregisterCancelable(workflowInstanceId, activityInstanceId, importer);
-            };
+                await importer.OpenAsync();
+                await importer.ExecuteAsync();
+            }
+            finally
+            {
+                importer.Close();
+            }
         }
     }
 }

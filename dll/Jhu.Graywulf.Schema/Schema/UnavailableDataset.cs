@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Schema
@@ -170,7 +172,12 @@ namespace Jhu.Graywulf.Schema
             throw new NotImplementedException();
         }
 
-        public override IDbConnection OpenConnection()
+        public override Task<DbConnection> OpenConnectionAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override DbConnection OpenConnection()
         {
             throw new NotImplementedException();
         }

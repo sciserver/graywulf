@@ -6,8 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.Data;
+using System.Data.Common;
 using Npgsql;
 using Jhu.Graywulf.Schema;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Schema.PostgreSql
 { /// <summary>
@@ -916,23 +919,35 @@ WHERE nspname = @schemaName and proname= @objectName;";
 
         #endregion
 
-        private NpgsqlConnection OpenConnectionInternal()
+        private async Task<NpgsqlConnection> OpenConnectionInternalAsync(CancellationToken cancellationToken)
         {
             var csb = new NpgsqlConnectionStringBuilder(ConnectionString);
             csb.Enlist = false;
 
             var cn = new NpgsqlConnection(csb.ConnectionString);
-            cn.Open();
+            await cn.OpenAsync(cancellationToken);
             return cn;
+        }
+
+        private NpgsqlConnection OpenConnectionInternal()
+        {
+            // TODO: get rid of this
+            return Util.TaskHelper.Wait(OpenConnectionInternalAsync(CancellationToken.None));
         }
 
         /// <summary>
         /// Opens a connection to the Npgsql database
         /// </summary>
         /// <returns></returns>
-        public override  IDbConnection OpenConnection()
+        public override  DbConnection OpenConnection()
         {
+            // TODO: get rid of this
             return OpenConnectionInternal();
+        }
+
+        public override async Task<DbConnection> OpenConnectionAsync(CancellationToken cancellationToken)
+        {
+            return await OpenConnectionInternalAsync(cancellationToken);
         }
     }
 }

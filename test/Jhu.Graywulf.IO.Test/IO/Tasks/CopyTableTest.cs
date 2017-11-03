@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data.SqlClient;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.IO;
+using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.RemoteService;
 
 namespace Jhu.Graywulf.IO.Tasks
@@ -14,16 +11,16 @@ namespace Jhu.Graywulf.IO.Tasks
     [TestClass]
     public class CopyTableTest : TestClassBase
     {
-        private ICopyTable GetTableCopy(string tableName, bool remote)
+        private ICopyTable GetTableCopy(CancellationContext cancellationContext, string tableName, bool remote)
         {
             ICopyTable q = null;
             if (remote)
             {
-                q = RemoteServiceHelper.CreateObject<ICopyTable>(Test.Constants.Localhost, false);
+                q = RemoteServiceHelper.CreateObject<ICopyTable>(cancellationContext, Test.Constants.Localhost, false);
             }
             else
             {
-                q = new CopyTable();
+                q = new CopyTable(cancellationContext);
             }
 
             var ds = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString)
@@ -57,14 +54,17 @@ namespace Jhu.Graywulf.IO.Tasks
         [TestMethod]
         public void ImportTableTest()
         {
-            var table = GetTestUniqueName();
-            var q = GetTableCopy(table, false);
+            using (var cancellationContext = new CancellationContext())
+            {
+                var table = GetTestUniqueName();
+                var q = GetTableCopy(cancellationContext, table, false);
 
-            DropTable(q.Destination.GetTable());
+                DropTable(q.Destination.GetTable());
 
-            q.Execute();
+                q.ExecuteAsync().Wait();
 
-            DropTable(q.Destination.GetTable());
+                DropTable(q.Destination.GetTable());
+            }
         }
 
         [TestMethod]
@@ -74,14 +74,17 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var table = GetTestUniqueName();
-                var q = GetTableCopy(table, true);
+                using (var cancellationContext = new CancellationContext())
+                {
+                    var table = GetTestUniqueName();
+                    var q = GetTableCopy(cancellationContext, table, true);
 
-                DropTable(q.Destination.GetTable());
+                    DropTable(q.Destination.GetTable());
 
-                q.Execute();
+                    q.ExecuteAsync().Wait();
 
-                DropTable(q.Destination.GetTable());
+                    DropTable(q.Destination.GetTable());
+                }
             }
         }
 

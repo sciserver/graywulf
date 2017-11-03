@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
 using System.Diagnostics;
-using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Tasks
 {
@@ -45,6 +42,14 @@ namespace Jhu.Graywulf.Tasks
             this.info = info;
         }
 
+        public CancelableProcess(CancellationContext cancellationContext, ProcessStartInfo info)
+            : base(cancellationContext)
+        {
+            InitializeMembers();
+
+            this.info = info;
+        }
+
         private void InitializeMembers()
         {
             this.info = null;
@@ -58,27 +63,49 @@ namespace Jhu.Graywulf.Tasks
         /// <remarks>
         /// This method is called by the infrastructure.
         /// </remarks>
-        protected override void OnExecute()
+        protected override async Task OnExecuteAsync()
         {
-            process = Process.Start(info);
-            process.WaitForExit();
+            var tcs = new TaskCompletionSource<object>();
 
-            exitCode = process.ExitCode;
+            process = new Process();
+            process.StartInfo = info;
+            process.EnableRaisingEvents = true;
+            process.Exited += delegate (object sender, EventArgs args)
+            {
+                exitCode = process.ExitCode;
 
-            process = null;
+                if (IsCancellationRequested)
+                {
+                    tcs.TrySetCanceled();
+                }
+                else if (process.ExitCode == 0)
+                {
+                    tcs.TrySetResult(null);
+                }
+                else
+                {
+                    var ex = new Exception(String.Format("Process exited with error code {0}", process.ExitCode));
+                    tcs.TrySetException(ex);
+                }
+
+                process.Dispose();
+                process = null;
+            };
+
+            process.Start();
+
+            await tcs.Task;
         }
 
         /// <summary>
         /// Cancels the operation by killing the process
         /// </summary>
-        public override void Cancel()
+        protected override void OnCancel()
         {
             if (process != null)
             {
                 process.Kill();
             }
-
-            base.Cancel();
         }
     }
 }

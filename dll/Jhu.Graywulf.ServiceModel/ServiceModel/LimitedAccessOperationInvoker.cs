@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.ServiceModel
 
         public bool IsSynchronous
         {
-            get { return this.originalInvoker.IsSynchronous; }
+            get { return originalInvoker.IsSynchronous; }
         }
 
         /// <summary>
@@ -52,6 +52,8 @@ namespace Jhu.Graywulf.ServiceModel
 
         public IAsyncResult InvokeBegin(object instance, object[] inputs, AsyncCallback callback, object state)
         {
+            EnsureRoleAccess();
+
             return this.originalInvoker.InvokeBegin(instance, inputs, callback, state);
         }
 

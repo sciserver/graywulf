@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Activities;
+using System.Threading;
+using System.Threading.Tasks;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.IO.Tasks;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -16,7 +18,7 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
@@ -24,18 +26,22 @@ namespace Jhu.Graywulf.Jobs.Query
             var queryPartition = query.Partitions[0];
             Table destinationTable;
 
-            using (RegistryContext context = query.CreateContext())
+            switch (query.ExecutionMode)
             {
-                queryPartition.InitializeQueryObject(context, null, true);
-                queryPartition.PrepareCreateDestinationTablePrimaryKey(context, activityContext.GetExtension<IScheduler>(), out destinationTable);
+                case ExecutionMode.SingleServer:
+                    throw new NotImplementedException();
+                case ExecutionMode.Graywulf:
+                    using (RegistryContext registryContext = query.CreateContext())
+                    {
+                        queryPartition.InitializeQueryObject(cancellationContext, registryContext, activityContext.GetExtension<IScheduler>(), true);
+                        destinationTable = await queryPartition.PrepareCreateDestinationTablePrimaryKeyAsync();
+                    }
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
 
-            return delegate ()
-            {
-                RegisterCancelable(workflowInstanceId, activityInstanceId, queryPartition);
-                queryPartition.CreateDestinationTablePrimaryKey(destinationTable);
-                UnregisterCancelable(workflowInstanceId, activityInstanceId, queryPartition);
-            };
+            await queryPartition.CreateDestinationTablePrimaryKeyAsync(destinationTable);
         }
     }
 }

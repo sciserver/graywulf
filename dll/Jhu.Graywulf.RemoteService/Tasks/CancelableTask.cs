@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Data;
 using System.Xml.Serialization;
@@ -15,7 +16,18 @@ namespace Jhu.Graywulf.Tasks
     [NetDataContract]
     public interface ICancelableTask
     {
-        bool IsCanceled
+        CancellationContext CancellationContext
+        {
+            get; set;
+        }
+
+        CancelableTaskProgress Progress
+        {
+            [OperationContract]
+            get;
+        }
+
+        bool IsCancellationRequested
         {
             [OperationContract]
             get;
@@ -26,179 +38,137 @@ namespace Jhu.Graywulf.Tasks
     }
 
     /// <summary>
-    /// Implements basic functions to cancel long-running operations.
+    /// Implements basic functions to cancel long-running operations via WCF.
     /// The class also supports task delegation to remote servers.
     /// </summary>
+    /// <remarks>
+    /// WCF doesn't support cancellation of async tasks with cancellation tokens
+    /// but if objects are instantiated per session, calling a Cancel method can
+    /// server the same purpose.
+    /// </remarks>
     [Serializable]
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
-    public abstract class CancelableTask : ICancelableTask
+    public abstract class CancelableTask : ICancelableTask, IDisposable
     {
-        #region Private members
+        #region Private member varuables
+
+        [NonSerialized]
+        private CancellationContext cancellationContext;
+
+        [NonSerialized]
+        private bool ownsCancellationContext;
+
+        private bool isCancellationRequested;
 
         /// <summary>
-        /// Holds a reference to the async task.
+        /// Keeps track of the progress of the long running task.
         /// </summary>
-        [NonSerialized]
-        private Task task;
-
-        /// <summary>
-        /// Flags is the operation is cancelled
-        /// </summary>
-        [NonSerialized]
-        private bool isCanceled;
-        
-        /// <summary>
-        /// Holds a list of cancellable operations
-        /// </summary>
-        [NonSerialized]
-        private Dictionary<string, ICancelableTask> cancelableTasks;
+        private CancelableTaskProgress progress;
 
         #endregion
+        #region Properties
+
+        protected CancellationContext CancellationContext
+        {
+            get { return cancellationContext; }
+        }
+
+        CancellationContext ICancelableTask.CancellationContext
+        {
+            get { return cancellationContext; }
+            set
+            {
+                cancellationContext = value;
+                ownsCancellationContext = false;
+            }
+        }
 
         /// <summary>
-        /// Gets whether the task is cancelled.
+        /// Gets whether the task is cancelled, either by calling the Cancel method
+        /// directly, or requesting a cancellation from the outside via a cancellation token.
         /// </summary>
-        public virtual bool IsCanceled
+        public bool IsCancellationRequested
         {
-            get { return isCanceled; }
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+            get { return isCancellationRequested; }
         }
+
+        /// <summary>
+        /// Gets the status of the long running task.
+        /// </summary>
+        public CancelableTaskProgress Progress
+        {
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+            get { return progress; }
+        }
+
+        #endregion
+        #region Constructors and initializers
 
         public CancelableTask()
         {
             InitializeMembers();
+
+            cancellationContext = new Tasks.CancellationContext();
+            ownsCancellationContext = true;
+        }
+
+        public CancelableTask(CancellationContext cancellationContext)
+        {
+            InitializeMembers();
+
+            this.cancellationContext = cancellationContext;
+            this.ownsCancellationContext = false;
+            this.cancellationContext.Register(this);
         }
 
         private void InitializeMembers()
         {
-            this.task = null;
-            this.isCanceled = false;
-            this.cancelableTasks = new Dictionary<string, ICancelableTask>();
+            this.cancellationContext = null;
+            this.isCancellationRequested = false;
+            this.progress = new CancelableTaskProgress();
         }
 
-        public virtual void Execute()
+        public virtual void Dispose()
         {
-            if (isCanceled)
+            if (ownsCancellationContext && cancellationContext != null)
             {
-                throw new InvalidOperationException(ExceptionMessages.TaskAlreadyCanceled);
+                cancellationContext.Dispose();
             }
-
-            OnExecute();
         }
+
+        #endregion
+        #region Task logic implementation
 
         /// <summary>
         /// When overriden in derived classes, executes the task logic.
         /// </summary>
-        protected abstract void OnExecute();
+        protected abstract Task OnExecuteAsync();
 
-        /// <summary>
-        /// When overriden in derived classes, executes the task asynchronously
-        /// </summary>
-        public virtual void BeginExecute()
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation(Constants.DefaultRole)]
+        public virtual async Task ExecuteAsync()
         {
-            if (task != null)
-            {
-                throw new InvalidOperationException(ExceptionMessages.TaskAlreadyRunning);
-            }
-
-            if (isCanceled)
-            {
-                throw new InvalidOperationException(ExceptionMessages.TaskAlreadyCanceled);
-            }
-
-            task = Task.Factory.StartNew(OnExecute);
+            await OnExecuteAsync();
         }
 
-        /// <summary>
-        /// Waits for the asynchronous task to complete
-        /// </summary>
-        public virtual void EndExecute()
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation(Constants.DefaultRole)]
+        public void Cancel()
         {
-            try
-            {
-                task.Wait();
-            }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions != null && ex.InnerExceptions.Count == 1)
-                {
-                    throw ex.InnerExceptions[0];
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            finally
-            {
-                task = null;
-            }
+            this.isCancellationRequested = true;
+
+            OnCancel();
+
+            CancellationContext.Cancel();
         }
 
-        /// <summary>
-        /// Cancels the task by cancelling all asynchronously running subtasks.
-        /// </summary>
-        public virtual void Cancel()
+        protected virtual void OnCancel()
         {
-            if (isCanceled)
-            {
-                throw new InvalidOperationException(ExceptionMessages.TaskAlreadyCanceled);
-            }
-
-            lock (cancelableTasks)
-            {
-                foreach (var t in cancelableTasks.Values)
-                {
-                    t.Cancel();
-                }
-            }
-
-            isCanceled = true;
         }
 
-        /// <summary>
-        /// Registers a cancellable subtask.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="task"></param>
-        protected void RegisterCancelable(Guid key, ICancelableTask task)
-        {
-            RegisterCancelable(key.ToString(), task);
-        }
-
-        /// <summary>
-        /// Registers a cancellable subtask.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="task"></param>
-        protected void RegisterCancelable(string key, ICancelableTask task)
-        {
-            lock (cancelableTasks)
-            {
-                cancelableTasks.Add(key, task);
-            }
-        }
-
-        /// <summary>
-        /// Unregisters a cancellable subtask.
-        /// </summary>
-        /// <param name="key"></param>
-        protected void UnregisterCancelable(Guid key)
-        {
-            UnregisterCancelable(key.ToString());
-        }
-
-        /// <summary>
-        /// Unregisters a cancellable subtask.
-        /// </summary>
-        /// <param name="key"></param>
-        protected void UnregisterCancelable(string key)
-        {
-            lock (cancelableTasks)
-            {
-                cancelableTasks.Remove(key);
-            }
-        }
+        #endregion
     }
 }

@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.IO;
 using Jhu.Graywulf.Test;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
@@ -34,16 +32,19 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             var name = GetTestUniqueName();
 
-            var afc = new AsyncFileCopy()
+            using (var cancellationContext = new CancellationContext())
             {
-                Source = String.Format(@"\\{0}\{1}\{2}.txt", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, name),
-                Destination = String.Format(@"\\{0}\{1}\{2}_2.txt", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, name)
-            };
+                var afc = new AsyncFileCopy(cancellationContext)
+                {
+                    Source = String.Format(@"\\{0}\{1}\{2}.txt", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, name),
+                    Destination = String.Format(@"\\{0}\{1}\{2}_2.txt", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, name)
+                };
 
-            CreateTestFile(afc.Source);
-            DeleteTestFile(afc.Destination);
+                CreateTestFile(afc.Source);
+                DeleteTestFile(afc.Destination);
 
-            afc.Execute();
+                afc.ExecuteAsync();
+            }
         }
     }
 }

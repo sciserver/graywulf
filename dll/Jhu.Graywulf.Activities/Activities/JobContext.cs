@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Activities;
@@ -16,19 +17,12 @@ namespace Jhu.Graywulf.Activities
     {
         #region Singleton
 
-        [ThreadStatic]
-        private static JobContext context;
+        private static AsyncLocal<JobContext> context = new AsyncLocal<JobContext>();
 
         public static JobContext Current
         {
-            get
-            {
-                return context;
-            }
-            set
-            {
-                context = value;
-            }
+            get { return context.Value; }
+            set { context.Value = value; }
         }
 
         #endregion
@@ -45,33 +39,33 @@ namespace Jhu.Graywulf.Activities
         }
 
         internal JobContext(IJobActivity activity, CodeActivityContext activityContext)
-            :base(activityContext.GetValue(activity.JobInfo))
+            : base(activityContext.GetValue(activity.JobInfo))
         {
             InitializeMembers(new StreamingContext());
         }
 
         public JobContext(JobInfo job)
-            :base(job)
+            : base(job)
         {
         }
-        
+
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
         }
-        
+
         private void CopyMembers(JobContext old)
         {
         }
 
         public void Push()
         {
-            context = this;
+            context.Value = this;
         }
 
         public void Pop()
         {
-            context = null;
+            context.Value = null;
         }
     }
 }

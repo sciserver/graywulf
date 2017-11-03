@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Activities;
 using System.Activities.Tracking;
+using System.Threading;
 
 namespace Jhu.Graywulf.Logging
 {
@@ -30,23 +31,22 @@ namespace Jhu.Graywulf.Logging
             }
         }
 
-        [ThreadStatic]
-        private static LoggingContext context;
+        private static AsyncLocal<LoggingContext> context = new AsyncLocal<LoggingContext>();
 
         public static LoggingContext Current
         {
             get
             {
-                if (context == null)
+                if (context.Value == null)
                 {
-                    context = new LoggingContext();
+                    context.Value = new LoggingContext();
                 }
 
-                return context;
+                return context.Value;
             }
             set
             {
-                context = value;
+                context.Value = value;
             }
         }
 

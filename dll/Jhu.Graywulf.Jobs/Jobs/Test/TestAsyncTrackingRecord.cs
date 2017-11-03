@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Activities;
 using System.Activities.Tracking;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Test
 {
@@ -14,16 +15,13 @@ namespace Jhu.Graywulf.Jobs.Test
         [RequiredArgument]
         public InArgument<string> Message { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             string message = activityContext.GetValue(Message);
 
-            Logging.LoggingContext.Current.LogStatus(Logging.EventSource.Test, "Test event from async activitity initializer.");
+            Logging.LoggingContext.Current.LogStatus(Logging.EventSource.Test, "Test event from async activitity.");
 
-            return delegate ()
-            {
-                Logging.LoggingContext.Current.LogStatus(Logging.EventSource.Test, "Test event from async activitity action.");
-            };
+            return Task.CompletedTask;
         }
     }
 }

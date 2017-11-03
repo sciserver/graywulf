@@ -5,7 +5,7 @@ using System.Text;
 using System.Activities;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
-using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             SqlQuery query = Query.Get(activityContext);
 
@@ -25,12 +25,12 @@ namespace Jhu.Graywulf.Jobs.Query
             switch (query.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
-                    query.InitializeQueryObject(null);
+                    query.InitializeQueryObject(cancellationContext, null);
                     break;
                 case ExecutionMode.Graywulf:
                     using (RegistryContext context = ContextManager.Instance.CreateReadOnlyContext())
                     {
-                        query.InitializeQueryObject(context);
+                        query.InitializeQueryObject(cancellationContext, context);
                         query.Validate();
                         query.CollectTablesForStatistics();
                     }

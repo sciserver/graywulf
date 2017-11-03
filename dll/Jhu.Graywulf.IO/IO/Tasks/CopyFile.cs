@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.IO;
@@ -58,7 +56,7 @@ namespace Jhu.Graywulf.IO.Tasks
     /// </summary>
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
-        IncludeExceptionDetailInFaults=true)]
+        IncludeExceptionDetailInFaults = true)]
     public class CopyFile : RemoteServiceBase, ICopyFile
     {
         #region Private members for property storage
@@ -124,6 +122,12 @@ namespace Jhu.Graywulf.IO.Tasks
             InitializeMembers();
         }
 
+        public CopyFile(CancellationContext cancellationContext)
+            : base(cancellationContext)
+        {
+            InitializeMembers();
+        }
+
         private void InitializeMembers()
         {
             this.source = null;
@@ -134,7 +138,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         #endregion
 
-        protected override void OnExecute()
+        protected override async Task OnExecuteAsync()
         {
             // Check if file can be overwritten
             if (File.Exists(Destination))
@@ -158,16 +162,16 @@ namespace Jhu.Graywulf.IO.Tasks
             switch (method)
             {
                 case FileCopyMethod.Win32FileCopy:
-                    ExecuteWin32FileCopy();
+                    await ExecuteWin32FileCopyAsync();
                     break;
                 case FileCopyMethod.AsyncFileCopy:
-                    ExecuteAsyncFileCopy();
+                    await ExecuteAsyncFileCopyAsync();
                     break;
                 case FileCopyMethod.EseUtil:
-                    ExecuteEseUtil();
+                    await ExecuteEseUtilAsync();
                     break;
                 case FileCopyMethod.Robocopy:
-                    ExecuteRobocopy();
+                    await ExecuteRobocopyAsync();
                     break;
                 case FileCopyMethod.FastDataTransfer:
                 default:
@@ -175,26 +179,23 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
-        private void ExecuteWin32FileCopy()
+        private Task ExecuteWin32FileCopyAsync()
         {
-            File.Copy(source, destination, true);
+            return Task.Factory.StartNew(() => File.Copy(source, destination, true));
         }
 
-        private void ExecuteAsyncFileCopy()
+        private async Task ExecuteAsyncFileCopyAsync()
         {
-            var afc = new AsyncFileCopy()
+            var afc = new AsyncFileCopy(CancellationContext)
             {
                 Source = source,
                 Destination = destination,
             };
 
-            var guid = Guid.NewGuid();
-            RegisterCancelable(guid, afc);
-            afc.Execute();
-            UnregisterCancelable(guid);
+            await afc.ExecuteAsync();
         }
 
-        private void ExecuteEseUtil()
+        private async Task ExecuteEseUtilAsync()
         {
             // Figure out the working directory from the service's exe
             var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -204,7 +205,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 Path.Combine(path, "eseutil.exe"),
                 String.Format("/y \"{0}\" /d \"{1}\"", source, destination));
 
-            var exit = ExecuteProcess(info);
+            var exit = await ExecuteProcess(info);
 
             if (exit > 0)
             {
@@ -212,45 +213,49 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
-        private void ExecuteRobocopy()
+        private async Task ExecuteRobocopyAsync()
         {
             // Execute robocopy to perform copy
             var info = new ProcessStartInfo(
                 "robocopy.exe",
                 String.Format(
                     "\"{0}\" \"{1}\" \"{2}\" /Z /MT /R:1",
-                    Path.GetDirectoryName(source), 
+                    Path.GetDirectoryName(source),
                     Path.GetDirectoryName(destination),
                     Path.GetFileName(source)));
 
-            var exit = ExecuteProcess(info);
+            var exit = await ExecuteProcess(info);
 
             if (exit != 1)
             {
                 throw new Exception(String.Format(ExceptionMessages.FileCopyFailed, exit));
             }
-            
+
         }
 
-        private int ExecuteProcess(ProcessStartInfo info)
+        private async Task<int> ExecuteProcess(ProcessStartInfo info)
         {
             // These are important to run program under the delegated account
             info.UseShellExecute = false;
             info.CreateNoWindow = true;
 
             var guid = Guid.NewGuid();
-            var cproc = new CancelableProcess(info);
-            RegisterCancelable(guid, cproc);
+            var cproc = new CancelableProcess(CancellationContext, info);
 
-            cproc.Execute();
+            try
+            {
+                await cproc.ExecuteAsync();
+            }
+            catch (Exception)
+            {
 
-            UnregisterCancelable(guid);
+            }
 
-            if (cproc.IsCanceled || cproc.ExitCode == -1073741510)
+            if (cproc.IsCancellationRequested || cproc.ExitCode == -1073741510)
             {
                 throw new OperationCanceledException(ExceptionMessages.FileCopyCanceled);
             }
-            else 
+            else
             {
                 return cproc.ExitCode;
             }

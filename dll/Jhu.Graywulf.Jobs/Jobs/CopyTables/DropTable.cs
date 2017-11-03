@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Activities;
 using Jhu.Graywulf.Activities;
-using Jhu.Graywulf.IO.Tasks;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.CopyTables
 {
@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Jobs.CopyTables
         [RequiredArgument]
         public InArgument<CopyTablesItem> Item { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var item = Item.Get(activityContext);
             var ds = item.Source.Dataset;

@@ -6,7 +6,7 @@ using System.Activities;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -17,21 +17,21 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<QueryObject> QueryObject { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var queryObject = QueryObject.Get(activityContext);
 
             switch (queryObject.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
-                    queryObject.InitializeQueryObject(null, null, true);
+                    queryObject.InitializeQueryObject(cancellationContext, null, null, true);
                     break;
                 case ExecutionMode.Graywulf:
-                    using (var context = ContextManager.Instance.CreateReadOnlyContext())
+                    using (var registryContext = ContextManager.Instance.CreateReadOnlyContext())
                     {
                         var scheduler = activityContext.GetExtension<IScheduler>();
 
-                        queryObject.InitializeQueryObject(context, scheduler, false);
+                        queryObject.InitializeQueryObject(cancellationContext, registryContext, scheduler, false);
                         queryObject.AssignServerInstance();
                         EntityGuid.Set(activityContext, queryObject.AssignedServerInstance.Guid);
                     }

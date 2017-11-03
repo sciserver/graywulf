@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
+using System.Threading;
 using System.Linq;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.IO.Tasks;
-using Jhu.Graywulf.Format;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Test;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
@@ -32,7 +30,7 @@ namespace Jhu.Graywulf.IO.Tasks
             StopLogger();
         }
 
-        private IImportTableArchive GetImportTableArchiveTask(string path, string tableNamePattern, bool remote, bool generateIdentityColumn)
+        private IImportTableArchive GetImportTableArchiveTask(CancellationContext cancellationContext, string path, string tableNamePattern, bool remote, bool generateIdentityColumn)
         {
             var ds = IOTestDataset;
             ds.IsMutable = true;
@@ -48,11 +46,11 @@ namespace Jhu.Graywulf.IO.Tasks
             IImportTableArchive it = null;
             if (remote)
             {
-                it = RemoteServiceHelper.CreateObject<IImportTableArchive>(Test.Constants.Localhost, false);
+                it = RemoteServiceHelper.CreateObject<IImportTableArchive>(cancellationContext, Test.Constants.Localhost, false);
             }
             else
             {
-                it = new ImportTableArchive();
+                it = new ImportTableArchive(cancellationContext);
             }
 
             it.BatchName = Path.GetFileNameWithoutExtension(path);
@@ -69,7 +67,7 @@ namespace Jhu.Graywulf.IO.Tasks
         private void ExecuteImportTableArchiveTest(IImportTableArchive it)
         {
             it.Open();
-            it.Execute();
+            it.ExecuteAsync().Wait();
         }
 
         private void DropTestTables()
@@ -88,7 +86,7 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
-        private void ImportTableArchiveTestHelper(ArchiveType type, bool remote, bool generateIdentity)
+        private void ImportTableArchiveTestHelper(CancellationContext cancellationContext, ArchiveType type, bool remote, bool generateIdentity)
         {
             ServiceTesterToken token = null;
             string path, tableNamePattern;
@@ -127,7 +125,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 }
             }
 
-            var it = GetImportTableArchiveTask(path, tableNamePattern, remote, generateIdentity);
+            var it = GetImportTableArchiveTask(cancellationContext, path, tableNamePattern, remote, generateIdentity);
             ExecuteImportTableArchiveTest(it);
 
             for (int i = 0; i < it.Results.Count(); i++)
@@ -145,49 +143,73 @@ namespace Jhu.Graywulf.IO.Tasks
         [TestMethod]
         public void ImportSingleFileTest()
         {
-            ImportTableArchiveTestHelper(ArchiveType.SingleFile, false, false);
+            using (var cancellationContext = new CancellationContext())
+            {
+                ImportTableArchiveTestHelper(cancellationContext, ArchiveType.SingleFile, false, false);
+            }
         }
 
         [TestMethod]
         public void ImportSingleFileGenerateIdentityTest()
         {
-            ImportTableArchiveTestHelper(ArchiveType.SingleFile, false, true);
+            using (var cancellationContext = new CancellationContext())
+            {
+                ImportTableArchiveTestHelper(cancellationContext, ArchiveType.SingleFile, false, true);
+            }
         }
 
         [TestMethod]
         public void RemoteImportSingleFileTest()
         {
-            ImportTableArchiveTestHelper(ArchiveType.SingleFile, true, false);
+            using (var cancellationContext = new CancellationContext())
+            {
+                ImportTableArchiveTestHelper(cancellationContext, ArchiveType.SingleFile, true, false);
+            }
         }
 
         [TestMethod]
         public void RemoteImportSingleFileGenerateIdentityTest()
         {
-            ImportTableArchiveTestHelper(ArchiveType.SingleFile, true, true);
+            using (var cancellationContext = new CancellationContext())
+            {
+                ImportTableArchiveTestHelper(cancellationContext, ArchiveType.SingleFile, true, true);
+            }
         }
 
         [TestMethod]
         public void ImportArchiveTest()
         {
-            ImportTableArchiveTestHelper(ArchiveType.MultipleFiles, false, false);
+            using (var cancellationContext = new CancellationContext())
+            {
+                ImportTableArchiveTestHelper(cancellationContext, ArchiveType.MultipleFiles, false, false);
+            }
         }
 
         [TestMethod]
         public void ImportArchiveGenerateIdentityTest()
         {
-            ImportTableArchiveTestHelper(ArchiveType.MultipleFiles, false, true);
+            using (var cancellationContext = new CancellationContext())
+            {
+                ImportTableArchiveTestHelper(cancellationContext, ArchiveType.MultipleFiles, false, true);
+            }
         }
 
         [TestMethod]
         public void RemoteImportArchiveTest()
         {
-            ImportTableArchiveTestHelper(ArchiveType.MultipleFiles, true, false);
+            using (var cancellationContext = new CancellationContext())
+            {
+                ImportTableArchiveTestHelper(cancellationContext, ArchiveType.MultipleFiles, true, false);
+            }
         }
 
         [TestMethod]
         public void RemoteImportArchiveGenerateIdentityTest()
         {
-            ImportTableArchiveTestHelper(ArchiveType.MultipleFiles, true, true);
+            using (var cancellationContext = new CancellationContext())
+            {
+                ImportTableArchiveTestHelper(cancellationContext, ArchiveType.MultipleFiles, true, true);
+            }
         }
     }
 }

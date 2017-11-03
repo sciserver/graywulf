@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Data;
 using Jhu.Graywulf.Schema;
 
@@ -14,7 +13,8 @@ namespace Jhu.Graywulf.Data
 
         bool RecordsCounted { get; set; }
 
-        new ISmartDataReader ExecuteReader();
-        new ISmartDataReader ExecuteReader(CommandBehavior behavior);
+        Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken);
+
+        Task<ISmartDataReader> ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken);
     }
 }

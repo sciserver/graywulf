@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.ServiceModel
 
         public bool IsSynchronous
         {
-            get { return true; }
+            get { return originalInvoker.IsSynchronous; }
         }
 
         public ServiceLoggingOperationInvoker(string operationName, IOperationInvoker originalInvoker)
@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.ServiceModel
             catch (Exception ex)
             {
                 LogError(ex);
-                throw ex;
+                throw;
             }
             finally
             {
@@ -61,12 +61,28 @@ namespace Jhu.Graywulf.ServiceModel
 
         public IAsyncResult InvokeBegin(object instance, object[] inputs, AsyncCallback callback, object state)
         {
-            throw new NotImplementedException();
+            new ServiceLoggingContext(LoggingContext.Current).Push();
+
+            LogDebug();
+
+            return this.originalInvoker.InvokeBegin(instance, inputs, callback, state);
         }
 
         public object InvokeEnd(object instance, out object[] outputs, IAsyncResult result)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return this.originalInvoker.InvokeEnd(instance, out outputs, result);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                throw;
+            }
+            finally
+            {
+                LoggingContext.Current.Pop();
+            }
         }
 
         private void LogDebug()

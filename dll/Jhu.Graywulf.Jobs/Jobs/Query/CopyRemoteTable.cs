@@ -10,6 +10,7 @@ using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -21,7 +22,7 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<string> RemoteTable { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
@@ -35,12 +36,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 querypartition.PrepareCopyRemoteTable(remotetable, out source);
             }
 
-            return delegate ()
-            {
-                RegisterCancelable(workflowInstanceId, activityInstanceId, querypartition);
-                querypartition.CopyRemoteTable(remotetable, source);
-                UnregisterCancelable(workflowInstanceId, activityInstanceId, querypartition);
-            };
+            await querypartition.CopyRemoteTableAsync(remotetable, source);
         }
     }
 }

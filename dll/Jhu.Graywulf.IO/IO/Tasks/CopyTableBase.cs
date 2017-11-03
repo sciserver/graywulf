@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.ServiceModel;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.Common;
 using System.Threading;
-using Jhu.Graywulf.Components;
+using System.Threading.Tasks;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
@@ -192,7 +192,14 @@ namespace Jhu.Graywulf.IO.Tasks
             InitializeMembers();
         }
 
+        protected CopyTableBase(CancellationContext cancellationContext)
+            : base(cancellationContext)
+        {
+            InitializeMembers();
+        }
+
         protected CopyTableBase(CopyTableBase old)
+            : base(old.CancellationContext)
         {
             CopyMembers(old);
         }
@@ -221,8 +228,6 @@ namespace Jhu.Graywulf.IO.Tasks
 
         public abstract object Clone();
 
-        public abstract void Dispose();
-
         #endregion
 
         /// <summary>
@@ -248,12 +253,12 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         /// <param name="source"></param>
         /// <param name="destination"></param>
-        protected void CopyFromFile(DataFileBase source, DestinationTable destination, TableCopyResult result)
+        protected async Task CopyFromFileAsync(DataFileBase source, DestinationTable destination, TableCopyResult result)
         {
             // Import the file by wrapping it into a dummy command
             using (var cmd = new FileCommand(source))
             {
-                CopyFromCommand(cmd, destination, result);
+                await CopyFromCommandAsync(cmd, destination, result);
             }
         }
 
@@ -263,47 +268,36 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         /// <param name="cmd"></param>
         /// <param name="destination"></param>
-        protected void CopyFromCommand(ISmartCommand cmd, DestinationTable destination, TableCopyResult result)
+        protected async Task CopyFromCommandAsync(ISmartCommand cmd, DestinationTable destination, TableCopyResult result)
         {
-            // Run bulk insert wrapped into a cancelable task
-            var guid = Guid.NewGuid();
-            var ccmd = new CancelableDbCommand(cmd);
-            RegisterCancelable(guid, ccmd);
+            // TODO: implement multi-table copy, might require converting results to a collection
 
-            ccmd.ExecuteReader(CommandBehavior.KeyInfo, dr =>
+            var dr = await cmd.ExecuteReaderAsync(CommandBehavior.KeyInfo, CancellationContext.Token);
+            var sdr = (ISmartDataReader)dr;
+
+            // DestinationTable has the property TableNameTemplate which needs to
+            // be evaluated now
+            var table = destination.GetTable(batchName, cmd.Name, sdr.Name, sdr.Metadata);
+
+            // Certain data readers cannot determine the columns from the data file,
+            // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
+            // from the destination table instead
+            if ((destination.Options & TableInitializationOptions.Create) == 0 &&
+                sdr is FileDataReader &&
+                (sdr.Columns == null || sdr.Columns.Count == 0))
             {
-                // TODO: implement multi-table copy, might require converting results to a
-                // a collection
-                //do
-                //{
-                var sdr = (ISmartDataReader)dr;
+                var fdr = (FileDataReader)sdr;
+                fdr.CreateColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
+            }
 
-                // DestinationTable has the property TableNameTemplate which needs to
-                // be evaluated now
-                var table = destination.GetTable(batchName, cmd.Name, sdr.Name, sdr.Metadata);
+            // TODO: make schema operation async
 
-                // Certain data readers cannot determine the columns from the data file,
-                // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
-                // from the destination table instead
-                if ((destination.Options & TableInitializationOptions.Create) == 0 &&
-                    sdr is FileDataReader &&
-                    (sdr.Columns == null || sdr.Columns.Count == 0))
-                {
-                    var fdr = (FileDataReader)sdr;
-                    fdr.CreateColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
-                }
+            table.Initialize(sdr.Columns, destination.Options);
 
-                table.Initialize(sdr.Columns, destination.Options);
+            result.SchemaName = table.SchemaName;
+            result.TableName = table.ObjectName;
 
-                result.SchemaName = table.SchemaName;
-                result.TableName = table.ObjectName;
-
-                ExecuteBulkCopy(dr, table, result);
-                //}
-                //while (dr.NextResult());
-            });
-
-            UnregisterCancelable(guid);
+            await ExecuteBulkCopyAsync(dr, table, result);
         }
 
         /// <summary>
@@ -311,12 +305,12 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         /// <param name="source"></param>
         /// <param name="destination"></param>
-        protected void CopyToFile(SourceTableQuery source, DataFileBase destination, TableCopyResult result)
+        protected async Task CopyToFileAsync(SourceTableQuery source, DataFileBase destination, TableCopyResult result)
         {
             // Create command that reads the table
             using (var cmd = source.CreateCommand())
             {
-                using (var cn = source.OpenConnection())
+                using (var cn = await source.OpenConnectionAsync(CancellationContext.Token))
                 {
                     using (var tn = cn.BeginTransaction(IsolationLevel.ReadUncommitted))
                     {
@@ -324,7 +318,7 @@ namespace Jhu.Graywulf.IO.Tasks
                         cmd.Transaction = tn;
                         cmd.CommandTimeout = Timeout;
 
-                        CopyToFile(cmd, destination, result);
+                        await CopyToFileAsync(cmd, destination, result);
                     }
                 }
             }
@@ -335,29 +329,18 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         /// <param name="cmd"></param>
         /// <param name="destination"></param>
-        private void CopyToFile(ISmartCommand cmd, DataFileBase destination, TableCopyResult result)
+        private async Task CopyToFileAsync(ISmartCommand cmd, DataFileBase destination, TableCopyResult result)
         {
-            // TODO: make it async
-
-            // Wrap command into a cancellable task
-            var guid = Guid.NewGuid();
-            var ccmd = new CancelableDbCommand(cmd);
-            RegisterCancelable(guid, ccmd);
-
-            // Pass data reader to the file formatter
-            result.RecordsAffected = ccmd.ExecuteReader(dr =>
-            {
-                destination.WriteFromDataReaderAsync((SmartDataReader)dr).Wait();
-            });
-
-            UnregisterCancelable(guid);
+            var dr = await cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationContext.Token);
+            await destination.WriteFromDataReaderAsync((SmartDataReader)dr);
+            result.RecordsAffected = dr.RecordsAffected;
         }
 
         /// <summary>
         /// Executest bulk copy to ingest data from the DataReader
         /// </summary>
         /// <param name="dr"></param>
-        protected virtual void ExecuteBulkCopy(IDataReader dr, Table destination, TableCopyResult result)
+        protected virtual async Task ExecuteBulkCopyAsync(ISmartDataReader sdr, Table destination, TableCopyResult result)
         {
             // Bulk insert is a tricky animal. To get best performance, batch size
             // has to be set to zero and table locking has to be set on. This prevents
@@ -366,8 +349,8 @@ namespace Jhu.Graywulf.IO.Tasks
 
             // TODO: it can only import the first resultset from dr
             var cg = new SqlServerCodeGenerator();
+            var dr = (DbDataReader)sdr;
 
-            isBulkCopyCancelRequested = false;
             bulkCopyFinishedEvent = new AutoResetEvent(false);
 
             // Turn on TABLOCK
@@ -384,15 +367,15 @@ namespace Jhu.Graywulf.IO.Tasks
             };
 
             // Initialize events
-            sbc.SqlRowsCopied += delegate(object sender, System.Data.SqlClient.SqlRowsCopiedEventArgs e)
+            sbc.SqlRowsCopied += delegate (object sender, System.Data.SqlClient.SqlRowsCopiedEventArgs e)
             {
-                e.Abort = isBulkCopyCancelRequested;
+                e.Abort = IsCancellationRequested;
                 result.RecordsAffected = e.RowsCopied;
             };
 
             try
             {
-                sbc.WriteToServer(dr);
+                await sbc.WriteToServerAsync(dr, CancellationContext.Token);
             }
             catch (OperationAbortedException)
             {
@@ -405,21 +388,6 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
-        /// <summary>
-        /// Send a cancel request to the bulk copy operation via isBulkCopyCancelRequested
-        /// and synchronizes execution to the end of the bulk copy.
-        /// </summary>
-        public override void Cancel()
-        {
-            if (bulkCopyFinishedEvent != null)
-            {
-                isBulkCopyCancelRequested = true;
-                bulkCopyFinishedEvent.WaitOne();
-            }
-
-            base.Cancel();
-        }
-
         protected void HandleException(Exception ex, TableCopyResult result)
         {
             // Put a breakpoint here when debuggin bypassed exceptions
@@ -429,7 +397,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
             if (!BypassExceptions)
             {
-                throw new TableCopyException("Table copy failed: " + ex.Message , ex);     // TODO
+                throw new TableCopyException("Table copy failed: " + ex.Message, ex);     // TODO
             }
         }
     }

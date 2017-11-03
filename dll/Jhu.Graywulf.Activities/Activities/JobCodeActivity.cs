@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Activities;
 using Jhu.Graywulf.Logging;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Activities
 {
@@ -17,15 +18,19 @@ namespace Jhu.Graywulf.Activities
         {
             new JobContext(this, activityContext).Push();
             new LoggingContext(LoggingContext.Current, true).Push();
+
             JobContext.Current.UpdateLoggingContext(LoggingContext.Current);
-            
-            OnExecute(activityContext);
+
+            using (var cancellationContext = new CancellationContext())
+            {
+                OnExecute(activityContext, cancellationContext);
+            }
 
             LoggingContext.Current.Pop();
             JobContext.Current.Pop();
         }
 
-        protected abstract void OnExecute(CodeActivityContext context);
+        protected abstract void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext);
     }
 
     public abstract class JobCodeActivity<T> : CodeActivity<T>, IJobActivity

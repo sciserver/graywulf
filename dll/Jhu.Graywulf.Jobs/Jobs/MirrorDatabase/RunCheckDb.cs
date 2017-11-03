@@ -5,6 +5,8 @@ using System.Text;
 using System.Activities;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading;
+using System.Threading.Tasks;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Tasks;
@@ -18,7 +20,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         [RequiredArgument]
         public InArgument<Guid> DatabaseInstanceGuid { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
@@ -34,23 +36,16 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                 connectionString = di.GetConnectionString().ConnectionString;
             }
 
-            return delegate ()
+            using (var cn = new SqlConnection(connectionString))
             {
-                using (var cn = new SqlConnection(connectionString))
+                await cn.OpenAsync(cancellationContext.Token);
+
+                using (var cmd = new SqlCommand("DBCC CHECKDB", cn))
                 {
-                    cn.Open();
-
-                    using (var cmd = new SqlCommand("DBCC CHECKDB", cn))
-                    {
-                        cmd.CommandTimeout = 0;
-
-                        var cc = new CancelableDbCommand(cmd);
-                        RegisterCancelable(workflowInstanceId, activityInstanceId, cc);
-                        cc.ExecuteNonQuery();
-                        UnregisterCancelable(workflowInstanceId, activityInstanceId, cc);
-                    }
+                    cmd.CommandTimeout = 0;
+                    await cmd.ExecuteNonQueryAsync(cancellationContext.Token);
                 }
-            };
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Text;
+using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
@@ -515,7 +515,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
                     cmd.CommandText = sql;
                     cmd.CommandType = CommandType.Text;
 
-                    using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
+                    using (var dr = cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess, CancellationToken.None).Result)
                     {
                         var columns = dr.Columns;
 

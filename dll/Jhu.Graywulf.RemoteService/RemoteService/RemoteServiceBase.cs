@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Security;
+using System.Threading.Tasks;
 using System.ServiceModel;
 using System.Configuration;
 using Jhu.Graywulf.ServiceModel;
@@ -30,38 +27,13 @@ namespace Jhu.Graywulf.RemoteService
 
         #endregion
 
-        public override bool IsCanceled
+        protected RemoteServiceBase()
         {
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-            get { return base.IsCanceled; }
-        }
-        
-        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation(Constants.DefaultRole)]
-        public override void Execute()
-        {
-            // Modify remote service to do check access when called from service only
-            // add wcf handler to check roles instead of doing it from here
-            base.Execute();
         }
 
-        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation(Constants.DefaultRole)]
-        public override void BeginExecute()
+        protected RemoteServiceBase(CancellationContext cancellationContext)
+            :base (cancellationContext)
         {
-            base.BeginExecute();
-        }
-
-        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-        public override void EndExecute()
-        {
-            base.EndExecute();
-        }
-
-        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-        public override void Cancel()
-        {
-            base.Cancel();
         }
     }
 }

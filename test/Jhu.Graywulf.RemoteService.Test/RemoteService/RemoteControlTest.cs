@@ -125,12 +125,15 @@ namespace Jhu.Graywulf.RemoteService
 
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var delay = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, false);
+                using (var cancellationContext = new CancellationContext())
+                {
+                    var delay = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, false);
 
-                var sc = RemoteServiceHelper.GetControlObject(Jhu.Graywulf.Test.Constants.Localhost);
-                var ss = sc.QueryRegisteredServices();
+                    var sc = RemoteServiceHelper.GetControlObject(Jhu.Graywulf.Test.Constants.Localhost);
+                    var ss = sc.QueryRegisteredServices();
 
-                Assert.AreEqual(1, ss.Length);
+                    Assert.AreEqual(1, ss.Length);
+                }
             }
         }
     }

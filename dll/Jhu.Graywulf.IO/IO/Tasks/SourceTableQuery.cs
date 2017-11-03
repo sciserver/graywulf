@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Text;
 using System.Data;
 using System.Data.Common;
@@ -164,9 +165,9 @@ namespace Jhu.Graywulf.IO.Tasks
         /// Opens a connection to the underlying dataset.
         /// </summary>
         /// <returns></returns>
-        internal IDbConnection OpenConnection()
+        internal Task<DbConnection> OpenConnectionAsync(CancellationToken cancellationToken)
         {
-            return dataset.OpenConnection();
+            return dataset.OpenConnectionAsync(cancellationToken);
         }
 
         /// <summary>
@@ -212,15 +213,15 @@ namespace Jhu.Graywulf.IO.Tasks
             return cmd;
         }
 
-        public IList<Column> GetColumns()
+        public async Task<IList<Column>> GetColumnsAsync(CancellationToken cancellationToken)
         {
-            using (var cn = OpenConnection())
+            using (var cn = await OpenConnectionAsync(cancellationToken))
             {
                 using (var cmd = CreateCommand())
                 {
                     cmd.Connection = cn;
 
-                    using (var dr = cmd.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo))
+                    using (var dr = (ISmartDataReader)cmd.ExecuteReaderAsync(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo, cancellationToken))
                     {
                         return dr.Columns;
                     }

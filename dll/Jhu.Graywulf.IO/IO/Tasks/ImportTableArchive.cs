@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.ServiceModel;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.RemoteService;
@@ -74,7 +72,14 @@ namespace Jhu.Graywulf.IO.Tasks
             InitializeMembers();
         }
 
+        public ImportTableArchive(CancellationContext cancellationContext)
+            : base(cancellationContext)
+        {
+            InitializeMembers();
+        }
+
         public ImportTableArchive(ImportTableArchive old)
+            : base(old)
         {
             CopyMembers(old);
         }
@@ -101,15 +106,15 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// Opens the archive.
         /// </summary>
-        public override void Open()
+        public override Task OpenAsync()
         {
-            Open(DataFileMode.Read, DataFileArchival.Automatic);
+            return OpenAsync(DataFileMode.Read, DataFileArchival.Automatic);
         }
 
         /// <summary>
         /// Executes the import operation
         /// </summary>
-        protected override void OnExecute()
+        protected override async Task OnExecuteAsync()
         {
             // Make sure stream is open
             if (BaseStream == null)
@@ -145,7 +150,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     };
 
                     Results.Add(result);
-                    
+
                     // Use the file format factory to open the file
                     string filename, extension;
                     DataFileCompression compression;
@@ -164,7 +169,7 @@ namespace Jhu.Graywulf.IO.Tasks
                             // Open the file. It's read directly from the archive stream.
                             file.Open(BaseStream, DataFileMode.Read);
 
-                            CopyFromFile(file, destination, result);
+                            await CopyFromFileAsync(file, destination, result);
                         }
                         catch (Exception ex)
                         {

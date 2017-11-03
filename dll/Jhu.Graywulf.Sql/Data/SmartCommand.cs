@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Data;
+using System.Data.Common;
 using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Data
@@ -16,7 +17,7 @@ namespace Jhu.Graywulf.Data
         #region Private member variables
 
         private DatasetBase dataset;
-        private IDbCommand command;
+        private DbCommand command;
         private string name;
         private DatasetMetadata metadata;
         private bool recordsCounted;
@@ -45,13 +46,13 @@ namespace Jhu.Graywulf.Data
         public IDbConnection Connection
         {
             get { return command.Connection; }
-            set { command.Connection = value; }
+            set { command.Connection = (DbConnection)value; }
         }
 
         public IDbTransaction Transaction
         {
             get { return command.Transaction; }
-            set { command.Transaction = value; }
+            set { command.Transaction = (DbTransaction)value; }
         }
 
         public UpdateRowSource UpdatedRowSource
@@ -97,7 +98,7 @@ namespace Jhu.Graywulf.Data
         #endregion
         #region Constructors and initializers
 
-        public SmartCommand(DatasetBase dataset, IDbCommand command)
+        public SmartCommand(DatasetBase dataset, DbCommand command)
         {
             this.dataset = dataset;
             this.command = command;
@@ -133,6 +134,11 @@ namespace Jhu.Graywulf.Data
             return command.CreateParameter();
         }
 
+        public Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)
+        {
+            return command.ExecuteNonQueryAsync(cancellationToken);
+        }
+
         public int ExecuteNonQuery()
         {
             return command.ExecuteNonQuery();
@@ -145,27 +151,22 @@ namespace Jhu.Graywulf.Data
 
         IDataReader IDbCommand.ExecuteReader()
         {
-            return ExecuteReaderInternal(CommandBehavior.Default);
+            return ((IDbCommand)this).ExecuteReader(CommandBehavior.Default);
         }
 
         IDataReader IDbCommand.ExecuteReader(CommandBehavior behavior)
         {
-            return ExecuteReaderInternal(behavior);
+            return Util.TaskHelper.Wait(ExecuteReaderInternalAsync(behavior, CancellationToken.None));
         }
 
         #endregion
 
-        public ISmartDataReader ExecuteReader()
+        public Task<ISmartDataReader> ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
         {
-            return ExecuteReaderInternal(CommandBehavior.Default);
+            return ExecuteReaderInternalAsync(behavior, cancellationToken);
         }
 
-        public ISmartDataReader ExecuteReader(CommandBehavior behavior)
-        {
-            return ExecuteReaderInternal(behavior);
-        }
-
-        private ISmartDataReader ExecuteReaderInternal(CommandBehavior behavior)
+        private async Task<ISmartDataReader> ExecuteReaderInternalAsync(CommandBehavior behavior, CancellationToken cancellationToken)
         {
             List<long> recordCounts = null;
 
@@ -173,21 +174,22 @@ namespace Jhu.Graywulf.Data
             // number of records that will be returned.
             if (recordsCounted)
             {
-                recordCounts = CountResults();
+                recordCounts = await CountResultsAsync(cancellationToken);
             }
 
             // TODO: figure out resultset name and metadata here, then pass it
             // to the data reader for further processing
 
             // Execute query and wrap into a smart data reader
-            return new SmartDataReader(dataset, command.ExecuteReader(behavior), recordCounts);
+            var dr = await command.ExecuteReaderAsync(behavior, cancellationToken);
+            return new SmartDataReader(dataset, dr, recordCounts);
         }
 
         /// <summary>
         /// Wraps the query into a SELECT COUNT(*) FROM (...) query and
         /// the number of records is counted.
         /// </summary>
-        private List<long> CountResults()
+        private async Task<List<long>> CountResultsAsync(CancellationToken cancellationToken)
         {
             // TODO: this only works with single SELECTs now
             // and can count only records from query, SPs don't work
@@ -212,14 +214,14 @@ namespace Jhu.Graywulf.Data
                 cmd.Connection = command.Connection;
                 cmd.Transaction = command.Transaction;
 
-                using (var dr = cmd.ExecuteReader())
+                using (var dr = await cmd.ExecuteReaderAsync(cancellationToken))
                 {
                     do
                     {
-                        dr.Read();
+                        await dr.ReadAsync(cancellationToken);
                         res.Add(dr.GetInt64(0));
                     }
-                    while (dr.NextResult());
+                    while (await dr.NextResultAsync(cancellationToken));
                 }
             }
 

@@ -21,35 +21,33 @@ namespace Jhu.Graywulf.Jobs.Test
         [RequiredArgument]
         public InArgument<bool> Cancelable { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
+
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
             var period = DelayPeriod.Get(activityContext);
             var cancelable = Cancelable.Get(activityContext);
 
-            return delegate ()
+            if (cancelable)
             {
-                if (cancelable)
-                {
-                    var delay = new CancelableDelay(period);
+                // TODO: Maybe get rid of task here?
+                // TODO: Or create it on remote server?
 
-                    RegisterCancelable(workflowInstanceId, activityInstanceId, delay);
-                    delay.Execute();
-                    UnregisterCancelable(workflowInstanceId, activityInstanceId, delay);
-                }
-                else
-                {
-                    // This would idle
-                    //Thread.Sleep(period);
+                var delay = new CancelableDelay(cancellationContext, period);
+                await delay.ExecuteAsync();
+            }
+            else
+            {
+                // This would idle
+                //Thread.Sleep(period);
 
-                    // This doesn't idle
-                    var start = DateTime.Now;
-                    while ((DateTime.Now - start).TotalMilliseconds < period)
-                    {
-                    }
+                // This doesn't idle
+                var start = DateTime.Now;
+                while ((DateTime.Now - start).TotalMilliseconds < period)
+                {
                 }
-            };
+            }
         }
     }
 }

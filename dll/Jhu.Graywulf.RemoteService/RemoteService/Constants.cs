@@ -9,5 +9,7 @@ namespace Jhu.Graywulf.RemoteService
     {
         public const string Namespace = "http://graywulf.jhu.edu/";
         public const string DefaultRole = "Default";
+
+        public const int ControlServiveTimeout = 30;
     }
 }

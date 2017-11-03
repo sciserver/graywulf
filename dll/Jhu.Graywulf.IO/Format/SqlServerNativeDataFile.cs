@@ -116,16 +116,16 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Stream open and close
 
-        protected override void OpenForRead()
+        protected override async Task OpenForReadAsync()
         {
-            base.OpenForRead();
+            await base.OpenForReadAsync();
 
             nativeReader = new SqlServerNativeBinaryReader(new DetachedStream(BaseStream));
         }
 
-        protected override void OpenForWrite()
+        protected override async Task OpenForWriteAsync()
         {
-            base.OpenForWrite();
+            await base.OpenForWriteAsync();
 
             if (generateSqlScripts && !IsArchive)
             {

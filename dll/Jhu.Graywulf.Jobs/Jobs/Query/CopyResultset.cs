@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Activities;
 using System.Threading.Tasks;
-using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -14,23 +14,18 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
 
-            using (var context = querypartition.Query.CreateContext())
+            using (var registryContext = querypartition.Query.CreateContext())
             {
-                querypartition.PrepareCopyResultset(context);
+                querypartition.InitializeQueryObject(cancellationContext, registryContext);
             }
-
-            return delegate()
-            {
-                RegisterCancelable(workflowInstanceId, activityInstanceId, querypartition);
-                querypartition.CopyResultset();
-                UnregisterCancelable(workflowInstanceId, activityInstanceId, querypartition);
-            };
+            
+            await querypartition.CopyResultsetAsync();
         }
     }
 }

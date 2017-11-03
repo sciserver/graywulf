@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.ServiceModel;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.Common;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Schema;
-
+using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
@@ -63,7 +63,14 @@ namespace Jhu.Graywulf.IO.Tasks
             InitializeMembers();
         }
 
+        public InsertIntoTable(CancellationContext cancellationContext)
+            : base(cancellationContext)
+        {
+            InitializeMembers();
+        }
+
         public InsertIntoTable(InsertIntoTable old)
+            : base(old)
         {
             CopyMembers(old);
         }
@@ -85,11 +92,7 @@ namespace Jhu.Graywulf.IO.Tasks
             return new InsertIntoTable(this);
         }
 
-        public override void Dispose()
-        {
-        }
-
-        protected override void OnExecute()
+        protected override async Task OnExecuteAsync()
         {
             if (source == null)
             {
@@ -102,12 +105,16 @@ namespace Jhu.Graywulf.IO.Tasks
             }
 
             var table = destination.GetTable();
-            var columns = source.GetColumns();
+            var columns = await source.GetColumnsAsync(CancellationContext.Token);
             table.Initialize(columns, destination.Options);
+
+            // TODO: make schema operation async
 
             // TODO: this doesn't work with WITH queries
             // Add a token somewhere in the generated query where the
             // insert statement should go
+
+            // TODO: use code generator
 
             var sql = new StringBuilder();
 
@@ -148,7 +155,7 @@ namespace Jhu.Graywulf.IO.Tasks
             // Create command that reads the table
             using (var cmd = source.CreateCommand())
             {
-                using (var cn = source.OpenConnection())
+                using (var cn = await source.OpenConnectionAsync(CancellationContext.Token))
                 {
                     using (var tn = cn.BeginTransaction(IsolationLevel.ReadUncommitted))
                     {
@@ -157,14 +164,7 @@ namespace Jhu.Graywulf.IO.Tasks
                         cmd.CommandTimeout = Timeout;
                         cmd.CommandText = sql.ToString();
 
-                        // Run insert wrapped into a cancelable task
-                        var guid = Guid.NewGuid();
-                        var ccmd = new CancelableDbCommand(cmd);
-                        RegisterCancelable(guid, ccmd);
-
-                        ccmd.ExecuteNonQuery();
-
-                        UnregisterCancelable(guid);
+                        await cmd.ExecuteNonQueryAsync(CancellationContext.Token);
 
                         tn.Commit();
                     }

@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.IO;
 using System.ServiceModel;
-using Jhu.Graywulf.Components;
 using Jhu.Graywulf.ServiceModel;
-using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
-using Jhu.Graywulf.Format;
-using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.Schema.SqlServer;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
@@ -93,6 +87,12 @@ namespace Jhu.Graywulf.IO.Tasks
             InitializeMembers();
         }
 
+        public CopyTableArchiveBase(CancellationContext cancellationContext)
+            : base(cancellationContext)
+        {
+            InitializeMembers();
+        }
+
         public CopyTableArchiveBase(CopyTableArchiveBase old)
             : base(old)
         {
@@ -136,14 +136,19 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// When overriden is derived classes, opens the archive pointed by the URI.
         /// </summary>
-        public abstract void Open();
+        public abstract Task OpenAsync();
+
+        public void Open()
+        {
+            Util.TaskHelper.Wait(OpenAsync());
+        }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="fileMode"></param>
         /// <param name="archival"></param>
-        protected void Open(DataFileMode fileMode, DataFileArchival archival)
+        protected async Task OpenAsync(DataFileMode fileMode, DataFileArchival archival)
         {
             EnsureNotOpen();
 
@@ -159,7 +164,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 sf.Mode = fileMode;
                 sf.Archival = archival;
 
-                baseStream = sf.Open();
+                baseStream = await sf.OpenAsync();
                 ownsBaseStream = true;
             }
             else
@@ -172,7 +177,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// Opens the archive by taking an already opened stream from outside.
         /// </summary>
         /// <param name="stream"></param>
-        public void Open(Stream stream)
+        public async Task OpenAsync(Stream stream)
         {
             if (stream == null)
             {
@@ -183,14 +188,14 @@ namespace Jhu.Graywulf.IO.Tasks
             this.ownsBaseStream = false;
             this.uri = null;
 
-            Open();
+            await OpenAsync();
         }
 
         /// <summary>
         /// Opens the archive pointed by the URI.
         /// </summary>
         /// <param name="uri"></param>
-        public void Open(Uri uri)
+        public async Task OpenAsync(Uri uri)
         {
             if (uri == null)
             {
@@ -201,7 +206,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.ownsBaseStream = false;
             this.uri = uri;
 
-            Open();
+            await OpenAsync();
         }
 
         /// <summary>

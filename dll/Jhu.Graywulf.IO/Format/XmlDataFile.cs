@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Text;
 using System.IO;
 using System.Globalization;
@@ -239,11 +238,11 @@ namespace Jhu.Graywulf.Format
         /// This function is called by the infrastructure when starting to read
         /// the file by the FileDataReader
         /// </remarks>
-        protected override void OpenForRead()
+        protected override async Task OpenForReadAsync()
         {
             if (inputReader == null)
             {
-                base.OpenForRead();
+                await base.OpenForReadAsync();
 
                 var settings = new XmlReaderSettings()
                 {
@@ -259,11 +258,11 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// If necessary, opens an XmlWriter and wraps the underlying stream in it.
         /// </summary>
-        protected override void OpenForWrite()
+        protected override async Task OpenForWriteAsync()
         {
             if (outputWriter == null)
             {
-                base.OpenForWrite();
+                await base.OpenForWriteAsync();
 
                 var settings = new XmlWriterSettings()
                 {

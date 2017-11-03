@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.ServiceModel;
-using Jhu.Graywulf.Components;
+using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Format;
@@ -91,7 +89,14 @@ namespace Jhu.Graywulf.IO.Tasks
             InitializeMembers();
         }
 
+        public ImportTable(CancellationContext cancellationContext)
+            : base(cancellationContext)
+        {
+            InitializeMembers();
+        }
+
         public ImportTable(ImportTable old)
+            : base(old)
         {
             CopyMembers(old);
         }
@@ -121,11 +126,16 @@ namespace Jhu.Graywulf.IO.Tasks
 
         #endregion
 
-        public void Open()
+        public async Task OpenAsync()
         {
             source.FileMode = DataFileMode.Read;
             source.StreamFactory = GetStreamFactory();
-            source.Open();
+            await source.OpenAsync();
+        }
+
+        public void Open()
+        {
+            Util.TaskHelper.Wait(OpenAsync());
         }
 
         public void Close()
@@ -136,7 +146,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// Executes the copy operation.
         /// </summary>
-        protected override void OnExecute()
+        protected override async Task OnExecuteAsync()
         {
             if (source == null)
             {
@@ -167,10 +177,10 @@ namespace Jhu.Graywulf.IO.Tasks
                 // stream factory to open the URI
                 if (source.IsClosed)
                 {
-                    Open();
+                    await OpenAsync();
                 }
 
-                CopyFromFile(source, destination, result);
+                await CopyFromFileAsync(source, destination, result);
             }
             catch (Exception ex)
             {

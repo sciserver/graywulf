@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Data;
 using System.Data.Common;
@@ -2010,17 +2009,28 @@ END",
 
         #endregion
 
-        private SqlConnection OpenConnectionInternal()
+        private async Task<SqlConnection> OpenConnectionInternalAsync(CancellationToken cancellationToken)
         {
             var csb = new SqlConnectionStringBuilder(ConnectionString);
             csb.Enlist = false;
 
             var cn = new SqlConnection(csb.ConnectionString);
-            cn.Open();
+            await cn.OpenAsync(cancellationToken);
             return cn;
         }
 
-        public override IDbConnection OpenConnection()
+        private SqlConnection OpenConnectionInternal()
+        {
+            // TODO: get rid of this
+            return Util.TaskHelper.Wait(OpenConnectionInternalAsync(CancellationToken.None));
+        }
+
+        public override async Task<DbConnection> OpenConnectionAsync(CancellationToken cancellationToken)
+        {
+            return await OpenConnectionInternalAsync(cancellationToken);
+        }
+
+        public override DbConnection OpenConnection()
         {
             return OpenConnectionInternal();
         }

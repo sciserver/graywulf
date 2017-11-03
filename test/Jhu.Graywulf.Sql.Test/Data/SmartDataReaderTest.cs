@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
+using System.Threading;
 using System.Linq;
 using System.Data;
 using System.Data.SqlClient;
@@ -24,7 +23,7 @@ namespace Jhu.Graywulf.Data
                     cmd.CommandText = sql;
                     cmd.RecordsCounted = true;
 
-                    using (var dr = cmd.ExecuteReader())
+                    using (var dr = cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationToken.None).Result)
                     {
                         Assert.AreEqual(1, dr.RecordCount);
                         Assert.AreEqual(13, dr.Columns.Count);

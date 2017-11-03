@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Data;
-using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 using System.ServiceModel;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.ServiceModel;
@@ -78,7 +74,14 @@ namespace Jhu.Graywulf.IO.Tasks
             InitializeMembers();
         }
 
+        public ExportTable(CancellationContext cancellationContext)
+            : base(cancellationContext)
+        {
+            InitializeMembers();
+        }
+
         public ExportTable(ExportTable old)
+            : base(old)
         {
             CopyMembers(old);
         }
@@ -106,11 +109,16 @@ namespace Jhu.Graywulf.IO.Tasks
 
         #endregion
 
-        public void Open()
+        public async Task OpenAsync()
         {
             destination.FileMode = DataFileMode.Write;
             destination.StreamFactory = GetStreamFactory();
-            destination.Open();
+            await destination.OpenAsync();
+        }
+
+        public void Open()
+        {
+            Util.TaskHelper.Wait(OpenAsync());
         }
 
         public void Close()
@@ -121,7 +129,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// Executes the table export operation
         /// </summary>
-        protected override void OnExecute()
+        protected override async Task OnExecuteAsync()
         {
             if (source == null)
             {
@@ -146,10 +154,10 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 if (destination.IsClosed)
                 {
-                    Open();
+                    await OpenAsync();
                 }
 
-                CopyToFile(source, destination, result);
+                await CopyToFileAsync(source, destination, result);
             }
             catch (Exception ex)
             {

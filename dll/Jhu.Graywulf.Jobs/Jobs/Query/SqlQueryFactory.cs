@@ -55,7 +55,7 @@ namespace Jhu.Graywulf.Jobs.Query
             SqlQuery res;
             if (root is SelectStatement)
             {
-                res = new SqlQuery(RegistryContext);
+                res = new SqlQuery(null, RegistryContext);
             }
             else
             {

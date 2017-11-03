@@ -77,10 +77,6 @@
     <Compile Include="RemoteService\RemoteServiceCheck.cs" />
     <Compile Include="RemoteService\RemoteServiceConfiguration.cs" />
     <Compile Include="RemoteService\RemoteServiceHelper.cs" />
-    <Compile Include="Tasks\CancelableCollection.cs" />
-    <Compile Include="Tasks\CancelableDbCommand.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Tasks\CancelableDelay.cs" />
     <Compile Include="Tasks\CancelableProcess.cs">
       <SubType>Code</SubType>
@@ -88,6 +84,8 @@
     <Compile Include="Tasks\CancelableTask.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Tasks\CancelableTaskProgress.cs" />
+    <Compile Include="Tasks\CancellationContext.cs" />
     <Compile Include="Tasks\ExceptionMessages.Designer.cs">
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
       <DesignTime>True</DesignTime>

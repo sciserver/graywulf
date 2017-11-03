@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Data;
 using System.Data.SqlClient;
@@ -349,10 +347,10 @@ testline
                 {
                     cmd.CommandText = "SELECT SampleData.* FROM SampleData";
 
-                    using (var dr = cmd.ExecuteReader())
+                    using (var dr = cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationToken.None).Result)
                     {
                         var csv = new DelimitedTextDataFile(w);
-                        csv.WriteFromDataReaderAsync(dr).Wait();
+                        csv.WriteFromDataReader(dr);
                     }
                 }
             }
@@ -376,10 +374,10 @@ testline
                 {
                     cmd.CommandText = "SELECT EmptyTable.* FROM EmptyTable";
 
-                    using (var dr = cmd.ExecuteReader())
+                    using (var dr = cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationToken.None).Result)
                     {
                         var csv = new DelimitedTextDataFile(w);
-                        csv.WriteFromDataReaderAsync(dr).Wait();
+                        csv.WriteFromDataReader(dr);
                     }
                 }
             }
@@ -401,10 +399,10 @@ testline
                 {
                     cmd.CommandText = "SELECT * FROM SampleData_AllTypes";
 
-                    using (var dr = cmd.ExecuteReader())
+                    using (var dr = cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationToken.None).Result)
                     {
                         var csv = new DelimitedTextDataFile(w);
-                        csv.WriteFromDataReaderAsync(dr).Wait();
+                        csv.WriteFromDataReader(dr);
                     }
                 }
             }
@@ -431,9 +429,9 @@ testline
                     {
                         cmd.CommandText = "SELECT SampleData.* FROM SampleData";
 
-                        using (var dr = cmd.ExecuteReader())
+                        using (var dr = cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationToken.None).Result)
                         {
-                            csv.WriteFromDataReaderAsync(dr).Wait();
+                            csv.WriteFromDataReader(dr);
                         }
                     }
                 }

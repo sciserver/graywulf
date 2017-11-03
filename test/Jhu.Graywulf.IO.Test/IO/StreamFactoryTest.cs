@@ -112,7 +112,7 @@ namespace Jhu.Graywulf.IO
             var sf = StreamFactory.Create(null);
             var path = GetTestFilePath("modules/graywulf/test/files/csv_numbers.csv");
 
-            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.OpenAsync(new Uri(path, UriKind.Relative), null, DataFileMode.Read).Result)
             {
                 s.ReadByte();
             }
@@ -124,7 +124,7 @@ namespace Jhu.Graywulf.IO
             var sf = StreamFactory.Create(null);
             var path = GetTestFilePath("modules/graywulf/test/files/writetest.csv");
 
-            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
+            using (var s = sf.OpenAsync(new Uri(path, UriKind.Relative), null, DataFileMode.Write).Result)
             {
                 s.WriteByte(0);
             }
@@ -136,7 +136,7 @@ namespace Jhu.Graywulf.IO
             var sf = StreamFactory.Create(null);
             var path = GetTestFilePath("modules/graywulf/test/files/csv_numbers.csv.gz");
 
-            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.OpenAsync(new Uri(path, UriKind.Relative), null, DataFileMode.Read).Result)
             {
                 s.ReadByte();
             }
@@ -148,7 +148,7 @@ namespace Jhu.Graywulf.IO
             var sf = StreamFactory.Create(null);
             var path = GetTestFilePath("modules/graywulf/test/files/writetest.csv.gz");
 
-            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
+            using (var s = sf.OpenAsync(new Uri(path, UriKind.Relative), null, DataFileMode.Write).Result)
             {
                 s.WriteByte(0);
             }
@@ -160,7 +160,7 @@ namespace Jhu.Graywulf.IO
             var sf = StreamFactory.Create(null);
             var path = GetTestFilePath("modules/graywulf/test/files/csv_numbers.csv.bz2");
 
-            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.OpenAsync(new Uri(path, UriKind.Relative), null, DataFileMode.Read).Result)
             {
                 s.ReadByte();
             }
@@ -172,7 +172,7 @@ namespace Jhu.Graywulf.IO
             var sf = StreamFactory.Create(null);
             var path = GetTestFilePath("modules/graywulf/test/files/writetest.csv.bz2");
 
-            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
+            using (var s = sf.OpenAsync(new Uri(path, UriKind.Relative), null, DataFileMode.Write).Result)
             {
                 s.WriteByte(0);
             }
@@ -184,7 +184,7 @@ namespace Jhu.Graywulf.IO
             var sf = StreamFactory.Create(null);
             var path = GetTestFilePath("modules/graywulf/test/files/csv_numbers.zip");
 
-            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.OpenAsync(new Uri(path, UriKind.Relative), null, DataFileMode.Read).Result)
             {
                 Assert.IsTrue(s is IArchiveInputStream);
 
@@ -204,7 +204,7 @@ namespace Jhu.Graywulf.IO
             var sf = StreamFactory.Create(null);
             var path = GetTestFilePath("modules/graywulf/test/files/writetest.zip");
 
-            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
+            using (var s = sf.OpenAsync(new Uri(path, UriKind.Relative), null, DataFileMode.Write).Result)
             {
                 Assert.IsTrue(s is IArchiveOutputStream);
 
@@ -225,7 +225,7 @@ namespace Jhu.Graywulf.IO
             var sf = StreamFactory.Create(null);
             var path = GetTestFilePath("modules/graywulf/test/files/csv_numbers.tar.gz");
 
-            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.OpenAsync(new Uri(path, UriKind.Relative), null, DataFileMode.Read).Result)
             {
                 Assert.IsTrue(s is IArchiveInputStream);
 
@@ -245,7 +245,7 @@ namespace Jhu.Graywulf.IO
             var sf = StreamFactory.Create(null);
             var path = GetTestFilePath("modules/graywulf/test/files/writetest.tar.gz");
 
-            using (var s = sf.Open(new Uri(path, UriKind.Relative), null, DataFileMode.Write))
+            using (var s = sf.OpenAsync(new Uri(path, UriKind.Relative), null, DataFileMode.Write).Result)
             {
                 Assert.IsTrue(s is IArchiveOutputStream);
 
@@ -265,7 +265,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("file:///C:/windows/win.ini"), null, DataFileMode.Read))
+            using (var s = sf.OpenAsync(new Uri("file:///C:/windows/win.ini"), null, DataFileMode.Read).Result)
             {
                 s.ReadByte();
             }
@@ -282,7 +282,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("http://www.bing.com"), null, DataFileMode.Read))
+            using (var s = sf.OpenAsync(new Uri("http://www.bing.com"), null, DataFileMode.Read).Result)
             {
                 s.ReadByte();
             }
@@ -293,7 +293,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("https://www.google.com"), null, DataFileMode.Read))
+            using (var s = sf.OpenAsync(new Uri("https://www.google.com"), null, DataFileMode.Read).Result)
             {
                 s.ReadByte();
             }
@@ -304,7 +304,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("ftp://ftp.debian.com/debian/README"), null, DataFileMode.Read))
+            using (var s = sf.OpenAsync(new Uri("ftp://ftp.debian.com/debian/README"), null, DataFileMode.Read).Result)
             {
                 s.ReadByte();
             }

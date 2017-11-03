@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Activities;
+using System.Threading;
+using System.Threading.Tasks;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.CopyTables
 {
@@ -12,20 +15,15 @@ namespace Jhu.Graywulf.Jobs.CopyTables
         [RequiredArgument]
         public InArgument<CopyTablesItem> Item { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
             var parameters = Parameters.Get(activityContext);
             var item = Item.Get(activityContext);
 
-            return delegate()
-            {
-                var task = item.GetInitializedCopyTableTask(parameters);
-                RegisterCancelable(workflowInstanceId, activityInstanceId, task);
-                task.Execute();
-                UnregisterCancelable(workflowInstanceId, activityInstanceId, task);
-            };
+            var task = item.GetInitializedCopyTableTask(cancellationContext, parameters);
+            await task.ExecuteAsync();
         }
     }
 }

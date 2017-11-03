@@ -11,6 +11,7 @@ using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -22,7 +23,7 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<ITableSource> TableSource { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
@@ -31,18 +32,13 @@ namespace Jhu.Graywulf.Jobs.Query
             var tableSource = TableSource.Get(activityContext);
             DatasetBase statisticsDataset = null;
 
-            using (RegistryContext context = query.CreateContext())
+            using (RegistryContext registryContext = query.CreateContext())
             {
-                query.InitializeQueryObject(context, scheduler, true);
+                query.InitializeQueryObject(cancellationContext, registryContext, scheduler, true);
                 statisticsDataset = query.GetStatisticsDataset(tableSource);
             }
 
-            return delegate()
-            {
-                RegisterCancelable(workflowInstanceId, activityInstanceId, query);
-                query.ComputeTableStatistics(tableSource, statisticsDataset);
-                UnregisterCancelable(workflowInstanceId, activityInstanceId, query);
-            };
+            await query.ComputeTableStatisticsAsync(tableSource, statisticsDataset);
         }
     }
 }

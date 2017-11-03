@@ -151,7 +151,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             var options = importOptionsForm.GetOptions();
             var importer = uploadForm.GetTableImporter(file, table, options);
 
-            importer.Execute();
+            importer.ExecuteAsync().Wait();
 
             foreach (var r in importer.Results)
             {

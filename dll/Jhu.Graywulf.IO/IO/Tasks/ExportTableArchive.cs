@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Data;
-using System.Data.Common;
+using System.Threading.Tasks;
 using System.ServiceModel;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.ServiceModel;
@@ -79,7 +74,14 @@ namespace Jhu.Graywulf.IO.Tasks
             InitializeMembers();
         }
 
+        public ExportTableArchive(CancellationContext cancellationContext)
+            : base(cancellationContext)
+        {
+            InitializeMembers();
+        }
+
         public ExportTableArchive(ExportTableArchive old)
+            : base(old)
         {
             CopyMembers(old);
         }
@@ -106,15 +108,15 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// Opens the archive file for writing.
         /// </summary>
-        public override void Open()
+        public override async Task OpenAsync()
         {
-            Open(DataFileMode.Write, DataFileArchival.Automatic);
+            await OpenAsync(DataFileMode.Write, DataFileArchival.Automatic);
         }
 
         /// <summary>
         /// Executes the table export operation
         /// </summary>
-        protected override void OnExecute()
+        protected override async Task OnExecuteAsync()
         {
             if (BaseStream == null)
             {
@@ -151,7 +153,7 @@ namespace Jhu.Graywulf.IO.Tasks
             // of them can contain only one, so iterating through the resultsets
             // has to happen here and conditionally, inside the file writer
             // function: DataFileBase.WriteFromDataReader
-            
+
             // Iterate through all source queries
             for (int i = 0; i < sources.Length; i++)
             {
@@ -173,7 +175,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     // or new files need to be created for every single resultset
 
                     destinations[i].Open(BaseStream, DataFileMode.Write);
-                    CopyToFile(sources[i], destinations[i], result);
+                    await CopyToFileAsync(sources[i], destinations[i], result);
                 }
                 catch (Exception ex)
                 {

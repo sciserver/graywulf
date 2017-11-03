@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -32,8 +33,10 @@ namespace Jhu.Graywulf.Jobs.Query
     /// </remarks>
     [Serializable]
     [DataContract(Namespace = "")]
-    public abstract class QueryObject : CancelableCollection, IRegistryContextObject, ICancelableTask, ICloneable
+    public abstract class QueryObject : CancelableTask, IRegistryContextObject, ICloneable
     {
+        protected delegate Task AsyncReaderAction(SqlDataReader dr, CancellationToken cancellationToken);
+
         #region Property storage member variables
 
         /// <summary>
@@ -460,7 +463,14 @@ namespace Jhu.Graywulf.Jobs.Query
             InitializeMembers(new StreamingContext());
         }
 
-        public QueryObject(RegistryContext context)
+        public QueryObject(CancellationContext cancellationContext)
+            : base(cancellationContext)
+        {
+            InitializeMembers(new StreamingContext());
+        }
+
+        public QueryObject(CancellationContext cancellationContext, RegistryContext context)
+            : base(cancellationContext)
         {
             InitializeMembers(new StreamingContext());
 
@@ -468,6 +478,7 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         public QueryObject(QueryObject old)
+            : base(old.CancellationContext)
         {
             CopyMembers(old);
         }
@@ -573,9 +584,9 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Initializes the query object by loading registry objects, if necessary.
         /// </summary>
         /// <param name="context"></param>
-        public void InitializeQueryObject(RegistryContext context)
+        public void InitializeQueryObject(CancellationContext cancellationContext, RegistryContext registryContext)
         {
-            InitializeQueryObject(context, null, true);
+            InitializeQueryObject(cancellationContext, registryContext, null, true);
         }
 
         /// <summary>
@@ -583,29 +594,34 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="context"></param>
         /// <param name="scheduler"></param>
-        public void InitializeQueryObject(RegistryContext context, IScheduler scheduler)
+        public void InitializeQueryObject(CancellationContext cancellationContext, RegistryContext registryContext, IScheduler scheduler)
         {
-            InitializeQueryObject(context, scheduler, false);
+            InitializeQueryObject(cancellationContext, registryContext, scheduler, false);
         }
 
         /// <summary>
         /// Initializes the query object by loading registry objects, if necessary.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="registryContext"></param>
         /// <param name="scheduler"></param>
         /// <param name="forceReinitialize"></param>
-        public virtual void InitializeQueryObject(RegistryContext context, IScheduler scheduler, bool forceReinitialize)
+        public virtual void InitializeQueryObject(CancellationContext cancellationContext, RegistryContext registryContext, IScheduler scheduler, bool forceReinitialize)
         {
-            if (context != null)
+            if (cancellationContext != null)
             {
-                context.EnsureContextEntitiesLoaded();
+                ((ICancelableTask)this).CancellationContext = cancellationContext;
+            }
+
+            if (registryContext != null)
+            {
+                registryContext.EnsureContextEntitiesLoaded();
             }
 
             lock (syncRoot)
             {
-                if (context != null)
+                if (registryContext != null)
                 {
-                    UpdateContext(context);
+                    UpdateContext(registryContext);
 
                     switch (executionMode)
                     {
@@ -1275,121 +1291,31 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
-        #region Actual query execution functions
+        #region Generic query execution functions
 
-        protected void ExecuteSqlOnDataset(SqlCommand cmd, DatasetBase dataset)
+        private async Task<SqlConnection> OpenConnectionForCommandAsync(SqlCommand cmd, string connectionString)
         {
-            using (var cn = new SqlConnection(dataset.ConnectionString))
-            {
-                cn.Open();
+            var cn = new SqlConnection(connectionString);
+            await cn.OpenAsync(CancellationContext.Token);
 
-                cmd.Connection = cn;
-                cmd.CommandTimeout = queryTimeout;
+            cmd.Connection = cn;
+            cmd.CommandTimeout = queryTimeout;
 
-                DumpSqlCommand(cmd);
-
-                ExecuteSql(cmd);
-            }
-        }
-
-        protected void ExecuteSqlOnAssignedServer(SqlCommand cmd, CommandTarget target)
-        {
-            var csb = GetSystemDatabaseConnectionStringOnAssignedServer(target);
-
-            using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
-            {
-                cn.Open();
-
-                cmd.Connection = cn;
-                cmd.CommandTimeout = queryTimeout;
-
-                DumpSqlCommand(cmd);
-
-                ExecuteSql(cmd);
-            }
-        }
-
-        protected object ExecuteSqlOnAssignedServerScalar(SqlCommand cmd, CommandTarget target)
-        {
-            var csb = GetSystemDatabaseConnectionStringOnAssignedServer(target);
-
-            using (var cn = new SqlConnection(csb.ConnectionString))
-            {
-                cn.Open();
-
-                cmd.Connection = cn;
-                cmd.CommandTimeout = queryTimeout;
-
-                DumpSqlCommand(cmd);
-
-                return ExecuteSqlScalar(cmd);
-            }
-        }
-
-        protected void ExecuteSqlOnAssignedServerReader(SqlCommand cmd, CommandTarget target, Action<IDataReader> action)
-        {
-            var csb = GetSystemDatabaseConnectionStringOnAssignedServer(target);
-
-            using (var cn = new SqlConnection(csb.ConnectionString))
-            {
-                cn.Open();
-
-                cmd.Connection = cn;
-                cmd.CommandTimeout = queryTimeout;
-
-                DumpSqlCommand(cmd);
-
-                ExecuteSqlReader(cmd, action);
-            }
+            return cn;
         }
 
         /// <summary>
         /// Executes a long SQL command in cancelable mode.
         /// </summary>
         /// <param name="cmd"></param>
-        protected void ExecuteSql(SqlCommand cmd)
+        protected async Task<int> ExecuteSqlAsync(SqlCommand cmd, string connectionString)
         {
-            var guid = Guid.NewGuid();
-            var ccmd = new CancelableDbCommand(cmd);
+            // TODO: dispatch exceptions
 
-            RegisterCancelable(guid, ccmd);
-
-            try
+            using (var cn = await OpenConnectionForCommandAsync(cmd, connectionString))
             {
-#if !SKIPQUERIES
-                ccmd.ExecuteNonQuery();
-#endif
-            }
-            finally
-            {
-                UnregisterCancelable(guid);
-            }
-        }
-
-
-        /// <summary>
-        /// Executes a long SQL command in cancelable mode.
-        /// </summary>
-        /// <param name="cmd"></param>
-        /// <returns></returns>
-        protected object ExecuteSqlScalar(SqlCommand cmd)
-        {
-            var guid = Guid.NewGuid();
-            var ccmd = new CancelableDbCommand(cmd);
-
-            RegisterCancelable(guid, ccmd);
-
-            try
-            {
-#if !SKIPQUERIES
-                return ccmd.ExecuteScalar();
-#else
-            return 0;
-#endif
-            }
-            finally
-            {
-                UnregisterCancelable(guid);
+                DumpSqlCommand(cmd);
+                return await cmd.ExecuteNonQueryAsync(CancellationContext.Token);
             }
         }
 
@@ -1397,21 +1323,31 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Executes a long SQL command in cancelable mode.
         /// </summary>
         /// <param name="cmd"></param>
-        /// <param name="action"></param>
-        protected void ExecuteSqlReader(SqlCommand cmd, Action<IDataReader> action)
+        /// <returns></returns>
+        protected async Task<object> ExecuteSqlScalarAsync(SqlCommand cmd, string connectionString)
         {
-            var guid = Guid.NewGuid();
-            var ccmd = new CancelableDbCommand(cmd);
+            // TODO: dispatch exceptions
 
-            RegisterCancelable(guid, ccmd);
-
-            try
+            using (var cn = await OpenConnectionForCommandAsync(cmd, connectionString))
             {
-                ccmd.ExecuteReader(action);
+                DumpSqlCommand(cmd);
+                return await cmd.ExecuteScalarAsync(CancellationContext.Token);
             }
-            finally
+        }
+
+        protected async Task<int> ExecuteSqlReaderAsync(SqlCommand cmd, string connectionString, AsyncReaderAction asyncAction)
+        {
+            // TODO: dispatch exceptions
+
+            using (var cn = await OpenConnectionForCommandAsync(cmd, connectionString))
             {
-                UnregisterCancelable(guid);
+                DumpSqlCommand(cmd);
+
+                using (var dr = await cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationContext.Token))
+                {
+                    await asyncAction(dr, CancellationContext.Token);
+                    return dr.RecordsAffected;
+                }
             }
         }
 
@@ -1482,9 +1418,35 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
-        #region Cancelable command execution
+        #region Execute SQL on specific data sets
 
-        public virtual void Execute()
+        protected async Task<int> ExecuteSqlOnDatasetAsync(SqlCommand cmd, DatasetBase dataset)
+        {
+            return await ExecuteSqlAsync(cmd, dataset.ConnectionString);
+        }
+
+        protected async Task<int> ExecuteSqlOnAssignedServerAsync(SqlCommand cmd, CommandTarget target)
+        {
+            var csb = GetSystemDatabaseConnectionStringOnAssignedServer(target);
+            return await ExecuteSqlAsync(cmd, csb.ConnectionString);
+        }
+
+        protected async Task<object> ExecuteSqlOnAssignedServerScalarAsync(SqlCommand cmd, CommandTarget target)
+        {
+            var csb = GetSystemDatabaseConnectionStringOnAssignedServer(target);
+            return await ExecuteSqlScalarAsync(cmd, csb.ConnectionString);
+        }
+
+        protected async Task<int> ExecuteSqlOnAssignedServerReaderAsync(SqlCommand cmd, CommandTarget target, AsyncReaderAction asyncAction)
+        {
+            var csb = GetSystemDatabaseConnectionStringOnAssignedServer(target);
+            return await ExecuteSqlReaderAsync(cmd, csb.ConnectionString, asyncAction);
+        }
+
+        #endregion
+        #region Cancelable task execution
+
+        protected override Task OnExecuteAsync()
         {
             // Required by cancelable interface
             throw new NotImplementedException();
@@ -1508,11 +1470,11 @@ namespace Jhu.Graywulf.Jobs.Query
 
             if (local)
             {
-                qi = new CopyTable();
+                qi = new CopyTable(CancellationContext);
             }
             else
             {
-                qi = RemoteServiceHelper.CreateObject<ICopyTable>(desthost, true);
+                qi = RemoteServiceHelper.CreateObject<ICopyTable>(CancellationContext, desthost, true);
             }
 
             qi.Source = source;

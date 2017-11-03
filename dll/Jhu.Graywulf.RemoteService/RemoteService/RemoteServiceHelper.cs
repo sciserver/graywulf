@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using System.IO;
-using System.Threading;
-using System.ServiceModel;
-using System.ServiceModel.Description;
-using System.Security;
-using System.Security.Principal;
 using Jhu.Graywulf.ServiceModel;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.RemoteService
 {
@@ -37,10 +27,10 @@ namespace Jhu.Graywulf.RemoteService
             return CreateChannel<IRemoteServiceControl>(host, "Control", RemoteServiceBase.Configuration.Endpoint, timeout);
         }
 
-        public static T CreateObject<T>(string host, bool allowInProcess)
+        public static T CreateObject<T>(CancellationContext cancellationContext, string host, bool allowInProcess)
             where T : IRemoteService
         {
-            return CreateObject<T>(host, allowInProcess, TimeSpan.FromSeconds(5));
+            return CreateObject<T>(cancellationContext, host, allowInProcess, TimeSpan.FromSeconds(Constants.ControlServiveTimeout));
         }
 
         /// <summary>
@@ -53,16 +43,20 @@ namespace Jhu.Graywulf.RemoteService
         /// If the remote service does not serve the requested type of service yet, the
         /// function registers it before creating a proxy.
         /// </remarks>
-        public static T CreateObject<T>(string host, bool allowInProcess, TimeSpan timeout)
+        public static T CreateObject<T>(CancellationContext cancellationContext, string host, bool allowInProcess, TimeSpan timeout)
             where T : IRemoteService
         {
+            // TODO: make this async
+
             var fdqn = DnsHelper.GetFullyQualifiedDnsName(host);
+            T res;
 
             if (allowInProcess && DnsHelper.IsLocalhost(fdqn))
             {
                 // Create the object in-process
                 var st = GetServiceType(typeof(T));
-                return (T)Activator.CreateInstance(st);
+                res = (T)Activator.CreateInstance(st);  // This calls the parameterless constructor!
+                res.CancellationContext = cancellationContext;
             }
             else
             {
@@ -70,8 +64,12 @@ namespace Jhu.Graywulf.RemoteService
                 var sc = GetControlObject(fdqn, timeout);
                 var uri = sc.GetServiceEndpointUri(typeof(T).AssemblyQualifiedName);
                 var ep = CreateEndpointAddress(uri, RemoteServiceBase.Configuration.Endpoint.ServicePrincipalName);
-                return CreateChannel<T>(ep, timeout);
+                res = CreateChannel<T>(ep, timeout);
             }
+
+            cancellationContext.Register(res);
+
+            return res;
         }
 
         #endregion

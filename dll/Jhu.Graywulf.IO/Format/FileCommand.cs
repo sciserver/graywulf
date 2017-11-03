@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Data;
 using System.Data.Common;
 using Jhu.Graywulf.Schema;
@@ -118,6 +117,11 @@ namespace Jhu.Graywulf.Format
             throw new NotImplementedException();
         }
 
+        public Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
         public object ExecuteScalar()
         {
             throw new NotImplementedException();
@@ -146,14 +150,15 @@ namespace Jhu.Graywulf.Format
             return dataReader;
         }
 
-        ISmartDataReader ISmartCommand.ExecuteReader()
+        public Task<FileDataReader> ExecuteReaderAsync(CommandBehavior bahavior, CancellationToken cancellationToken)
         {
-            return this.ExecuteReader();
+            dataReader = new FileDataReader(file);
+            return Task.FromResult(dataReader);
         }
-
-        ISmartDataReader ISmartCommand.ExecuteReader(CommandBehavior behavior)
+        
+        async Task<ISmartDataReader> ISmartCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
         {
-            return this.ExecuteReader(behavior);
+            return await this.ExecuteReaderAsync(behavior, cancellationToken);
         }
     }
 }

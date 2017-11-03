@@ -6,6 +6,7 @@ using System.IO;
 using System.Security.Principal;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.RemoteService;
 
@@ -16,45 +17,78 @@ namespace Jhu.Graywulf.Tasks
     public class CancelableProcessTest : Jhu.Graywulf.Test.TestClassBase
     {
         [TestMethod]
+        public void ExecuteProcessTest()
+        {
+            using (var cc = new CancellationContext())
+            {
+                var pinfo = new ProcessStartInfo()
+                {
+                    FileName = "ping.exe",
+                    Arguments = "localhost",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                };
+
+                var cp = new CancelableProcess(cc, pinfo);
+
+                var task = cp.ExecuteAsync();
+                Util.TaskHelper.Wait(task);
+
+                Assert.AreEqual(0, cp.ExitCode);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TaskCanceledException))]
         public void CancelProcessTest()
         {
-            var pinfo = new ProcessStartInfo()
+            using (var cc = new CancellationContext())
             {
-                FileName = "ping.exe",
-                Arguments = "localhost -t",
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            };
+                var pinfo = new ProcessStartInfo()
+                {
+                    FileName = "ping.exe",
+                    Arguments = "localhost -t",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                };
 
-            var cp = new CancelableProcess(pinfo);
+                var cp = new CancelableProcess(cc, pinfo);
 
-            cp.BeginExecute();
+                var task = cp.ExecuteAsync();
 
-            Thread.Sleep(5000);
+                Thread.Sleep(5000);
 
-            cp.Cancel();
+                cc.Cancel();
 
-            cp.EndExecute();
-
-            Assert.AreEqual(-1, cp.ExitCode);
+                Util.TaskHelper.Wait(task);
+            }
         }
 
         [TestMethod]
         public void ExecuteEseutilTest()
         {
-            var pinfo = new ProcessStartInfo()
+            using (var cancellationContext = new CancellationContext())
             {
-                FileName = GetTestFilePath(@"graywulf\util\eseutil.exe"),
-                Arguments = "/y",
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            };
+                var pinfo = new ProcessStartInfo()
+                {
+                    FileName = GetTestFilePath(@"modules\graywulf\util\eseutil.exe"),
+                    Arguments = "/y",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                };
 
-            var cp = new CancelableProcess(pinfo);
+                var cp = new CancelableProcess(cancellationContext, pinfo);
 
-            cp.Execute();
+                try
+                {
+                    Util.TaskHelper.Wait(cp.ExecuteAsync());
+                }
+                catch (Exception)
+                {
+                }
 
-            Assert.AreEqual(-1003, cp.ExitCode);
+                Assert.AreEqual(-1003, cp.ExitCode);
+            }
         }
     }
 }

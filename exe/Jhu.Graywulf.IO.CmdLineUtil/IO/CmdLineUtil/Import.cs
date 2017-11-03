@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using Jhu.Graywulf.CommandLineParser;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.IO.Tasks;
-using Jhu.Graywulf.IO;
+using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.Format;
 
 namespace Jhu.Graywulf.IO.CmdLineUtil
@@ -108,21 +108,23 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
                 destination.Options |= TableInitializationOptions.Create;
             }
 
-            // Create task
-            var import = new ImportTable()
+            using (var cancellationContext = new CancellationContext())
             {
-                Source = source,
-                Destination = destination,
-                Timeout = timeout,
-            };
+                var import = new ImportTable(cancellationContext)
+                {
+                    Source = source,
+                    Destination = destination,
+                    Timeout = timeout,
+                };
 
-            Console.WriteLine("Importing table...");
+                Console.WriteLine("Importing table...");
 
-            import.Open();
-            import.Execute();
-            import.Close();
+                import.Open();
+                Util.TaskHelper.Wait(import.ExecuteAsync());
+                import.Close();
 
-            Console.WriteLine("     done.");
+                Console.WriteLine("     done.");
+            }
         }
     }
 }

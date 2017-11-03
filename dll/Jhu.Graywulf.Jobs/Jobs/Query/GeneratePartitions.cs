@@ -6,7 +6,7 @@ using System.Activities;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Scheduler;
-using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -17,22 +17,21 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             SqlQuery query = Query.Get(activityContext);
 
             switch (query.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
-                    query.InitializeQueryObject(null);
+                    query.InitializeQueryObject(cancellationContext, null);
                     query.GeneratePartitions();
                     break;
                 case ExecutionMode.Graywulf:
-                    using (RegistryContext context = query.CreateContext())
+                    using (RegistryContext registryContext = query.CreateContext())
                     {
                         var scheduler = activityContext.GetExtension<IScheduler>();
-
-                        query.InitializeQueryObject(context, scheduler, false);
+                        query.InitializeQueryObject(cancellationContext, registryContext, scheduler, false);
                         query.GeneratePartitions();
                     }
                     break;

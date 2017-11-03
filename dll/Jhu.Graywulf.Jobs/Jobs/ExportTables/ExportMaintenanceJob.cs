@@ -10,6 +10,7 @@ using System.Xml.Serialization;
 using System.IO;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.ExportTables
 {
@@ -21,11 +22,13 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         [RequiredArgument]
         public InArgument<int> Age { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             int age = Age.Get(activityContext);
 
-            /*
+            throw new NotImplementedException();
+
+            /* TODO: implement
             using (Context context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 EntityFactory ef = new EntityFactory(context);

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.IO;
-using System.Configuration;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
@@ -14,7 +13,7 @@ using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.CodeGeneration;
-using Jhu.Graywulf.IO;
+using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
@@ -33,10 +32,14 @@ namespace Jhu.Graywulf.Jobs.Query
         private DestinationTable destination;
 
         /// <summary>
-        /// If true, query destination table has already been initialized.
-        /// TODO: this will need to be changed for multi-select queries
+        /// If 1, query destination table has already been initialized.
+        /// TODO: these will need to be changed for multi-select queries
         /// </summary>
-        private bool isDestinationTableInitialized;
+        [NonSerialized]
+        public int IsDestinationTableCreated;
+
+        [NonSerialized]
+        public int IsDestinationTablePrimaryKeyCreated;
 
         /// <summary>
         /// Points to the output table of the query.
@@ -75,17 +78,7 @@ namespace Jhu.Graywulf.Jobs.Query
             get { return destination; }
             set { destination = value; }
         }
-
-        /// <summary>
-        /// Gets whether the destination table is initialized.
-        /// </summary>
-        [IgnoreDataMember]
-        public bool IsDestinationTableInitialized
-        {
-            get { return isDestinationTableInitialized; }
-            internal set { isDestinationTableInitialized = value; }
-        }
-
+        
         [DataMember]
         public Table Output
         {
@@ -122,8 +115,14 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Constructors and initializer
 
-        protected SqlQuery()
-            : base()
+        protected SqlQuery(CancellationContext cancellationContext)
+            : base(cancellationContext)
+        {
+            InitializeMembers(new StreamingContext());
+        }
+        
+        public SqlQuery(CancellationContext cancellationContext, RegistryContext registryContext)
+            : base(cancellationContext, registryContext)
         {
             InitializeMembers(new StreamingContext());
         }
@@ -134,19 +133,12 @@ namespace Jhu.Graywulf.Jobs.Query
             CopyMembers(old);
         }
 
-        public SqlQuery(RegistryContext context)
-            : base(context)
-        {
-            InitializeMembers(new StreamingContext());
-
-            this.RegistryContext = context;
-        }
-
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
             this.destination = null;
-            this.isDestinationTableInitialized = false;
+            this.IsDestinationTableCreated = 0;
+            this.IsDestinationTablePrimaryKeyCreated = 0;
             this.output = null;
 
             this.partitions = new List<SqlQueryPartition>();
@@ -158,7 +150,8 @@ namespace Jhu.Graywulf.Jobs.Query
         private void CopyMembers(SqlQuery old)
         {
             this.destination = old.destination;
-            this.isDestinationTableInitialized = old.isDestinationTableInitialized;
+            this.IsDestinationTableCreated = old.IsDestinationTableCreated;
+            this.IsDestinationTablePrimaryKeyCreated = old.IsDestinationTablePrimaryKeyCreated;
             this.output = old.output;
 
             this.partitions = new List<SqlQueryPartition>(old.partitions.Select(p => (SqlQueryPartition)p.Clone()));
@@ -180,7 +173,7 @@ namespace Jhu.Graywulf.Jobs.Query
             // TODO: this is used to validate query before scheduling
             // this needs to be merged with with InitializeQuery.
             // Also: add mechanism to collect validation messages
-            InitializeQueryObject(null, null, true);
+            InitializeQueryObject(null, null, null, true);
         }
 
         protected override void FinishInterpret(bool forceReinitialize)
@@ -284,16 +277,16 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="tr"></param>
         /// <param name="binSize"></param>
-        public void ComputeTableStatistics(ITableSource tableSource, DatasetBase statisticsDataset)
+        public async Task ComputeTableStatisticsAsync(ITableSource tableSource, DatasetBase statisticsDataset)
         {
             var stat = TableStatistics[tableSource];
 
             using (var cmd = CodeGenerator.GetTableStatisticsCommand(tableSource, statisticsDataset))
             {
-                ExecuteSqlOnAssignedServerReader(cmd, CommandTarget.Code, dr =>
+                await ExecuteSqlOnAssignedServerReaderAsync(cmd, CommandTarget.Code, async (dr, ct) =>
                 {
                     long rc = 0;
-                    while (dr.Read())
+                    while (await dr.ReadAsync(ct))
                     {
                         stat.KeyCount.Add(dr.GetInt64(0));
                         stat.KeyValue.Add((IComparable)dr.GetValue(1));
@@ -304,7 +297,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 });
             }
         }
-
+        
         #endregion
         #region Query partitioning
 

@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.ExportTables
 {
@@ -17,7 +18,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         [RequiredArgument]
         public InArgument<ExportTablesParameters> Parameters { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
@@ -39,25 +40,18 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 }
             }
 
-            return delegate()
+            // Create table exporter
+            var exporter = parameters.GetInitializedTableExportTask(cancellationContext);
+            
+            try
             {
-                // Create table exporter
-                var exporter = parameters.GetInitializedTableExportTask();
-
-                RegisterCancelable(workflowInstanceId, activityInstanceId, exporter);
-
-                try
-                {
-                    exporter.Open();
-                    exporter.Execute();
-                }
-                finally
-                {
-                    exporter.Close();
-                }
-
-                UnregisterCancelable(workflowInstanceId, activityInstanceId, exporter);
-            };
+                await exporter.OpenAsync();
+                await exporter.ExecuteAsync();
+            }
+            finally
+            {
+                exporter.Close();
+            }
         }
     }
 }

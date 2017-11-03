@@ -7,6 +7,7 @@ using System.ServiceModel;
 using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
+using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Tasks
 {
@@ -30,8 +31,8 @@ namespace Jhu.Graywulf.Tasks
     /// <remarks>
     /// This class is used for testing purposes.
     /// </remarks>
-    [ServiceBehavior(
-        InstanceContextMode = InstanceContextMode.PerSession)]
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession,
+        ConcurrencyMode = ConcurrencyMode.Multiple)]
     public class CancelableDelay : RemoteServiceBase, ICancelableDelay
     {
         private int period;
@@ -50,7 +51,14 @@ namespace Jhu.Graywulf.Tasks
             InitializeMembers();
         }
 
-        public CancelableDelay(int period)
+        public CancelableDelay(CancellationContext cancellationContext)
+            : base(cancellationContext)
+        {
+            InitializeMembers();
+        }
+
+        public CancelableDelay(CancellationContext cancellationContext, int period)
+            : base(cancellationContext)
         {
             InitializeMembers();
 
@@ -62,24 +70,19 @@ namespace Jhu.Graywulf.Tasks
             this.period = 1000;
         }
 
-        protected override void OnExecute()
+        protected override async Task OnExecuteAsync()
         {
             var start = DateTime.Now;
 
             Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Test, String.Format("Sleeping..."));
 
-            while (!IsCanceled && (DateTime.Now - start).TotalMilliseconds < period)
-            {
-                Thread.Sleep(1000);
-            }
+            await Task.Delay(period, CancellationContext.Token);
 
             Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Test, String.Format("Finished."));
         }
 
-        public override void Cancel()
+        protected override void OnCancel()
         {
-            base.Cancel();
-
             Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Test, String.Format("Cancelled."));
         }
     }

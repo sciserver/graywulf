@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.ServiceModel;
 using System.Data;
-using System.Data.SqlClient;
+using System.Threading.Tasks;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
@@ -62,7 +61,14 @@ namespace Jhu.Graywulf.IO.Tasks
             InitializeMembers();
         }
 
+        public CopyTable(CancellationContext cancellationContext)
+            : base(cancellationContext)
+        {
+            InitializeMembers();
+        }
+
         public CopyTable(CopyTable old)
+            : base(old)
         {
             CopyMembers(old);
         }
@@ -84,11 +90,7 @@ namespace Jhu.Graywulf.IO.Tasks
             return new CopyTable(this);
         }
 
-        public override void Dispose()
-        {
-        }
-
-        protected override void OnExecute()
+        protected override async Task OnExecuteAsync()
         {
             if (source == null)
             {
@@ -115,7 +117,7 @@ namespace Jhu.Graywulf.IO.Tasks
             // Create command that reads the table
             using (var cmd = source.CreateCommand())
             {
-                using (var cn = source.OpenConnection())
+                using (var cn = await source.OpenConnectionAsync(CancellationContext.Token))
                 {
                     using (var tn = cn.BeginTransaction(IsolationLevel.ReadUncommitted))
                     {
@@ -123,7 +125,7 @@ namespace Jhu.Graywulf.IO.Tasks
                         cmd.Transaction = tn;
                         cmd.CommandTimeout = Timeout;
 
-                        CopyFromCommand(cmd, destination, result);
+                        await CopyFromCommandAsync(cmd, destination, result);
                     }
                 }
             }

@@ -21,38 +21,25 @@ namespace Jhu.Graywulf.Jobs.Test
         [RequiredArgument]
         public InArgument<int> QueryTimeout { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
             var delay = DelayPeriod.Get(activityContext);
             var queryTimeout = QueryTimeout.Get(activityContext);
 
-            return delegate ()
+            var sql = String.Format("WAITFOR DELAY '{0:mm\\:ss}'", TimeSpan.FromMilliseconds(delay));
+
+            using (var cn = new SqlConnection("Data Source=localhost;Integrated Security=true"))
             {
-                var sql = String.Format("WAITFOR DELAY '{0:mm\\:ss}'", TimeSpan.FromMilliseconds(delay));
+                await cn.OpenAsync(cancellationContext.Token);
 
-                using (var cn = new SqlConnection("Data Source=localhost;Integrated Security=true"))
+                using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cn.Open();
-                    using (var cmd = new SqlCommand(sql, cn))
-                    {
-                        cmd.CommandTimeout = queryTimeout;
-
-                        var ccmd = new CancelableDbCommand(cmd);
-                        RegisterCancelable(workflowInstanceId, activityInstanceId, ccmd);
-
-                        try
-                        {
-                            ccmd.ExecuteNonQuery();
-                        }
-                        finally
-                        {
-                            UnregisterCancelable(workflowInstanceId, activityInstanceId, ccmd);
-                        }
-                    }
+                    cmd.CommandTimeout = queryTimeout;
+                    await cmd.ExecuteNonQueryAsync(cancellationContext.Token);
                 }
-            };
+            }
         }
     }
 }

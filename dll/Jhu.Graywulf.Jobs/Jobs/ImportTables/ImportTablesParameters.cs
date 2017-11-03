@@ -175,7 +175,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
         /// Returns an initialized table export task based on the job parameters
         /// </summary>
         /// <returns></returns>
-        public ICopyDataStream GetInitializedTableImportTask()
+        public ICopyDataStream GetInitializedTableImportTask(CancellationContext cancellationContext)
         {
             var sf = StreamFactory.Create(streamFactoryType);
 
@@ -201,7 +201,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                 // Use only first item from sources and destinations
                 // TODO: this could be extended but that would mean multiple tasks
 
-                var task = RemoteServiceHelper.CreateObject<IImportTable>(host, true);
+                var task = RemoteServiceHelper.CreateObject<IImportTable>(cancellationContext, host, true);
 
                 task.Source = this.sources[0];
                 task.Destination = this.destinations[0];
@@ -216,7 +216,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
             {
                 // Archive mode
 
-                var task = RemoteServiceHelper.CreateObject<IImportTableArchive>(host, true);
+                var task = RemoteServiceHelper.CreateObject<IImportTableArchive>(cancellationContext, host, true);
 
                 task.BatchName = Util.UriConverter.GetFileNameWithoutExtension(this.uri);
                 task.Uri = this.uri;

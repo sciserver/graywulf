@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Text;
-using System.Configuration;
-using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
@@ -17,7 +16,7 @@ using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.CodeGeneration;
 using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
-using Jhu.Graywulf.IO;
+using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
@@ -78,7 +77,12 @@ namespace Jhu.Graywulf.Jobs.Query
         #region Constructors and initializers
 
         public SqlQueryPartition()
-            : base()
+        {
+            InitializeMembers(new StreamingContext());
+        }
+
+        public SqlQueryPartition(CancellationContext cancellationContext)
+            : base(cancellationContext)
         {
             InitializeMembers(new StreamingContext());
         }
@@ -208,7 +212,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="table"></param>
         /// <param name="source"></param>
-        public void CopyRemoteTable(TableReference table, SourceTableQuery source)
+        public async Task CopyRemoteTableAsync(TableReference table, SourceTableQuery source)
         {
             // Create a target table name
             var cg = new SqlServerCodeGenerator();
@@ -220,13 +224,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 TableInitializationOptions.Drop | TableInitializationOptions.Create);
 
             var tc = CreateTableCopyTask(source, dest, false);
-
-            var guid = Guid.NewGuid();
-            RegisterCancelable(guid, tc);
-
-            tc.Execute();
-
-            UnregisterCancelable(guid);
+            await tc.ExecuteAsync();
         }
 
         /// <summary>
@@ -274,7 +272,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// the destination table.
         /// </summary>
         /// <returns></returns>
-        protected SourceTableQuery GetExecuteSourceQuery()
+        public SourceTableQuery GetExecuteSourceQuery()
         {
             // Source query will be run on the code database to have
             // access to UDTs
@@ -283,43 +281,17 @@ namespace Jhu.Graywulf.Jobs.Query
             return source;
         }
 
-        public virtual void PrepareExecuteQuery(RegistryContext context, Scheduler.IScheduler scheduler, out SourceTableQuery source, out Table destination)
-        {
-            InitializeQueryObject(context, scheduler, true);
-
-            // Destination table
-            switch (Query.ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    // In single-server mode results are directly written into destination table
-                    destination = Query.Destination.GetTable();
-                    break;
-                case ExecutionMode.Graywulf:
-                    // In graywulf mode results are written into a temporary table first
-                    destination = GetOutputTable();
-                    TemporaryTables.TryAdd(destination.TableName, destination);
-
-                    // Drop destination table, in case it already exists for some reason
-                    destination.Drop();
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            source = GetExecuteSourceQuery();
-        }
-
-        public void ExecuteQuery(SourceTableQuery source, Table destination)
+        public async Task ExecuteQueryAsync(SourceTableQuery source, Table destination)
         {
             var dt = new DestinationTable(destination, TableInitializationOptions.Create);
 
-            var insert = new InsertIntoTable()
+            var insert = new InsertIntoTable(CancellationContext)
             {
                 Source = source,
                 Destination = dt,
             };
 
-            insert.Execute();
+            await insert.ExecuteAsync();
         }
 
         #endregion
@@ -352,91 +324,50 @@ namespace Jhu.Graywulf.Jobs.Query
             };
         }
 
-        protected void PrepareDestinationTable()
+        public async Task PrepareDestinationTableAsync()
         {
-            lock (syncRoot)
+            // Only initialize target table if it's still uninitialized
+            if (Interlocked.Exchange(ref query.IsDestinationTableCreated, 1) == 0)
             {
-                // Only initialize target table if it's still uninitialzed
-                if (!query.IsDestinationTableInitialized)
+                var source = GetOutputSourceQuery();
+
+                // TODO: figure out metadata from query
+                var table = query.Destination.GetQueryOutputTable(BatchName, QueryName, null, null);
+                var columns = await source.GetColumnsAsync(CancellationContext.Token);
+
+                // TODO: make schema operation async
+                table.Initialize(columns, query.Destination.Options);
+
+                // At this point the name of the destination is determined
+                // mark it as the output
+                query.Output = table;
+            }
+        }
+
+        public async Task<Table> PrepareCreateDestinationTablePrimaryKeyAsync()
+        {
+            Table destination = null;
+
+            if (Interlocked.Exchange(ref Query.IsDestinationTablePrimaryKeyCreated, 1) == 0)
+            {
+                destination = query.Destination.GetQueryOutputTable(BatchName, QueryName, null, null);
+
+                var source = GetExecuteSourceQuery();
+                var columns = (await source.GetColumnsAsync(CancellationContext.Token)).Where(ci => ci.IsKey).ToArray();
+
+                if (columns.Length > 0)
                 {
-                    var source = GetOutputSourceQuery();
-
-                    // TODO: figure out metadata from query
-                    var table = query.Destination.GetQueryOutputTable(BatchName, QueryName, null, null);
-                    var columns = source.GetColumns();
-                    table.Initialize(columns, query.Destination.Options);
-
-                    // At this point the name of the destination is determined
-                    // mark it as the output
-                    query.Output = table;
+                    var pk = new Index(destination, columns, null, true);
+                    destination.Indexes.TryAdd(pk.IndexName, pk);
                 }
-
-                query.IsDestinationTableInitialized = true;
             }
+
+            return destination;
         }
 
-        /// <summary>
-        /// Creates or truncates destination table in the output database (usually MYDB)
-        /// </summary>
-        /// <remarks>
-        /// This has to be in the QueryPartition class because the Query class does not
-        /// have information about the database server the partition is executing on and
-        /// the temporary tables are required to generate the destination table schema.
-        /// 
-        /// The destination table is created by the very first partition that gets to
-        /// the point of copying results. This is when the name of the target table is
-        /// determined in case only a table name pattern is specified and automatic
-        /// unique naming is turned on.
-        /// </remarks>
-        public void PrepareDestinationTable(RegistryContext context, IScheduler scheduler)
+        public async Task CreateDestinationTablePrimaryKeyAsync(Table destination)
         {
-            switch (ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    // Output is already written to the target table
-                    break;
-                case Jobs.Query.ExecutionMode.Graywulf:
-                    InitializeQueryObject(context, scheduler, true);
-                    PrepareDestinationTable();
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        public void PrepareCreateDestinationTablePrimaryKey(RegistryContext context, IScheduler scheduler, out Table destination)
-        {
-            switch (ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    throw new NotImplementedException();
-                case Jobs.Query.ExecutionMode.Graywulf:
-                    {
-                        InitializeQueryObject(context, scheduler, true);
-
-                        lock (syncRoot)
-                        {
-                            destination = query.Destination.GetQueryOutputTable(BatchName, QueryName, null, null);
-
-                            var source = GetExecuteSourceQuery();
-                            var columns = source.GetColumns().Where(ci => ci.IsKey).ToArray();
-
-                            if (columns.Length > 0)
-                            {
-                                var pk = new Index(destination, columns, null, true);
-                                destination.Indexes.TryAdd(pk.IndexName, pk);
-                            }
-                        }
-                    }
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        public void CreateDestinationTablePrimaryKey(Table destination)
-        {
-            if (destination.PrimaryKey != null)
+            if (destination != null && destination.PrimaryKey != null)
             {
                 var sql = CodeGenerator.GenerateCreatePrimaryKeyScript(destination, true);
 
@@ -449,7 +380,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                     try
                     {
-                        ExecuteSqlOnDataset(cmd, destination.Dataset);
+                        await ExecuteSqlOnDatasetAsync(cmd, destination.Dataset);
                     }
                     catch (SqlException ex)
                     {
@@ -467,16 +398,10 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-
-        public virtual void PrepareCopyResultset(RegistryContext context)
-        {
-            this.InitializeQueryObject(context);
-        }
-
         /// <summary>
         /// Copies resultset from the output temporary table to the destination database (MYDB)
         /// </summary>
-        public void CopyResultset()
+        public async Task CopyResultsetAsync()
         {
             switch (Query.ExecutionMode)
             {
@@ -493,13 +418,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                         // Create bulk copy task and execute it
                         var tc = CreateTableCopyTask(source, destination, false);
-
-                        var guid = Guid.NewGuid();
-                        RegisterCancelable(guid, tc);
-
-                        tc.Execute();
-
-                        UnregisterCancelable(guid);
+                        await tc.ExecuteAsync();
                     }
                     break;
                 default:

@@ -5,6 +5,7 @@ using System.Text;
 using System.Activities;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.MirrorDatabase
 {
@@ -17,7 +18,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         [RequiredArgument]
         public OutArgument<Dictionary<Guid, List<Guid>>> SourceDatabaseInstanceFileGuids { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             Guid databaseinstanceguid = SourceDatabaseInstanceGuid.Get(activityContext);
 

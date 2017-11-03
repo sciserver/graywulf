@@ -9,6 +9,7 @@ using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.IO.Tasks;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -17,7 +18,7 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
@@ -27,15 +28,31 @@ namespace Jhu.Graywulf.Jobs.Query
 
             using (RegistryContext context = querypartition.Query.CreateContext())
             {
-                querypartition.PrepareExecuteQuery(context, activityContext.GetExtension<IScheduler>(), out source, out destination);
+                querypartition.InitializeQueryObject(cancellationContext, context, activityContext.GetExtension<IScheduler>(), true);
+
+                // Destination table
+                switch (querypartition.Query.ExecutionMode)
+                {
+                    case ExecutionMode.SingleServer:
+                        // In single-server mode results are directly written into destination table
+                        destination = querypartition.Query.Destination.GetTable();
+                        break;
+                    case ExecutionMode.Graywulf:
+                        // In graywulf mode results are written into a temporary table first
+                        destination = querypartition.GetOutputTable();
+                        querypartition.TemporaryTables.TryAdd(destination.TableName, destination);
+
+                        // Drop destination table, in case it already exists for some reason
+                        destination.Drop();
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                source = querypartition.GetExecuteSourceQuery();
             }
 
-            return delegate ()
-            {
-                RegisterCancelable(workflowInstanceId, activityInstanceId, querypartition);
-                querypartition.ExecuteQuery(source, destination);
-                UnregisterCancelable(workflowInstanceId, activityInstanceId, querypartition);
-            };
+            await querypartition.ExecuteQueryAsync(source, destination);
         }
     }
 }

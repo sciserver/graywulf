@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Data;
 using System.IO;
@@ -398,21 +399,26 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        protected void Open()
+        {
+            Util.TaskHelper.Wait(OpenAsync());
+        }
+
         /// <summary>
         /// Opens the file by opening a stream to the resource
         /// identified by the Uri property.
         /// </summary>
-        public void Open()
+        public async Task OpenAsync()
         {
             EnsureNotOpen();
 
             switch (fileMode)
             {
                 case DataFileMode.Read:
-                    OpenForRead();
+                    await OpenForReadAsync();
                     break;
                 case DataFileMode.Write:
-                    OpenForWrite();
+                    await OpenForWriteAsync();
                     break;
                 default:
                     throw new InvalidOperationException();  // TODO
@@ -440,7 +446,7 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         /// <param name="uri"></param>
         /// <param name="fileMode"></param>
-        public void Open(Uri uri, DataFileMode fileMode)
+        public async Task OpenAsync(Uri uri, DataFileMode fileMode)
         {
             if (uri == null)
             {
@@ -450,7 +456,7 @@ namespace Jhu.Graywulf.Format
             this.uri = uri;
             this.fileMode = fileMode;
 
-            Open();
+            await OpenAsync();
         }
 
         /// <summary>
@@ -471,11 +477,11 @@ namespace Jhu.Graywulf.Format
         /// Opens the underlying stream, if it is not set externally via
         /// a constructor or the OpenStream method.
         /// </summary>
-        private void OpenOwnStream()
+        private async Task OpenOwnStreamAsync()
         {
             // Use stream factory to open stream
             var sf = streamFactory ?? Jhu.Graywulf.IO.StreamFactory.Create(null);
-            baseStream = sf.Open(uri, credentials, fileMode, compression);
+            baseStream = await sf.OpenAsync(uri, credentials, fileMode, compression);
 
             ownsBaseStream = true;
         }
@@ -483,7 +489,7 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// When overloaded in derived classes, opens the data file for reading
         /// </summary>
-        protected virtual void OpenForRead()
+        protected virtual async Task OpenForReadAsync()
         {
             if (FileMode != DataFileMode.Read)
             {
@@ -492,14 +498,14 @@ namespace Jhu.Graywulf.Format
 
             if (baseStream == null)
             {
-                OpenOwnStream();
+                await OpenOwnStreamAsync();
             }
         }
 
         /// <summary>
         /// When overloaded in derived class, opens the data file for writing
         /// </summary>
-        protected virtual void OpenForWrite()
+        protected virtual async Task OpenForWriteAsync()
         {
             if (FileMode != DataFileMode.Write)
             {
@@ -508,7 +514,7 @@ namespace Jhu.Graywulf.Format
 
             if (baseStream == null)
             {
-                OpenOwnStream();
+                await OpenOwnStreamAsync();
             }
 
             // When writing into an archive a new entry for the file is to be created
@@ -768,15 +774,25 @@ namespace Jhu.Graywulf.Format
 
         public async Task WriteFromDataCommandAsync(ISmartCommand cmd)
         {
-            using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
+            using (var dr = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess, CancellationToken.None))
             {
-                await WriteFromDataReaderAsync(dr, true);
+                await WriteFromDataReaderAsync((ISmartDataReader)dr, true);
             }
         }
 
-        public async Task WriteFromDataReaderAsync(ISmartDataReader dr)
+        public void WriteFromDataCommand(ISmartCommand cmd)
         {
-            await WriteFromDataReaderAsync(dr, false);
+            Util.TaskHelper.Wait(WriteFromDataCommandAsync(cmd));
+        }
+
+        public Task WriteFromDataReaderAsync(ISmartDataReader dr)
+        {
+            return WriteFromDataReaderAsync(dr, false);
+        }
+
+        public void WriteFromDataReader(ISmartDataReader dr)
+        {
+            Util.TaskHelper.Wait(WriteFromDataReaderAsync(dr));
         }
 
         /// <summary>

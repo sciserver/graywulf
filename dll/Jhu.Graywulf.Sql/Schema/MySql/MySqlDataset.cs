@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
 using System.Data;
+using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using System.Collections;
 using Jhu.Graywulf.Schema;
@@ -803,21 +803,32 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
 
         #endregion
 
-        private MySqlConnection OpenConnectionInternal()
+        private async Task<MySqlConnection> OpenConnectionInternalAsync(CancellationToken cancellationToken)
         {
             var csb = new MySqlConnectionStringBuilder(ConnectionString);
             csb.AutoEnlist = false;
 
             var cn = new MySqlConnection(csb.ConnectionString);
-            cn.Open();
+            await cn.OpenAsync(cancellationToken);
             return cn;
+        }
+
+        private MySqlConnection OpenConnectionInternal()
+        {
+            // TODO: get rid of this
+            return Util.TaskHelper.Wait(OpenConnectionInternalAsync(CancellationToken.None));
+        }
+
+        public override async Task<DbConnection> OpenConnectionAsync(CancellationToken cancellationToken)
+        {
+            return await OpenConnectionInternalAsync(cancellationToken);
         }
 
         /// <summary>
         /// Opens a connection to the MySQL database
         /// </summary>
         /// <returns></returns>
-        public override IDbConnection OpenConnection()
+        public override DbConnection OpenConnection()
         {
             return OpenConnectionInternal();
         }

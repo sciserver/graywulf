@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.ServiceModel;
 using Jhu.Graywulf.ServiceModel;
 
@@ -15,12 +14,6 @@ namespace Jhu.Graywulf.RemoteService
     public interface IRemoteService : Jhu.Graywulf.Tasks.ICancelableTask
     {
         [OperationContract]
-        void Execute();
-
-        [OperationContract]
-        void BeginExecute();
-
-        [OperationContract]
-        void EndExecute();
+        Task ExecuteAsync();
     }
 }

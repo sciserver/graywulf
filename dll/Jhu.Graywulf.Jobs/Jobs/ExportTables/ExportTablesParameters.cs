@@ -151,7 +151,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         /// Returns an initialized table export task based on the job parameters
         /// </summary>
         /// <returns></returns>
-        public ICopyDataStream GetInitializedTableExportTask()
+        public ICopyDataStream GetInitializedTableExportTask(CancellationContext cancellationContext)
         {
             var sf = StreamFactory.Create(streamFactoryType);
 
@@ -180,7 +180,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 // Use only first item from sources and destinations
                 // TODO: this could be extended but that would mean multiple tasks
 
-                var task = RemoteServiceHelper.CreateObject<IExportTable>(host, true);
+                var task = RemoteServiceHelper.CreateObject<IExportTable>(cancellationContext, host, true);
 
                 task.Source = this.sources[0];
                 task.Destination = this.destinations[0];
@@ -194,7 +194,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             {
                 // Archive mode
 
-                var task = RemoteServiceHelper.CreateObject<IExportTableArchive>(host, true);
+                var task = RemoteServiceHelper.CreateObject<IExportTableArchive>(cancellationContext, host, true);
 
                 task.Sources = sources;
                 task.Destinations = destinations;

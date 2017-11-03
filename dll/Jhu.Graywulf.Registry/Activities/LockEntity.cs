@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Activities;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Activities
 {
@@ -15,7 +16,7 @@ namespace Jhu.Graywulf.Activities
         [RequiredArgument]
         public InArgument<Guid> LockOwner { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var entityguid = EntityGuid.Get(activityContext);
             var lockOwner = LockOwner.Get(activityContext);

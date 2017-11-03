@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -1176,7 +1175,10 @@ namespace Jhu.Graywulf.Schema
 
         public abstract string GetSpecializedConnectionString(string connectionString, bool integratedSecurity, string username, string password, bool enlist);
 
-        public abstract IDbConnection OpenConnection();
+        // TODO: try to get rid of this
+        public abstract DbConnection OpenConnection();
+
+        public abstract Task<DbConnection> OpenConnectionAsync(CancellationToken cancellationToken);
 
         public void FlushCache()
         {

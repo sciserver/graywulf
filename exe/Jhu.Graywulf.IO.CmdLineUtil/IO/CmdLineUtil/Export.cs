@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using Jhu.Graywulf.CommandLineParser;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.IO.Tasks;
-using Jhu.Graywulf.IO;
+using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.Format;
 
 namespace Jhu.Graywulf.IO.CmdLineUtil
@@ -71,22 +71,24 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
 
             var destination = ff.CreateFile(filename);
 
-            // Create task
-            var export = new ExportTable()
+            using (var cancellationContext = new CancellationContext())
             {
-                Source = source,
-                FileFormatFactoryType = "",
-                StreamFactoryType = "",
-                Destination = destination,
-            };
+                var export = new ExportTable(cancellationContext)
+                {
+                    Source = source,
+                    FileFormatFactoryType = "",
+                    StreamFactoryType = "",
+                    Destination = destination,
+                };
 
-            Console.WriteLine("Exporting table...");
+                Console.WriteLine("Exporting table...");
 
-            export.Open();
-            export.Execute();
-            export.Close();
+                export.Open();
+                Util.TaskHelper.Wait(export.ExecuteAsync());
+                export.Close();
 
-            Console.WriteLine("     done.");
+                Console.WriteLine("     done.");
+            }
         }
     }
 }

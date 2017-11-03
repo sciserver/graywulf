@@ -18,14 +18,10 @@ namespace Jhu.Graywulf.Jobs.Test
         [RequiredArgument]
         public InArgument<string> Message { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             string message = activityContext.GetValue(Message);
-
-            return delegate ()
-            {
-                throw new Exception(message);
-            };
+            throw new Exception(message);
         }
     }
 }

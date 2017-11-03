@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Data;
 using System.Data.SqlClient;
@@ -29,9 +27,9 @@ namespace Jhu.Graywulf.Format
                     {
                         cmd.CommandText = "SELECT * FROM SampleData_NumericTypes";
 
-                        using (var dr = cmd.ExecuteReader())
+                        using (var dr = cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationToken.None).Result)
                         {
-                            nat.WriteFromDataReaderAsync(dr).Wait();
+                            nat.WriteFromDataReader(dr);
                         }
                     }
                 }
@@ -51,9 +49,9 @@ namespace Jhu.Graywulf.Format
                     {
                         cmd.CommandText = "SELECT * FROM SampleData_NumericTypes_Null";
 
-                        using (var dr = cmd.ExecuteReader())
+                        using (var dr = cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationToken.None).Result)
                         {
-                            nat.WriteFromDataReaderAsync(dr).Wait();
+                            nat.WriteFromDataReader(dr);
                         }
                     }
                 }
@@ -73,9 +71,9 @@ namespace Jhu.Graywulf.Format
                     {
                         cmd.CommandText = "SELECT * FROM SampleData_AllTypes";
 
-                        using (var dr = cmd.ExecuteReader())
+                        using (var dr = cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationToken.None).Result)
                         {
-                            nat.WriteFromDataReaderAsync(dr).Wait();
+                            nat.WriteFromDataReader(dr);
                         }
                     }
                 }
@@ -95,9 +93,9 @@ namespace Jhu.Graywulf.Format
                     {
                         cmd.CommandText = "SELECT * FROM SampleData_AllTypes_Nullable";
 
-                        using (var dr = cmd.ExecuteReader())
+                        using (var dr = cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationToken.None).Result)
                         {
-                            nat.WriteFromDataReaderAsync(dr).Wait();
+                            nat.WriteFromDataReader(dr);
                         }
                     }
                 }
@@ -117,9 +115,9 @@ namespace Jhu.Graywulf.Format
                     {
                         cmd.CommandText = "SELECT * FROM EmptyTable";
 
-                        using (var dr = cmd.ExecuteReader())
+                        using (var dr = cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationToken.None).Result)
                         {
-                            nat.WriteFromDataReaderAsync(dr).Wait();
+                            nat.WriteFromDataReader(dr);
                         }
                     }
                 }

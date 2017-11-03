@@ -4,10 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Activities;
 using System.Data;
+using System.Data.Common;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Tasks;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Jobs.SqlScript
 {
@@ -22,7 +25,7 @@ namespace Jhu.Graywulf.Jobs.SqlScript
         [RequiredArgument]
         public InArgument<string> Script { get; set; }
 
-        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
+        protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
@@ -30,31 +33,23 @@ namespace Jhu.Graywulf.Jobs.SqlScript
             var dataset = Dataset.Get(activityContext);
             var script = Script.Get(activityContext);
 
-            return delegate ()
+            using (var cn = await dataset.OpenConnectionAsync(cancellationContext.Token))
             {
-                var cn = dataset.OpenConnection();
-                var cmd = cn.CreateCommand();
-
-                cmd.CommandType = CommandType.Text;
-                cmd.CommandText = script;
-                cmd.CommandTimeout = parameters.Timeout;
-                cmd.Transaction = cn.BeginTransaction(parameters.IsolationLevel);
-
-                var ccmd = new CancelableDbCommand(cmd);
-
-                RegisterCancelable(workflowInstanceId, activityInstanceId, ccmd);
-
-                ccmd.ExecuteNonQuery();
-
-                if (ccmd.Transaction != null)
+                using (var cmd = cn.CreateCommand())
                 {
-                    ccmd.Transaction.Commit();
+                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandText = script;
+                    cmd.CommandTimeout = parameters.Timeout;
+                    cmd.Transaction = cn.BeginTransaction(parameters.IsolationLevel);
+
+                    await cmd.ExecuteNonQueryAsync(cancellationContext.Token);
+
+                    if (cmd.Transaction != null)
+                    {
+                        cmd.Transaction.Commit();
+                    }
                 }
-
-                UnregisterCancelable(workflowInstanceId, activityInstanceId, ccmd);
-
-                ccmd.Dispose();
-            };
+            }
         }
     }
 }

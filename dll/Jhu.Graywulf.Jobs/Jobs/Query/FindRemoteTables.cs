@@ -5,6 +5,7 @@ using System.Text;
 using System.Activities;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -13,13 +14,13 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
 
-            using (RegistryContext context = querypartition.Query.CreateContext())
+            using (RegistryContext registryContext = querypartition.Query.CreateContext())
             {
-                querypartition.InitializeQueryObject(context);
+                querypartition.InitializeQueryObject(cancellationContext, registryContext);
                 querypartition.FindRemoteTableReferences();
             }
         }

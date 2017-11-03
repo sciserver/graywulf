@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.IO;
 using System.Configuration;
 using System.Net;
@@ -168,23 +167,23 @@ namespace Jhu.Graywulf.IO
         /// If not set explicitly through properties, compression and archival settings
         /// are figured out automatically from the file extension.
         /// </remarks>
-        public Stream Open(Uri uri, Credentials credentials, DataFileMode mode)
+        public async Task<Stream> OpenAsync(Uri uri, Credentials credentials, DataFileMode mode)
         {
             this.uri = uri;
             this.credentials = credentials;
             this.mode = mode;
 
-            return Open();
+            return await OpenAsync();
         }
 
-        public Stream Open(Uri uri, Credentials credentials, DataFileMode mode, DataFileCompression compression)
+        public async Task<Stream> OpenAsync(Uri uri, Credentials credentials, DataFileMode mode, DataFileCompression compression)
         {
             this.uri = uri;
             this.credentials = credentials;
             this.mode = mode;
             this.compression = compression;
 
-            return Open();
+            return await OpenAsync();
         }
 
         /// <summary>
@@ -195,7 +194,7 @@ namespace Jhu.Graywulf.IO
         /// <param name="compression"></param>
         /// <param name="archival"></param>
         /// <returns></returns>
-        public Stream Open(Uri uri, Credentials credentials, DataFileMode mode, DataFileCompression compression, DataFileArchival archival)
+        public async Task<Stream> OpenAsync(Uri uri, Credentials credentials, DataFileMode mode, DataFileCompression compression, DataFileArchival archival)
         {
             this.uri = uri;
             this.credentials = credentials;
@@ -203,7 +202,7 @@ namespace Jhu.Graywulf.IO
             this.compression = compression;
             this.archival = archival;
 
-            return Open();
+            return await OpenAsync();
         }
 
         public Stream Open(Stream stream, DataFileMode mode, DataFileCompression compression, DataFileArchival archival)
@@ -219,14 +218,14 @@ namespace Jhu.Graywulf.IO
         /// Opens a file with parameters determined by the factory class properties.
         /// </summary>
         /// <returns></returns>
-        public Stream Open()
+        public async Task<Stream> OpenAsync()
         {
             switch (mode)
             {
                 case DataFileMode.Read:
-                    return OpenForRead();
+                    return await OpenForReadAsync();
                 case DataFileMode.Write:
-                    return OpenForWrite();
+                    return await OpenForWriteAsync();
                 default:
                     throw new NotImplementedException();
             }
@@ -237,9 +236,9 @@ namespace Jhu.Graywulf.IO
             switch (mode)
             {
                 case DataFileMode.Read:
-                    return OpenForRead(stream);
+                    return WrapForRead(stream);
                 case DataFileMode.Write:
-                    return OpenForWrite(stream);
+                    return WrapForWrite(stream);
                 default:
                     throw new NotImplementedException();
             }
@@ -253,19 +252,19 @@ namespace Jhu.Graywulf.IO
         /// a decompressor and archive reader, if necessary.
         /// </summary>
         /// <returns></returns>
-        private Stream OpenForRead()
+        private async Task<Stream> OpenForReadAsync()
         {
-            var stream = OpenBaseStreamForRead();
+            var stream = await OpenBaseStreamForRead();
 
             if (stream == null)
             {
                 throw new FileFormatException("Unknown protocol.");      // TODO
             }
 
-            return OpenForRead(stream);
+            return WrapForRead(stream);
         }
 
-        private Stream OpenForRead(Stream stream)
+        private Stream WrapForRead(Stream stream)
         {
             // Check if compressed and wrap in compressed stream reader
             stream = WrapCompressedStreamForRead(stream);
@@ -281,19 +280,19 @@ namespace Jhu.Graywulf.IO
         /// an archive writer and compressior, if necessary.
         /// </summary>
         /// <returns></returns>
-        private Stream OpenForWrite()
+        private async Task<Stream> OpenForWriteAsync()
         {
-            var stream = OpenBaseStreamForWrite();
+            var stream = await OpenBaseStreamForWrite();
 
             if (stream == null)
             {
                 throw new FileFormatException("Unknown protocol.");      // TODO
             }
 
-            return OpenForWrite(stream);
+            return WrapForWrite(stream);
         }
 
-        private Stream OpenForWrite(Stream stream)
+        private Stream WrapForWrite(Stream stream)
         {
             // Check if compressed and wrap in compressed stream reader
             stream = WrapCompressedStreamForWrite(stream);
@@ -311,7 +310,7 @@ namespace Jhu.Graywulf.IO
         /// This function can be overloaded in inherited classes to
         /// support special protocols.
         /// </remarks>
-        protected virtual Stream OpenBaseStreamForRead()
+        protected virtual async Task<Stream> OpenBaseStreamForRead()
         {
             // If URI is relative it must be a file
             if (!uri.IsAbsoluteUri || uri.IsFile)
@@ -324,9 +323,9 @@ namespace Jhu.Graywulf.IO
                 {
                     case Constants.UriSchemeHttp:
                     case Constants.UriSchemeHttps:
-                        return OpenHttpStream();
+                        return await OpenHttpStreamAsync();
                     case Constants.UriSchemeFtp:
-                        return OpenFtpStream();
+                        return await OpenFtpStreamAsync();
                     default:
                         // If the stream format is unknown, return null, so that a derived class will be
                         // able to handle it
@@ -339,7 +338,7 @@ namespace Jhu.Graywulf.IO
         /// Opens the base stream for writing a file using a protocol specified by the URI.
         /// </summary>
         /// <returns></returns>
-        protected virtual Stream OpenBaseStreamForWrite()
+        protected virtual async Task<Stream> OpenBaseStreamForWrite()
         {
             if (!uri.IsAbsoluteUri || uri.IsFile)
             {
@@ -351,9 +350,9 @@ namespace Jhu.Graywulf.IO
                 {
                     case Constants.UriSchemeHttp:
                     case Constants.UriSchemeHttps:
-                        return OpenHttpStream();
+                        return await OpenHttpStreamAsync();
                     case Constants.UriSchemeFtp:
-                        return OpenFtpStream();
+                        return await OpenFtpStreamAsync();
                     default:
                         return null;
                 }
@@ -534,7 +533,7 @@ namespace Jhu.Graywulf.IO
         /// Opens a HTTP stream for read.
         /// </summary>
         /// <returns></returns>
-        protected Stream OpenHttpStream()
+        protected async Task<Stream> OpenHttpStreamAsync()
         {
             var req = (HttpWebRequest)WebRequest.Create(uri);
 
@@ -559,8 +558,7 @@ namespace Jhu.Graywulf.IO
 
                 req.Method = "GET";
 
-                
-                var res = req.GetResponse();
+                var res = await req.GetResponseAsync();
                 return res.GetResponseStream();
             }
             else if (mode == DataFileMode.Write)
@@ -576,7 +574,7 @@ namespace Jhu.Graywulf.IO
 
                 // TODO: req.ContentType = 
                 
-                return req.GetRequestStream();
+                return await req.GetRequestStreamAsync();
             }
             else
             {
@@ -588,7 +586,7 @@ namespace Jhu.Graywulf.IO
         /// Opens an ftp stream for read.
         /// </summary>
         /// <returns></returns>
-        protected Stream OpenFtpStream()
+        protected async Task<Stream> OpenFtpStreamAsync()
         {
             // TODO: add authentication
             // TODO: add write logic: how to write FTP
@@ -605,8 +603,7 @@ namespace Jhu.Graywulf.IO
                 //req.UseDefaultCredentials = true;
             }
 
-            var res = req.GetResponse();
-
+            var res = await req.GetResponseAsync();
             return res.GetResponseStream();
         }
 

@@ -203,11 +203,11 @@ namespace Jhu.Graywulf.Format
         /// This function is called by the infrastructure when starting to read
         /// the file by the FileDataReader
         /// </remarks>
-        protected override void OpenForRead()
+        protected override async Task OpenForReadAsync()
         {
             if (inputReader == null)
             {
-                base.OpenForRead();
+                await base.OpenForReadAsync();
 
                 var detached = new DetachedStream(base.BaseStream);
 
@@ -228,11 +228,11 @@ namespace Jhu.Graywulf.Format
             this.bufferedReader = new BufferedTextReader(inputReader);
         }
 
-        protected override void OpenForWrite()
+        protected override async Task OpenForWriteAsync()
         {
             if (outputWriter == null)
             {
-                base.OpenForWrite();
+                await base.OpenForWriteAsync();
 
                 // Wrap underlying stream, so it doesn't get disposed automatically
                 var detached = new DetachedStream(base.BaseStream);

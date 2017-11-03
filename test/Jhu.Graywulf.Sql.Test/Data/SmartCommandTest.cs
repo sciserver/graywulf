@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Data;
 using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -24,7 +22,7 @@ namespace Jhu.Graywulf.Data
                     cmd.CommandText = sql;
                     cmd.RecordsCounted = false;
 
-                    using (var dr = cmd.ExecuteReader())
+                    using (var dr = cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationToken.None).Result)
                     {
                         Assert.AreEqual(-1, dr.RecordCount);
                     }
@@ -44,7 +42,7 @@ namespace Jhu.Graywulf.Data
                     cmd.CommandText = sql;
                     cmd.RecordsCounted = true;
 
-                    using (var dr = cmd.ExecuteReader())
+                    using (var dr = cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationToken.None).Result)
                     {
                         Assert.AreEqual(1, dr.RecordCount);
                     }

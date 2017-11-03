@@ -5,10 +5,12 @@ using System.Text;
 using System.IO;
 using System.Threading;
 using Microsoft.Win32.SafeHandles;
+using System.Threading.Tasks;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
-    public partial class AsyncFileCopy : Jhu.Graywulf.Tasks.CancelableTask, IDisposable
+    public partial class AsyncFileCopy : CancelableTask, IDisposable
     {
         private string source;
         private string destination;
@@ -50,6 +52,12 @@ namespace Jhu.Graywulf.IO.Tasks
             InitializeMembers();
         }
 
+        public AsyncFileCopy(CancellationContext cancellationContext)
+            :base(cancellationContext)
+        {
+            InitializeMembers();
+        }
+
         private void InitializeMembers()
         {
             this.source = null;
@@ -62,7 +70,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.destinationStream = null;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             buffer = null;
 
@@ -83,28 +91,26 @@ namespace Jhu.Graywulf.IO.Tasks
                     events[i].Dispose();
                 }
             }
+
+            base.Dispose();
         }
 
-        protected override void OnExecute()
+        protected override async Task OnExecuteAsync()
         {
             sourceStream = null;
             destinationStream = null;
 
-            ExecuteNet4_5();
+            await ExecuteNet4_5Async();
         }
 
-        private void ExecuteNet4_5()
+        private async Task ExecuteNet4_5Async()
         {
             try
             {
                 sourceStream = OpenStream(source, FileMode.Open, FileAccess.Read, FileShare.None, unbuffered, true, true, blockSize);
                 destinationStream = OpenStream(destination, FileMode.CreateNew, FileAccess.Write, FileShare.None, unbuffered, true, true, blockSize);
 
-                var t = sourceStream.CopyToAsync(destinationStream, blockSize);
-
-                t.Wait();
-
-                // TODO: implement cancelation
+                await sourceStream.CopyToAsync(destinationStream, blockSize, CancellationContext.Token);
             }
             finally
             {
@@ -138,7 +144,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 {
                     int slot = 0;
 
-                    while (!IsCanceled && bytes >= blockSize)
+                    while (!IsCancellationRequested && bytes >= blockSize)
                     {
                         events[slot].WaitOne();
                         events[slot].Reset();
