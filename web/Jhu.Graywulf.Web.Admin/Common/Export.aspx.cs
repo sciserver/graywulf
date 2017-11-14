@@ -20,28 +20,30 @@ namespace Jhu.Graywulf.Web.Admin.Common
         {
             return String.Format("~/Common/Export.aspx?key={0}&mask={1}", key, mask);
         }
-
-        protected EntityGroup Mask
-        {
-            get { return (EntityGroup)Enum.Parse(typeof(EntityGroup), Request.QueryString["mask"]); }
-        }
         
         protected override void UpdateForm()
         {
+            if (!IsPostBack)
+            {
+                var m = (EntityGroup)Enum.Parse(typeof(EntityGroup), Request.QueryString["mask"]);
+                Util.EnumParser.SetListItemsFlags(mask, m);
+            }
         }
 
         protected override void ProcessForm()
         {
             LoadEntities();
 
+            var m = Util.EnumParser.GetListItemFlags<EntityGroup>(mask);
+
             var s = new RegistrySerializer(Entities)
             {
                 Recursive = recursive.Checked,
                 ExcludeUserCreated = excludeUserCreated.Checked,
-                EntityGroupMask = Mask,
+                EntityGroupMask = m,
             };
 
-            var filename = String.Format("Registry_{0}.xml", Mask);
+            var filename = String.Format("Registry_{0}.xml", m);
             var content = String.Format("attachment;{0}", filename);
 
             Response.ContentType = "text/xml";
