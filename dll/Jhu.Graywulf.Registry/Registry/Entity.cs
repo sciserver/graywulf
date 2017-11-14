@@ -616,6 +616,12 @@ namespace Jhu.Graywulf.Registry
             this.deploymentState = other.deploymentState;
             this.settings = new ParameterCollection(other.settings);
             this.comments = other.comments;
+
+            if (other.isEntityReferencesLoaded)
+            {
+                CopyEntityReferences(other);
+                this.isEntityReferencesLoaded = true;
+            }
         }
 
         public virtual object Clone()

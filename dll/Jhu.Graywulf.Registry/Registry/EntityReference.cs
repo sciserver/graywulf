@@ -265,6 +265,10 @@ namespace Jhu.Graywulf.Registry
 
         #endregion
 
+        public void Resolve()
+        {
+            EnsureEntityLoaded();
+        }
 
         /// <summary>
         /// Loads the entity from the registry using the context of the
