@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Jhu.Graywulf</RootNamespace>
     <AssemblyName>Jhu.Graywulf.ServiceModel</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -80,6 +80,10 @@
     <Compile Include="ServiceModel\TcpEndpointConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
+      <Project>{abb4c403-720a-47e1-9485-cfaadd696656}</Project>
+      <Name>Jhu.Graywulf.Components</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
       <Project>{fd98fb58-a3e5-4d32-b6d6-3e20609c4d09}</Project>
       <Name>Jhu.Graywulf.Logging</Name>

@@ -61,23 +61,24 @@ namespace Jhu.Graywulf.Web.Services.Templates {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to function __serviceName__Service() {
-        ///    this.serviceUrl = &quot;__serviceUrl__&quot;;
+        ///   Looks up a localized string similar to /* This is an auto-generated proxy */
+        ///
+        ///function __serviceName__Service(serviceUrl) {
+        ///    this.serviceUrl = serviceUrl ? serviceUrl : &quot;__serviceUrl__&quot;;
         ///}
         ///
         ///__serviceName__Service.prototype.error = function (xhr, status, message) {
         ///    alert(message);
         ///}
         ///
-        ///__serviceName__Service.prototype.createUrl = function (pathParts, optQueryParts) {
+        ///__serviceName__Service.prototype.__createUrl = function (pathParts, queryParts) {
         ///    var finalUrl = this.serviceUrl;
         ///    $.each(pathParts, function (i, part) {
         ///        finalUrl += &quot;/&quot; + part;
         ///    });
         ///
-        ///    if (typeof optQueryParts != &quot;undefined&quot;) {
-        ///        finalUrl += &quot;?&quot;;
-        ///        $.each(optQueryParts, function (key, [rest of string was truncated]&quot;;.
+        ///    if (queryParts) {
+        ///        finalUrl += [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Class {
             get {
@@ -86,7 +87,22 @@ namespace Jhu.Graywulf.Web.Services.Templates {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to __serviceName__Service.prototype.__methodName__ = function (__parameterList__) {
+        ///    var __me = this;
+        ///    var __pathParts = __pathParts__;
+        ///    var __queryParts = __queryParts__;
+        ///    var __data = __bodyParameter__;
+        ///    var __dataType = __returnType__;
+        ///    var __url = this.__createUrl(__pathParts, __queryParts);
+        ///    var __request = {
+        ///        dataType: __dataType
+        ///    };
+        ///
+        ///    if (__data) {
+        ///        __request.contentType = &quot;application/json&quot;;
+        ///        __request.data = JSON.stringify(__data);
+        ///    };
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Method {
             get {

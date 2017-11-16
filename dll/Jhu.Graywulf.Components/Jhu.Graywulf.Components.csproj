@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Jhu.Graywulf</RootNamespace>
     <AssemblyName>Jhu.Graywulf.Components</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -92,6 +92,9 @@
     <Compile Include="CommandLineParser\PartialStringComparer.cs" />
     <Compile Include="CommandLineParser\VerbAttribute.cs" />
     <Compile Include="Components\AllItemsLoadingEventArgs.cs" />
+    <Compile Include="Components\AmbientContextBase.cs" />
+    <Compile Include="Components\AmbientContextExtension.cs" />
+    <Compile Include="Components\AmbientContextStore.cs" />
     <Compile Include="Components\AppDomainHelper.cs" />
     <Compile Include="Components\AppDomainManager.cs" />
     <Compile Include="Components\AssemblyNameComparer.cs" />
