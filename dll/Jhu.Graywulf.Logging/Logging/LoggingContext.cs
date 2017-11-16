@@ -8,11 +8,21 @@ using System.Runtime.Serialization;
 using System.Activities;
 using System.Activities.Tracking;
 using System.Threading;
+using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Logging
 {
+    /// <summary>
+    /// Implements an abmient context to provide logging functionality.
+    /// </summary>
+    /// <remarks>
+    /// When running inside a workflow, logging event are routed through
+    /// the workflow foundation event system. For this reason, log messages
+    /// from async activities are collected and processed when the async
+    /// operation has finished.
+    /// </remarks>
     [Serializable]
-    public class LoggingContext : IDisposable
+    public class LoggingContext : AmbientContextBase
     {
         #region Singletons
 
@@ -31,36 +41,23 @@ namespace Jhu.Graywulf.Logging
             }
         }
 
-        private static AsyncLocal<LoggingContext> context = new AsyncLocal<LoggingContext>();
 
         public static LoggingContext Current
         {
             get
             {
-                if (context.Value == null)
-                {
-                    context.Value = new LoggingContext();
-                }
-
-                return context.Value;
-            }
-            set
-            {
-                context.Value = value;
+                return Get<LoggingContext>(AmbientContextSupport.All);
             }
         }
 
         #endregion
 
-        private LoggingContext outerContext;
-        private bool isValid;
         private bool isAsync;
         private EventSource defaultEventSource;
         private int eventOrder;
         private List<Event> asyncEvents;
         private CodeActivityContext activityContext;
 
-        private Guid contextGuid;
         private Guid jobGuid;
         private string jobName;
         private Guid userGuid;
@@ -69,12 +66,9 @@ namespace Jhu.Graywulf.Logging
 
         #region Properties
 
-        /// <summary>
-        /// Gets the validity of the context.
-        /// </summary>
-        public bool IsValid
+        protected override sealed string ContextTypeKey
         {
-            get { return isValid; }
+            get { return "Jhu.Graywulf.Logging.LoggingContext"; }
         }
 
         /// <summary>
@@ -100,12 +94,6 @@ namespace Jhu.Graywulf.Logging
         {
             get { return activityContext; }
             set { activityContext = value; }
-        }
-
-        public Guid ContextGuid
-        {
-            get { return contextGuid; }
-            set { contextGuid = value; }
         }
 
         public Guid JobGuid
@@ -142,26 +130,17 @@ namespace Jhu.Graywulf.Logging
 
         #region Constructors and initializers
 
-        public LoggingContext()
-            : this(null, false)
+        public LoggingContext(AmbientContextSupport support)
+            : this(false, support)
         {
         }
 
-        public LoggingContext(bool isAsync)
-            : this(null, isAsync)
+        public LoggingContext(bool isAsync, AmbientContextSupport support)
+            : base(support)
         {
-        }
-
-        public LoggingContext(LoggingContext outerContext)
-            : this(null, outerContext.isAsync)
-        {
-        }
-
-        public LoggingContext(LoggingContext outerContext, bool isAsync)
-        {
-            if (outerContext != null)
+            if (OuterContext is LoggingContext)
             {
-                CopyMembers(outerContext);
+                CopyMembers((LoggingContext)OuterContext);
             }
             else
             {
@@ -177,15 +156,12 @@ namespace Jhu.Graywulf.Logging
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.outerContext = null;
-            this.isValid = true;
             this.isAsync = false;
             this.defaultEventSource = EventSource.None;
             this.eventOrder = 0;
             this.asyncEvents = null;
             this.activityContext = null;
 
-            this.contextGuid = Guid.NewGuid();
             this.jobGuid = Guid.Empty;
             this.jobName = null;
             this.userGuid = Guid.Empty;
@@ -201,15 +177,12 @@ namespace Jhu.Graywulf.Logging
 
         private void CopyMembers(LoggingContext outerContext)
         {
-            this.outerContext = outerContext;
-            this.isValid = true;
             this.isAsync = outerContext.isAsync;
             this.defaultEventSource = outerContext.defaultEventSource;
             this.eventOrder = 0;
             this.asyncEvents = null;
             this.activityContext = outerContext.activityContext;
 
-            this.contextGuid = Guid.NewGuid();
             this.jobGuid = outerContext.jobGuid;
             this.jobName = outerContext.jobName;
             this.userGuid = outerContext.userGuid;
@@ -217,24 +190,7 @@ namespace Jhu.Graywulf.Logging
             this.taskName = outerContext.taskName;
         }
 
-        public virtual void Dispose()
-        {
-            isValid = false;
-        }
-
         #endregion
-
-        public void Push()
-        {
-            this.outerContext = LoggingContext.Current;
-            LoggingContext.Current = this;
-        }
-
-        public void Pop()
-        {
-            LoggingContext.Current = this.outerContext;
-            this.outerContext = null;
-        }
 
         public void StartLogger(EventSource defaultEventSource, bool attachConsole)
         {
@@ -339,7 +295,7 @@ namespace Jhu.Graywulf.Logging
             if (this.taskName != null) e.TaskName = this.taskName;
             if (this.jobGuid != Guid.Empty) e.JobGuid = this.jobGuid;
             if (this.jobName != null) e.JobName = this.jobName;
-            if (this.contextGuid != Guid.Empty) e.ContextGuid = this.contextGuid;
+            if (this.ContextGuid != Guid.Empty) e.ContextGuid = this.ContextGuid;
 
             e.Principal = System.Threading.Thread.CurrentPrincipal;
         }

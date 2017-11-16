@@ -24,6 +24,8 @@ namespace Jhu.Graywulf.RemoteService.Server
         private static Dictionary<string, ServiceHost> registeredServiceHosts;
         private static Dictionary<string, ServiceEndpoint> registeredEndpoints;
 
+        private LoggingContext loggingContext;
+
         public static object SyncRoot
         {
             get { return syncRoot; }
@@ -57,6 +59,8 @@ namespace Jhu.Graywulf.RemoteService.Server
 
             // Initialize logger
             // TODO: add interactive mode
+            loggingContext = new LoggingContext(Components.AmbientContextSupport.ThreadLocal);
+
             Logging.LoggingContext.Current.StartLogger(Logging.EventSource.RemoteService, false);
 
             // Log starting event
@@ -103,6 +107,8 @@ namespace Jhu.Graywulf.RemoteService.Server
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
             Logging.LoggingContext.Current.StopLogger();
+
+            loggingContext.Dispose();
         }
 
         private void OnStopImpl()

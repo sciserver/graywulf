@@ -17,16 +17,17 @@ namespace Jhu.Graywulf.Activities
         protected sealed override void Execute(CodeActivityContext activityContext)
         {
             new JobContext(this, activityContext).Push();
-            new LoggingContext(LoggingContext.Current, true).Push();
 
-            JobContext.Current.UpdateLoggingContext(LoggingContext.Current);
-
-            using (var cancellationContext = new CancellationContext())
+            using (new LoggingContext(true, Components.AmbientContextSupport.Default))
             {
-                OnExecute(activityContext, cancellationContext);
+                JobContext.Current.UpdateLoggingContext(LoggingContext.Current);
+
+                using (var cancellationContext = new CancellationContext())
+                {
+                    OnExecute(activityContext, cancellationContext);
+                }
             }
 
-            LoggingContext.Current.Pop();
             JobContext.Current.Pop();
         }
 

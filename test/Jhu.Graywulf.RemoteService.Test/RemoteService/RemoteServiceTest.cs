@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.RemoteService;
@@ -58,8 +59,9 @@ namespace Jhu.Graywulf.RemoteService
                 }
             }
         }
-        
+
         [TestMethod]
+        [ExpectedException(typeof(TaskCanceledException))]
         public void CancelRemoteExecuteTest()
         {
             using (RemoteServiceTester.Instance.GetToken())
@@ -77,10 +79,44 @@ namespace Jhu.Graywulf.RemoteService
                     Thread.Sleep(1000);
                     c.Cancel();
 
-                    task.Wait();
+                    Util.TaskHelper.Wait(task);
 
                     Assert.IsTrue((DateTime.Now - start).TotalMilliseconds < 5000);
                     Assert.IsTrue(c.IsCancellationRequested);
+                }
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.ServiceModel.FaultException<System.ServiceModel.ExceptionDetail>))]
+        public void CancelProcessInterleavedTest()
+        {
+            // Here we test that the two remote calls are directed
+            // to separate service instances
+            using (RemoteServiceTester.Instance.GetToken())
+            {
+                RemoteServiceTester.Instance.EnsureRunning();
+
+                using (var cancellationContext = new CancellationContext())
+                {
+                    var c1 = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
+                    c1.Period = 10000;
+                    var task1 = c1.ExecuteAsync();
+
+                    Thread.Sleep(1000);
+
+                    var c2 = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
+                    c2.Period = 10000;
+                    var task2 = c2.ExecuteAsync();
+
+                    c1.Cancel();
+
+                    Thread.Sleep(1000);
+
+                    c2.Cancel();
+
+                    Util.TaskHelper.Wait(task1);
+                    Util.TaskHelper.Wait(task2);
                 }
             }
         }

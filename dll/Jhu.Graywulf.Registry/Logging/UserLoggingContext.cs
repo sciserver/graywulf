@@ -4,24 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
+using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Logging
 {
     public abstract class UserLoggingContext : LoggingContext
     {
 
-        public UserLoggingContext(LoggingContext outerContext)
-                : base(outerContext)
+        public UserLoggingContext(AmbientContextSupport support)
+            : base(support)
         {
-            InitializeMembers(new StreamingContext());
+            if (LoggingContext.Current is UserLoggingContext)
+            {
+                CopyMembers((UserLoggingContext)LoggingContext.Current);
+            }
+            else
+            {
+                InitializeMembers(new StreamingContext());
+            }
         }
-
-        public UserLoggingContext(UserLoggingContext outerContext)
-                : base(outerContext)
-        {
-            CopyMembers(outerContext);
-        }
-
+        
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {

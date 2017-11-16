@@ -40,28 +40,25 @@ namespace Jhu.Graywulf.ServiceModel
 
         public object Invoke(object instance, object[] inputs, out object[] outputs)
         {
-            new ServiceLoggingContext(LoggingContext.Current).Push();
+            using (new ServiceLoggingContext(Components.AmbientContextSupport.Default))
+            {
+                LogDebug();
 
-            LogDebug();
-
-            try
-            {
-                return this.originalInvoker.Invoke(instance, inputs, out outputs);
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-                throw;
-            }
-            finally
-            {
-                LoggingContext.Current.Pop();
+                try
+                {
+                    return this.originalInvoker.Invoke(instance, inputs, out outputs);
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                    throw;
+                }
             }
         }
 
         public IAsyncResult InvokeBegin(object instance, object[] inputs, AsyncCallback callback, object state)
         {
-            new ServiceLoggingContext(LoggingContext.Current).Push();
+            new ServiceLoggingContext(Components.AmbientContextSupport.Default);
 
             LogDebug();
 
@@ -81,7 +78,7 @@ namespace Jhu.Graywulf.ServiceModel
             }
             finally
             {
-                LoggingContext.Current.Pop();
+                ServiceLoggingContext.Current.Dispose();
             }
         }
 

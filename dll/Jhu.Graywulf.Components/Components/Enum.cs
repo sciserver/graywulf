@@ -20,4 +20,19 @@ namespace Jhu.Graywulf.Components
         BatchEnd,
         ItemProcessing
     }
+
+    [Flags]
+    public enum AmbientContextSupport : UInt32
+    {
+        None = 0,
+
+        ThreadLocal = 1,
+        AsyncLocal = 2,
+        WebHttpContext = 4,
+        WcfOperationContext = 8,
+
+        Default = AsyncLocal | WebHttpContext | WcfOperationContext,
+
+        All = 0xFFFF
+    }
 }

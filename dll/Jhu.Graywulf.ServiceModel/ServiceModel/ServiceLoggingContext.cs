@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.ServiceModel
@@ -24,16 +25,17 @@ namespace Jhu.Graywulf.ServiceModel
 
         #endregion
 
-        public ServiceLoggingContext(LoggingContext outerContext)
-            : base(outerContext)
+        public ServiceLoggingContext(AmbientContextSupport support)
+            : base(support)
         {
-            InitializeMembers(new StreamingContext());
-        }
-
-        public ServiceLoggingContext(ServiceLoggingContext outerContext)
-            : base(outerContext)
-        {
-            CopyMembers(outerContext);
+            if (OuterContext is ServiceLoggingContext)
+            {
+                CopyMembers((ServiceLoggingContext)OuterContext);
+            }
+            else
+            {
+                InitializeMembers(new StreamingContext());
+            }
         }
 
         [OnDeserializing]

@@ -81,23 +81,20 @@ namespace Jhu.Graywulf.Activities
         private async Task ExecuteAsync(AsyncCodeActivityContext activityContext)
         {
             var jobContext = new JobContext(this, activityContext);
-            var loggingContext = new LoggingContext(LoggingContext.Current, true);
-            
-            // Save cancellation context to be called when cancel request arrives
-            // from another thread context
-
-            jobContext.UpdateLoggingContext(loggingContext);
-            jobContext.Push();
-            loggingContext.Push();
-
-            using (var cancellationContext = new CancellationContext())
+            using (new LoggingContext(true, Components.AmbientContextSupport.Default))
             {
-                activityContext.UserState = cancellationContext;
-                await OnExecuteAsync(activityContext, cancellationContext);
-            }
+                // Save cancellation context to be called when cancel request arrives
+                // from another thread context
 
-            loggingContext.Pop();
-            jobContext.Pop();
+                jobContext.UpdateLoggingContext(LoggingContext.Current);
+                jobContext.Push();
+
+                using (var cancellationContext = new CancellationContext())
+                {
+                    activityContext.UserState = cancellationContext;
+                    await OnExecuteAsync(activityContext, cancellationContext);
+                }
+            }
         }
 
         protected abstract Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext);
