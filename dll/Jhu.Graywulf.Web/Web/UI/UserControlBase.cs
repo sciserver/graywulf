@@ -9,8 +9,6 @@ namespace Jhu.Graywulf.Web.UI
 {
     public abstract class UserControlBase : UserControl, Registry.IRegistryContextObject
     {
-        private WebLoggingContext loggingContext;
-
         public new PageBase Page
         {
             get { return ((PageBase)base.Page); }
@@ -32,6 +30,7 @@ namespace Jhu.Graywulf.Web.UI
             set { throw new InvalidOperationException(); }
         }
 
+        /*
         protected override void OnInit(EventArgs e)
         {
             loggingContext = Page.LoggingContext;
@@ -63,5 +62,6 @@ namespace Jhu.Graywulf.Web.UI
 
             this.loggingContext = null;
         }
+        */
     }
 }

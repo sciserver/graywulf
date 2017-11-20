@@ -1,21 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web.UI;
 using Jhu.Graywulf.Schema;
 using schema = Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Sql.CodeGeneration;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Data;
-using System.Web.UI;
+
 
 namespace Jhu.Graywulf.Web.UI.Apps.Schema
 {
     public partial class Peek : SchemaItemView<TableOrView>
     {
+        private DbConnection databaseConnection;
+        private DbTransaction databaseTransaction;
+        private SmartCommand databaseCommand;
+        private ISmartDataReader dataReader;
+        
         public static string GetUrl(string objid)
         {
             return Default.GetUrl(Default.SchemaView.Peek, objid);
@@ -25,20 +33,57 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         {
         }
 
-        protected override void Render(HtmlTextWriter writer)
+        protected void Page_Load(object sender, EventArgs e)
         {
-            RenderTable(writer);
+            databaseConnection = null;
+            databaseTransaction = null;
+            databaseCommand = null;
+            dataReader = null;
         }
 
-        protected void RenderTable(TextWriter writer)
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            if (Visible)
+            {
+                Page.RegisterAsyncTask(new PageAsyncTask(ExecuteQuery));
+            }
+        }
+
+        protected void Page_Unload(object sender, EventArgs e)
+        {
+            if (dataReader != null)
+            {
+                dataReader.Close();
+                dataReader.Dispose();
+            }
+
+            if (databaseCommand != null)
+            {
+                databaseCommand.Dispose();
+            }
+
+            if (databaseTransaction != null)
+            {
+                databaseTransaction.Commit();
+                databaseTransaction.Dispose();
+            }
+
+            if (databaseConnection != null)
+            {
+                databaseConnection.Close();
+                databaseConnection.Dispose();
+            }
+        }
+
+        private async Task ExecuteQuery(CancellationToken cancellationToken)
         {
             var tableOrView = Item;
             var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(tableOrView.Dataset);
             var sql = codegen.GenerateSelectStarQuery(tableOrView, 100);
-            IDbConnection cn = null;
 
             // To peek into data, pick a server
-            if (tableOrView.Dataset is GraywulfDataset)
+            // Do not do this for mutable databasets such as MyDB
+            if (tableOrView.Dataset is GraywulfDataset && !tableOrView.Dataset.IsMutable)
             {
                 var ds = (GraywulfDataset)tableOrView.Dataset;
 
@@ -50,28 +95,32 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                     var di = dd.GetRandomDatabaseInstance(Registry.Constants.ProdDatabaseVersionName);
                     var cstr = di.GetConnectionString();
 
-                    cn = new SqlConnection(cstr.ConnectionString);
-                    cn.Open();
+                    databaseConnection = new SqlConnection(cstr.ConnectionString);
+                    await databaseConnection.OpenAsync(cancellationToken);
                 }
             }
 
-            if (cn == null)
+            if (databaseConnection == null)
             {
-                cn = tableOrView.Dataset.OpenConnection();
+                databaseConnection = await tableOrView.Dataset.OpenConnectionAsync(cancellationToken);
             }
 
-            using (var cmd = new SmartCommand(tableOrView.Dataset, cn.CreateCommand()))
+            databaseTransaction = databaseConnection.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+            databaseCommand = new SmartCommand(tableOrView.Dataset, databaseConnection.CreateCommand())
             {
-                cmd.CommandText = sql;
-                cmd.CommandType = CommandType.Text;
+                Connection = databaseConnection,
+                Transaction = databaseTransaction,
+                CommandText = sql,
+                CommandType = CommandType.Text
+            };
 
-                using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
-                {
-                    RenderTable(writer, dr);
-                }
-            }
+            dataReader = await databaseCommand.ExecuteReaderAsync(CommandBehavior.SequentialAccess, cancellationToken);
+        }
 
-            cn.Dispose();
+        protected override void Render(HtmlTextWriter writer)
+        {
+            RenderTable(writer, dataReader);
         }
 
         private void RenderTable(TextWriter writer, ISmartDataReader dr)

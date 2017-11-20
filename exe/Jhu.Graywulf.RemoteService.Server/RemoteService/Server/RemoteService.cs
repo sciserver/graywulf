@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.RemoteService.Server
 
             // Initialize logger
             // TODO: add interactive mode
-            loggingContext = new LoggingContext(Components.AmbientContextSupport.ThreadLocal);
+            loggingContext = new LoggingContext();
 
             Logging.LoggingContext.Current.StartLogger(Logging.EventSource.RemoteService, false);
 

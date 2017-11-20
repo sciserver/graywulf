@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.ServiceModel
 
         public object Invoke(object instance, object[] inputs, out object[] outputs)
         {
-            using (new ServiceLoggingContext(Components.AmbientContextSupport.Default))
+            using (new ServiceLoggingContext())
             {
                 LogDebug();
 
@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.ServiceModel
 
         public IAsyncResult InvokeBegin(object instance, object[] inputs, AsyncCallback callback, object state)
         {
-            new ServiceLoggingContext(Components.AmbientContextSupport.Default);
+            new ServiceLoggingContext();
 
             LogDebug();
 

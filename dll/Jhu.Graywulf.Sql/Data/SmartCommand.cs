@@ -161,6 +161,21 @@ namespace Jhu.Graywulf.Data
 
         #endregion
 
+        public Task<ISmartDataReader> ExecuteReaderAsync()
+        {
+            return ExecuteReaderInternalAsync(CommandBehavior.Default, CancellationToken.None);
+        }
+
+        public Task<ISmartDataReader> ExecuteReaderAsync(CancellationToken cancellationToken)
+        {
+            return ExecuteReaderInternalAsync(CommandBehavior.Default, cancellationToken);
+        }
+
+        public Task<ISmartDataReader> ExecuteReaderAsync(CommandBehavior behavior)
+        {
+            return ExecuteReaderInternalAsync(behavior, CancellationToken.None);
+        }
+
         public Task<ISmartDataReader> ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
         {
             return ExecuteReaderInternalAsync(behavior, cancellationToken);

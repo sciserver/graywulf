@@ -92,7 +92,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                     Options = options,
                 };
 
-                task.Open(FederationContext.StreamFactory.Open(importedFile.PostedFile.InputStream, DataFileMode.Read, compression, archival));
+                // TODO: make async
+                Util.TaskHelper.Wait(task.OpenAsync(FederationContext.StreamFactory.Open(importedFile.PostedFile.InputStream, DataFileMode.Read, compression, archival)));
 
                 return task;
             }

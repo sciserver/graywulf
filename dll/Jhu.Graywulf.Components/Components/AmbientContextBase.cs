@@ -13,7 +13,6 @@ namespace Jhu.Graywulf.Components
         private static ThreadLocal<AmbientContextStore> threadLocalContexts = new ThreadLocal<AmbientContextStore>();
         private static AsyncLocal<AmbientContextStore> asyncLocalContexts = new AsyncLocal<AmbientContextStore>();
 
-        private AmbientContextSupport support;
         private AmbientContextBase outerContext;
         private Guid contextGuid;
         private bool isValid;
@@ -39,19 +38,15 @@ namespace Jhu.Graywulf.Components
             get { return isValid; }
         }
 
-        protected AmbientContextBase(AmbientContextSupport support)
+        protected AmbientContextBase()
         {
             InitializeMembers();
-
-            this.support = support;
-
             Push();
         }
 
         [OnDeserializing]
         private void InitializeMembers()
         {
-            this.support = AmbientContextSupport.None;
             this.outerContext = null;
             this.contextGuid = Guid.NewGuid();
             this.isValid = true;
@@ -59,7 +54,6 @@ namespace Jhu.Graywulf.Components
 
         private void CopyMembers(AmbientContextBase old)
         {
-            this.support = old.support;
             this.outerContext = old.outerContext;
             this.contextGuid = Guid.NewGuid();
             this.isValid = old.isValid;
@@ -72,9 +66,9 @@ namespace Jhu.Graywulf.Components
             isValid = false;
         }
 
-        private static bool IsThreadLocalSupported(AmbientContextSupport support)
+        private static bool IsThreadLocalSupported()
         {
-            return support.HasFlag(AmbientContextSupport.ThreadLocal);
+            return true;
         }
 
         private static AmbientContextStore GetThreadLocalStore(bool create)
@@ -87,16 +81,16 @@ namespace Jhu.Graywulf.Components
             }
             else if (create)
             {
-                store = new AmbientContextStore();
+                store = new AmbientContextStore(AmbientContextStoreLocation.ThreadLocal);
                 threadLocalContexts.Value = store;
             }
 
             return store;
         }
 
-        private static bool IsAsyncLocalSupported(AmbientContextSupport support)
+        private static bool IsAsyncLocalSupported()
         {
-            return support.HasFlag(AmbientContextSupport.AsyncLocal);
+            return true;
         }
 
         private static AmbientContextStore GetAsyncLocalStore(bool create)
@@ -109,17 +103,16 @@ namespace Jhu.Graywulf.Components
             }
             else if (create)
             {
-                store = new AmbientContextStore();
+                store = new AmbientContextStore(AmbientContextStoreLocation.AsyncLocal);
                 asyncLocalContexts.Value = store;
             }
 
             return store;
         }
 
-        private static bool IsHttpContextSupported(AmbientContextSupport support)
+        private static bool IsHttpContextSupported()
         {
-            return support.HasFlag(AmbientContextSupport.WebHttpContext) &&
-                System.Web.HttpContext.Current != null;
+            return System.Web.HttpContext.Current != null;
         }
 
         private static AmbientContextStore GetHttpContextStore(bool create)
@@ -130,17 +123,16 @@ namespace Jhu.Graywulf.Components
 
             if (create && store == null)
             {
-                store = new AmbientContextStore();
+                store = new AmbientContextStore(AmbientContextStoreLocation.WebHttpContext);
                 System.Web.HttpContext.Current.Items[AmbientContextStoreKey] = store;
             }
 
             return store;
         }
 
-        private static bool IsOperationContextSupported(AmbientContextSupport support)
+        private static bool IsOperationContextSupported()
         {
-            return support.HasFlag(AmbientContextSupport.WcfOperationContext) &&
-                System.ServiceModel.OperationContext.Current != null;
+            return System.ServiceModel.OperationContext.Current != null;
         }
 
         private static AmbientContextStore GetOperationContextStore(bool create)
@@ -156,11 +148,11 @@ namespace Jhu.Graywulf.Components
             return ext?.Store;
         }
 
-        private static IEnumerable<AmbientContextStore> EnumerateStores(AmbientContextSupport support, bool create)
+        private static IEnumerable<AmbientContextStore> EnumerateStores(bool create)
         {
             AmbientContextStore store;
 
-            if (IsOperationContextSupported(support))
+            if (IsOperationContextSupported())
             {
                 store = GetOperationContextStore(create);
 
@@ -170,7 +162,7 @@ namespace Jhu.Graywulf.Components
                 }
             }
 
-            if (IsHttpContextSupported(support))
+            if (IsHttpContextSupported())
             {
                 store = GetHttpContextStore(create);
 
@@ -180,7 +172,7 @@ namespace Jhu.Graywulf.Components
                 }
             }
 
-            if (IsAsyncLocalSupported(support))
+            if (IsAsyncLocalSupported())
             {
                 store = GetAsyncLocalStore(create);
 
@@ -189,8 +181,7 @@ namespace Jhu.Graywulf.Components
                     yield return store;
                 }
             }
-
-            if (IsThreadLocalSupported(support))
+            else if (IsThreadLocalSupported())
             {
                 store = GetThreadLocalStore(create);
 
@@ -208,7 +199,7 @@ namespace Jhu.Graywulf.Components
         {
             var type = this.GetType();
 
-            foreach (var store in EnumerateStores(support, true))
+            foreach (var store in EnumerateStores(true))
             {
                 var key = store.Find(type);
 
@@ -230,7 +221,7 @@ namespace Jhu.Graywulf.Components
         {
             var type = this.GetType();
             
-            foreach (var store in EnumerateStores(support, false))
+            foreach (var store in EnumerateStores(false))
             {
                 var key = store.Find(type);
 
@@ -238,24 +229,32 @@ namespace Jhu.Graywulf.Components
                 {
                     throw new InvalidOperationException();
                 }
-                else
+
+                // Only pop if this is the current one
+                if (store[key] == this)
                 {
                     store.Remove(key);
-                }
 
-                if (outerContext != null)
+                    if (outerContext != null)
+                    {
+                        store.Add(outerContext.GetType(), outerContext);
+                    }
+                }
+                else
                 {
-                    store.Add(outerContext.GetType(), outerContext);
+                    // TODO: test this. It could happen if the context is added to
+                    // thread local but there's a context switch somewhere
+                    throw new InvalidOperationException();
                 }
             }
         }
 
-        protected static T Get<T>(AmbientContextSupport support)
+        protected static T Get<T>()
             where T : AmbientContextBase
         {
             var type = typeof(T);
 
-            foreach (var store in EnumerateStores(support, false))
+            foreach (var store in EnumerateStores(false))
             {
                 var key = store.Find(type);
 

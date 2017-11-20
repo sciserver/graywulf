@@ -22,9 +22,9 @@ namespace Jhu.Graywulf.Web.UI
             //throw new Exception(m.ValidationKey);
         }
 
-        protected override void Application_Start(object sender, EventArgs e)
+        protected override void OnApplicationStart()
         {
-            base.Application_Start(sender, e);
+            base.OnApplicationStart();
 
             // Load domain settings
             using (var context = CreateRegistryContext())

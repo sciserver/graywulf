@@ -8,6 +8,19 @@ namespace Jhu.Graywulf.Components
 {
     class AmbientContextStore : Dictionary<Type, AmbientContextBase>
     {
+        private AmbientContextStoreLocation location;
+
+        internal AmbientContextStoreLocation Location
+        {
+            get { return location; }
+            set { location = value; }
+        }
+
+        internal AmbientContextStore(AmbientContextStoreLocation location)
+        {
+            this.location = location;
+        }
+
         public Type Find(Type key)
         {
             foreach (var k in this.Keys)

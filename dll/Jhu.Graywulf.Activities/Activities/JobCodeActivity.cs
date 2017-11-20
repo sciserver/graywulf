@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Activities
         {
             new JobContext(this, activityContext).Push();
 
-            using (new LoggingContext(true, Components.AmbientContextSupport.Default))
+            using (new LoggingContext(true))
             {
                 JobContext.Current.UpdateLoggingContext(LoggingContext.Current);
 

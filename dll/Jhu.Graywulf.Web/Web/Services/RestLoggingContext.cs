@@ -19,18 +19,18 @@ namespace Jhu.Graywulf.Web.Services
 
         #endregion
 
-        public RestLoggingContext(LoggingContext outerContext)
-            : base(outerContext)
+        public RestLoggingContext()
         {
-            InitializeMembers(new StreamingContext());
+            if (LoggingContext.Current is RestLoggingContext)
+            {
+                CopyMembers((RestLoggingContext)LoggingContext.Current);
+            }
+            else
+            {
+                InitializeMembers(new StreamingContext());
+            }
         }
-
-        public RestLoggingContext(RestLoggingContext outerContext)
-            : base(outerContext)
-        {
-            CopyMembers(outerContext);
-        }
-
+        
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {

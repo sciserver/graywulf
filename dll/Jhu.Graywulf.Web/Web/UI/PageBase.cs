@@ -17,7 +17,6 @@ namespace Jhu.Graywulf.Web.UI
         #region Private member variables
 
         private string overrideUrl;
-        private WebLoggingContext loggingContext;
         private RegistryContext registryContext;
         private FederationContext federationContext;
         
@@ -59,12 +58,7 @@ namespace Jhu.Graywulf.Web.UI
         {
             get { return Request.QueryString[Constants.ReturnUrl] ?? ""; }
         }
-
-        internal WebLoggingContext LoggingContext
-        {
-            get { return loggingContext; }
-        }
-
+        
         /// <summary>
         /// Gets the authenticated Graywulf user
         /// </summary>
@@ -138,7 +132,6 @@ namespace Jhu.Graywulf.Web.UI
         {
             this.overrideUrl = null;
             this.registryContext = null;
-            this.loggingContext = new WebLoggingContext(Logging.LoggingContext.Current);
         }
 
         #endregion
@@ -146,14 +139,17 @@ namespace Jhu.Graywulf.Web.UI
 
         protected override void OnPreInit(EventArgs e)
         {
-            loggingContext.Push();
+            new WebLoggingContext();
+
+            //loggingContext.Push();
 
             LogDebug();
 
             base.OnPreInit(e);
-            loggingContext.Pop();
+            //loggingContext.Pop();
         }
 
+        /*
         protected override void OnInit(EventArgs e)
         {
             loggingContext.Push();
@@ -174,10 +170,11 @@ namespace Jhu.Graywulf.Web.UI
             base.OnPreLoad(e);
             loggingContext.Pop();
         }
+        */
 
         protected override void OnLoad(EventArgs e)
         {
-            loggingContext.Push();
+            //loggingContext.Push();
 
             base.OnLoad(e);
 
@@ -186,9 +183,10 @@ namespace Jhu.Graywulf.Web.UI
                 OriginalReferer = Request.UrlReferrer.ToString();
             }
 
-            loggingContext.Pop();
+            //loggingContext.Pop();
         }
 
+        /*
         protected override void RaisePostBackEvent(IPostBackEventHandler sourceControl, string eventArgument)
         {
             loggingContext.Push();
@@ -209,10 +207,11 @@ namespace Jhu.Graywulf.Web.UI
             base.OnLoadComplete(e);
             loggingContext.Pop();
         }
+        */
 
         protected override void OnPreRender(EventArgs e)
         {
-            loggingContext.Push();
+            //loggingContext.Push();
 
             base.OnPreRender(e);
 
@@ -221,9 +220,10 @@ namespace Jhu.Graywulf.Web.UI
                 ScriptManager.RegisterClientScriptBlock(this, typeof(PageBase), "Jhu.Graywulf.Web.UI.PageBase.OverrideUrl", GetOverrideUrlScript(), true);
             }
 
-            loggingContext.Pop();
+            //loggingContext.Pop();
         }
 
+        /*
         protected override void OnPreRenderComplete(EventArgs e)
         {
             loggingContext.Push();
@@ -237,10 +237,11 @@ namespace Jhu.Graywulf.Web.UI
             base.OnSaveStateComplete(e);
             loggingContext.Pop();
         }
+        */
 
         protected override void OnUnload(EventArgs e)
         {
-            loggingContext.Push();
+            //loggingContext.Push();
 
             base.OnUnload(e);
 
@@ -251,8 +252,8 @@ namespace Jhu.Graywulf.Web.UI
                 registryContext = null;
             }
 
-            loggingContext.Pop();
-            loggingContext.Dispose();
+            //loggingContext.Pop();
+            WebLoggingContext.Current.Dispose();
         }
 
         protected override void OnError(EventArgs e)

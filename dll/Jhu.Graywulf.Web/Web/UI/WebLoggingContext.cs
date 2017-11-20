@@ -19,17 +19,18 @@ namespace Jhu.Graywulf.Web.UI
 
         #endregion
 
-        public WebLoggingContext(LoggingContext outerContext)
-            : base(outerContext)
+        public WebLoggingContext()
         {
-            InitializeMembers(new StreamingContext());
+            if (LoggingContext.Current is WebLoggingContext)
+            {
+                CopyMembers((WebLoggingContext)LoggingContext.Current);
+            }
+            else
+            {
+                InitializeMembers(new StreamingContext());
+            }
         }
 
-        public WebLoggingContext(WebLoggingContext outerContext)
-            : base(outerContext)
-        {
-            CopyMembers(outerContext);
-        }
 
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)

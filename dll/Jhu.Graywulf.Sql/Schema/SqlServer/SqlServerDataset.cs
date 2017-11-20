@@ -2021,8 +2021,14 @@ END",
 
         private SqlConnection OpenConnectionInternal()
         {
-            // TODO: get rid of this
-            return Util.TaskHelper.Wait(OpenConnectionInternalAsync(CancellationToken.None));
+            // Replace this with async?
+
+            var csb = new SqlConnectionStringBuilder(ConnectionString);
+            csb.Enlist = false;
+
+            var cn = new SqlConnection(csb.ConnectionString);
+            cn.Open();
+            return cn;
         }
 
         public override async Task<DbConnection> OpenConnectionAsync(CancellationToken cancellationToken)

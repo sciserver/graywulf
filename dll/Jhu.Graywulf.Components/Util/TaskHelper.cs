@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Util
     {
         public static void Wait(Task task)
         {
-            //task.ConfigureAwait(false);     // TODO: this seems risky here, test
+            task.ConfigureAwait(false);     // TODO: this seems risky here, test
 
             try
             {
@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.Util
 
         public static T Wait<T>(Task<T> task)
         {
-            //task.ConfigureAwait(false);
+            task.ConfigureAwait(false);
 
             try
             {

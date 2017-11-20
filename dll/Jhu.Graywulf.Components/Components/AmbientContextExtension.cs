@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Components
 
         private void InitializeMembers()
         {
-            this.store = new Components.AmbientContextStore();
+            this.store = new Components.AmbientContextStore(AmbientContextStoreLocation.WcfOperationContext);
         }
 
         public void Attach(InstanceContext owner)

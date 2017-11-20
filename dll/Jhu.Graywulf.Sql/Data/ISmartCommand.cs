@@ -14,7 +14,9 @@ namespace Jhu.Graywulf.Data
         bool RecordsCounted { get; set; }
 
         Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken);
-
+        Task<ISmartDataReader> ExecuteReaderAsync();
+        Task<ISmartDataReader> ExecuteReaderAsync(CommandBehavior behavior);
         Task<ISmartDataReader> ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken);
+        Task<ISmartDataReader> ExecuteReaderAsync(CancellationToken cancellationToken);
     }
 }

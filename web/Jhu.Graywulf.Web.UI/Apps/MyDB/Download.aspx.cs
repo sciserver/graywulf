@@ -46,7 +46,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             using (var stream = sf.Open(Response.OutputStream, DataFileMode.Write, file.Compression, DataFileArchival.None))
             {
                 file.Open(stream, DataFileMode.Write);
-                task.Execute();
+
+                // TODO: make it async
+                Util.TaskHelper.Wait(task.ExecuteAsync());
+
                 stream.Flush();
             }
 

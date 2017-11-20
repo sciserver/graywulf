@@ -9,9 +9,9 @@ namespace Jhu.Graywulf.Web.UI
 {
     public abstract class FederationApplicationBase : DomainApplicationBase
     {
-        protected override void Application_Start(object sender, EventArgs e)
+        protected override void OnApplicationStart()
         {
-            base.Application_Start(sender, e);
+            base.OnApplicationStart();
 
             // Load settings from federation
             using (var context = CreateRegistryContext())
@@ -30,15 +30,18 @@ namespace Jhu.Graywulf.Web.UI
 
             var buttons = ConfigurationManager.GetSection("jhu.graywulf/webui/dropdownButtons") as NameValueCollection;
 
-            foreach (string key in buttons.Keys)
+            if (buttons != null)
             {
-                var parts = buttons[key].Split('|');
-
-                RegisterDropdownButton(new MenuButton()
+                foreach (string key in buttons.Keys)
                 {
-                    Text = parts[0],
-                    NavigateUrl = parts[1]
-                });
+                    var parts = buttons[key].Split('|');
+
+                    RegisterDropdownButton(new MenuButton()
+                    {
+                        Text = parts[0],
+                        NavigateUrl = parts[1]
+                    });
+                }
             }
         }
     }

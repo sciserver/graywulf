@@ -25,8 +25,7 @@ namespace Jhu.Graywulf.ServiceModel
 
         #endregion
 
-        public ServiceLoggingContext(AmbientContextSupport support)
-            : base(support)
+        public ServiceLoggingContext()
         {
             if (OuterContext is ServiceLoggingContext)
             {

@@ -127,7 +127,9 @@ namespace Jhu.Graywulf.Web.Api.V1
                 stream =>
                 {
                     export.Destination.Open(stream, DataFileMode.Write);
-                    export.Execute();
+
+                    // TODO: make this whole service async
+                    Jhu.Graywulf.Util.TaskHelper.Wait(export.ExecuteAsync());
                 },
                 destination.Description.MimeType);
 
@@ -172,7 +174,8 @@ namespace Jhu.Graywulf.Web.Api.V1
                 Destination = destination
             };
 
-            import.Execute();
+            // TODO: async
+            Jhu.Graywulf.Util.TaskHelper.Wait(import.ExecuteAsync());
         }
 
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]

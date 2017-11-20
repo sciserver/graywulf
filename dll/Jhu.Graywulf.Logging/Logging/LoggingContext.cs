@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.Logging
         {
             get
             {
-                return Get<LoggingContext>(AmbientContextSupport.All);
+                return Get<LoggingContext>();
             }
         }
 
@@ -130,13 +130,12 @@ namespace Jhu.Graywulf.Logging
 
         #region Constructors and initializers
 
-        public LoggingContext(AmbientContextSupport support)
-            : this(false, support)
+        public LoggingContext()
+            : this(false)
         {
         }
 
-        public LoggingContext(bool isAsync, AmbientContextSupport support)
-            : base(support)
+        public LoggingContext(bool isAsync)
         {
             if (OuterContext is LoggingContext)
             {

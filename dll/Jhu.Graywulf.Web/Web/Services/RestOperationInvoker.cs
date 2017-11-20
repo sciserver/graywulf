@@ -37,45 +37,46 @@ namespace Jhu.Graywulf.Web.Services
 
         public object Invoke(object instance, object[] inputs, out object[] outputs)
         {
-            new RestLoggingContext(Logging.LoggingContext.Current).Push();
-            RestLoggingContext.Current.DefaultEventSource = Logging.EventSource.WebService;
-            LogDebug();
+            using (new RestLoggingContext())
+            {
+                RestLoggingContext.Current.DefaultEventSource = Logging.EventSource.WebService;
+                LogDebug();
 
-            var svc = (RestServiceBase)instance;
-            var context = new RestOperationContext();
-            OperationContext.Current.Extensions.Add(context);
-            
-            try
-            {
-                svc.OnBeforeInvoke(context);    
-                var res = this.originalInvoker.Invoke(instance, inputs, out outputs);
-                svc.OnAfterInvoke(context);
-                return res;
-            }
-            catch (Exception ex)
-            {
-#if BREAKDEBUG
-                if (System.Diagnostics.Debugger.IsAttached)
+                var svc = (RestServiceBase)instance;
+                var context = new RestOperationContext();
+                OperationContext.Current.Extensions.Add(context);
+
+                try
                 {
-                    System.Diagnostics.Debugger.Break();
+                    svc.OnBeforeInvoke(context);
+                    var res = this.originalInvoker.Invoke(instance, inputs, out outputs);
+                    svc.OnAfterInvoke(context);
+                    return res;
                 }
+                catch (Exception ex)
+                {
+#if BREAKDEBUG
+                    if (System.Diagnostics.Debugger.IsAttached)
+                    {
+                        System.Diagnostics.Debugger.Break();
+                    }
 #endif
 
-                var e = LogError(ex);
+                    var e = LogError(ex);
 
-                // TODO: this won't catch exceptions from IEnumerator that occur
-                // in MoveNext, so they won't be logged.
-                svc.OnError(context, ex);
+                    // TODO: this won't catch exceptions from IEnumerator that occur
+                    // in MoveNext, so they won't be logged.
+                    svc.OnError(context, ex);
 
-                // Wrap up exception into a RestOperationException which will convey it to
-                // the error handler implementation
-                throw new RestOperationException(ex, e.BookmarkGuid.ToString());
-            }
-            finally
-            {
-                OperationContext.Current.Extensions.Remove(context);
-                context.Dispose();
-                RestLoggingContext.Current.Pop();
+                    // Wrap up exception into a RestOperationException which will convey it to
+                    // the error handler implementation
+                    throw new RestOperationException(ex, e.BookmarkGuid.ToString());
+                }
+                finally
+                {
+                    OperationContext.Current.Extensions.Remove(context);
+                    context.Dispose();
+                }
             }
         }
 

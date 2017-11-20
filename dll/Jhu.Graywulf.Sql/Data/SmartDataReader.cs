@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Data;
+using System.Data.Common;
 using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Data
@@ -12,7 +13,7 @@ namespace Jhu.Graywulf.Data
         #region Private member variables
 
         private DatasetBase dataset;
-        private IDataReader dataReader;
+        private DbDataReader dataReader;
         private int resultsetCounter;
         private List<long> recordCounts;
         private string name;
@@ -134,7 +135,7 @@ namespace Jhu.Graywulf.Data
 
         // TODO: rewrite this to get rowcount only from smart command
         // the rest needs to be figured out by this class (with the help of the dataset class)
-        internal SmartDataReader(DatasetBase dataset, IDataReader dataReader, List<long> recordCounts)
+        internal SmartDataReader(DatasetBase dataset, DbDataReader dataReader, List<long> recordCounts)
         {
             InitializeMembers();
 
@@ -169,7 +170,6 @@ namespace Jhu.Graywulf.Data
 
         public bool NextResult()
         {
-
             name = null;
             metadata = null;
             columns = null;
@@ -179,9 +179,29 @@ namespace Jhu.Graywulf.Data
             return dataReader.NextResult();
         }
 
+        public Task<bool> NextResultAsync()
+        {
+            return dataReader.NextResultAsync();
+        }
+
+        public Task<bool> NextResultAsync(CancellationToken cancellationToken)
+        {
+            return dataReader.NextResultAsync(cancellationToken);
+        }
+
         public bool Read()
         {
             return dataReader.Read();
+        }
+
+        public Task<bool> ReadAsync()
+        {
+            return dataReader.ReadAsync();
+        }
+
+        public Task<bool> ReadAsync(CancellationToken cancellationToken)
+        {
+            return dataReader.ReadAsync(cancellationToken);
         }
 
         public void Close()

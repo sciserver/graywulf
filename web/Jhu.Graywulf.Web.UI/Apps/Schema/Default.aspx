@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true"
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" Async="true" AutoEventWireup="true"
     Inherits="Jhu.Graywulf.Web.UI.Apps.Schema.Default" CodeBehind="Default.aspx.cs" %>
 
 <%@ Register Src="ColumnsView.ascx" TagName="Columns" TagPrefix="view" %>

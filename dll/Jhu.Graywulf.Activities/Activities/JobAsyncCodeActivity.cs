@@ -81,7 +81,7 @@ namespace Jhu.Graywulf.Activities
         private async Task ExecuteAsync(AsyncCodeActivityContext activityContext)
         {
             var jobContext = new JobContext(this, activityContext);
-            using (new LoggingContext(true, Components.AmbientContextSupport.Default))
+            using (new LoggingContext(true))
             {
                 // Save cancellation context to be called when cancel request arrives
                 // from another thread context

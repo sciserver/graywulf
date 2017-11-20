@@ -76,29 +76,32 @@ namespace Jhu.Graywulf.Web.Security
         {
             // (0.) Called by the Http framework when the entire module is initializing
 
-            // Load authenticators from the registry
-            using (var context = ContextManager.Instance.CreateReadOnlyContext())
+            using (new WebLoggingContext())
             {
-                // The admin interface doesn't have a domain associated with, this
-                // special case has to be handled here
-                if (context.Domain != null)
+                // Load authenticators from the registry
+                using (var context = ContextManager.Instance.CreateReadOnlyContext())
                 {
-                    // Initialize authenticators            
-                    var af = AuthenticationFactory.Create(context.Domain);
-                    RegisterAuthentications(af.GetAuthentications(AuthenticatorProtocolType.WebRequest));
+                    // The admin interface doesn't have a domain associated with, this
+                    // special case has to be handled here
+                    if (context.Domain != null)
+                    {
+                        // Initialize authenticators            
+                        var af = AuthenticationFactory.Create(context.Domain);
+                        RegisterAuthentications(af.GetAuthentications(AuthenticatorProtocolType.WebRequest));
+                    }
                 }
+
+                // Wire up request events
+
+                // --- Call all authenticators in this one
+                application.AuthenticateRequest += new EventHandler(OnAuthenticateRequest);
+                // --- Associate identity with graywulf user
+                application.PostAuthenticateRequest += new EventHandler(OnPostAuthenticateRequest);
+                // --- Identify authenticated user
+                application.PostAcquireRequestState += new EventHandler(OnPostAcquireRequestState);
+                // --- Handle failed authentication
+                application.EndRequest += new EventHandler(OnEndRequest);
             }
-
-            // Wire up request events
-
-            // --- Call all authenticators in this one
-            application.AuthenticateRequest += new EventHandler(OnAuthenticateRequest);
-            // --- Associate identity with graywulf user
-            application.PostAuthenticateRequest += new EventHandler(OnPostAuthenticateRequest);
-            // --- Identify authenticated user
-            application.PostAcquireRequestState += new EventHandler(OnPostAcquireRequestState);
-            // --- Handle failed authentication
-            application.EndRequest += new EventHandler(OnEndRequest);
         }
 
         #endregion
@@ -108,6 +111,8 @@ namespace Jhu.Graywulf.Web.Security
         {
             // (1.) Called when a new page request is made and the built in
             // security module has established the identity of the user.
+
+            new WebLoggingContext();
 
             var request = new AuthenticationRequest(HttpContext.Current);
 
@@ -227,6 +232,8 @@ namespace Jhu.Graywulf.Web.Security
 
             // Use the first authenticator in the list for redirect
             RedirectToLoginPage();
+
+            WebLoggingContext.Current.Dispose();
         }
 
         #endregion

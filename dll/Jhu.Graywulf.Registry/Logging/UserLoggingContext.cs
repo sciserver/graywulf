@@ -11,8 +11,7 @@ namespace Jhu.Graywulf.Logging
     public abstract class UserLoggingContext : LoggingContext
     {
 
-        public UserLoggingContext(AmbientContextSupport support)
-            : base(support)
+        public UserLoggingContext()
         {
             if (LoggingContext.Current is UserLoggingContext)
             {

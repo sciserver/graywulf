@@ -117,16 +117,24 @@ namespace Jhu.Graywulf.Web.UI
             get { return ((GraywulfIdentity)User.Identity).User; }
         }
 
-        protected virtual void Application_Start(object sender, EventArgs e)
+        protected void Application_Start(object sender, EventArgs e)
         {
-            LoggingContext.Current.StartLogger(EventSource.WebUI, false);
+            using (new LoggingContext())
+            {
+                LoggingContext.Current.StartLogger(EventSource.WebUI, false);
 
-            Logging.LoggingContext.Current.LogOperation(
-                Logging.EventSource.WebUI,
-                String.Format("The web application at {0} has started.", VirtualPathUtility.ToAbsolute("~/")),
-                null,
-                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
+                Logging.LoggingContext.Current.LogOperation(
+                    Logging.EventSource.WebUI,
+                    String.Format("The web application at {0} has started.", VirtualPathUtility.ToAbsolute("~/")),
+                    null,
+                    new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
+                OnApplicationStart();
+            }
+        }
+
+        protected virtual void OnApplicationStart()
+        {
             HostingEnvironment.RegisterVirtualPathProvider(virtualPathProvider);
             RegisterScripts();
             RegisterControls();
@@ -135,15 +143,32 @@ namespace Jhu.Graywulf.Web.UI
             RegisterButtons();
         }
 
-        protected virtual void Session_Start(object sender, EventArgs e)
+        protected void Session_Start(object sender, EventArgs e)
         {
             // This is a workaround that's required by WCF not to throw an exception
             // when first request by a client to the web service returns streaming
             // response
             string sessionId = Session.SessionID;
+
+            using (new LoggingContext())
+            {
+                OnSessionStart();
+            }
+        }
+
+        protected virtual void OnSessionStart()
+        {
         }
 
         protected virtual void Session_End(object sender, EventArgs e)
+        {
+            using (new LoggingContext())
+            {
+                OnSessionEnd();
+            }
+        }
+
+        protected virtual void OnSessionEnd()
         {
         }
 
@@ -161,13 +186,22 @@ namespace Jhu.Graywulf.Web.UI
 
         protected virtual void Application_End(object sender, EventArgs e)
         {
-            Logging.LoggingContext.Current.LogOperation(
+            using (new LoggingContext())
+            {
+                OnApplicationEnd();
+
+                Logging.LoggingContext.Current.LogOperation(
                 Logging.EventSource.WebUI,
                 String.Format("The web application at {0} has stopped.", VirtualPathUtility.ToAbsolute("~/")),
                 null,
                 null);
 
-            LoggingContext.Current.StopLogger();
+                LoggingContext.Current.StopLogger();
+            }
+        }
+
+        protected virtual void OnApplicationEnd()
+        {
         }
 
         protected virtual void RegisterScripts()
