@@ -161,6 +161,16 @@ namespace Jhu.Graywulf.Data
 
         #endregion
 
+        public ISmartDataReader ExecuteReader()
+        {
+            return ExecuteReaderInternal(CommandBehavior.Default);
+        }
+
+        public ISmartDataReader ExecuteReader(CommandBehavior behavior)
+        {
+            return ExecuteReaderInternal(behavior);
+        }
+
         public Task<ISmartDataReader> ExecuteReaderAsync()
         {
             return ExecuteReaderInternalAsync(CommandBehavior.Default, CancellationToken.None);
@@ -179,6 +189,24 @@ namespace Jhu.Graywulf.Data
         public Task<ISmartDataReader> ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
         {
             return ExecuteReaderInternalAsync(behavior, cancellationToken);
+        }
+
+        private ISmartDataReader ExecuteReaderInternal(CommandBehavior behavior)
+        {
+            List<long> recordCounts = null;
+
+            // If record counting is on, first execute a query to find the
+            // number of records that will be returned.
+            if (recordsCounted)
+            {
+                recordCounts = CountResults();
+            }
+
+            // TODO: figure out resultset name and metadata here, then pass it
+            // to the data reader for further processing
+
+            var dr = command.ExecuteReader(behavior);
+            return new SmartDataReader(dataset, dr, recordCounts);
         }
 
         private async Task<ISmartDataReader> ExecuteReaderInternalAsync(CommandBehavior behavior, CancellationToken cancellationToken)
@@ -200,11 +228,7 @@ namespace Jhu.Graywulf.Data
             return new SmartDataReader(dataset, dr, recordCounts);
         }
 
-        /// <summary>
-        /// Wraps the query into a SELECT COUNT(*) FROM (...) query and
-        /// the number of records is counted.
-        /// </summary>
-        private async Task<List<long>> CountResultsAsync(CancellationToken cancellationToken)
+        private DbCommand CreateCountResultsCommand()
         {
             // TODO: this only works with single SELECTs now
             // and can count only records from query, SPs don't work
@@ -214,21 +238,54 @@ namespace Jhu.Graywulf.Data
 
             var res = new List<long>();
 
-            using (var cmd = command.Connection.CreateCommand())
+            var cmd = command.Connection.CreateCommand();
+
+            // Copy parameters
+            for (int i = 0; i < command.Parameters.Count; i++)
             {
-                // Copy parameters
-                for (int i = 0; i < command.Parameters.Count; i++)
+                cmd.Parameters.Add(command.Parameters[i]);
+            }
+
+            cmd.CommandText = sql;
+            cmd.CommandTimeout = command.CommandTimeout;
+            cmd.CommandType = command.CommandType;
+
+            cmd.Connection = command.Connection;
+            cmd.Transaction = command.Transaction;
+
+            return cmd;
+        }
+
+        private List<long> CountResults()
+        {
+            var res = new List<long>();
+
+            using (var cmd = CreateCountResultsCommand())
+            {
+                using (var dr = cmd.ExecuteReader())
                 {
-                    cmd.Parameters.Add(command.Parameters[i]);
+                    do
+                    {
+                        dr.Read();
+                        res.Add(dr.GetInt64(0));
+                    }
+                    while (dr.NextResult());
                 }
+            }
 
-                cmd.CommandText = sql;
-                cmd.CommandTimeout = command.CommandTimeout;
-                cmd.CommandType = command.CommandType;
+            return res;
+        }
 
-                cmd.Connection = command.Connection;
-                cmd.Transaction = command.Transaction;
+        /// <summary>
+        /// Wraps the query into a SELECT COUNT(*) FROM (...) query and
+        /// the number of records is counted.
+        /// </summary>
+        private async Task<List<long>> CountResultsAsync(CancellationToken cancellationToken)
+        {
+            var res = new List<long>();
 
+            using (var cmd = CreateCountResultsCommand())
+            {
                 using (var dr = await cmd.ExecuteReaderAsync(cancellationToken))
                 {
                     do

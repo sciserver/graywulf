@@ -12,6 +12,8 @@ namespace Jhu.Graywulf.Data
         DatasetMetadata Metadata { get; }
 
         bool RecordsCounted { get; set; }
+        ISmartDataReader ExecuteReader();
+        ISmartDataReader ExecuteReader(CommandBehavior behavior);
 
         Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken);
         Task<ISmartDataReader> ExecuteReaderAsync();

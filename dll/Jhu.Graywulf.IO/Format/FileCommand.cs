@@ -139,6 +139,16 @@ namespace Jhu.Graywulf.Format
 
         #endregion
 
+        ISmartDataReader ISmartCommand.ExecuteReader()
+        {
+            return ExecuteReader();
+        }
+
+        ISmartDataReader ISmartCommand.ExecuteReader(CommandBehavior behavior)
+        {
+            return ExecuteReader(behavior);
+        }
+
         public FileDataReader ExecuteReader()
         {
             return ExecuteReader(CommandBehavior.Default);
