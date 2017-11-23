@@ -37,6 +37,10 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             }
             if (expression == null)
             {
+                return "[null]";
+            }
+            else if (expression == null)
+            {
                 return entity.Name;
             }
             else

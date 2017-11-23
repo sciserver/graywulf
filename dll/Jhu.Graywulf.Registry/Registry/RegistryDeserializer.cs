@@ -87,7 +87,7 @@ namespace Jhu.Graywulf.Registry
 
         private void ResolveReferences(Entity entity)
         {
-            // Console.Error.Write("Resolving references of {0}... ", entity.Name);
+            Console.Error.WriteLine("Resolving references of {0}... ", entity.Name);
 
             // Allow saving entity references
             entity.IsDeserializing = false;

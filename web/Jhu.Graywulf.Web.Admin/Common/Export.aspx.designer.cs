@@ -31,6 +31,15 @@ namespace Jhu.Graywulf.Web.Admin.Common {
         protected global::System.Web.UI.WebControls.Button Cancel;
         
         /// <summary>
+        /// mask control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBoxList mask;
+        
+        /// <summary>
         /// recursive control.
         /// </summary>
         /// <remarks>

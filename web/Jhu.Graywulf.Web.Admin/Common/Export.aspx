@@ -15,11 +15,27 @@
         <h3>Export items</h3>
         list of items comes here
 
-        <p>
-            <asp:CheckBox runat="server" ID="recursive" Text="Recursive" Checked="true" />
-        </p>
-        <p>
-            <asp:CheckBox runat="server" ID="excludeUserCreated" Text="Exclude user created" Checked="true" />
-        </p>
+        <table class="DetailsForm">
+            <tr>
+                <td class="FormLabel">Export filter:</td>
+                <td class="FormField">
+                    <asp:CheckBoxList runat="server" ID="mask">
+                        <asp:ListItem Value="Cluster" Text="Cluster" />
+                        <asp:ListItem Value="Domain" Text="Domain" />
+                        <asp:ListItem Value="Federation" Text="Federation" />
+                        <asp:ListItem Value="Layout" Text="Layout" />
+                        <asp:ListItem Value="Jobs" Text="Jobs" />
+                    </asp:CheckBoxList>
+                </td>
+            </tr>
+            <tr>
+                <td class="FormLabel"></td>
+                <td class="FormField"><asp:CheckBox runat="server" ID="recursive" Text="Recursive" Checked="true" /></td>
+            </tr>
+            <tr>
+                <td class="FormLabel"></td>
+                <td class="FormField"><asp:CheckBox runat="server" ID="excludeUserCreated" Text="Exclude user created" Checked="true" /></td>
+            </tr>
+        </table>
     </div>
 </asp:Content>

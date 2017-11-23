@@ -265,6 +265,10 @@ namespace Jhu.Graywulf.Registry
 
         #endregion
 
+        public void Resolve()
+        {
+            EnsureEntityLoaded();
+        }
 
         public void Resolve()
         {

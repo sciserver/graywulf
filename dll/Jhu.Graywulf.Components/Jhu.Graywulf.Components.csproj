@@ -129,6 +129,7 @@
     <Compile Include="Util\Cloner.cs" />
     <Compile Include="Util\DeepCloner.cs" />
     <Compile Include="Util\EmailFormatter.cs" />
+    <Compile Include="Util\EnumParser.cs" />
     <Compile Include="Util\MediaTypeComparer.cs" />
     <Compile Include="Util\ServiceControl.cs" />
     <Compile Include="Util\SqlScriptSplitter.cs" />

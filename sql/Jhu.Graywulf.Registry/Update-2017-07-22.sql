@@ -19,6 +19,8 @@ INNER JOIN Entity e ON e.Guid = id.EntityGuid
 
 GO
 
+SELECT COUNT(*) FROM users_map
+
 SELECT TOP 10 * FROM users_map
 
 GO
