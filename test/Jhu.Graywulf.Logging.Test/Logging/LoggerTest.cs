@@ -9,18 +9,18 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Jhu.Graywulf.Logging
 {
     [TestClass]
-    public class LoggerTest
+    public class LoggerTest : Jhu.Graywulf.Test.LoggingTestClassBase
     {
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
-            LoggingContext.Current.StartLogger(EventSource.Test, true);
+            StartLogger();
         }
 
         [ClassCleanup]
-        public static void CleanUp()
+        public static void Cleanup()
         {
-            LoggingContext.Current.StopLogger();
+            StopLogger();
         }
 
         [TestMethod]

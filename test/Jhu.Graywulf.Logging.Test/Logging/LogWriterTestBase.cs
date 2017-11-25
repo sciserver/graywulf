@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Jhu.Graywulf.Logging
 {
-    public abstract class LogWriterTestBase
+    public abstract class LogWriterTestBase : Jhu.Graywulf.Test.LoggingTestClassBase
     {
         protected void WriteErrorTestHelper()
         {

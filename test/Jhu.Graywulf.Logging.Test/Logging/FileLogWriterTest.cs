@@ -10,6 +10,18 @@ namespace Jhu.Graywulf.Logging
     [TestClass]
     public class FileLogWriterTest : LogWriterTestBase
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            StartLogger();
+        }
+
+        [ClassCleanup]
+        public static void Cleanup()
+        {
+            StopLogger();
+        }
+
         protected override LogWriterBase CreateLogWriter(bool isasync)
         {
             var w = FileLogWriter.Configuration.CreateLogWriter();

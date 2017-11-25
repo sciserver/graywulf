@@ -17,7 +17,7 @@ using Jhu.Graywulf.Scheduler;
 
 namespace Jhu.Graywulf.Test
 {
-    public abstract class TestClassBase
+    public abstract class TestClassBase : LoggingTestClassBase
     {
         protected const string TestUser = "test";
         protected const string OtherUser = "testother";
@@ -67,21 +67,6 @@ namespace Jhu.Graywulf.Test
             QueryDelayRetry,
             QueryTimeoutRetry,
             AsyncTrackingRecord,
-        }
-
-        protected Task scheduler;
-
-        protected static void StartLogger()
-        {
-            // Here we allow storing the context in global static
-            new Logging.LoggingContext(true, Components.AmbientContextStoreLocation.All);
-            Logging.LoggingContext.Current.StartLogger(Logging.EventSource.Test, false);
-        }
-
-        protected static void StopLogger()
-        {
-            Logging.LoggingContext.Current.StopLogger();
-            Logging.LoggingContext.Current.Dispose();
         }
 
         protected virtual SqlServerDataset CreateIOTestDataset()

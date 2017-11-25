@@ -81,6 +81,7 @@
     <Compile Include="Logging\TestLogWriter.cs" />
     <Compile Include="Logging\TestLogWriterConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Test\LoggingTestClassBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
