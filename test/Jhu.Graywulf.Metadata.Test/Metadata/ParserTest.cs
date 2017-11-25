@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Metadata
         {
             get
             {
-                return Path.Combine(GetSolutionDir(), @"graywulf\test\files\metadata.sql");
+                return Path.Combine(GetSolutionDir(), @"modules\graywulf\test\files\metadata.sql");
             }
         }
 
