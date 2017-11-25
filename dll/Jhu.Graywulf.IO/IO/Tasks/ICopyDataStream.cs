@@ -14,9 +14,6 @@ namespace Jhu.Graywulf.IO.Tasks
         Task OpenAsync();
 
         [OperationContract]
-        void Open();
-
-        [OperationContract]
         void Close();
     }
 }

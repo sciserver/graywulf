@@ -272,32 +272,32 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             // TODO: implement multi-table copy, might require converting results to a collection
 
-            var dr = await cmd.ExecuteReaderAsync(CommandBehavior.KeyInfo, CancellationContext.Token);
-            var sdr = (ISmartDataReader)dr;
-
-            // DestinationTable has the property TableNameTemplate which needs to
-            // be evaluated now
-            var table = destination.GetTable(batchName, cmd.Name, sdr.Name, sdr.Metadata);
-
-            // Certain data readers cannot determine the columns from the data file,
-            // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
-            // from the destination table instead
-            if ((destination.Options & TableInitializationOptions.Create) == 0 &&
-                sdr is FileDataReader &&
-                (sdr.Columns == null || sdr.Columns.Count == 0))
+            using (var dr = await cmd.ExecuteReaderAsync(CommandBehavior.KeyInfo, CancellationContext.Token))
             {
-                var fdr = (FileDataReader)sdr;
-                fdr.CreateColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
+                var sdr = (ISmartDataReader)dr;
+
+                // DestinationTable has the property TableNameTemplate which needs to
+                // be evaluated now
+                var table = destination.GetTable(batchName, cmd.Name, sdr.Name, sdr.Metadata);
+
+                // Certain data readers cannot determine the columns from the data file,
+                // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
+                // from the destination table instead
+                if ((destination.Options & TableInitializationOptions.Create) == 0 &&
+                    sdr is FileDataReader &&
+                    (sdr.Columns == null || sdr.Columns.Count == 0))
+                {
+                    var fdr = (FileDataReader)sdr;
+                    fdr.CreateColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
+                }
+
+                // TODO: make schema operation async
+                table.Initialize(sdr.Columns, destination.Options);
+                result.SchemaName = table.SchemaName;
+                result.TableName = table.ObjectName;
+
+                await ExecuteBulkCopyAsync(dr, table, result);
             }
-
-            // TODO: make schema operation async
-
-            table.Initialize(sdr.Columns, destination.Options);
-
-            result.SchemaName = table.SchemaName;
-            result.TableName = table.ObjectName;
-
-            await ExecuteBulkCopyAsync(dr, table, result);
         }
 
         /// <summary>
@@ -319,6 +319,8 @@ namespace Jhu.Graywulf.IO.Tasks
                         cmd.CommandTimeout = Timeout;
 
                         await CopyToFileAsync(cmd, destination, result);
+
+                        tn.Commit();
                     }
                 }
             }
@@ -331,9 +333,11 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <param name="destination"></param>
         private async Task CopyToFileAsync(ISmartCommand cmd, DataFileBase destination, TableCopyResult result)
         {
-            var dr = await cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationContext.Token);
-            await destination.WriteFromDataReaderAsync((SmartDataReader)dr);
-            result.RecordsAffected = dr.RecordsAffected;
+            using (var dr = await cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationContext.Token))
+            {
+                await destination.WriteFromDataReaderAsync((SmartDataReader)dr);
+                result.RecordsAffected = dr.RecordsAffected;
+            }
         }
 
         /// <summary>

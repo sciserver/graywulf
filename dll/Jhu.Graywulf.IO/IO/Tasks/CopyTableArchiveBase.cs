@@ -137,12 +137,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// When overriden is derived classes, opens the archive pointed by the URI.
         /// </summary>
         public abstract Task OpenAsync();
-
-        public void Open()
-        {
-            Util.TaskHelper.Wait(OpenAsync());
-        }
-
+        
         /// <summary>
         /// 
         /// </summary>

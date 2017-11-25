@@ -269,12 +269,7 @@ namespace Jhu.Graywulf.Registry
         {
             EnsureEntityLoaded();
         }
-
-        public void Resolve()
-        {
-            EnsureEntityLoaded();
-        }
-
+        
         /// <summary>
         /// Loads the entity from the registry using the context of the
         /// referencing object.

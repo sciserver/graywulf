@@ -55,8 +55,8 @@ namespace Jhu.Graywulf.IO.Tasks
                 var path = "test.csv";
                 var task = GetTableExportTask(cancellationContext, Util.UriConverter.FromFilePath(zippath), path, false);
 
-                task.Open();
-                task.ExecuteAsync().Wait();
+                Util.TaskHelper.Wait(task.OpenAsync());
+                Util.TaskHelper.Wait(task.ExecuteAsync());
                 task.Close();
 
                 Assert.IsTrue(File.Exists(zippath));
@@ -77,8 +77,8 @@ namespace Jhu.Graywulf.IO.Tasks
                     var path = "test.csv";
                     var task = GetTableExportTask(cancellationContext, Util.UriConverter.FromFilePath(zippath), path, true);
 
-                    task.Open();
-                    task.ExecuteAsync().Wait();
+                    Util.TaskHelper.Wait(task.OpenAsync());
+                    Util.TaskHelper.Wait(task.ExecuteAsync());
                     task.Close();
 
                     Assert.IsTrue(File.Exists(zippath));

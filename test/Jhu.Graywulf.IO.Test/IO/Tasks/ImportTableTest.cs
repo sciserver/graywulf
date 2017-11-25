@@ -70,7 +70,7 @@ namespace Jhu.Graywulf.IO.Tasks
             var t = it.Destination.GetTable();
             DropTable(t);
 
-            it.ExecuteAsync().Wait();
+            Util.TaskHelper.Wait(it.ExecuteAsync());
 
             var table = it.Destination.GetTable();
 

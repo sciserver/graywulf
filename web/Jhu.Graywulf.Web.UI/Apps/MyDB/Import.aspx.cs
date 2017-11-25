@@ -149,9 +149,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             var file = fileFormatForm.GetDataFile(uri);
             var table = Web.Api.V1.DestinationTable.GetDestinationTable(FederationContext, destinationTableForm.Dataset.Name, destinationTableForm.TableName);
             var options = importOptionsForm.GetOptions();
-            var importer = uploadForm.GetTableImporter(file, table, options);
 
-            importer.ExecuteAsync().Wait();
+            // TODO: make this whole function async
+            var importer = Util.TaskHelper.Wait(uploadForm.OpenTableImporterAsync(file, table, options));
+            Util.TaskHelper.Wait(importer.ExecuteAsync());
 
             foreach (var r in importer.Results)
             {

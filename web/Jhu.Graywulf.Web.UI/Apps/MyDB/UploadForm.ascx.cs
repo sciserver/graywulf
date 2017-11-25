@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.Configuration;
-using System.Xml;
+using System.Threading.Tasks;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             }
         }
 
-        public CopyTableBase GetTableImporter(DataFileBase file, DestinationTable table, ImportTableOptions options)
+        public async Task<CopyTableBase> OpenTableImporterAsync(DataFileBase file, DestinationTable table, ImportTableOptions options)
         {
             var uri = this.Uri;
 
@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                     Options = options,
                 };
 
-                task.Open();
+                await task.OpenAsync();
 
                 return task;
             }
@@ -92,8 +92,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                     Options = options,
                 };
 
-                // TODO: make async
-                Util.TaskHelper.Wait(task.OpenAsync(FederationContext.StreamFactory.Open(importedFile.PostedFile.InputStream, DataFileMode.Read, compression, archival)));
+                await task.OpenAsync(FederationContext.StreamFactory.Open(importedFile.PostedFile.InputStream, DataFileMode.Read, compression, archival));
 
                 return task;
             }

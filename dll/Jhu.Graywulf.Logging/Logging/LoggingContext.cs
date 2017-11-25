@@ -131,11 +131,19 @@ namespace Jhu.Graywulf.Logging
         #region Constructors and initializers
 
         public LoggingContext()
-            : this(false)
+            : this(false, AmbientContextStoreLocation.Default)
         {
+            // override
         }
 
         public LoggingContext(bool isAsync)
+            : this(isAsync, AmbientContextStoreLocation.Default)
+        {
+            // override
+        }
+
+        public LoggingContext(bool isAsync, AmbientContextStoreLocation supportedLocation)
+            : base(supportedLocation)
         {
             if (OuterContext is LoggingContext)
             {

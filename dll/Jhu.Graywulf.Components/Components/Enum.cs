@@ -21,11 +21,16 @@ namespace Jhu.Graywulf.Components
         ItemProcessing
     }
 
-    public enum AmbientContextStoreLocation
+    [Flags]
+    public enum AmbientContextStoreLocation : UInt32
     {
-        ThreadLocal,
-        AsyncLocal,
-        WebHttpContext,
-        WcfOperationContext,
+        GlobalStatic = 0x0001,
+        ThreadLocal = 0x0002,
+        AsyncLocal = 0x0004,
+        WebHttpContext = 0x0008,
+        WcfOperationContext = 0x0010,
+
+        Default = AsyncLocal | WebHttpContext | WcfOperationContext,
+        All = 0xFFFF
     }
 }

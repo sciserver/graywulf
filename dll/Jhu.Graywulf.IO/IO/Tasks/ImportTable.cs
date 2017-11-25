@@ -132,12 +132,7 @@ namespace Jhu.Graywulf.IO.Tasks
             source.StreamFactory = GetStreamFactory();
             await source.OpenAsync();
         }
-
-        public void Open()
-        {
-            Util.TaskHelper.Wait(OpenAsync());
-        }
-
+        
         public void Close()
         {
             source.Close();

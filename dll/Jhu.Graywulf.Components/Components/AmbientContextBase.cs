@@ -10,10 +10,12 @@ namespace Jhu.Graywulf.Components
     {
         private const string AmbientContextStoreKey = "Jhu.Graywulf.Components.AmbientContextStore";
 
+        private static AmbientContextStore staticContexts = new AmbientContextStore(AmbientContextStoreLocation.GlobalStatic);
         private static ThreadLocal<AmbientContextStore> threadLocalContexts = new ThreadLocal<AmbientContextStore>();
         private static AsyncLocal<AmbientContextStore> asyncLocalContexts = new AsyncLocal<AmbientContextStore>();
 
         private AmbientContextBase outerContext;
+        private AmbientContextStoreLocation supportedLocation;
         private Guid contextGuid;
         private bool isValid;
 
@@ -39,8 +41,15 @@ namespace Jhu.Graywulf.Components
         }
 
         protected AmbientContextBase()
+            : this(AmbientContextStoreLocation.Default)
+        {
+            // override
+        }
+
+        protected AmbientContextBase(AmbientContextStoreLocation supportedLocation)
         {
             InitializeMembers();
+            this.supportedLocation = supportedLocation;
             Push();
         }
 
@@ -66,9 +75,20 @@ namespace Jhu.Graywulf.Components
             isValid = false;
         }
 
-        private static bool IsThreadLocalSupported()
+        private static bool IsStaticStoreSupported(AmbientContextStoreLocation support)
         {
-            return true;
+            return support.HasFlag(AmbientContextStoreLocation.GlobalStatic);
+        }
+
+        private static AmbientContextStore GetStaticStore(bool create)
+        {
+            // TODO: synchronize?
+            return staticContexts;
+        }
+
+        private static bool IsThreadLocalStoreSupported(AmbientContextStoreLocation support)
+        {
+            return support.HasFlag(AmbientContextStoreLocation.ThreadLocal);
         }
 
         private static AmbientContextStore GetThreadLocalStore(bool create)
@@ -88,9 +108,9 @@ namespace Jhu.Graywulf.Components
             return store;
         }
 
-        private static bool IsAsyncLocalSupported()
+        private static bool IsAsyncLocalStoreSupported(AmbientContextStoreLocation support)
         {
-            return true;
+            return support.HasFlag(AmbientContextStoreLocation.AsyncLocal);
         }
 
         private static AmbientContextStore GetAsyncLocalStore(bool create)
@@ -110,9 +130,11 @@ namespace Jhu.Graywulf.Components
             return store;
         }
 
-        private static bool IsHttpContextSupported()
+        private static bool IsHttpContextStoreSupported(AmbientContextStoreLocation support)
         {
-            return System.Web.HttpContext.Current != null;
+            return
+                support.HasFlag(AmbientContextStoreLocation.WebHttpContext) &&
+                System.Web.HttpContext.Current != null;
         }
 
         private static AmbientContextStore GetHttpContextStore(bool create)
@@ -130,9 +152,11 @@ namespace Jhu.Graywulf.Components
             return store;
         }
 
-        private static bool IsOperationContextSupported()
+        private static bool IsOperationContextStoreSupported(AmbientContextStoreLocation support)
         {
-            return System.ServiceModel.OperationContext.Current != null;
+            return
+                support.HasFlag(AmbientContextStoreLocation.WcfOperationContext) &&
+                System.ServiceModel.OperationContext.Current != null;
         }
 
         private static AmbientContextStore GetOperationContextStore(bool create)
@@ -148,11 +172,11 @@ namespace Jhu.Graywulf.Components
             return ext?.Store;
         }
 
-        private static IEnumerable<AmbientContextStore> EnumerateStores(bool create)
+        private static IEnumerable<AmbientContextStore> EnumerateStores(bool create, AmbientContextStoreLocation support)
         {
             AmbientContextStore store;
 
-            if (IsOperationContextSupported())
+            if (IsOperationContextStoreSupported(support))
             {
                 store = GetOperationContextStore(create);
 
@@ -162,7 +186,7 @@ namespace Jhu.Graywulf.Components
                 }
             }
 
-            if (IsHttpContextSupported())
+            if (IsHttpContextStoreSupported(support))
             {
                 store = GetHttpContextStore(create);
 
@@ -172,7 +196,7 @@ namespace Jhu.Graywulf.Components
                 }
             }
 
-            if (IsAsyncLocalSupported())
+            if (IsAsyncLocalStoreSupported(support))
             {
                 store = GetAsyncLocalStore(create);
 
@@ -181,9 +205,19 @@ namespace Jhu.Graywulf.Components
                     yield return store;
                 }
             }
-            else if (IsThreadLocalSupported())
+            else if (IsThreadLocalStoreSupported(support))
             {
                 store = GetThreadLocalStore(create);
+
+                if (store != null)
+                {
+                    yield return store;
+                }
+            }
+
+            if (IsStaticStoreSupported(support))
+            {
+                store = GetStaticStore(create);
 
                 if (store != null)
                 {
@@ -199,7 +233,7 @@ namespace Jhu.Graywulf.Components
         {
             var type = this.GetType();
 
-            foreach (var store in EnumerateStores(true))
+            foreach (var store in EnumerateStores(true, supportedLocation))
             {
                 var key = store.Find(type);
 
@@ -208,7 +242,7 @@ namespace Jhu.Graywulf.Components
                     this.outerContext = store[key];
                     store.Remove(key);
                 }
-                
+
                 store.Add(type, this);
             }
         }
@@ -220,8 +254,8 @@ namespace Jhu.Graywulf.Components
         private void Pop()
         {
             var type = this.GetType();
-            
-            foreach (var store in EnumerateStores(false))
+
+            foreach (var store in EnumerateStores(false, supportedLocation))
             {
                 var key = store.Find(type);
 
@@ -254,7 +288,7 @@ namespace Jhu.Graywulf.Components
         {
             var type = typeof(T);
 
-            foreach (var store in EnumerateStores(false))
+            foreach (var store in EnumerateStores(false, AmbientContextStoreLocation.All))
             {
                 var key = store.Find(type);
 

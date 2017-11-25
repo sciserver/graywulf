@@ -66,8 +66,8 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void ExecuteImportTableArchiveTest(IImportTableArchive it)
         {
-            it.Open();
-            it.ExecuteAsync().Wait();
+            Util.TaskHelper.Wait(it.OpenAsync());
+            Util.TaskHelper.Wait(it.ExecuteAsync());
         }
 
         private void DropTestTables()

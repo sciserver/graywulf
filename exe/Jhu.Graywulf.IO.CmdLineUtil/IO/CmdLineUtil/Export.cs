@@ -83,7 +83,7 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
 
                 Console.WriteLine("Exporting table...");
 
-                export.Open();
+                Util.TaskHelper.Wait(export.OpenAsync());
                 Util.TaskHelper.Wait(export.ExecuteAsync());
                 export.Close();
 

@@ -293,7 +293,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.OpenAsync(new Uri("https://www.google.com"), null, DataFileMode.Read).Result)
+            using (var s = sf.OpenAsync(new Uri("https://www.bing.com"), null, DataFileMode.Read).Result)
             {
                 s.ReadByte();
             }
@@ -304,7 +304,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.OpenAsync(new Uri("ftp://ftp.debian.com/debian/README"), null, DataFileMode.Read).Result)
+            using (var s = sf.OpenAsync(new Uri("ftp://ftp.ubuntu.com/ubuntu/dists/trusty/Release"), null, DataFileMode.Read).Result)
             {
                 s.ReadByte();
             }

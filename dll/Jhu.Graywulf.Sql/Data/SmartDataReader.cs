@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.Common;
 using Jhu.Graywulf.Schema;
+using System.Collections;
 
 namespace Jhu.Graywulf.Data
 {
-    public class SmartDataReader : ISmartDataReader
+    public class SmartDataReader : DbDataReader, ISmartDataReader
     {
         #region Private member variables
 
@@ -24,32 +25,37 @@ namespace Jhu.Graywulf.Data
         #endregion
         #region IDataReader properties
 
-        public int Depth
+        public override int Depth
         {
             get { return dataReader.Depth; }
         }
 
-        public bool IsClosed
+        public override bool IsClosed
         {
             get { return dataReader.IsClosed; }
         }
 
-        public int RecordsAffected
+        public override bool HasRows
+        {
+            get { return dataReader.HasRows; }
+        }
+
+        public override int RecordsAffected
         {
             get { return dataReader.RecordsAffected; }
         }
 
-        public object this[string name]
+        public override object this[string name]
         {
             get { return dataReader[name]; }
         }
 
-        public object this[int i]
+        public override object this[int i]
         {
             get { return dataReader[i]; }
         }
 
-        public int FieldCount
+        public override int FieldCount
         {
             get { return dataReader.FieldCount; }
         }
@@ -156,8 +162,10 @@ namespace Jhu.Graywulf.Data
             this.typeMappings = null;
         }
 
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
+            base.Dispose(disposing);
+
             if (dataReader != null)
             {
                 dataReader.Dispose();
@@ -168,7 +176,7 @@ namespace Jhu.Graywulf.Data
         #endregion
         #region IDataReader functions
 
-        public bool NextResult()
+        public override bool NextResult()
         {
             name = null;
             metadata = null;
@@ -179,32 +187,22 @@ namespace Jhu.Graywulf.Data
             return dataReader.NextResult();
         }
 
-        public Task<bool> NextResultAsync()
-        {
-            return dataReader.NextResultAsync();
-        }
-
-        public Task<bool> NextResultAsync(CancellationToken cancellationToken)
+        public override Task<bool> NextResultAsync(CancellationToken cancellationToken)
         {
             return dataReader.NextResultAsync(cancellationToken);
         }
 
-        public bool Read()
+        public override bool Read()
         {
             return dataReader.Read();
         }
 
-        public Task<bool> ReadAsync()
-        {
-            return dataReader.ReadAsync();
-        }
-
-        public Task<bool> ReadAsync(CancellationToken cancellationToken)
+        public override Task<bool> ReadAsync(CancellationToken cancellationToken)
         {
             return dataReader.ReadAsync(cancellationToken);
         }
 
-        public void Close()
+        public override void Close()
         {
             dataReader.Close();
         }
@@ -212,7 +210,7 @@ namespace Jhu.Graywulf.Data
         #endregion
         #region IDataReader schema functions
 
-        public DataTable GetSchemaTable()
+        public override DataTable GetSchemaTable()
         {
             return dataReader.GetSchemaTable();
         }
@@ -220,27 +218,32 @@ namespace Jhu.Graywulf.Data
         #endregion
         #region Field functions
 
-        public string GetDataTypeName(int i)
+        public override IEnumerator GetEnumerator()
+        {
+            return dataReader.GetEnumerator();
+        }
+
+        public override string GetDataTypeName(int i)
         {
             return dataReader.GetDataTypeName(i);
         }
 
-        public Type GetFieldType(int i)
+        public override Type GetFieldType(int i)
         {
             return dataReader.GetFieldType(i);
         }
 
-        public string GetName(int i)
+        public override string GetName(int i)
         {
             return dataReader.GetName(i);
         }
 
-        public int GetOrdinal(string name)
+        public override int GetOrdinal(string name)
         {
             return dataReader.GetOrdinal(name);
         }
 
-        public bool IsDBNull(int i)
+        public override bool IsDBNull(int i)
         {
             return dataReader.IsDBNull(i);
         }
@@ -248,12 +251,7 @@ namespace Jhu.Graywulf.Data
         #endregion
         #region Field accessors
 
-        public IDataReader GetData(int i)
-        {
-            return dataReader.GetData(i);
-        }
-
-        public object GetValue(int i)
+        public override object GetValue(int i)
         {
             var value = dataReader.GetValue(i);
 
@@ -267,7 +265,7 @@ namespace Jhu.Graywulf.Data
             }
         }
 
-        public int GetValues(object[] values)
+        public override int GetValues(object[] values)
         {
             var res = dataReader.GetValues(values);
 
@@ -284,12 +282,12 @@ namespace Jhu.Graywulf.Data
             return res;
         }
 
-        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+        public override long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
         {
             return dataReader.GetBytes(i, fieldOffset, buffer, bufferoffset, length);
         }
 
-        public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
+        public override long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
         {
             return dataReader.GetChars(i, fieldoffset, buffer, bufferoffset, length);
         }
@@ -297,62 +295,62 @@ namespace Jhu.Graywulf.Data
         #endregion
         #region Strongly type field accessors
 
-        public bool GetBoolean(int i)
+        public override bool GetBoolean(int i)
         {
             return dataReader.GetBoolean(i);
         }
 
-        public byte GetByte(int i)
+        public override byte GetByte(int i)
         {
             return dataReader.GetByte(i);
         }
 
-        public short GetInt16(int i)
+        public override short GetInt16(int i)
         {
             return dataReader.GetInt16(i);
         }
 
-        public int GetInt32(int i)
+        public override int GetInt32(int i)
         {
             return dataReader.GetInt32(i);
         }
 
-        public long GetInt64(int i)
+        public override long GetInt64(int i)
         {
             return dataReader.GetInt64(i);
         }
 
-        public float GetFloat(int i)
+        public override float GetFloat(int i)
         {
             return dataReader.GetFloat(i);
         }
 
-        public double GetDouble(int i)
+        public override double GetDouble(int i)
         {
             return dataReader.GetDouble(i);
         }
 
-        public decimal GetDecimal(int i)
+        public override decimal GetDecimal(int i)
         {
             return dataReader.GetDecimal(i);
         }
 
-        public Guid GetGuid(int i)
+        public override Guid GetGuid(int i)
         {
             return dataReader.GetGuid(i);
         }
 
-        public DateTime GetDateTime(int i)
+        public override DateTime GetDateTime(int i)
         {
             return dataReader.GetDateTime(i);
         }
 
-        public char GetChar(int i)
+        public override char GetChar(int i)
         {
             return dataReader.GetChar(i);
         }
 
-        public string GetString(int i)
+        public override string GetString(int i)
         {
             return dataReader.GetString(i);
         }

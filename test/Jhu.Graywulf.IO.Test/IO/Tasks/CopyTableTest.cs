@@ -11,6 +11,18 @@ namespace Jhu.Graywulf.IO.Tasks
     [TestClass]
     public class CopyTableTest : TestClassBase
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            StartLogger();
+        }
+
+        [ClassCleanup]
+        public static void Cleanup()
+        {
+            StopLogger();
+        }
+
         private ICopyTable GetTableCopy(CancellationContext cancellationContext, string tableName, bool remote)
         {
             ICopyTable q = null;

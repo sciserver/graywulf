@@ -119,7 +119,7 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
 
                 Console.WriteLine("Importing table...");
 
-                import.Open();
+                Util.TaskHelper.Wait(import.OpenAsync());
                 Util.TaskHelper.Wait(import.ExecuteAsync());
                 import.Close();
 

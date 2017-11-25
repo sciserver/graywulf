@@ -115,17 +115,19 @@ namespace Jhu.Graywulf.IO.Tasks
             // server to server copies should always throw an exception
 
             // Create command that reads the table
-            using (var cmd = source.CreateCommand())
+            using (var cn = await source.OpenConnectionAsync(CancellationContext.Token))
             {
-                using (var cn = await source.OpenConnectionAsync(CancellationContext.Token))
+                using (var tn = cn.BeginTransaction(IsolationLevel.ReadUncommitted))
                 {
-                    using (var tn = cn.BeginTransaction(IsolationLevel.ReadUncommitted))
+                    using (var cmd = source.CreateCommand())
                     {
                         cmd.Connection = cn;
                         cmd.Transaction = tn;
                         cmd.CommandTimeout = Timeout;
 
                         await CopyFromCommandAsync(cmd, destination, result);
+
+                        tn.Commit();
                     }
                 }
             }
