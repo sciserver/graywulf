@@ -71,6 +71,8 @@ namespace Jhu.Graywulf.RemoteService.Server
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
             OnStartImpl(args);
+
+            loggingContext.Pop();
         }
 
         private void OnStartImpl(string[] args)
@@ -98,6 +100,8 @@ namespace Jhu.Graywulf.RemoteService.Server
 
         protected override void OnStop()
         {
+            loggingContext.Push();
+
             OnStopImpl();
 
             Logging.LoggingContext.Current.LogStatus(

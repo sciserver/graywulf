@@ -229,7 +229,7 @@ namespace Jhu.Graywulf.Components
         /// <summary>
         /// Puts the context into all supported stores
         /// </summary>
-        private void Push()
+        public void Push()
         {
             var type = this.GetType();
 
@@ -251,7 +251,7 @@ namespace Jhu.Graywulf.Components
         /// Takes the context from all supported stores. If the outercontext is set,
         /// puts that back.
         /// </summary>
-        private void Pop()
+        public void Pop()
         {
             var type = this.GetType();
 

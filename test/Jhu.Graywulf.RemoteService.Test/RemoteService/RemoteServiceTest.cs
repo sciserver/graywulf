@@ -9,11 +9,13 @@ using Jhu.Graywulf.RemoteService.Server;
 namespace Jhu.Graywulf.RemoteService
 {
     [TestClass]
-    public class RemoteServiceTest
+    public class RemoteServiceTest : Jhu.Graywulf.Test.LoggingTestClassBase
     {
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
+            StartLogger();
+
             using (RemoteServiceTester.Instance.GetToken())
             {
                 RemoteServiceTester.Instance.EnsureRunning();
@@ -27,6 +29,8 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.Stop();
             }
+
+            StopLogger();
         }
 
         // TODO: these tests now run in in-proc mode because authentication against localhost is problematic
