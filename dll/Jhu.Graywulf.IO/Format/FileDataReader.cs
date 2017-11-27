@@ -160,6 +160,7 @@ namespace Jhu.Graywulf.Format
         /// <returns></returns>
         public override bool Read()
         {
+            // TODO: call Async directly, instead
             return ReadAsync(CancellationToken.None).Result;
         }
 

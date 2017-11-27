@@ -138,7 +138,7 @@ namespace Jhu.Graywulf.Format
 
         protected internal override async Task<bool> OnReadNextRowAsync(object[] values)
         {
-            var parts = new List<string>();
+            var parts = new string[Columns.Count];
             var hasNextRow = await OnReadNextRowPartsAsync(parts, true);
 
             if (hasNextRow)

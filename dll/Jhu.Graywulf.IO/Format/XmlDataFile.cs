@@ -248,6 +248,7 @@ namespace Jhu.Graywulf.Format
                 {
                     IgnoreComments = true,
                     IgnoreWhitespace = true,
+                    Async = true,
                 };
 
                 inputReader = XmlReader.Create(new DetachedStream(BaseStream), settings);
@@ -268,6 +269,7 @@ namespace Jhu.Graywulf.Format
                 {
                     Indent = true,
                     NamespaceHandling = NamespaceHandling.OmitDuplicates,
+                    Async = true
                 };
 
                 if (Encoding != null)
