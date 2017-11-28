@@ -5,6 +5,7 @@ using System.Security.Principal;
 
 namespace Jhu.Graywulf.Logging
 {
+    [Serializable]
     public class Event
     {
         #region Private member variables

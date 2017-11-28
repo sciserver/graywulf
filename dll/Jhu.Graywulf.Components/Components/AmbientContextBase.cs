@@ -19,8 +19,6 @@ namespace Jhu.Graywulf.Components
         private Guid contextGuid;
         private bool isValid;
 
-        protected abstract string ContextTypeKey { get; }
-
         protected AmbientContextBase OuterContext
         {
             get { return outerContext; }
@@ -53,6 +51,12 @@ namespace Jhu.Graywulf.Components
             Push();
         }
 
+        protected AmbientContextBase(AmbientContextBase old)
+        {
+            CopyMembers(old);
+            Push();
+        }
+
         [OnDeserializing]
         private void InitializeMembers()
         {
@@ -64,15 +68,14 @@ namespace Jhu.Graywulf.Components
         private void CopyMembers(AmbientContextBase old)
         {
             this.outerContext = old.outerContext;
-            this.contextGuid = Guid.NewGuid();
+            this.contextGuid = old.contextGuid;
             this.isValid = old.isValid;
         }
 
         public virtual void Dispose()
         {
-            Pop();
-
             isValid = false;
+            Pop();
         }
 
         private static bool IsStaticStoreSupported(AmbientContextStoreLocation support)
@@ -239,8 +242,17 @@ namespace Jhu.Graywulf.Components
 
                 if (key != null)
                 {
-                    this.outerContext = store[key];
-                    store.Remove(key);
+                    // Only push if not already on top
+                    // TODO: what if already in the chain but not on top?
+                    if (this != store[key])
+                    {
+                        outerContext = store[key];
+                        store.Remove(key);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Context is already on top.");
+                    }
                 }
 
                 store.Add(type, this);
@@ -273,12 +285,14 @@ namespace Jhu.Graywulf.Components
                     {
                         store.Add(outerContext.GetType(), outerContext);
                     }
+
+                    outerContext = null;
                 }
                 else
                 {
                     // TODO: test this. It could happen if the context is added to
                     // thread local but there's a context switch somewhere
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException("Context is not on top.");
                 }
             }
         }
@@ -299,6 +313,38 @@ namespace Jhu.Graywulf.Components
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Detaches the async local store
+        /// </summary>
+        /// <remarks>
+        /// AsyncLocal is automatically flown to new threads when the newly created thread captures
+        /// the execution context. Although AsyncLocal is copied by value, the reference to the same
+        /// store is kept. Here we clone the store and remove the specified context from the new store.
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        protected static void DetachAsyncLocal<T>()
+            where T : AmbientContextBase
+        {
+            var type = typeof(T);
+            var store = asyncLocalContexts.Value;
+
+            if (store != null)
+            {
+                // Take a copy
+                store = store.Clone();
+
+                // Remove specific item
+                var key = store.Find(type);
+
+                if (key != null)
+                {
+                    store.Remove(key);
+                }
+
+                asyncLocalContexts.Value = store;
+            }
         }
     }
 }

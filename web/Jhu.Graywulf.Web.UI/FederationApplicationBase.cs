@@ -24,9 +24,9 @@ namespace Jhu.Graywulf.Web.UI
             }
         }
 
-        protected override void RegisterButtons()
+        protected override void OnRegisterButtons()
         {
-            base.RegisterButtons();
+            base.OnRegisterButtons();
 
             var buttons = ConfigurationManager.GetSection("jhu.graywulf/webui/dropdownButtons") as NameValueCollection;
 

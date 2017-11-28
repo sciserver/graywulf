@@ -33,5 +33,17 @@ namespace Jhu.Graywulf.Components
 
             return null;
         }
+
+        public AmbientContextStore Clone()
+        {
+            var copy = new AmbientContextStore(this.location);
+
+            foreach (var key in this.Keys)
+            {
+                copy.Add(key, this[key]);
+            }
+
+            return copy;
+        }
     }
 }

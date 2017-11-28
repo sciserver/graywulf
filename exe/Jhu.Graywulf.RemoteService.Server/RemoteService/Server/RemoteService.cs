@@ -60,19 +60,17 @@ namespace Jhu.Graywulf.RemoteService.Server
             // Initialize logger
             // TODO: add interactive mode
             loggingContext = new LoggingContext();
+            loggingContext.Pop();
 
-            Logging.LoggingContext.Current.StartLogger(Logging.EventSource.RemoteService, false);
-
+            loggingContext.StartLogger(Logging.EventSource.RemoteService, false);
             // Log starting event
-            Logging.LoggingContext.Current.LogStatus(
+            loggingContext.LogStatus(
                 Logging.EventSource.RemoteService,
                 "Graywulf Remote Service has started.",
                 null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
             OnStartImpl(args);
-
-            loggingContext.Pop();
         }
 
         private void OnStartImpl(string[] args)
@@ -100,18 +98,16 @@ namespace Jhu.Graywulf.RemoteService.Server
 
         protected override void OnStop()
         {
-            loggingContext.Push();
-
             OnStopImpl();
 
-            Logging.LoggingContext.Current.LogStatus(
+            loggingContext.LogStatus(
                 Logging.EventSource.RemoteService,
                 "Graywulf Remote Service has stopped.", 
                 null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
+            loggingContext.StopLogger();
 
-            Logging.LoggingContext.Current.StopLogger();
-
+            loggingContext.Push();
             loggingContext.Dispose();
         }
 
@@ -184,10 +180,9 @@ namespace Jhu.Graywulf.RemoteService.Server
 
         public static void LogDebug(string message, params object[] args)
         {
-            var context = ServiceLoggingContext.Current;
-            var method = context.UnwindStack(2);
+            var method = LoggingContext.Current.UnwindStack(2);
 
-            context.LogDebug(
+            LoggingContext.Current.LogDebug(
                 EventSource.RemoteService,
                 String.Format(message, args),
                 method.DeclaringType.FullName + "." + method.Name,

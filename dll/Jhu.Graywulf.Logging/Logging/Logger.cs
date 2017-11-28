@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Data.SqlClient;
-using System.Configuration;
-using System.Reflection;
-using System.Diagnostics;
 
 namespace Jhu.Graywulf.Logging
 {
-    class Logger
+    public class Logger : MarshalByRefObject
     {
         #region Private member variables
 

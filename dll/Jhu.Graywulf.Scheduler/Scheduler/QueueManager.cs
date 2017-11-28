@@ -42,6 +42,8 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         private bool interactive;
 
+        private Logging.LoggingContext loggingContext;
+
         /// <summary>
         /// All jobs listed by their workflow instance IDs
         /// </summary>
@@ -175,6 +177,7 @@ namespace Jhu.Graywulf.Scheduler
         private void InitializeMembers()
         {
             this.interactive = true;
+            this.loggingContext = null;
 
             this.appDomainManager = null;
             this.appDomains = null;
@@ -349,6 +352,8 @@ namespace Jhu.Graywulf.Scheduler
         {
             // Initialize Queue Manager
             this.interactive = interactive;
+            this.loggingContext = new LoggingContext();
+            this.loggingContext.Push();
 
             appDomainManager = new Components.AppDomainManager();
             appDomains = new Dictionary<int, AppDomainHost>();
@@ -374,6 +379,8 @@ namespace Jhu.Graywulf.Scheduler
             StartControlService();
             ProcessInterruptedJobs();
             StartPoller();
+
+            loggingContext.Pop();
         }
 
         /// <summary>
@@ -382,11 +389,11 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="timeout"></param>
         public void DrainStop(TimeSpan timeout)
         {
-            Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Scheduler, "A drain stop operation has been requested.");
+            loggingContext.LogDebug(Logging.EventSource.Scheduler, "A drain stop operation has been requested.");
 
             var res = Stop(timeout, false, false);
 
-            Logging.LoggingContext.Current.LogOperation(
+            loggingContext.LogOperation(
                 Logging.EventSource.Scheduler,
                 String.Format("The Graywulf Scheduler Service has stopped with{0} timeout.", res ? "out" : ""),
                 null,
@@ -401,11 +408,11 @@ namespace Jhu.Graywulf.Scheduler
         /// </remarks>
         public void Stop(TimeSpan timeout)
         {
-            Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Scheduler, "A stop operation has been requested.");
+            loggingContext.LogDebug(Logging.EventSource.Scheduler, "A stop operation has been requested.");
 
             var res = Stop(timeout, false, true);
 
-            Logging.LoggingContext.Current.LogOperation(
+            loggingContext.LogOperation(
                 Logging.EventSource.Scheduler,
                 String.Format("The Graywulf Scheduler Service has stopped.", res ? "out" : ""),
                 null,
@@ -417,11 +424,11 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public void Kill(TimeSpan timeout)
         {
-            Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Scheduler, "A kill operation has been requested.");
+            loggingContext.LogDebug(Logging.EventSource.Scheduler, "A kill operation has been requested.");
 
             var res = Stop(timeout, true, false);
 
-            Logging.LoggingContext.Current.LogOperation(
+            loggingContext.LogOperation(
                 Logging.EventSource.Scheduler,
                 String.Format("The Graywulf Scheduler Service has been killed.", res ? "out" : ""),
                 null,
@@ -581,34 +588,39 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         private void Poller()
         {
+            LoggingContext.SupressFlow();
+
             isPollerRunning = true;
 
-            while (!isPollerStopRequested)
+            using (new LoggingContext())
             {
-                try
+                while (!isPollerStopRequested)
                 {
-                    lock (pollSyncRoot)
+                    try
                     {
-                        ProcessTimedOutJobs();
-                        PollAndStartJobs();
-                        PollAndCancelJobs();
+                        lock (pollSyncRoot)
+                        {
+                            ProcessTimedOutJobs();
+                            PollAndStartJobs();
+                            PollAndCancelJobs();
 
-                        // Figure out how to do this async so that quick jobs
-                        // report results quickly
-                        ProcessFinishedJobs();
+                            // Figure out how to do this async so that quick jobs
+                            // report results quickly
+                            ProcessFinishedJobs();
+                        }
+
+                        // TODO: this should be executed only every 5 mins or so
+                        UnloadOldAppDomains(Constants.UnloadAppDomainTimeout);
+                        // TODO: reload cluster
+                    }
+                    catch (Exception ex)
+                    {
+                        // TODO: this shouldn't happen here
+                        LogError(ex);
                     }
 
-                    // TODO: this should be executed only every 5 mins or so
-                    UnloadOldAppDomains(Constants.UnloadAppDomainTimeout);
-                    // TODO: reload cluster
+                    Thread.Sleep(Scheduler.Configuration.PollingInterval);
                 }
-                catch (Exception ex)
-                {
-                    // TODO: this shouldn't happen here
-                    LogError(ex);
-                }
-
-                Thread.Sleep(Scheduler.Configuration.PollingInterval);
             }
 
             // Signal the completion event

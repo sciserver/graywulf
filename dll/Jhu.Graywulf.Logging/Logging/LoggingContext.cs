@@ -21,7 +21,6 @@ namespace Jhu.Graywulf.Logging
     /// from async activities are collected and processed when the async
     /// operation has finished.
     /// </remarks>
-    [Serializable]
     public class LoggingContext : AmbientContextBase
     {
         #region Singletons
@@ -41,16 +40,9 @@ namespace Jhu.Graywulf.Logging
             }
         }
 
-
-        public static LoggingContext Current
-        {
-            get
-            {
-                return Get<LoggingContext>();
-            }
-        }
-
         #endregion
+
+        private LoggingContext parent;
 
         private bool isAsync;
         private EventSource defaultEventSource;
@@ -66,9 +58,9 @@ namespace Jhu.Graywulf.Logging
 
         #region Properties
 
-        protected override sealed string ContextTypeKey
+        public static LoggingContext Current
         {
-            get { return "Jhu.Graywulf.Logging.LoggingContext"; }
+            get { return Get<LoggingContext>(); }
         }
 
         /// <summary>
@@ -145,14 +137,7 @@ namespace Jhu.Graywulf.Logging
         public LoggingContext(bool isAsync, AmbientContextStoreLocation supportedLocation)
             : base(supportedLocation)
         {
-            if (OuterContext is LoggingContext)
-            {
-                CopyMembers((LoggingContext)OuterContext);
-            }
-            else
-            {
-                InitializeMembers(new StreamingContext());
-            }
+            InitializeMembers();
 
             if (isAsync)
             {
@@ -160,9 +145,16 @@ namespace Jhu.Graywulf.Logging
             }
         }
 
-        [OnDeserializing]
-        private void InitializeMembers(StreamingContext context)
+        public LoggingContext(LoggingContext parent)
+            : base(parent)
         {
+            CopyMembers(parent);
+        }
+
+        private void InitializeMembers()
+        {
+            this.parent = null;
+
             this.isAsync = false;
             this.defaultEventSource = EventSource.None;
             this.eventOrder = 0;
@@ -182,22 +174,34 @@ namespace Jhu.Graywulf.Logging
             this.asyncEvents = new List<Event>();
         }
 
-        private void CopyMembers(LoggingContext outerContext)
+        private void CopyMembers(LoggingContext parent)
         {
-            this.isAsync = outerContext.isAsync;
-            this.defaultEventSource = outerContext.defaultEventSource;
-            this.eventOrder = 0;
-            this.asyncEvents = null;
-            this.activityContext = outerContext.activityContext;
+            this.parent = parent;
 
-            this.jobGuid = outerContext.jobGuid;
-            this.jobName = outerContext.jobName;
-            this.userGuid = outerContext.userGuid;
-            this.userName = outerContext.userName;
-            this.taskName = outerContext.taskName;
+            this.isAsync = parent.isAsync;
+            this.defaultEventSource = parent.defaultEventSource;
+            this.eventOrder = parent.eventOrder;
+            this.asyncEvents = null;
+            this.activityContext = parent.activityContext;
+
+            this.jobGuid = parent.jobGuid;
+            this.jobName = parent.jobName;
+            this.userGuid = parent.userGuid;
+            this.userName = parent.userName;
+            this.taskName = parent.taskName;
         }
 
         #endregion
+        #region Control functions
+
+        /// <summary>
+        /// When executed on a manually created thread, this method
+        /// prevents flowing the async execution context.
+        /// </summary>
+        public static void SupressFlow()
+        {
+            DetachAsyncLocal<LoggingContext>();
+        }
 
         public void StartLogger(EventSource defaultEventSource, bool attachConsole)
         {
@@ -209,6 +213,18 @@ namespace Jhu.Graywulf.Logging
         {
             Logger.Stop();
         }
+
+        public Logger GetLogger()
+        {
+            return LoggingContext.logger;
+        }
+
+        public void SetLogger(Logger logger)
+        {
+            LoggingContext.logger = logger;
+        }
+
+        #endregion
 
         public Event LogDebug(EventSource source, string message = null, string operation = null, Dictionary<string, object> data = null)
         {
@@ -288,7 +304,7 @@ namespace Jhu.Graywulf.Logging
                 }
             }
 
-            LoggingContext.Current.UpdateEvent(e);
+            UpdateEvent(e);
 
             return e;
         }
@@ -313,23 +329,30 @@ namespace Jhu.Graywulf.Logging
         /// <param name="e"></param>
         public void RecordEvent(Event e)
         {
-            e.Order = ++eventOrder;
-
-            if (activityContext != null && !IsAsync)
+            if (parent != null)
             {
-                // This is a synchronous event called from a simple CodeActivity
-                // Route event through the workflow tracking infrastructure
-                var ctr = new CustomTrackingRecord("Graywulf log event");
-                ctr.Data.Add("Event", e);
-                activityContext.Track(ctr);
-            }
-            else if (isAsync)
-            {
-                asyncEvents.Add(e);
+                parent.RecordEvent(e);
             }
             else
             {
-                Logger.WriteEvent(e);
+                e.Order = ++eventOrder;
+
+                if (activityContext != null && !IsAsync)
+                {
+                    // This is a synchronous event called from a simple CodeActivity
+                    // Route event through the workflow tracking infrastructure
+                    var ctr = new CustomTrackingRecord("Graywulf log event");
+                    ctr.Data.Add("Event", e);
+                    activityContext.Track(ctr);
+                }
+                else if (isAsync)
+                {
+                    asyncEvents.Add(e);
+                }
+                else
+                {
+                    Logger.WriteEvent(e);
+                }
             }
         }
 
@@ -340,25 +363,32 @@ namespace Jhu.Graywulf.Logging
 
         public virtual void FlushEvents()
         {
-            if (isAsync && asyncEvents != null)
+            if (parent != null)
             {
-                foreach (var e in asyncEvents)
-                {
-                    var record = new CustomTrackingRecord("asyncEvent");
-                    record.Data[Constants.ActivityRecordDataItemEvent] = e;
-
-                    activityContext.Track(record);
-                }
+                parent.FlushEvents();
             }
             else
             {
-                foreach (var e in asyncEvents)
+                if (isAsync && asyncEvents != null)
                 {
-                    Logger.WriteEvent(e);
-                }
-            }
+                    foreach (var e in asyncEvents)
+                    {
+                        var record = new CustomTrackingRecord("asyncEvent");
+                        record.Data[Constants.ActivityRecordDataItemEvent] = e;
 
-            asyncEvents.Clear();
+                        activityContext.Track(record);
+                    }
+                }
+                else
+                {
+                    foreach (var e in asyncEvents)
+                    {
+                        Logger.WriteEvent(e);
+                    }
+                }
+
+                asyncEvents.Clear();
+            }
         }
 
         public MethodBase UnwindStack(int skip)

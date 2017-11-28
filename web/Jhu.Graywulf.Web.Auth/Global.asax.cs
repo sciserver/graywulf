@@ -13,9 +13,9 @@ namespace Jhu.Graywulf.Web.Auth
 {
     public class Global : DomainApplicationBase
     {
-        protected override void RegisterApps()
+        protected override void OnRegisterApps()
         {
-            base.RegisterApps();
+            base.OnRegisterApps();
 
             RegisterApp(typeof(Jhu.Graywulf.Web.UI.Apps.Common.App));
             RegisterApp(typeof(Jhu.Graywulf.Web.UI.Apps.Auth.App));

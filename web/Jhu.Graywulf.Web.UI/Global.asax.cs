@@ -5,9 +5,9 @@ namespace Jhu.Graywulf.Web.UI
 {
     public class Global : FederationApplicationBase
     {
-        protected override void RegisterApps()
+        protected override void OnRegisterApps()
         {
-            base.RegisterApps();
+            base.OnRegisterApps();
 
             RegisterApp(typeof(Apps.Common.App));
             RegisterApp(typeof(Apps.Schema.App));
@@ -18,9 +18,9 @@ namespace Jhu.Graywulf.Web.UI
             RegisterApp(typeof(Apps.Docs.App));
         }
 
-        protected override void RegisterServices()
+        protected override void OnRegisterServices()
         {
-            base.RegisterServices();
+            base.OnRegisterServices();
 
             RegisterService(typeof(IAuthService));
             RegisterService(typeof(IManageService));
@@ -30,9 +30,9 @@ namespace Jhu.Graywulf.Web.UI
             RegisterService(typeof(ITestService));
         }
 
-        protected override void RegisterButtons()
+        protected override void OnRegisterButtons()
         {
-            base.RegisterButtons();
+            base.OnRegisterButtons();
 
             RegisterFooterButton(new Graywulf.Web.UI.MenuButton()
             {

@@ -252,6 +252,7 @@ namespace Jhu.Graywulf.Format
                 };
 
                 inputReader = XmlReader.Create(new DetachedStream(BaseStream), settings);
+                
                 ownsInputReader = true;
             }
         }

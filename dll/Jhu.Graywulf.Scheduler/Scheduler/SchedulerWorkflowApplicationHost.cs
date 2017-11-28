@@ -83,9 +83,11 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// Starts a new Workflowhost
         /// </summary>
-        public void Start(Guid guid, Scheduler scheduler, bool interactive)
+        public void Start(Guid guid, Logging.Logger logger, Scheduler scheduler, bool interactive)
         {
-            Start(interactive);
+            base.Start(logger);
+
+            loggingContext.Push();
 
             this.guid = guid;
             this.scheduler = scheduler;
@@ -106,6 +108,7 @@ namespace Jhu.Graywulf.Scheduler
             var view = workflowInstanceStore.Execute(workflowInstanceHandle, new CreateWorkflowOwnerCommand(), TimeSpan.FromSeconds(30));
             workflowInstanceStore.DefaultInstanceOwner = view.InstanceOwner;
 
+            loggingContext.Pop();
         }
 
         /// <summary>
@@ -116,11 +119,14 @@ namespace Jhu.Graywulf.Scheduler
         {
             if (base.TryStop())
             {
-                //var deleteOwnerCmd = new DeleteWorkflowOwnerCommand();
-                //workflowInstanceStore.Execute(workflowInstanceHandle, deleteOwnerCmd, TimeSpan.FromSeconds(30));
+                loggingContext.Push();
+
                 workflowInstanceStore.DefaultInstanceOwner = null;
                 workflowInstanceHandle.Free();
                 workflowInstanceStore = null;
+
+                loggingContext.Pop();
+
                 return true;
             }
             else
@@ -134,6 +140,7 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public Guid PrepareStartJob(Job job)
         {
+            loggingContext.Push();
             new JobContext(job).Push();
 
             Guid wfguid;
@@ -171,6 +178,7 @@ namespace Jhu.Graywulf.Scheduler
             }
 
             JobContext.Current.Pop();
+            loggingContext.Pop();
 
             return wfguid;
         }
@@ -182,6 +190,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <returns></returns>
         public Guid PrepareResumeJob(Job job)
         {
+            loggingContext.Push();
             new JobContext(job).Push();
 
             Guid wfguid;
@@ -205,6 +214,7 @@ namespace Jhu.Graywulf.Scheduler
             }
 
             JobContext.Current.Pop();
+            loggingContext.Pop();
 
             return wfguid;
         }
@@ -254,6 +264,7 @@ namespace Jhu.Graywulf.Scheduler
         /// </remarks>
         public Guid CancelJob(Job job)
         {
+            loggingContext.Push();
             new JobContext(job).Push();
 
             Guid wfguid;
@@ -274,6 +285,7 @@ namespace Jhu.Graywulf.Scheduler
             CancelWorkflow(wfguid, Scheduler.Configuration.CancelTimeout);
 
             JobContext.Current.Pop();
+            loggingContext.Pop();
 
             return wfguid;
         }
@@ -285,6 +297,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <returns></returns>
         public Guid TimeOutJob(Job job)
         {
+            loggingContext.Push();
             new JobContext(job).Push();
 
             Guid wfguid;
@@ -305,12 +318,14 @@ namespace Jhu.Graywulf.Scheduler
             TimeOutWorkflow(wfguid, Scheduler.Configuration.CancelTimeout);
 
             JobContext.Current.Pop();
+            loggingContext.Pop();
 
             return wfguid;
         }
 
         public Guid PersistJob(Job job)
         {
+            loggingContext.Push();
             new JobContext(job).Push();
 
             Guid wfguid;
@@ -333,12 +348,14 @@ namespace Jhu.Graywulf.Scheduler
             PersistWorkflow(wfguid);
 
             JobContext.Current.Pop();
+            loggingContext.Pop();
 
             return wfguid;
         }
 
         public Guid AbortJob(Job job)
         {
+            loggingContext.Push();
             new JobContext(job).Push();
 
             Guid wfguid;
@@ -361,6 +378,7 @@ namespace Jhu.Graywulf.Scheduler
             AbortWorkflow(wfguid);
 
             JobContext.Current.Pop();
+            loggingContext.Pop();
 
             return wfguid;
         }

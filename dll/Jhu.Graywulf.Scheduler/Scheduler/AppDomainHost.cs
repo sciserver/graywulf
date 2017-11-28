@@ -140,7 +140,7 @@ namespace Jhu.Graywulf.Scheduler
             workflowHost.WorkflowEvent += workflowEventHandler;
 
             // Start the new workflow host inside the new AppDomain
-            workflowHost.Start(guid, scheduler, interactive);
+            workflowHost.Start(guid, Logging.LoggingContext.Current.GetLogger(), scheduler, interactive);
         }
 
         /// <summary>

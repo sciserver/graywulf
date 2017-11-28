@@ -6,8 +6,9 @@ using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Scheduler
 {
-    public class JobTrackingParticipant : TrackingParticipant
+    public class JobTrackingParticipant : TrackingParticipant, IDisposable
     {
+        LoggingContext loggingContext;
         TrackingProfile trackingProfile;
 
         public override TrackingProfile TrackingProfile
@@ -40,6 +41,19 @@ namespace Jhu.Graywulf.Scheduler
             fq.FaultHandlerActivityName = "*";
             fq.FaultSourceActivityName = "*";
             trackingProfile.Queries.Add(fq);
+
+            loggingContext = new LoggingContext();
+            loggingContext.Pop();
+        }
+
+        public void Dispose()
+        {
+            if (loggingContext != null)
+            {
+                loggingContext.Push();
+                loggingContext.Dispose();
+                loggingContext = null;
+            }
         }
 
         protected override void Track(TrackingRecord record, TimeSpan timeout)
@@ -68,14 +82,14 @@ namespace Jhu.Graywulf.Scheduler
 
             if (e != null)
             {
-                LoggingContext.Current.UpdateEvent(e);
+                loggingContext.UpdateEvent(e);
 
                 e.Source |= EventSource.Workflow;
                 e.Severity = EventSeverity.Debug;   // MapEventSeverity(record.Level);
                 e.DateTime = record.EventTime;
                 e.Order = record.RecordNumber;
-                
-                LoggingContext.Current.WriteEvent(e);
+
+                loggingContext.WriteEvent(e);
             }
         }
 
@@ -96,7 +110,7 @@ namespace Jhu.Graywulf.Scheduler
             // Only record events of IGraywulfActivity activities
             if (record.Arguments.ContainsKey(Activities.Constants.ActivityParameterJobInfo))
             {
-                var e = Logging.LoggingContext.Current.CreateEvent(
+                var e = loggingContext.CreateEvent(
                     EventSeverity.Status,
                     EventSource.Workflow,
                     record.Activity.Name + " is " + record.State.ToLowerInvariant() + ".",
@@ -120,7 +134,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             if (record.IsFaultSource)
             {
-                var e = Logging.LoggingContext.Current.CreateEvent(
+                var e = loggingContext.CreateEvent(
                     EventSeverity.Error,
                     EventSource.Job,
                     null,
@@ -129,8 +143,6 @@ namespace Jhu.Graywulf.Scheduler
                     null);
 
                 e.ExecutionStatus = ExecutionStatus.Faulted;
-
-                // TODO: where to get context from?
 
                 return e;
             }

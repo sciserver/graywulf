@@ -68,33 +68,36 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         internal static void StartDebug(SchedulerDebugOptions options)
         {
-            // Initialize logger
-            LoggingContext.Current.StartLogger(Logging.EventSource.Scheduler, true);
-
-            if (options == null)
+            using (new LoggingContext(false))
             {
-                debugInstances = new QueueManager[1];
-                debugInstances[0] = QueueManager.Instance;
-                QueueManager.Instance.Start(Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName, true);
-            }
-            else
-            {
-                debugInstances = new QueueManager[options.InstanceCount];
+                // Initialize logger
+                LoggingContext.Current.StartLogger(Logging.EventSource.Scheduler, true);
 
-                for (int i = 0; i < debugInstances.Length; i++)
+                if (options == null)
                 {
-                    if (i == 0)
-                    {
-                        debugInstances[i] = QueueManager.Instance;
-                    }
-                    else
-                    {
-                        debugInstances[i] = new QueueManager();
-                    }
+                    debugInstances = new QueueManager[1];
+                    debugInstances[0] = QueueManager.Instance;
+                    QueueManager.Instance.Start(Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName, true);
+                }
+                else
+                {
+                    debugInstances = new QueueManager[options.InstanceCount];
 
-                    debugInstances[i].IsControlServiceEnabled = options.InstanceCount == 1 && options.IsControlServiceEnabled;
-                    debugInstances[i].IsLayoutRequired = options.IsLayoutRequired;
-                    debugInstances[i].Start(Registry.ContextManager.Configuration.ClusterName, true);
+                    for (int i = 0; i < debugInstances.Length; i++)
+                    {
+                        if (i == 0)
+                        {
+                            debugInstances[i] = QueueManager.Instance;
+                        }
+                        else
+                        {
+                            debugInstances[i] = new QueueManager();
+                        }
+
+                        debugInstances[i].IsControlServiceEnabled = options.InstanceCount == 1 && options.IsControlServiceEnabled;
+                        debugInstances[i].IsLayoutRequired = options.IsLayoutRequired;
+                        debugInstances[i].Start(Registry.ContextManager.Configuration.ClusterName, true);
+                    }
                 }
             }
         }
@@ -104,13 +107,16 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         internal static void StopDebug()
         {
-            for (int i = 0; i < debugInstances.Length; i++)
+            using (new LoggingContext(false))
             {
-                debugInstances[i].Stop(TimeSpan.FromMinutes(2));
-            }
+                for (int i = 0; i < debugInstances.Length; i++)
+                {
+                    debugInstances[i].Stop(TimeSpan.FromMinutes(2));
+                }
 
-            // Stop logger
-            LoggingContext.Current.StopLogger();
+                // Stop logger
+                LoggingContext.Current.StopLogger();
+            }
         }
 
         /// <summary>

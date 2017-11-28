@@ -18,7 +18,9 @@ namespace Jhu.Graywulf.Web.UI
         private static List<MenuButton> menuButtons;
         private static List<MenuButton> footerButtons;
         private EmbeddedVirtualPathProvider virtualPathProvider;
-        
+
+        private LoggingContext applicationLoggingContext;
+
         public List<Type> Apps
         {
             get { return apps; }
@@ -61,10 +63,14 @@ namespace Jhu.Graywulf.Web.UI
         public UIApplicationBase()
         {
             virtualPathProvider = new EmbeddedVirtualPathProvider();
+            applicationLoggingContext = new LoggingContext();
+            applicationLoggingContext.Pop();
         }
 
         public override void Dispose()
         {
+            applicationLoggingContext.Push();
+            applicationLoggingContext.Dispose();
             base.Dispose();
         }
 
@@ -119,16 +125,15 @@ namespace Jhu.Graywulf.Web.UI
 
         protected void Application_Start(object sender, EventArgs e)
         {
-            using (new LoggingContext())
-            {
-                LoggingContext.Current.StartLogger(EventSource.WebUI, false);
-
-                Logging.LoggingContext.Current.LogOperation(
+            applicationLoggingContext.StartLogger(EventSource.WebUI, false);
+            applicationLoggingContext.LogOperation(
                     Logging.EventSource.WebUI,
                     String.Format("The web application at {0} has started.", VirtualPathUtility.ToAbsolute("~/")),
                     null,
                     new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
+            using (new LoggingContext(applicationLoggingContext))
+            {
                 OnApplicationStart();
             }
         }
@@ -136,11 +141,11 @@ namespace Jhu.Graywulf.Web.UI
         protected virtual void OnApplicationStart()
         {
             HostingEnvironment.RegisterVirtualPathProvider(virtualPathProvider);
-            RegisterScripts();
-            RegisterControls();
-            RegisterServices();
-            RegisterApps();
-            RegisterButtons();
+            OnRegisterScripts();
+            OnRegisterControls();
+            OnRegisterServices();
+            OnRegisterApps();
+            OnRegisterButtons();
         }
 
         protected void Session_Start(object sender, EventArgs e)
@@ -150,7 +155,7 @@ namespace Jhu.Graywulf.Web.UI
             // response
             string sessionId = Session.SessionID;
 
-            using (new LoggingContext())
+            using (new LoggingContext(applicationLoggingContext))
             {
                 OnSessionStart();
             }
@@ -162,7 +167,7 @@ namespace Jhu.Graywulf.Web.UI
 
         protected virtual void Session_End(object sender, EventArgs e)
         {
-            using (new LoggingContext())
+            using (new LoggingContext(applicationLoggingContext))
             {
                 OnSessionEnd();
             }
@@ -172,39 +177,38 @@ namespace Jhu.Graywulf.Web.UI
         {
         }
 
-        protected virtual void Application_BeginRequest(object sender, EventArgs e)
+        protected void Application_BeginRequest(object sender, EventArgs e)
         {
         }
 
-        protected virtual void Application_AuthenticateRequest(object sender, EventArgs e)
+        protected void Application_AuthenticateRequest(object sender, EventArgs e)
         {
         }
 
-        protected virtual void Application_Error(object sender, EventArgs e)
+        protected void Application_Error(object sender, EventArgs e)
         {
         }
 
         protected virtual void Application_End(object sender, EventArgs e)
         {
-            using (new LoggingContext())
+            using (new LoggingContext(applicationLoggingContext))
             {
                 OnApplicationEnd();
+            }
 
-                Logging.LoggingContext.Current.LogOperation(
+            applicationLoggingContext.LogOperation(
                 Logging.EventSource.WebUI,
                 String.Format("The web application at {0} has stopped.", VirtualPathUtility.ToAbsolute("~/")),
                 null,
                 null);
-
-                LoggingContext.Current.StopLogger();
-            }
+            applicationLoggingContext.StopLogger();
         }
 
         protected virtual void OnApplicationEnd()
         {
         }
 
-        protected virtual void RegisterScripts()
+        protected virtual void OnRegisterScripts()
         {
             Scripts.ScriptLibrary.RegisterMappings(new Scripts.JQuery());
             Scripts.ScriptLibrary.RegisterMappings(new Scripts.JQueryValidation());
@@ -213,19 +217,19 @@ namespace Jhu.Graywulf.Web.UI
             Scripts.ScriptLibrary.RegisterMappings(new Scripts.DockingPanel());
         }
 
-        protected virtual void RegisterControls()
+        protected virtual void OnRegisterControls()
         {
         }
 
-        protected virtual void RegisterServices()
+        protected virtual void OnRegisterServices()
         {
         }
 
-        protected virtual void RegisterApps()
+        protected virtual void OnRegisterApps()
         {
         }
 
-        protected virtual void RegisterButtons()
+        protected virtual void OnRegisterButtons()
         {
             var home = new MenuButton()
             {
@@ -278,7 +282,7 @@ namespace Jhu.Graywulf.Web.UI
                     relativeIndex = menuButtons.IndexOf(relative);
                 }
             }
-            
+
             switch (position)
             {
                 case MenuButtonPosition.First:
