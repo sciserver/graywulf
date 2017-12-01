@@ -50,23 +50,31 @@ namespace Jhu.Graywulf.Web.UI.Apps.Common
 
                 foreach (var m in mr.Machines.Values)
                 {
-                    m.LoadServerInstances(false);
-                    var sql = m.ServerInstances.Count > 0;
-
-                    if (sql)
+                    if (m.RunningState == RunningState.Running &&
+                        m.DeploymentState == DeploymentState.Deployed)
                     {
-                        foreach (var si in m.ServerInstances.Values)
+                        m.LoadServerInstances(false);
+                        var sql = m.ServerInstances.Count > 0;
+
+                        if (sql)
                         {
-                            node = GetNode(si);
+                            foreach (var si in m.ServerInstances.Values)
+                            {
+                                if (si.RunningState == RunningState.Running &&
+                                    si.DeploymentState == DeploymentState.Deployed)
+                                {
+                                    node = GetNode(si);
+                                    RunChecks(node);
+                                    role.Nodes.Add(node);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            node = GetNode(m);
                             RunChecks(node);
                             role.Nodes.Add(node);
                         }
-                    }
-                    else
-                    {
-                        node = GetNode(m);
-                        RunChecks(node);
-                        role.Nodes.Add(node);
                     }
                 }
 
