@@ -19,7 +19,7 @@ ALTER DATABASE [Graywulf]
 GO
 
 ALTER DATABASE [Graywulf]   
-   SET PARTNER = 'TCP://172.23.254.86:5022'
+   SET PARTNER = 'TCP://172.23.254.82:5022'
 
 GO
 
@@ -55,10 +55,13 @@ ALTER DATABASE [Graywulf_Persistence]
 GO
 
 ALTER DATABASE [Graywulf_Persistence]   
-   SET PARTNER = 'TCP://172.23.254.86:5022'
+   SET PARTNER = 'TCP://172.23.254.82:5022'
 
 GO
 
 ALTER DATABASE [Graywulf_Persistence]   
    SET WITNESS = 'TCP://172.23.24.139:7022'
 
+   
+   
+-- MAKE SURE TO TEST FAIL-OVER AND ENABLE CLR

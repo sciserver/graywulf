@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Logging
 
         public const string ActivityRecordDataItemEvent = "Event";
 
-        public const int LogWriterAsyncCapacity = 100;
-        public const int LogWriterAsyncTimeout = 10000; // ms
+        public const int DefaultLogWriterAsyncQueueSize = 100;
+        public const int DefaultLogWriterAsyncTimeout = 10000; // ms
     }
 }

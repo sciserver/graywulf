@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Log writing operation has time out with writer &apos;{0}&apos;. Please check config..
+        ///   Looks up a localized string similar to Log writing operation has timed out with writer &apos;{0}&apos;. Please check config..
         /// </summary>
         internal static string AsyncTimeout {
             get {

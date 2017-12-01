@@ -19,6 +19,9 @@ namespace Jhu.Graywulf.Logging
         private Thread worker;
 
         private bool isAsync;
+        private int asyncQueueSize;
+        private int asyncTimeout;
+        private bool failOnError;
         private object syncRoot;
         private EventSource sourceMask;
         private EventSeverity severityMask;
@@ -31,6 +34,24 @@ namespace Jhu.Graywulf.Logging
         {
             get { return isAsync; }
             set { isAsync = value; }
+        }
+
+        public int AsyncQueueSize
+        {
+            get { return asyncQueueSize; }
+            set { asyncQueueSize = value; }
+        }
+
+        public int AsyncTimeout
+        {
+            get { return asyncTimeout; }
+            set { asyncTimeout = value; }
+        }
+
+        public bool FailOnError
+        {
+            get { return failOnError; }
+            set { failOnError = value; }
         }
 
         public EventSource SourceMask
@@ -67,6 +88,9 @@ namespace Jhu.Graywulf.Logging
             this.worker = null;
 
             this.isAsync = true;
+            this.asyncQueueSize = Constants.DefaultLogWriterAsyncQueueSize;
+            this.asyncTimeout = Constants.DefaultLogWriterAsyncTimeout;
+            this.failOnError = true;
             this.syncRoot = new object();
             this.sourceMask = EventSource.All;
             this.severityMask = EventSeverity.All;
@@ -89,7 +113,7 @@ namespace Jhu.Graywulf.Logging
 
             if (isAsync)
             {
-                queue = new BlockingCollection<Event>(Constants.LogWriterAsyncCapacity);
+                queue = new BlockingCollection<Event>(asyncQueueSize);
                 stopRequestSource = new CancellationTokenSource();
                 stopRequestToken = stopRequestSource.Token;
 
@@ -131,11 +155,16 @@ namespace Jhu.Graywulf.Logging
                 }
                 catch (OperationCanceledException)
                 {
+                    // Graceful way of stopping
                     break;
                 }
 
                 try
                 {
+                    // TODO: when converting it to async/await, make sure to add some sleep
+                    // time to avoid running away when an exception happens and
+                    // the event is requeued
+
                     OnWriteEvent(e);
                 }
                 catch (Exception ex)
@@ -162,28 +191,38 @@ namespace Jhu.Graywulf.Logging
                 throw new InvalidOperationException();
             }
 
-            // Enforce mask
-            if ((e.Source & this.SourceMask) != 0 &&
-                (e.Severity & this.SeverityMask) != 0 &&
-                (e.ExecutionStatus & this.StatusMask) != 0)
+            try
             {
-                if (isAsync)
+                // Enforce mask
+                if ((e.Source & this.SourceMask) != 0 &&
+                    (e.Severity & this.SeverityMask) != 0 &&
+                    (e.ExecutionStatus & this.StatusMask) != 0)
                 {
-                    if (!queue.TryAdd(e, Constants.LogWriterAsyncTimeout))
+                    if (isAsync)
                     {
-                        throw Error.AsyncTimeout(this);
+                        if (!queue.TryAdd(e, asyncTimeout))
+                        {
+                            throw Error.AsyncTimeout(this);
+                        }
                     }
-                }
-                else
-                {
-                    lock (syncRoot)
+                    else
                     {
-                        OnWriteEvent(e);
+                        lock (syncRoot)
+                        {
+                            OnWriteEvent(e);
+                        }
                     }
                 }
             }
+            catch (Exception)
+            {
+                if (failOnError)
+                {
+                    throw;
+                }
+            }
         }
-        
+
         protected abstract void OnWriteEvent(Event e);
 
         public virtual IEnumerable<Check.CheckRoutineBase> GetCheckRoutines()
