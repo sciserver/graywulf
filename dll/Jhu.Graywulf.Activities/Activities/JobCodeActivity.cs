@@ -22,16 +22,13 @@ namespace Jhu.Graywulf.Activities
             {
                 JobContext.Current.UpdateLoggingContext(LoggingContext.Current);
 
-                using (var cancellationContext = new CancellationContext())
-                {
-                    OnExecute(activityContext, cancellationContext);
-                }
+                OnExecute(activityContext);
             }
 
             JobContext.Current.Pop();
         }
 
-        protected abstract void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext);
+        protected abstract void OnExecute(CodeActivityContext activityContext);
     }
 
     public abstract class JobCodeActivity<T> : CodeActivity<T>, IJobActivity
@@ -39,13 +36,17 @@ namespace Jhu.Graywulf.Activities
         [RequiredArgument]
         public InArgument<JobInfo> JobInfo { get; set; }
 
-        protected sealed override T Execute(CodeActivityContext context)
+        protected sealed override T Execute(CodeActivityContext activityContext)
         {
-            // Set up job context here
+            new JobContext(this, activityContext).Push();
 
-            var res = OnExecute(context);
+            using (new LoggingContext(true))
+            {
+                JobContext.Current.UpdateLoggingContext(LoggingContext.Current);
 
-            return res;
+                var res = OnExecute(activityContext);
+                return res;
+            }
         }
 
         protected abstract T OnExecute(CodeActivityContext context);

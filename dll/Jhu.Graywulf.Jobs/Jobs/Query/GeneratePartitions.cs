@@ -17,21 +17,21 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             SqlQuery query = Query.Get(activityContext);
 
             switch (query.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
-                    query.InitializeQueryObject(cancellationContext, null);
+                    query.InitializeQueryObject(null, null);
                     query.GeneratePartitions();
                     break;
                 case ExecutionMode.Graywulf:
                     using (RegistryContext registryContext = query.CreateContext())
                     {
                         var scheduler = activityContext.GetExtension<IScheduler>();
-                        query.InitializeQueryObject(cancellationContext, registryContext, scheduler, false);
+                        query.InitializeQueryObject(null, registryContext, scheduler, false);
                         query.GeneratePartitions();
                     }
                     break;

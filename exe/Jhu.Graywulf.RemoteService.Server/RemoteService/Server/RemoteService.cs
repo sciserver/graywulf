@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.RemoteService.Server
         private static Dictionary<string, ServiceHost> registeredServiceHosts;
         private static Dictionary<string, ServiceEndpoint> registeredEndpoints;
 
-        private LoggingContext loggingContext;
+        private static LoggingContext loggingContext;
 
         public static object SyncRoot
         {
@@ -180,9 +180,9 @@ namespace Jhu.Graywulf.RemoteService.Server
 
         public static void LogDebug(string message, params object[] args)
         {
-            var method = LoggingContext.Current.UnwindStack(2);
+            var method = loggingContext.UnwindStack(2);
 
-            LoggingContext.Current.LogDebug(
+            loggingContext.LogDebug(
                 EventSource.RemoteService,
                 String.Format(message, args),
                 method.DeclaringType.FullName + "." + method.Name,

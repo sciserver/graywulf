@@ -14,13 +14,13 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
 
             using (RegistryContext registryContext = querypartition.Query.CreateContext())
             {
-                querypartition.InitializeQueryObject(cancellationContext, registryContext);
+                querypartition.InitializeQueryObject(registryContext);
                 querypartition.FindRemoteTableReferences();
             }
         }

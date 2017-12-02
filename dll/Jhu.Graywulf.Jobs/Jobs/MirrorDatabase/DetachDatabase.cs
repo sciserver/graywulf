@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         [RequiredArgument]
         public InArgument<Guid> DatabaseInstanceGuid { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             Guid databaseinstanceguid = DatabaseInstanceGuid.Get(activityContext);
 

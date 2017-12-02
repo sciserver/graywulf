@@ -353,7 +353,6 @@ namespace Jhu.Graywulf.Scheduler
             // Initialize Queue Manager
             this.interactive = interactive;
             this.loggingContext = new LoggingContext();
-            this.loggingContext.Push();
 
             appDomainManager = new Components.AppDomainManager();
             appDomains = new Dictionary<int, AppDomainHost>();
@@ -365,11 +364,11 @@ namespace Jhu.Graywulf.Scheduler
             Scheduler.Configuration.RunSanityCheck();
 
             // Log starting event
-            Logging.LoggingContext.Current.LogOperation(
-                Logging.EventSource.Scheduler,
-                "Graywulf Scheduler Service has started.",
-                null,
-                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
+            LogOperation("Graywulf Scheduler Service has started.",
+                new Dictionary<string, object>()
+                {
+                    { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) }
+                });
 
             // *** TODO: error handling, and repeat a couple of times, then shut down with exception
             // If anything below breaks, we wait for a while and restart the whole scheduler
@@ -389,15 +388,19 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="timeout"></param>
         public void DrainStop(TimeSpan timeout)
         {
-            loggingContext.LogDebug(Logging.EventSource.Scheduler, "A drain stop operation has been requested.");
+            loggingContext.Push();
+
+            LogDebug("A drain stop operation has been requested.");
 
             var res = Stop(timeout, false, false);
 
-            loggingContext.LogOperation(
-                Logging.EventSource.Scheduler,
-                String.Format("The Graywulf Scheduler Service has stopped with{0} timeout.", res ? "out" : ""),
-                null,
-                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
+            LogOperation(String.Format("The Graywulf Scheduler Service has stopped with{0} timeout.", res ? "out" : ""),
+                new Dictionary<string, object>()
+                {
+                    { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) }
+                });
+
+            loggingContext.Dispose();
         }
 
         /// <summary>
@@ -408,15 +411,18 @@ namespace Jhu.Graywulf.Scheduler
         /// </remarks>
         public void Stop(TimeSpan timeout)
         {
-            loggingContext.LogDebug(Logging.EventSource.Scheduler, "A stop operation has been requested.");
+            loggingContext.Push();
+
+            LogDebug("A stop operation has been requested.");
 
             var res = Stop(timeout, false, true);
 
-            loggingContext.LogOperation(
-                Logging.EventSource.Scheduler,
+            LogOperation(
                 String.Format("The Graywulf Scheduler Service has stopped.", res ? "out" : ""),
-                null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
+
+            loggingContext.Dispose();
+            loggingContext = null;
         }
 
         /// <summary>
@@ -424,15 +430,18 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public void Kill(TimeSpan timeout)
         {
-            loggingContext.LogDebug(Logging.EventSource.Scheduler, "A kill operation has been requested.");
+            loggingContext.Push();
+
+            LogDebug("A kill operation has been requested.");
 
             var res = Stop(timeout, true, false);
 
-            loggingContext.LogOperation(
-                Logging.EventSource.Scheduler,
+            LogOperation(
                 String.Format("The Graywulf Scheduler Service has been killed.", res ? "out" : ""),
-                null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
+
+            loggingContext.Dispose();
+            loggingContext = null;
         }
 
         private bool Stop(TimeSpan timeout, bool requestCancel, bool requestPersist)
@@ -1184,11 +1193,15 @@ namespace Jhu.Graywulf.Scheduler
 
         public bool InjectCancelJob(Guid guid)
         {
+            loggingContext.Push();
+
             // Only allow job injection when the poller is in running state
             if (!isPollerRunning || isPollerStopRequested)
             {
                 throw new InvalidOperationException();
             }
+
+            bool res;
 
             lock (pollSyncRoot)
             {
@@ -1203,8 +1216,12 @@ namespace Jhu.Graywulf.Scheduler
                     job = runningJobsByGuid[guid];
                 }
 
-                return CancelOrTimeOutJob(job, false);
+                res = CancelOrTimeOutJob(job, false);
             }
+
+            loggingContext.Pop();
+
+            return res;
         }
 
         private void PersistJob(Job job)
@@ -1470,7 +1487,6 @@ namespace Jhu.Graywulf.Scheduler
 
         public void ReloadCluster()
         {
-
             throw new NotImplementedException();
         }
 
@@ -1519,6 +1535,16 @@ namespace Jhu.Graywulf.Scheduler
                 message,
                 method.DeclaringType.FullName + "." + method.Name,
                 null);
+        }
+
+        private void LogOperation(string message, Dictionary<string, object> data)
+        {
+            var method = Logging.LoggingContext.Current.UnwindStack(2);
+            Logging.LoggingContext.Current.LogOperation(
+                Logging.EventSource.Scheduler,
+                message,
+                method.DeclaringType.FullName + "." + method.Name,
+                data);
         }
 
         private void LogJobOperation(string message, Job job)

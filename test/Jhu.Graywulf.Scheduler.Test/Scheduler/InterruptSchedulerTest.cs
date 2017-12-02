@@ -67,9 +67,11 @@ namespace Jhu.Graywulf.Scheduler
         {
             // Make delay long enough but cancelable
             var guid = ScheduleTestJob(new TimeSpan(0, 2, 0), JobType.CancelableDelay, QueueType.Long, new TimeSpan(0, 2, 0));
-            WaitJobStarted(guid, TimeSpan.FromSeconds(10));
+            WaitJobStarted(guid, TimeSpan.FromSeconds(3));
+
             SchedulerTester.Instance.Kill();
-            WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+
+            WaitJobComplete(guid, TimeSpan.FromSeconds(3));
             var ji = LoadJob(guid);
 
             Assert.AreEqual(JobExecutionState.Cancelled, ji.JobExecutionStatus);

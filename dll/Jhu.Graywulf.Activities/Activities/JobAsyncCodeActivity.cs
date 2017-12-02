@@ -20,9 +20,12 @@ namespace Jhu.Graywulf.Activities
         public InArgument<JobInfo> JobInfo { get; set; }
 
         #endregion
-        
+
         protected sealed override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
         {
+            var activityState = new JobAsyncCodeActivityState();
+            activityContext.UserState = activityState;
+
             var task = ExecuteAsync(activityContext);
             var tcs = new TaskCompletionSource<object>(state);
 
@@ -49,38 +52,61 @@ namespace Jhu.Graywulf.Activities
 
         protected sealed override void EndExecute(AsyncCodeActivityContext activityContext, IAsyncResult result)
         {
+            var state = (JobAsyncCodeActivityState)activityContext.UserState;
             var task = (Task)result;
 
             try
             {
                 task.Wait();
             }
-            catch (OperationCanceledException)
+            catch (Exception ex)
             {
-                if (activityContext.IsCancellationRequested)
+                var helper = new JobCancellationHelper(ex);
+
+                if (activityContext.IsCancellationRequested && helper.IsCancelled)
                 {
                     activityContext.MarkCanceled();
                 }
                 else
                 {
-                    throw;
+                    throw helper.DispatchException();
                 }
             }
-            catch (AggregateException ex)
+            finally
             {
-                throw ex.InnerException;
+                lock (state.SyncRoot)
+                {
+                    state.Dispose();
+                }
             }
         }
 
         protected override void Cancel(AsyncCodeActivityContext activityContext)
         {
-            var cancellationContext = (CancellationContext)activityContext.UserState;
-            cancellationContext.Cancel();
+            // Any exceptions thrown from this method are fatal to the workflow instance. 
+            // This call can happen on a thread concurrent to OnExecuteAsync
+            var state = (JobAsyncCodeActivityState)activityContext.UserState;
+            var jobContext = new JobContext(this, activityContext);
+
+            using (new LoggingContext(true))
+            {
+                // Context becomes invalid once the activity has completed but cancel
+                // can be called after ExecuteAsync
+                if (state.CancellationContext.IsValid && !state.CancellationContext.IsRequested)
+                {
+                    lock (state.SyncRoot)
+                    {
+                        state.CancellationContext.Cancel();
+                    }
+                }
+            }
         }
 
         private async Task ExecuteAsync(AsyncCodeActivityContext activityContext)
         {
+            var state = (JobAsyncCodeActivityState)activityContext.UserState;
             var jobContext = new JobContext(this, activityContext);
+
             using (new LoggingContext(true))
             {
                 // Save cancellation context to be called when cancel request arrives
@@ -89,14 +115,12 @@ namespace Jhu.Graywulf.Activities
                 jobContext.UpdateLoggingContext(LoggingContext.Current);
                 jobContext.Push();
 
-                using (var cancellationContext = new CancellationContext())
-                {
-                    activityContext.UserState = cancellationContext;
-                    await OnExecuteAsync(activityContext, cancellationContext);
-                }
+                await OnExecuteAsync(activityContext, state.CancellationContext);
             }
         }
 
         protected abstract Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext);
+
+
     }
 }

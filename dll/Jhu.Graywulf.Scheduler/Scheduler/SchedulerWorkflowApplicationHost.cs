@@ -345,10 +345,11 @@ namespace Jhu.Graywulf.Scheduler
 
             // For some reason, unloading happens synchronously so to avoid deadlock with
             // the previous registry update, this has to be called outside the context
-            PersistWorkflow(wfguid);
 
             JobContext.Current.Pop();
             loggingContext.Pop();
+
+            PersistWorkflow(wfguid);
 
             return wfguid;
         }

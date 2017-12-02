@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         [RequiredArgument]
         public InArgument<bool> AttachReadOnly { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             Guid databaseinstanceguid = DatabaseInstanceGuid.Get(activityContext);
             bool attachReadOnly = AttachReadOnly.Get(activityContext);

@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         [RequiredArgument]
         public InArgument<int> Age { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             int age = Age.Get(activityContext);
 

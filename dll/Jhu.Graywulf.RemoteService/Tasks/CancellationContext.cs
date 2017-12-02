@@ -11,6 +11,8 @@ namespace Jhu.Graywulf.Tasks
     {
         #region Private member variables
 
+        private bool isValid;
+
         /// <summary>
         /// Server cancellation tokens that can be requested to cause cancellation
         /// by calling the Cancel method.
@@ -42,6 +44,11 @@ namespace Jhu.Graywulf.Tasks
             get { return cancellationTokenSource.Token; }
         }
 
+        public bool IsValid
+        {
+            get { return isValid; }
+        }
+
         public bool IsRequested
         {
             get { return cancellationTokenSource.IsCancellationRequested; }
@@ -57,6 +64,7 @@ namespace Jhu.Graywulf.Tasks
 
         private void InitializeMembers()
         {
+            this.isValid = true;
             this.cancellationTokenSource = new CancellationTokenSource();
             this.cancellationTokenRegistrations = null;
             this.cancellableTasks = null;
@@ -65,6 +73,7 @@ namespace Jhu.Graywulf.Tasks
         private void CopyMembers(CancellationContext old)
         {
             // TODO: review
+            this.isValid = old.isValid;
             this.cancellationTokenSource = old.cancellationTokenSource;
             this.cancellationTokenRegistrations = old.cancellationTokenRegistrations;
             this.cancellableTasks = old.cancellableTasks;
@@ -72,6 +81,8 @@ namespace Jhu.Graywulf.Tasks
 
         public void Dispose()
         {
+            isValid = false;
+
             this.cancellationTokenSource.Dispose();
             this.cancellationTokenSource = null;
 
@@ -85,7 +96,7 @@ namespace Jhu.Graywulf.Tasks
         }
 
         #endregion
-        
+
         public void Register(ICancelableTask task)
         {
             if (cancellableTasks == null)
@@ -122,8 +133,14 @@ namespace Jhu.Graywulf.Tasks
 
         public void Cancel()
         {
+            // The cancellation context can be disposed by ExecuteAsync while
+            // this is running here if the task completes too quickly
+
             if (!cancellationTokenSource.IsCancellationRequested)
             {
+                // This causes the disposal of the class instantly as
+                // the executing task finishes with a cancelled exception
+                cancellationTokenSource.Cancel();
 
                 if (cancellableTasks != null)
                 {
@@ -136,7 +153,6 @@ namespace Jhu.Graywulf.Tasks
                     }
                 }
 
-                cancellationTokenSource.Cancel();
             }
         }
     }

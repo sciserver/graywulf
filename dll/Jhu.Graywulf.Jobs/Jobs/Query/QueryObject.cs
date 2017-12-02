@@ -580,6 +580,11 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Query object initialization and parsing
 
+        public void InitializeQueryObject(RegistryContext registryContext)
+        {
+            InitializeQueryObject(null, registryContext, null, true);
+        }
+
         /// <summary>
         /// Initializes the query object by loading registry objects, if necessary.
         /// </summary>

@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Jobs.CopyTables
         [RequiredArgument]
         public InArgument<CopyTablesItem> Item { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             var item = Item.Get(activityContext);
             var ds = item.Source.Dataset;

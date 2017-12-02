@@ -26,19 +26,18 @@ namespace Jhu.Graywulf.ServiceModel
         #endregion
 
         public ServiceLoggingContext()
+            :base(false, AmbientContextStoreLocation.WcfOperationContext)
         {
-            if (OuterContext is ServiceLoggingContext)
-            {
-                CopyMembers((ServiceLoggingContext)OuterContext);
-            }
-            else
-            {
-                InitializeMembers(new StreamingContext());
-            }
+            InitializeMembers();
         }
 
-        [OnDeserializing]
-        private void InitializeMembers(StreamingContext context)
+        public ServiceLoggingContext(ServiceLoggingContext parent)
+            : base(parent)
+        {
+            CopyMembers(parent);
+        }
+
+        private void InitializeMembers()
         {
         }
 

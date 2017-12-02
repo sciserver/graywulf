@@ -43,11 +43,11 @@ namespace Jhu.Graywulf.Scheduler
         public void AtomicJobTest()
         {
             // Time must be longer than the time-out of quick queue!
-            var guid = ScheduleTestJob(new TimeSpan(0, 1, 0), JobType.AtomicDelay, QueueType.Quick, new TimeSpan(0, 0, 15));
+            var guid = ScheduleTestJob(new TimeSpan(0, 0, 30), JobType.AtomicDelay, QueueType.Quick, new TimeSpan(0, 0, 15));
 
-            WaitJobStarted(guid, TimeSpan.FromSeconds(10));
+            WaitJobStarted(guid, TimeSpan.FromSeconds(3));
 
-            WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+            WaitJobComplete(guid, TimeSpan.FromSeconds(3));
 
             var ji = LoadJob(guid);
 
@@ -101,9 +101,9 @@ namespace Jhu.Graywulf.Scheduler
             // Time must be longer than the time-out of quick queue!
             var guid = ScheduleTestJob(new TimeSpan(0, 1, 0), JobType.QueryDelayRetry, QueueType.Quick, new TimeSpan(0, 0, 15));
 
-            WaitJobStarted(guid, TimeSpan.FromSeconds(10));
+            WaitJobStarted(guid, TimeSpan.FromSeconds(3));
 
-            WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+            WaitJobComplete(guid, TimeSpan.FromSeconds(3));
 
             var ji = LoadJob(guid);
             Assert.AreEqual(JobExecutionState.TimedOut, ji.JobExecutionStatus);
@@ -135,8 +135,8 @@ namespace Jhu.Graywulf.Scheduler
             // Time must be longer than the time-out of quick queue!
             var guid = ScheduleTestJob(new TimeSpan(0, 0, 10), JobType.QueryTimeoutRetry, QueueType.Quick, new TimeSpan(0, 0, 50));
 
-            WaitJobStarted(guid, TimeSpan.FromSeconds(10));
-            WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+            WaitJobStarted(guid, TimeSpan.FromSeconds(3));
+            WaitJobComplete(guid, TimeSpan.FromSeconds(3));
 
             var ji = LoadJob(guid);
             Assert.AreEqual(JobExecutionState.Failed, ji.JobExecutionStatus);

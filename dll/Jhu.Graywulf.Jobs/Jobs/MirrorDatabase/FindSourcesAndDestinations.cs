@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         [RequiredArgument]
         public OutArgument<Queue<Guid>> DestinationDatabaseQueue { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             var sourceDatabaseInstanceGuids = SourceDatabaseInstanceGuids.Get(activityContext);
             var destinationDatabaseInstanceGuids = DestinationDatabaseInstanceGuids.Get(activityContext);

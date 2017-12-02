@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             SqlQuery query = Query.Get(activityContext);
 
@@ -25,12 +25,12 @@ namespace Jhu.Graywulf.Jobs.Query
             switch (query.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
-                    query.InitializeQueryObject(cancellationContext, null);
+                    query.InitializeQueryObject(null, null);
                     break;
                 case ExecutionMode.Graywulf:
-                    using (RegistryContext context = ContextManager.Instance.CreateReadOnlyContext())
+                    using (RegistryContext registryContext = ContextManager.Instance.CreateReadOnlyContext())
                     {
-                        query.InitializeQueryObject(cancellationContext, context);
+                        query.InitializeQueryObject(registryContext);
                         query.Validate();
                         query.CollectTablesForStatistics();
                     }

@@ -18,6 +18,11 @@ namespace Jhu.Graywulf.Scheduler
                 StartLogger();
                 PurgeTestJobs();
             }
+
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                SchedulerTester.Instance.EnsureRunning();
+            }
         }
 
         public static void ClassCleanUp()
@@ -28,7 +33,10 @@ namespace Jhu.Graywulf.Scheduler
                 {
                     SchedulerTester.Instance.DrainStop();
                 }
+            }
 
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
                 PurgeTestJobs();
                 StopLogger();
             }
@@ -38,17 +46,20 @@ namespace Jhu.Graywulf.Scheduler
         {
             token = SchedulerTester.Instance.GetExclusiveToken();
             PurgeTestJobs();
+
             var options = new SchedulerDebugOptions()
             {
                 IsControlServiceEnabled = true,
                 IsLayoutRequired = layout,
                 InstanceCount = instances
             };
+
             SchedulerTester.Instance.EnsureRunning(options);
         }
 
         public virtual void TestCleanup()
         {
+            /*
             try
             {
                 if (SchedulerTester.Instance.IsRunning)
@@ -63,7 +74,9 @@ namespace Jhu.Graywulf.Scheduler
             finally
             {
                 token.Dispose();
-            }
+            }*/
+
+            token.Dispose();
         }
     }
 }

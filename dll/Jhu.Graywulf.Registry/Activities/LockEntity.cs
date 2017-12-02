@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Activities
         [RequiredArgument]
         public InArgument<Guid> LockOwner { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             var entityguid = EntityGuid.Get(activityContext);
             var lockOwner = LockOwner.Get(activityContext);

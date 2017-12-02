@@ -17,21 +17,21 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<QueryObject> QueryObject { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             var queryObject = QueryObject.Get(activityContext);
 
             switch (queryObject.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
-                    queryObject.InitializeQueryObject(cancellationContext, null, null, true);
+                    queryObject.InitializeQueryObject(null, null, null, true);
                     break;
                 case ExecutionMode.Graywulf:
                     using (var registryContext = ContextManager.Instance.CreateReadOnlyContext())
                     {
                         var scheduler = activityContext.GetExtension<IScheduler>();
 
-                        queryObject.InitializeQueryObject(cancellationContext, registryContext, scheduler, false);
+                        queryObject.InitializeQueryObject(null, registryContext, scheduler, false);
                         queryObject.AssignServerInstance();
                         EntityGuid.Set(activityContext, queryObject.AssignedServerInstance.Guid);
                     }

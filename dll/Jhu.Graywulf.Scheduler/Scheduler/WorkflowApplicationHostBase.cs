@@ -24,6 +24,7 @@ namespace Jhu.Graywulf.Scheduler
 
         #region Private variables
 
+        private object syncRoot = new object();
         protected Logging.LoggingContext loggingContext;
 
         /// <summary>
@@ -65,16 +66,19 @@ namespace Jhu.Graywulf.Scheduler
         }
 
         #endregion
-        
+
         public virtual void Start(Logging.Logger logger)
         {
-            // Initialize logging
-            loggingContext = new Logging.LoggingContext();
-            loggingContext.SetLogger(logger);
+            lock (syncRoot)
+            {
+                // Initialize logging
+                loggingContext = new Logging.LoggingContext();
+                loggingContext.SetLogger(logger);
 
-            trackingParticipant = new JobTrackingParticipant();
+                trackingParticipant = new JobTrackingParticipant();
 
-            loggingContext.Pop();
+                loggingContext.Pop();
+            }
         }
 
         public virtual bool TryStop()
@@ -86,29 +90,35 @@ namespace Jhu.Graywulf.Scheduler
             }
             else
             {
-                loggingContext.Push();
+                lock (syncRoot)
+                {
+                    loggingContext.Push();
 
-                trackingParticipant.Dispose();
-                trackingParticipant = null;
+                    trackingParticipant.Dispose();
+                    trackingParticipant = null;
 
-                Logging.LoggingContext.Current.StopLogger();
-                loggingContext.Dispose();
-                return true;
+                    loggingContext.Dispose();
+
+                    return true;
+                }
             }
         }
 
         public virtual void Abort()
         {
-            loggingContext.Push();
-
-            foreach (var w in workflows.Values.ToArray())
+            lock (syncRoot)
             {
-                w.WorkflowApplication.Abort();
-            }
+                loggingContext.Push();
 
-            loggingContext.Pop();
+                foreach (var w in workflows.Values.ToArray())
+                {
+                    w.WorkflowApplication.Abort();
+                }
+
+                loggingContext.Pop();
+            }
         }
-        
+
         /// <summary>
         /// Initializes a WorkflowApplication for the job
         /// </summary>
@@ -272,7 +282,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 throw new InvalidOperationException();
             }
-            
+
             return instanceId;
         }
 
@@ -308,11 +318,14 @@ namespace Jhu.Graywulf.Scheduler
 
             if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                loggingContext.Push();
+                lock (syncRoot)
+                {
+                    loggingContext.Push();
 
-                OnWorkflowUnHandledException(e, workflow);
+                    OnWorkflowUnHandledException(e, workflow);
 
-                loggingContext.Pop();
+                    loggingContext.Pop();
+                }
             }
 
             // Force the workflow to execute the cancel logic
@@ -335,19 +348,20 @@ namespace Jhu.Graywulf.Scheduler
             {
                 if (WorkflowEvent != null)
                 {
-                    loggingContext.Push();
+                    lock (syncRoot)
+                    {
+                        loggingContext.Push();
 
-                    OnWorkflowCompleted(e, workflow);
+                        OnWorkflowCompleted(e, workflow);
 
-                    loggingContext.Pop();
+                        loggingContext.Pop();
+                    }
                 }
             }
         }
 
         protected virtual void OnWorkflowCompleted(WorkflowApplicationCompletedEventArgs e, WorkflowApplicationDetails workflow)
         {
-            loggingContext.Push();
-
             switch (e.CompletionState)
             {
                 case ActivityInstanceState.Closed:
@@ -370,8 +384,6 @@ namespace Jhu.Graywulf.Scheduler
                 default:
                     throw new NotImplementedException();
             }
-
-            loggingContext.Pop();
         }
 
         protected virtual void WorkflowApplication_WorkflowUnloaded(WorkflowApplicationEventArgs e)
@@ -380,12 +392,15 @@ namespace Jhu.Graywulf.Scheduler
 
             if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                loggingContext.Push();
+                lock (syncRoot)
+                {
+                    loggingContext.Push();
 
-                OnWorkflowUnloaded(e, workflow);
-                FinishWorkflow(e.InstanceId);
+                    OnWorkflowUnloaded(e, workflow);
+                    FinishWorkflow(e.InstanceId);
 
-                loggingContext.Pop();
+                    loggingContext.Pop();
+                }
             }
         }
 
@@ -396,28 +411,31 @@ namespace Jhu.Graywulf.Scheduler
 
         protected virtual void WorkflowApplication_WorkflowAborted(WorkflowApplicationEventArgs e)
         {
+            // This can happen multiple times for the same workflow on the same thread
+            // The call originates from an IOCallback which is repeated when an
+            // exception happens on this thread down the call stack
+
             WorkflowApplicationDetails workflow;
 
             if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                loggingContext.Push();
+                lock (syncRoot)
+                {
+                    loggingContext.Push();
 
-                OnWorkflowAborted(e, workflow);
-                FinishWorkflow(e.InstanceId);
+                    OnWorkflowAborted(e, workflow);
+                    FinishWorkflow(e.InstanceId);
 
-                loggingContext.Pop();
+                    loggingContext.Pop();
+                }
             }
         }
 
         protected virtual void OnWorkflowAborted(WorkflowApplicationEventArgs e, WorkflowApplicationDetails workflow)
         {
-            loggingContext.Push();
-
             // Workflows are aborted when an exception is thrown during cancellation
             var args = (WorkflowApplicationAbortedEventArgs)e;
             WorkflowEvent(this, new WorkflowApplicationHostEventArgs(WorkflowEventType.Failed, args.InstanceId, args.Reason ?? workflow.LastException));
-
-            loggingContext.Pop();
         }
 
         protected virtual void WorkflowApplication_WorkflowIdle(WorkflowApplicationIdleEventArgs e)
@@ -426,11 +444,14 @@ namespace Jhu.Graywulf.Scheduler
 
             if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                loggingContext.Push();
+                lock (syncRoot)
+                {
+                    loggingContext.Push();
 
-                OnWorkflowIdle(e, workflow);
+                    OnWorkflowIdle(e, workflow);
 
-                loggingContext.Pop();
+                    loggingContext.Pop();
+                }
             }
         }
 
@@ -444,13 +465,16 @@ namespace Jhu.Graywulf.Scheduler
 
             if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                loggingContext.Push();
+                lock (syncRoot)
+                {
+                    loggingContext.Push();
 
-                var res = OnWorkflowPersistableIdle(e, workflow);
+                    var res = OnWorkflowPersistableIdle(e, workflow);
 
-                loggingContext.Pop();
+                    loggingContext.Pop();
 
-                return res;
+                    return res;
+                }
             }
             else
             {

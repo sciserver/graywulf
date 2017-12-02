@@ -14,13 +14,13 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
 
-        protected override void OnExecute(CodeActivityContext activityContext, CancellationContext cancellationContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             SqlQuery query = Query.Get(activityContext);
 
             using (RegistryContext registryContext = query.CreateContext())
             {
-                query.InitializeQueryObject(cancellationContext, registryContext);
+                query.InitializeQueryObject(registryContext);
                 query.Destination.CheckTableExistence();
             }
         }

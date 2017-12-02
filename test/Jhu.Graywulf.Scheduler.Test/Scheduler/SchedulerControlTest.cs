@@ -107,8 +107,8 @@ namespace Jhu.Graywulf.Scheduler
         [TestCategory("Slow")]
         public void GetJobsTest()
         {
-            var guid = ScheduleTestJob(new TimeSpan(0, 0, 30), JobType.AtomicDelay, QueueType.Long, new TimeSpan(0, 2, 0));
-            WaitJobStarted(guid, TimeSpan.FromSeconds(5));
+            var guid = ScheduleTestJob(new TimeSpan(0, 0, 10), JobType.AtomicDelay, QueueType.Long, new TimeSpan(0, 2, 0));
+            WaitJobStarted(guid, TimeSpan.FromSeconds(3));
 
             var control = GetControl();
             var queues = control.GetQueues();
@@ -145,7 +145,8 @@ namespace Jhu.Graywulf.Scheduler
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(10));
 
             control.CancelJob(guid);
-            WaitJobStarted(guid, TimeSpan.FromSeconds(5));
+
+            WaitJobComplete(guid, TimeSpan.FromSeconds(5));
 
             var ji = LoadJob(guid);
             Assert.AreEqual(JobExecutionState.Cancelled, ji.JobExecutionStatus);
