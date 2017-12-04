@@ -78,6 +78,7 @@
     <Compile Include="ServiceModel\ServiceLoggingContext.cs" />
     <Compile Include="ServiceModel\ServiceLoggingOperationInvoker.cs" />
     <Compile Include="ServiceModel\TcpEndpointConfiguration.cs" />
+    <Compile Include="ServiceModel\ServiceSynchronizationContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">

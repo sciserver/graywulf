@@ -58,6 +58,7 @@ namespace Jhu.Graywulf.ServiceModel
 
         public IAsyncResult InvokeBegin(object instance, object[] inputs, AsyncCallback callback, object state)
         {
+            new ServiceSynchronizationContext();
             new ServiceLoggingContext();
 
             LogDebug();

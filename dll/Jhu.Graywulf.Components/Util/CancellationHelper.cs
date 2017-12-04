@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace Jhu.Graywulf.Activities
+namespace Jhu.Graywulf.Util
 {
-    class JobCancellationHelper
+    public class CancellationHelper
     {
         private Exception exception;
         private Exception unwrappedException;
@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.Activities
             get { return IsTimeout; }
         }
 
-        public JobCancellationHelper(Exception exception)
+        public CancellationHelper(Exception exception)
         {
             this.exception = exception;
             UnwrapException();

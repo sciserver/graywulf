@@ -39,7 +39,6 @@ namespace Jhu.Graywulf.Tasks
         }
 
         [TestMethod]
-        [ExpectedException(typeof(TaskCanceledException))]
         public void CancelProcessTest()
         {
             using (var cc = new CancellationContext())
@@ -61,6 +60,8 @@ namespace Jhu.Graywulf.Tasks
                 cc.Cancel();
 
                 Util.TaskHelper.Wait(task);
+
+                Assert.IsTrue(cp.IsCancelled);
             }
         }
 

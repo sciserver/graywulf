@@ -65,7 +65,6 @@ namespace Jhu.Graywulf.RemoteService
         }
 
         [TestMethod]
-        [ExpectedException(typeof(TaskCanceledException))]
         public void CancelRemoteExecuteTest()
         {
             using (RemoteServiceTester.Instance.GetToken())
@@ -87,12 +86,12 @@ namespace Jhu.Graywulf.RemoteService
 
                     Assert.IsTrue((DateTime.Now - start).TotalMilliseconds < 5000);
                     Assert.IsTrue(c.IsCancellationRequested);
+                    Assert.IsTrue(c.IsCancelled);
                 }
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(System.ServiceModel.FaultException<System.ServiceModel.ExceptionDetail>))]
         public void CancelProcessInterleavedTest()
         {
             // Here we test that the two remote calls are directed
@@ -121,6 +120,9 @@ namespace Jhu.Graywulf.RemoteService
 
                     Util.TaskHelper.Wait(task1);
                     Util.TaskHelper.Wait(task2);
+
+                    Assert.IsTrue(c1.IsCancelled);
+                    Assert.IsTrue(c2.IsCancelled);
                 }
             }
         }

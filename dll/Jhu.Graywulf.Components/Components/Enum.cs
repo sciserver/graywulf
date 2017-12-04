@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Components
         WebHttpContext = 0x0008,
         WcfOperationContext = 0x0010,
 
-        Default = AsyncLocal | WebHttpContext | WcfOperationContext,
+        Default = AsyncLocal,
         All = 0xFFFF
     }
 }

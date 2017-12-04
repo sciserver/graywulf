@@ -33,6 +33,12 @@ namespace Jhu.Graywulf.Tasks
             get;
         }
 
+        bool IsCancelled
+        {
+            [OperationContract]
+            get;
+        }
+
         [OperationContract]
         void Cancel();
     }
@@ -61,6 +67,7 @@ namespace Jhu.Graywulf.Tasks
         private bool ownsCancellationContext;
 
         private bool isCancellationRequested;
+        private bool isCancelled;
 
         /// <summary>
         /// Keeps track of the progress of the long running task.
@@ -93,6 +100,12 @@ namespace Jhu.Graywulf.Tasks
         {
             [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return isCancellationRequested; }
+        }
+
+        public bool IsCancelled
+        {
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+            get { return isCancelled; }
         }
 
         /// <summary>
@@ -128,6 +141,7 @@ namespace Jhu.Graywulf.Tasks
         {
             this.cancellationContext = null;
             this.isCancellationRequested = false;
+            this.isCancelled = false;
             this.progress = new CancelableTaskProgress();
         }
 
@@ -149,9 +163,25 @@ namespace Jhu.Graywulf.Tasks
 
         [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
         [LimitedAccessOperation(Constants.DefaultRole)]
-        public virtual async Task ExecuteAsync()
+        public async Task ExecuteAsync()
         {
-            await OnExecuteAsync();
+            try
+            {
+                await OnExecuteAsync();
+            }
+            catch (Exception ex)
+            {
+                var helper = new Util.CancellationHelper(ex);
+
+                if (isCancellationRequested && helper.IsCancelled)
+                {
+                    isCancelled = true;
+                }
+                else
+                {
+                    throw helper.DispatchException();
+                }
+            }
         }
 
         [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]

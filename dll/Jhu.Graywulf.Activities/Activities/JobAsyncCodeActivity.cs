@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.Activities
             }
             catch (Exception ex)
             {
-                var helper = new JobCancellationHelper(ex);
+                var helper = new Util.CancellationHelper(ex);
 
                 if (activityContext.IsCancellationRequested && helper.IsCancelled)
                 {
