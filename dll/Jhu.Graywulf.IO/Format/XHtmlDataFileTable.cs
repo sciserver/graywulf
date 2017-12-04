@@ -60,7 +60,7 @@ namespace Jhu.Graywulf.Format
             throw new NotImplementedException();
         }
 
-        protected override Task<bool> OnReadNextRowPartsAsync(IList<string> parts, bool skipComments)
+        protected override Task<bool> OnReadNextRowPartsAsync(List<string> parts, bool skipComments)
         {
             throw new NotImplementedException();
         }

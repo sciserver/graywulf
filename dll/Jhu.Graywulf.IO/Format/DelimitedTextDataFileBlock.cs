@@ -109,7 +109,7 @@ namespace Jhu.Graywulf.Format
         /// <remarks>
         /// This function supports quoted strings.
         /// </remarks>
-        protected override async Task<bool> OnReadNextRowPartsAsync(IList<string> parts, bool skipComments)
+        protected override async Task<bool> OnReadNextRowPartsAsync(List<string> parts, bool skipComments)
         {
             string line;
             int ci = 0;

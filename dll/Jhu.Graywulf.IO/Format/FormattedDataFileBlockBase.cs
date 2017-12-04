@@ -134,11 +134,11 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Read functions
 
-        protected abstract Task<bool> OnReadNextRowPartsAsync(IList<string> parts, bool skipComments);
+        protected abstract Task<bool> OnReadNextRowPartsAsync(List<string> parts, bool skipComments);
 
         protected internal override async Task<bool> OnReadNextRowAsync(object[] values)
         {
-            var parts = new string[Columns.Count];
+            var parts = new List<string>(Columns.Count);
             var hasNextRow = await OnReadNextRowPartsAsync(parts, true);
 
             if (hasNextRow)

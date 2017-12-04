@@ -13,6 +13,8 @@ namespace Jhu.Graywulf.Jobs.Query
     [TestClass]
     public class TableReferenceTest : SqlQueryTestBase
     {
+        // TODO: move this to name resolver test or somewhere else
+
         #region Column list functions
 
         private List<Column> GetColumnListTestHelper(string sql, ColumnContext context)
