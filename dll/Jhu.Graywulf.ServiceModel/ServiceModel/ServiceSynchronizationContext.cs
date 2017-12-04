@@ -8,9 +8,8 @@ using System.ServiceModel;
 
 namespace Jhu.Graywulf.ServiceModel
 {
-    public class ServiceSynchronizationContext : SynchronizationContext, IDisposable
+    public class ServiceSynchronizationContext : SynchronizationContext
     {
-        private bool isValid;
         private SynchronizationContext outerContext;
         private OperationContext operationContext;
 
@@ -33,14 +32,12 @@ namespace Jhu.Graywulf.ServiceModel
 
         private void InitializeMembers()
         {
-            this.isValid = true;
             this.outerContext = null;
             this.operationContext = null;
         }
 
         private void CopyMembers(ServiceSynchronizationContext old)
         {
-            this.isValid = old.isValid;
             this.outerContext = old.outerContext;
             this.operationContext = old.operationContext;
         }
@@ -49,17 +46,7 @@ namespace Jhu.Graywulf.ServiceModel
         {
             return new ServiceSynchronizationContext(this);
         }
-
-        public void Dispose()
-        {
-            if (isValid)
-            {
-                // Return to the previous context.
-                SynchronizationContext.SetSynchronizationContext(outerContext);
-                isValid = false;
-            }
-        }
-
+        
         #endregion
 
         /// <summary>

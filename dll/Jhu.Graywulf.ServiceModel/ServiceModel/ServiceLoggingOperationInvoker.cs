@@ -40,19 +40,23 @@ namespace Jhu.Graywulf.ServiceModel
 
         public object Invoke(object instance, object[] inputs, out object[] outputs)
         {
-            using (new ServiceLoggingContext())
-            {
-                LogDebug();
+            new ServiceSynchronizationContext();
+            new ServiceLoggingContext();
 
-                try
-                {
-                    return this.originalInvoker.Invoke(instance, inputs, out outputs);
-                }
-                catch (Exception ex)
-                {
-                    LogError(ex);
-                    throw;
-                }
+            LogDebug();
+
+            try
+            {
+                return this.originalInvoker.Invoke(instance, inputs, out outputs);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                throw;
+            }
+            finally
+            {
+                ServiceLoggingContext.Current.Dispose();
             }
         }
 
