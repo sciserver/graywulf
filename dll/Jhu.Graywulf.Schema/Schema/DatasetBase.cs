@@ -609,7 +609,7 @@ namespace Jhu.Graywulf.Schema
         protected abstract IEnumerable<KeyValuePair<string, T>> OnLoadAllObjects<T>()
             where T : DatabaseObject, new();
 
-        internal bool IsObjectExisting(DatabaseObject databaseObject)
+        public bool IsObjectExisting(DatabaseObject databaseObject)
         {
             EnsureSchemaValid(databaseObject.SchemaName);
 
@@ -619,7 +619,7 @@ namespace Jhu.Graywulf.Schema
             });
         }
 
-        internal abstract bool OnIsObjectExisting(DatabaseObject databaseObject);
+        protected abstract bool OnIsObjectExisting(DatabaseObject databaseObject);
 
         public void LoadAllObjects(DatabaseObjectType objectType, bool forceReload)
         {
@@ -678,7 +678,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject databaseObject)
+        public IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject databaseObject)
         {
             EnsureSchemaValid(databaseObject);
 
@@ -693,9 +693,9 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal abstract IEnumerable<KeyValuePair<string, Column>> OnLoadColumns(DatabaseObject databaseObject);
+        protected abstract IEnumerable<KeyValuePair<string, Column>> OnLoadColumns(DatabaseObject databaseObject);
 
-        internal IEnumerable<KeyValuePair<string, Index>> LoadIndexes(DatabaseObject databaseObject)
+        public IEnumerable<KeyValuePair<string, Index>> LoadIndexes(DatabaseObject databaseObject)
         {
             EnsureSchemaValid(databaseObject);
 
@@ -710,9 +710,9 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="tableOrView"></param>
         /// <returns></returns>
-        internal abstract IEnumerable<KeyValuePair<string, Index>> OnLoadIndexes(DatabaseObject databaseObject);
+        protected abstract IEnumerable<KeyValuePair<string, Index>> OnLoadIndexes(DatabaseObject databaseObject);
 
-        internal IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index)
+        public IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index)
         {
             EnsureSchemaValid(index);
 
@@ -727,9 +727,9 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal abstract IEnumerable<KeyValuePair<string, IndexColumn>> OnLoadIndexColumns(Index index);
+        protected abstract IEnumerable<KeyValuePair<string, IndexColumn>> OnLoadIndexColumns(Index index);
 
-        internal IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject databaseObject)
+        public IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject databaseObject)
         {
             EnsureSchemaValid(databaseObject);
 
@@ -744,12 +744,12 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal abstract IEnumerable<KeyValuePair<string, Parameter>> OnLoadParameters(DatabaseObject databaseObject);
+        protected abstract IEnumerable<KeyValuePair<string, Parameter>> OnLoadParameters(DatabaseObject databaseObject);
 
         #endregion
         #region Metadata functions
 
-        private DatasetMetadata LoadDatasetMetadata()
+        public DatasetMetadata LoadDatasetMetadata()
         {
             return TryOperation(() =>
             {
@@ -759,7 +759,7 @@ namespace Jhu.Graywulf.Schema
 
         protected abstract DatasetMetadata OnLoadDatasetMetadata();
 
-        internal DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
+        public DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             EnsureSchemaValid(databaseObject);
 
@@ -769,9 +769,9 @@ namespace Jhu.Graywulf.Schema
             });
         }
 
-        internal protected abstract DatabaseObjectMetadata OnLoadDatabaseObjectMetadata(DatabaseObject databaseObject);
+        protected abstract DatabaseObjectMetadata OnLoadDatabaseObjectMetadata(DatabaseObject databaseObject);
 
-        internal void SaveDatabaseObjectMetadata(DatabaseObject databaseObject)
+        public void SaveDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             EnsureMutable(databaseObject);
             EnsureSchemaValid(databaseObject);
@@ -782,9 +782,9 @@ namespace Jhu.Graywulf.Schema
             });
         }
 
-        internal abstract void OnSaveDatabaseObjectMetadata(DatabaseObject databaseObject);
+        protected abstract void OnSaveDatabaseObjectMetadata(DatabaseObject databaseObject);
 
-        internal void DropDatabaseObjectMetadata(DatabaseObject databaseObject)
+        public void DropDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             EnsureMutable(databaseObject);
             EnsureSchemaValid(databaseObject);
@@ -795,7 +795,7 @@ namespace Jhu.Graywulf.Schema
             });
         }
 
-        internal abstract void OnDropDatabaseObjectMetadata(DatabaseObject databaseObject);
+        protected abstract void OnDropDatabaseObjectMetadata(DatabaseObject databaseObject);
 
         /// <summary>
         /// Loads metadata of a variable (parameter, column, return value, etc.).
@@ -805,7 +805,7 @@ namespace Jhu.Graywulf.Schema
         /// <remarks>Dataset is implemented to load all variable metadata of an
         /// object in a batch to reduce roundtrips between the client and the
         /// database server.</remarks>
-        internal void LoadAllVariableMetadata(DatabaseObject databaseObject)
+        public void LoadAllVariableMetadata(DatabaseObject databaseObject)
         {
             if (databaseObject is IColumns)
             {
@@ -818,7 +818,7 @@ namespace Jhu.Graywulf.Schema
             }
         }
 
-        protected void LoadAllColumnMetadata(DatabaseObject databaseObject)
+        public void LoadAllColumnMetadata(DatabaseObject databaseObject)
         {
             EnsureSchemaValid(databaseObject);
 
@@ -830,7 +830,7 @@ namespace Jhu.Graywulf.Schema
 
         protected abstract void OnLoadAllColumnMetadata(DatabaseObject databaseObject);
 
-        protected void LoadAllParameterMetadata(DatabaseObject databaseObject)
+        public void LoadAllParameterMetadata(DatabaseObject databaseObject)
         {
             EnsureSchemaValid(databaseObject);
 
@@ -842,7 +842,7 @@ namespace Jhu.Graywulf.Schema
 
         protected abstract void OnLoadAllParameterMetadata(DatabaseObject databaseObject);
 
-        internal void SaveAllVariableMetadata(DatabaseObject databaseObject)
+        public void SaveAllVariableMetadata(DatabaseObject databaseObject)
         {
             EnsureMutable(databaseObject);
             EnsureSchemaValid(databaseObject);
@@ -853,9 +853,9 @@ namespace Jhu.Graywulf.Schema
             });
         }
 
-        internal abstract void OnSaveAllVariableMetadata(DatabaseObject databaseObject);
+        protected abstract void OnSaveAllVariableMetadata(DatabaseObject databaseObject);
 
-        internal void DropAllVariableMetadata(DatabaseObject databaseObject)
+        public void DropAllVariableMetadata(DatabaseObject databaseObject)
         {
             EnsureMutable(databaseObject);
             EnsureSchemaValid(databaseObject);
@@ -866,12 +866,12 @@ namespace Jhu.Graywulf.Schema
             });
         }
 
-        internal abstract void OnDropAllVariableMetadata(DatabaseObject databaseObject);
+        protected abstract void OnDropAllVariableMetadata(DatabaseObject databaseObject);
 
         #endregion
         #region Statistics function
 
-        protected DatasetStatistics LoadDatasetStatistics()
+        public DatasetStatistics LoadDatasetStatistics()
         {
             return TryOperation(() =>
             {
@@ -881,7 +881,7 @@ namespace Jhu.Graywulf.Schema
 
         protected abstract DatasetStatistics OnLoadDatasetStatistics();
 
-        internal TableStatistics LoadTableStatistics(TableOrView tableOrView)
+        public TableStatistics LoadTableStatistics(TableOrView tableOrView)
         {
             EnsureSchemaValid(tableOrView);
 
@@ -891,12 +891,12 @@ namespace Jhu.Graywulf.Schema
             });
         }
 
-        internal abstract TableStatistics OnLoadTableStatistics(TableOrView tableOrView);
+        protected abstract TableStatistics OnLoadTableStatistics(TableOrView tableOrView);
 
         #endregion
         #region Object modification functions
 
-        internal virtual protected void EnsureMutable(DatabaseObject databaseObject)
+        protected virtual void EnsureMutable(DatabaseObject databaseObject)
         {
             if (!IsMutable)
             {
@@ -914,7 +914,7 @@ namespace Jhu.Graywulf.Schema
         {
         }
 
-        internal void RenameObject(DatabaseObject obj, string schemaName, string objectName)
+        public void RenameObject(DatabaseObject obj, string schemaName, string objectName)
         {
             EnsureMutable(obj);
             EnsureSchemaValid(schemaName);
@@ -941,9 +941,9 @@ namespace Jhu.Graywulf.Schema
         /// <remarks>
         /// Only works with mutable datasets, ie. myDBs
         /// </remarks>
-        internal abstract void OnRenameObject(DatabaseObject obj, string schemaName, string objectName);
+        protected abstract void OnRenameObject(DatabaseObject obj, string schemaName, string objectName);
 
-        internal void CreateTable(Table table, bool createPrimaryKey, bool createIndexes)
+        public void CreateTable(Table table, bool createPrimaryKey, bool createIndexes)
         {
             var name = table.SchemaName + "." + table.ObjectName;
 
@@ -958,9 +958,9 @@ namespace Jhu.Graywulf.Schema
             });
         }
 
-        internal abstract void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes);
+        protected abstract void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes);
 
-        internal void DropObject(DatabaseObject obj)
+        public void DropObject(DatabaseObject obj)
         {
             LogOperation(
                 "Dropping {0} {1}.{2} from database {3}:{4}.",
@@ -982,9 +982,9 @@ namespace Jhu.Graywulf.Schema
         /// <remarks>
         /// Only works with mutable datasets, ie. myDBs
         /// </remarks>
-        internal abstract void OnDropObject(DatabaseObject obj);
+        protected abstract void OnDropObject(DatabaseObject obj);
 
-        internal void CreateIndex(Index index)
+        public void CreateIndex(Index index)
         {
             LogOperation(
                 "Creating index {0} on {1}.{2} in database {3}:{4}.",
@@ -998,9 +998,9 @@ namespace Jhu.Graywulf.Schema
             });
         }
 
-        internal abstract void OnCreateIndex(Index index);
+        protected abstract void OnCreateIndex(Index index);
 
-        internal void DropIndex(Index index)
+        public void DropIndex(Index index)
         {
             LogOperation(
                 "Dropping index {0} on {1}.{2} in database {3}:{4}.",
@@ -1014,9 +1014,9 @@ namespace Jhu.Graywulf.Schema
             });
         }
 
-        internal abstract void OnDropIndex(Index index);
+        protected abstract void OnDropIndex(Index index);
 
-        internal void TruncateTable(Table table)
+        public void TruncateTable(Table table)
         {
             LogOperation(
                 "Truncating table {0}.{1} in database {2}:{3}.",
@@ -1029,7 +1029,7 @@ namespace Jhu.Graywulf.Schema
             });
         }
 
-        internal abstract void OnTruncateTable(Table table);
+        protected abstract void OnTruncateTable(Table table);
 
         #endregion
 
@@ -1089,7 +1089,7 @@ namespace Jhu.Graywulf.Schema
         /// <returns></returns>
         protected abstract DataType MapDataType(string name);
 
-        internal DataType MapDataType(string name, int length, byte scale, byte precision, bool isNullable)
+        protected DataType MapDataType(string name, int length, byte scale, byte precision, bool isNullable)
         {
             var dt = MapDataType(name);
 
@@ -1259,7 +1259,7 @@ namespace Jhu.Graywulf.Schema
             }
         }
 
-        internal Logging.Event LogError(Exception ex)
+        protected Logging.Event LogError(Exception ex)
         {
             var e = Logging.LoggingContext.Current.CreateEvent(
                 Logging.EventSeverity.Error,

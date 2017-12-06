@@ -211,7 +211,7 @@ WHERE routine_schema LIKE @databaseName AND routine_name LIKE @objectName AND ro
             }
         }
 
-        internal override bool OnIsObjectExisting(DatabaseObject databaseObject)
+        protected override bool OnIsObjectExisting(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
@@ -279,7 +279,7 @@ WHERE table_schema LIKE @databaseName AND table_type IN({0})";
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Column>> OnLoadColumns(DatabaseObject obj)
+        protected override IEnumerable<KeyValuePair<string, Column>> OnLoadColumns(DatabaseObject obj)
         {
             var sql = @"
 SELECT ordinal_position,
@@ -328,7 +328,7 @@ WHERE table_schema LIKE @databaseName AND table_name LIKE @tableName;";
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Index>> OnLoadIndexes(DatabaseObject obj)
+        protected override IEnumerable<KeyValuePair<string, Index>> OnLoadIndexes(DatabaseObject obj)
         {
             var sql = @"  
 SELECT s.index_name, s.non_unique
@@ -373,7 +373,7 @@ GROUP BY 1;";
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, IndexColumn>> OnLoadIndexColumns(Index index)
+        protected override IEnumerable<KeyValuePair<string, IndexColumn>> OnLoadIndexColumns(Index index)
         {
             var sql = @"
 SELECT c.column_name,
@@ -430,7 +430,7 @@ WHERE t.table_schema LIKE @databaseName AND kcu.table_name LIKE @tableName AND k
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Parameter>> OnLoadParameters(DatabaseObject obj)
+        protected override IEnumerable<KeyValuePair<string, Parameter>> OnLoadParameters(DatabaseObject obj)
         {
             var sql = @"
 SELECT p.ordinal_position,
@@ -501,7 +501,7 @@ ORDER BY 1;";
             }
         }
 
-        internal protected override DatabaseObjectMetadata OnLoadDatabaseObjectMetadata(DatabaseObject databaseObject)
+        protected override DatabaseObjectMetadata OnLoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             var sql = @"
 SELECT table_comment comment 
@@ -534,12 +534,12 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             }
         }
 
-        internal override void OnDropDatabaseObjectMetadata(DatabaseObject databaseObject)
+        protected override void OnDropDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnSaveDatabaseObjectMetadata(DatabaseObject databaseObject)
+        protected override void OnSaveDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
@@ -600,22 +600,22 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
                 }
             }
         }
-        internal override void OnDropAllVariableMetadata(DatabaseObject databaseObject)
+        protected override void OnDropAllVariableMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnSaveAllVariableMetadata(DatabaseObject databaseObject)
+        protected override void OnSaveAllVariableMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override TableStatistics OnLoadTableStatistics(TableOrView tableOrView)
+        protected override TableStatistics OnLoadTableStatistics(TableOrView tableOrView)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnRenameObject(DatabaseObject obj, string schemaName, string objectName)
+        protected override void OnRenameObject(DatabaseObject obj, string schemaName, string objectName)
         {
             throw new NotImplementedException();
 
@@ -645,7 +645,7 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             */
         }
 
-        internal override void OnDropObject(DatabaseObject obj)
+        protected override void OnDropObject(DatabaseObject obj)
         {
             throw new NotImplementedException();
 
@@ -669,22 +669,22 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             }*/
         }
 
-        internal override void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes)
+        protected override void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnCreateIndex(Index index)
+        protected override void OnCreateIndex(Index index)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnDropIndex(Index index)
+        protected override void OnDropIndex(Index index)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnTruncateTable(Table table)
+        protected override void OnTruncateTable(Table table)
         {
             throw new NotImplementedException();
         }

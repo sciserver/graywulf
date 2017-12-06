@@ -237,7 +237,7 @@ WHERE routine_type IN ({0}) AND
             }
         }
 
-        internal override bool OnIsObjectExisting(DatabaseObject databaseObject)
+        protected override bool OnIsObjectExisting(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
@@ -309,7 +309,7 @@ WHERE table_type IN ({0}) AND table_schema NOT IN ('information_schema', 'pg_cat
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Column>> OnLoadColumns(DatabaseObject obj)
+        protected override IEnumerable<KeyValuePair<string, Column>> OnLoadColumns(DatabaseObject obj)
         {
             string sql = @"
 SELECT ordinal_position, 
@@ -359,7 +359,7 @@ WHERE table_catalog ILIKE @databaseName AND table_name ILIKE @tableName AND tabl
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Index>> OnLoadIndexes(DatabaseObject obj)
+        protected override IEnumerable<KeyValuePair<string, Index>> OnLoadIndexes(DatabaseObject obj)
         {
             // TODO: this is not perfect here, it returns all indices (including primary keys, but
             // not constraints), there is, however, no way to tell the type of the index
@@ -407,7 +407,7 @@ WHERE schemaname ILIKE @schemaName AND tablename ILIKE @objectName;";
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, IndexColumn>> OnLoadIndexColumns(Index index)
+        protected override IEnumerable<KeyValuePair<string, IndexColumn>> OnLoadIndexColumns(Index index)
         {
             var sql = @"
 SELECT 
@@ -467,7 +467,7 @@ WHERE constraint_catalog ILIKE @databaseName AND constraint_schema ILIKE @schema
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Parameter>> OnLoadParameters(DatabaseObject obj)
+        protected override IEnumerable<KeyValuePair<string, Parameter>> OnLoadParameters(DatabaseObject obj)
         {
             var sql = @"
 SELECT p.ordinal_position,
@@ -541,7 +541,7 @@ WHERE p.specific_catalog ILIKE @databaseName AND p.specific_schema ILIKE @schema
         #endregion
         #region Metadata
 
-        internal protected override DatabaseObjectMetadata OnLoadDatabaseObjectMetadata(DatabaseObject databaseObject)
+        protected override DatabaseObjectMetadata OnLoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             var sql = @"SELECT DISTINCT
 pg_catalog.obj_description(c.oid) AS table_comment,
@@ -574,12 +574,12 @@ WHERE c.relname = @objectName AND d.nspname= @schemaName
             }
         }
 
-        internal override void OnDropDatabaseObjectMetadata(DatabaseObject databaseObject)
+        protected override void OnDropDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnSaveDatabaseObjectMetadata(DatabaseObject databaseObject)
+        protected override void OnSaveDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
@@ -678,12 +678,12 @@ WHERE nspname = @schemaName and proname= @objectName;";
             }
         }
 
-        internal override void OnDropAllVariableMetadata(DatabaseObject databaseObject)
+        protected override void OnDropAllVariableMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnSaveAllVariableMetadata(DatabaseObject databaseObject)
+        protected override void OnSaveAllVariableMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
@@ -691,14 +691,14 @@ WHERE nspname = @schemaName and proname= @objectName;";
         #endregion
         #region Statistics
 
-        internal override TableStatistics OnLoadTableStatistics(TableOrView tableOrView)
+        protected override TableStatistics OnLoadTableStatistics(TableOrView tableOrView)
         {
             throw new NotImplementedException();
         }
 
         #endregion
 
-        internal override void OnRenameObject(DatabaseObject obj, string schemaName, string objectName)
+        protected override void OnRenameObject(DatabaseObject obj, string schemaName, string objectName)
         {
             throw new NotImplementedException();
 
@@ -728,7 +728,7 @@ WHERE nspname = @schemaName and proname= @objectName;";
             */
         }
 
-        internal override void OnDropObject(DatabaseObject obj)
+        protected override void OnDropObject(DatabaseObject obj)
         {
             throw new NotImplementedException();
 
@@ -753,22 +753,22 @@ WHERE nspname = @schemaName and proname= @objectName;";
              * */
         }
 
-        internal override void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes)
+        protected override void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnCreateIndex(Index index)
+        protected override void OnCreateIndex(Index index)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnDropIndex(Index index)
+        protected override void OnDropIndex(Index index)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnTruncateTable(Table table)
+        protected override void OnTruncateTable(Table table)
         {
             throw new NotImplementedException();
         }

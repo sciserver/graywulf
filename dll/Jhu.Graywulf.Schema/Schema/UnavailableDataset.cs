@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Schema
             throw new NotImplementedException();
         }
 
-        internal override bool OnIsObjectExisting(DatabaseObject databaseObject)
+        protected override bool OnIsObjectExisting(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
@@ -57,22 +57,22 @@ namespace Jhu.Graywulf.Schema
             throw new NotImplementedException();
         }
 
-        internal override IEnumerable<KeyValuePair<string, Column>> OnLoadColumns(DatabaseObject databaseObject)
+        protected override IEnumerable<KeyValuePair<string, Column>> OnLoadColumns(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override IEnumerable<KeyValuePair<string, IndexColumn>> OnLoadIndexColumns(Index index)
+        protected override IEnumerable<KeyValuePair<string, IndexColumn>> OnLoadIndexColumns(Index index)
         {
             throw new NotImplementedException();
         }
 
-        internal override IEnumerable<KeyValuePair<string, Index>> OnLoadIndexes(DatabaseObject databaseObject)
+        protected override IEnumerable<KeyValuePair<string, Index>> OnLoadIndexes(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override IEnumerable<KeyValuePair<string, Parameter>> OnLoadParameters(DatabaseObject databaseObject)
+        protected override IEnumerable<KeyValuePair<string, Parameter>> OnLoadParameters(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
@@ -82,17 +82,17 @@ namespace Jhu.Graywulf.Schema
             throw new NotImplementedException();
         }
 
-        protected internal override DatabaseObjectMetadata OnLoadDatabaseObjectMetadata(DatabaseObject databaseObject)
+        protected override DatabaseObjectMetadata OnLoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnSaveDatabaseObjectMetadata(DatabaseObject databaseObject)
+        protected override void OnSaveDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnDropDatabaseObjectMetadata(DatabaseObject databaseObject)
+        protected override void OnDropDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
@@ -107,12 +107,12 @@ namespace Jhu.Graywulf.Schema
             throw new NotImplementedException();
         }
 
-        internal override void OnSaveAllVariableMetadata(DatabaseObject databaseObject)
+        protected override void OnSaveAllVariableMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnDropAllVariableMetadata(DatabaseObject databaseObject)
+        protected override void OnDropAllVariableMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
@@ -122,37 +122,37 @@ namespace Jhu.Graywulf.Schema
             throw new NotImplementedException();
         }
 
-        internal override TableStatistics OnLoadTableStatistics(TableOrView tableOrView)
+        protected override TableStatistics OnLoadTableStatistics(TableOrView tableOrView)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnRenameObject(DatabaseObject obj, string schemaName, string objectName)
+        protected override void OnRenameObject(DatabaseObject obj, string schemaName, string objectName)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes)
+        protected override void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnDropObject(DatabaseObject obj)
+        protected override void OnDropObject(DatabaseObject obj)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnCreateIndex(Index index)
+        protected override void OnCreateIndex(Index index)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnDropIndex(Index index)
+        protected override void OnDropIndex(Index index)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnTruncateTable(Table table)
+        protected override void OnTruncateTable(Table table)
         {
             throw new NotImplementedException();
         }

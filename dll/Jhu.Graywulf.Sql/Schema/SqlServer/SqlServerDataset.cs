@@ -467,7 +467,7 @@ WHERE o.type IN ({0}) AND
             }
         }
 
-        internal override bool OnIsObjectExisting(DatabaseObject databaseObject)
+        protected override bool OnIsObjectExisting(DatabaseObject databaseObject)
         {
             var sql = String.Format(
                 @"SELECT OBJECT_ID('{0}')",
@@ -569,7 +569,7 @@ WHERE o.type IN ({0})
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Column>> OnLoadColumns(DatabaseObject databaseObject)
+        protected override IEnumerable<KeyValuePair<string, Column>> OnLoadColumns(DatabaseObject databaseObject)
         {
             string sql;
 
@@ -703,7 +703,7 @@ ORDER BY c.column_id
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Index>> OnLoadIndexes(DatabaseObject databaseObject)
+        protected override IEnumerable<KeyValuePair<string, Index>> OnLoadIndexes(DatabaseObject databaseObject)
         {
             string sql;
 
@@ -787,7 +787,7 @@ WHERE   i.type IN (1, 2)";
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, IndexColumn>> OnLoadIndexColumns(Index index)
+        protected override IEnumerable<KeyValuePair<string, IndexColumn>> OnLoadIndexColumns(Index index)
         {
             // TODO: maybe add UDT support to index column types...
 
@@ -941,7 +941,7 @@ ORDER BY ic.key_ordinal";
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Parameter>> OnLoadParameters(DatabaseObject databaseObject)
+        protected override IEnumerable<KeyValuePair<string, Parameter>> OnLoadParameters(DatabaseObject databaseObject)
         {
             var sql = @"
 SELECT p.parameter_id, p.name, p.is_output, 
@@ -1010,7 +1010,7 @@ ORDER BY p.parameter_id";
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal protected override DatabaseObjectMetadata OnLoadDatabaseObjectMetadata(DatabaseObject databaseObject)
+        protected override DatabaseObjectMetadata OnLoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             var meta = new DatabaseObjectMetadata();
 
@@ -1188,12 +1188,12 @@ ORDER BY 1";
             }
         }
 
-        internal override void OnDropDatabaseObjectMetadata(DatabaseObject databaseObject)
+        protected override void OnDropDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnSaveDatabaseObjectMetadata(DatabaseObject databaseObject)
+        protected override void OnSaveDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
@@ -1300,12 +1300,12 @@ ORDER BY c.name, p.name";
             }
         }
 
-        internal override void OnDropAllVariableMetadata(DatabaseObject databaseObject)
+        protected override void OnDropAllVariableMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
 
-        internal override void OnSaveAllVariableMetadata(DatabaseObject databaseObject)
+        protected override void OnSaveAllVariableMetadata(DatabaseObject databaseObject)
         {
             throw new NotImplementedException();
         }
@@ -1455,7 +1455,7 @@ WHERE p.class = 0 -- DATABASE
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override TableStatistics OnLoadTableStatistics(TableOrView databaseObject)
+        protected override TableStatistics OnLoadTableStatistics(TableOrView databaseObject)
         {
             var sql = @"
 -- Data space
@@ -1518,7 +1518,7 @@ WHERE s.name = @schemaName AND o.name = @objectName
 
         #endregion
 
-        internal override void OnRenameObject(DatabaseObject databaseObject, string schemaName, string objectName)
+        protected override void OnRenameObject(DatabaseObject databaseObject, string schemaName, string objectName)
         {
             // The stored procedure sp_name expects the old name
             // the the schema.objectname or objectname format.
@@ -1556,7 +1556,7 @@ WHERE s.name = @schemaName AND o.name = @objectName
             }
         }
 
-        internal override void OnDropObject(DatabaseObject databaseObject)
+        protected override void OnDropObject(DatabaseObject databaseObject)
         {
             EnsureMutable(databaseObject);
 
@@ -1577,7 +1577,7 @@ END",
             }
         }
 
-        internal override void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes)
+        protected override void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes)
         {
             EnsureMutable(table);
 
@@ -1600,7 +1600,7 @@ END",
         /// <remarks>
         /// Do not use this function to build large indices.
         /// </remarks>
-        internal override void OnCreateIndex(Index index)
+        protected override void OnCreateIndex(Index index)
         {
             EnsureMutable(index);
 
@@ -1625,7 +1625,7 @@ END",
             }
         }
 
-        internal override void OnDropIndex(Index index)
+        protected override void OnDropIndex(Index index)
         {
             EnsureMutable(index);
 
@@ -1650,7 +1650,7 @@ END",
             }
         }
 
-        internal override void OnTruncateTable(Table table)
+        protected override void OnTruncateTable(Table table)
         {
             EnsureMutable(table);
 
