@@ -78,6 +78,8 @@ namespace Jhu.Graywulf.Web.Security
                     // Simply create a new identity in the Graywulf registry
                     var uid = AddUserIdentity(user, principal.Identity);
                 }
+
+                // TODO: update user data from master authority such as e-mail address
             }
             else
             {
