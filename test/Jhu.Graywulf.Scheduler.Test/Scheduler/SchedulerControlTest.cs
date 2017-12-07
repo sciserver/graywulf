@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Scheduler
             base.TestCleanup();
         }
 
-        private ISchedulerControl GetControl()
+        private ServiceProxy<ISchedulerControl> GetControl()
         {
             return ServiceHelper.CreateChannel<ISchedulerControl>(DnsHelper.Localhost, "Control", Scheduler.Configuration.Endpoint, TimeSpan.FromSeconds(5));
         }
@@ -48,8 +48,10 @@ namespace Jhu.Graywulf.Scheduler
         [TestCategory("Fast")]
         public void CallHelloTest()
         {
-            var control = GetControl();
-            control.Hello();
+            using (var control = GetControl())
+            {
+                control.Value.Hello();
+            }
         }
 
         [TestMethod]
@@ -57,19 +59,21 @@ namespace Jhu.Graywulf.Scheduler
         [TestCategory("Fast")]
         public void CallWhoAmITest()
         {
-            var control = GetControl();
+            using (var control = GetControl())
+            {
 
-            string name, authtype;
-            bool isauth;
+                string name, authtype;
+                bool isauth;
 
-            control.WhoAmI(out name, out isauth, out authtype);
+                control.Value.WhoAmI(out name, out isauth, out authtype);
 
-            // get current identity
-            var id = WindowsIdentity.GetCurrent();
+                // get current identity
+                var id = WindowsIdentity.GetCurrent();
 
-            Assert.AreEqual(id.Name, name);
-            Assert.AreEqual(id.IsAuthenticated, isauth);
-            Assert.AreEqual(id.AuthenticationType, authtype);
+                Assert.AreEqual(id.Name, name);
+                Assert.AreEqual(id.IsAuthenticated, isauth);
+                Assert.AreEqual(id.AuthenticationType, authtype);
+            }
         }
 
         [TestMethod]
@@ -77,19 +81,20 @@ namespace Jhu.Graywulf.Scheduler
         [TestCategory("Fast")]
         public void CallWhoAreYouTest()
         {
-            var control = GetControl();
+            using (var control = GetControl())
+            {
+                string name, authtype;
+                bool isauth;
 
-            string name, authtype;
-            bool isauth;
+                control.Value.WhoAreYou(out name, out isauth, out authtype);
 
-            control.WhoAreYou(out name, out isauth, out authtype);
+                // get current identity
+                var id = WindowsIdentity.GetCurrent();
 
-            // get current identity
-            var id = WindowsIdentity.GetCurrent();
-
-            Assert.AreEqual(id.Name, name);
-            Assert.AreEqual(id.IsAuthenticated, isauth);
-            Assert.AreEqual(id.AuthenticationType, authtype);
+                Assert.AreEqual(id.Name, name);
+                Assert.AreEqual(id.IsAuthenticated, isauth);
+                Assert.AreEqual(id.AuthenticationType, authtype);
+            }
         }
 
         [TestMethod]
@@ -97,9 +102,11 @@ namespace Jhu.Graywulf.Scheduler
         [TestCategory("Fast")]
         public void GetQueuesTest()
         {
-            var control = GetControl();
-            var queues = control.GetQueues();
-            Assert.IsTrue(queues.Length > 0);
+            using (var control = GetControl())
+            {
+                var queues = control.Value.GetQueues();
+                Assert.IsTrue(queues.Length > 0);
+            }
         }
 
         [TestMethod]
@@ -110,19 +117,21 @@ namespace Jhu.Graywulf.Scheduler
             var guid = ScheduleTestJob(new TimeSpan(0, 0, 30), JobType.AtomicDelay, QueueType.Long, new TimeSpan(0, 2, 0));
             WaitJobStarted(guid, TimeSpan.FromSeconds(5));
 
-            var control = GetControl();
-            var queues = control.GetQueues();
-            int cnt = 0;
-
-            foreach (var q in queues)
+            using (var control = GetControl())
             {
-                cnt += control.GetJobs(q.Guid).Length;
+                var queues = control.Value.GetQueues();
+                int cnt = 0;
+
+                foreach (var q in queues)
+                {
+                    cnt += control.Value.GetJobs(q.Guid).Length;
+                }
+
+                Assert.IsTrue(cnt > 0);
+
+                var job = control.Value.GetJob(guid);
+                Assert.AreEqual(JobStatus.Executing, job.Status);
             }
-
-            Assert.IsTrue(cnt > 0);
-
-            var job = control.GetJob(guid);
-            Assert.AreEqual(JobStatus.Executing, job.Status);
         }
 
         [TestMethod]
@@ -134,21 +143,22 @@ namespace Jhu.Graywulf.Scheduler
             // to start. Add delay or logic in TestInitialize to wait for the control service
             // to start.
 
-            var control = GetControl();
+            using (var control = GetControl())
+            {
+                var guid = ScheduleTestJob(new TimeSpan(0, 0, 30), JobType.CancelableDelay, QueueType.Long, new TimeSpan(0, 2, 0));
+                control.Value.StartJob(guid);
 
-            var guid = ScheduleTestJob(new TimeSpan(0, 0, 30), JobType.CancelableDelay, QueueType.Long, new TimeSpan(0, 2, 0));
-            control.StartJob(guid);
+                var job = control.Value.GetJob(guid);
+                Assert.AreEqual(JobStatus.Executing, job.Status);
 
-            var job = control.GetJob(guid);
-            Assert.AreEqual(JobStatus.Executing, job.Status);
+                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(10));
 
-            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(10));
+                control.Value.CancelJob(guid);
+                WaitJobStarted(guid, TimeSpan.FromSeconds(5));
 
-            control.CancelJob(guid);
-            WaitJobStarted(guid, TimeSpan.FromSeconds(5));
-
-            var ji = LoadJob(guid);
-            Assert.AreEqual(JobExecutionState.Cancelled, ji.JobExecutionStatus);
+                var ji = LoadJob(guid);
+                Assert.AreEqual(JobExecutionState.Cancelled, ji.JobExecutionStatus);
+            }
         }
     }
 }

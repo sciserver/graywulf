@@ -21,10 +21,12 @@ namespace Jhu.Graywulf.Jobs.CopyTables
 
             return delegate()
             {
-                var task = item.GetInitializedCopyTableTask(parameters);
-                RegisterCancelable(workflowInstanceId, activityInstanceId, task);
-                task.Execute();
-                UnregisterCancelable(workflowInstanceId, activityInstanceId, task);
+                using (var task = item.GetInitializedCopyTableTask(parameters))
+                {
+                    RegisterCancelable(workflowInstanceId, activityInstanceId, task.Value);
+                    task.Value.Execute();
+                    UnregisterCancelable(workflowInstanceId, activityInstanceId, task.Value);
+                }
             };
         }
     }

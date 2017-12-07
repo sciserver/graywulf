@@ -37,9 +37,10 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var sc = RemoteServiceHelper.GetControlObject(Jhu.Graywulf.Test.Constants.Localhost);
-
-                Assert.AreEqual(typeof(Program).Assembly.FullName, sc.Hello());
+                using (var sc = RemoteServiceHelper.GetControlObject(Jhu.Graywulf.Test.Constants.Localhost))
+                {
+                    Assert.AreEqual(typeof(Program).Assembly.FullName, sc.Value.Hello());
+                }
             }
         }
 
@@ -50,20 +51,20 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var sc = RemoteServiceHelper.GetControlObject(Jhu.Graywulf.Test.Constants.Localhost);
+                using (var sc = RemoteServiceHelper.GetControlObject(Jhu.Graywulf.Test.Constants.Localhost))
+                {
+                    string name, authtype;
+                    bool isauth;
 
-                string name, authtype;
-                bool isauth;
+                    sc.Value.WhoAmI(out name, out isauth, out authtype);
 
-                sc.WhoAmI(out name, out isauth, out authtype);
+                    // get current identity
+                    var id = WindowsIdentity.GetCurrent();
 
-                // get current identity
-                var id = WindowsIdentity.GetCurrent();
-
-                Assert.AreEqual(id.Name, name);
-                Assert.AreEqual(id.IsAuthenticated, isauth);
-                Assert.AreEqual(id.AuthenticationType, authtype);
-
+                    Assert.AreEqual(id.Name, name);
+                    Assert.AreEqual(id.IsAuthenticated, isauth);
+                    Assert.AreEqual(id.AuthenticationType, authtype);
+                }
             }
         }
 
@@ -79,7 +80,7 @@ namespace Jhu.Graywulf.RemoteService
                 string name, authtype;
                 bool isauth;
 
-                sc.WhoAreYou(out name, out isauth, out authtype);
+                sc.Value.WhoAreYou(out name, out isauth, out authtype);
 
                 // get current identity
                 var id = WindowsIdentity.GetCurrent();
@@ -98,19 +99,20 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var sc = RemoteServiceHelper.GetControlObject(Jhu.Graywulf.Test.Constants.Localhost);
-                Assert.AreEqual(typeof(Program).Assembly.FullName, sc.Hello());
+                using (var sc = RemoteServiceHelper.GetControlObject(Jhu.Graywulf.Test.Constants.Localhost))
+                {
+                    Assert.AreEqual(typeof(Program).Assembly.FullName, sc.Value.Hello());
 
-                var uri = sc.GetServiceEndpointUri(typeof(ICancelableDelay).AssemblyQualifiedName);
+                    var uri = sc.Value.GetServiceEndpointUri(typeof(ICancelableDelay).AssemblyQualifiedName);
 
-                Assert.AreEqual(
-                    new Uri(String.Format(
-                        "net.tcp://{0}:{1}/{2}",
-                        DnsHelper.GetFullyQualifiedDnsName(Jhu.Graywulf.Test.Constants.Localhost),
-                        RemoteServiceBase.Configuration.Endpoint.TcpPort,
-                        typeof(CancelableDelay).FullName)),
-                    uri);
-
+                    Assert.AreEqual(
+                        new Uri(String.Format(
+                            "net.tcp://{0}:{1}/{2}",
+                            DnsHelper.GetFullyQualifiedDnsName(Jhu.Graywulf.Test.Constants.Localhost),
+                            RemoteServiceBase.Configuration.Endpoint.TcpPort,
+                            typeof(CancelableDelay).FullName)),
+                        uri);
+                }
             }
         }
 
@@ -127,10 +129,11 @@ namespace Jhu.Graywulf.RemoteService
 
                 var delay = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, false);
 
-                var sc = RemoteServiceHelper.GetControlObject(Jhu.Graywulf.Test.Constants.Localhost);
-                var ss = sc.QueryRegisteredServices();
-
-                Assert.AreEqual(1, ss.Length);
+                using (var sc = RemoteServiceHelper.GetControlObject(Jhu.Graywulf.Test.Constants.Localhost))
+                {
+                    var ss = sc.Value.QueryRegisteredServices();
+                    Assert.AreEqual(1, ss.Length);
+                }
             }
         }
     }

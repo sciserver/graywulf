@@ -1481,23 +1481,23 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="destination"></param>
         /// <param name="local"></param>
         /// <returns></returns>
-        protected ICopyTable CreateTableCopyTask(SourceTableQuery source, DestinationTable destination, bool local)
+        protected ServiceModel.ServiceProxy<ICopyTable> CreateTableCopyTask(SourceTableQuery source, DestinationTable destination, bool local)
         {
             var desthost = GetHostnameFromSqlConnectionString(destination.Dataset.ConnectionString);
 
-            ICopyTable qi;
+            ServiceModel.ServiceProxy<ICopyTable> qi;
 
             if (local)
             {
-                qi = new CopyTable();
+                qi = new ServiceModel.ServiceProxy<ICopyTable>(new CopyTable());
             }
             else
             {
                 qi = RemoteServiceHelper.CreateObject<ICopyTable>(desthost, true);
             }
 
-            qi.Source = source;
-            qi.Destination = destination;
+            qi.Value.Source = source;
+            qi.Value.Destination = destination;
 
             return qi;
         }

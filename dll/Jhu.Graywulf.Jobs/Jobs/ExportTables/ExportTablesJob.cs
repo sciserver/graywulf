@@ -42,21 +42,23 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             return delegate()
             {
                 // Create table exporter
-                var exporter = parameters.GetInitializedTableExportTask();
-
-                RegisterCancelable(workflowInstanceId, activityInstanceId, exporter);
-
-                try
+                using (var exporter = parameters.GetInitializedTableExportTask())
                 {
-                    exporter.Open();
-                    exporter.Execute();
-                }
-                finally
-                {
-                    exporter.Close();
-                }
 
-                UnregisterCancelable(workflowInstanceId, activityInstanceId, exporter);
+                    RegisterCancelable(workflowInstanceId, activityInstanceId, exporter.Value);
+
+                    try
+                    {
+                        exporter.Value.Open();
+                        exporter.Value.Execute();
+                    }
+                    finally
+                    {
+                        exporter.Close();
+                    }
+
+                    UnregisterCancelable(workflowInstanceId, activityInstanceId, exporter.Value);
+                }
             };
         }
     }

@@ -40,21 +40,22 @@ namespace Jhu.Graywulf.Jobs.ImportTables
             return delegate ()
             {
                 // Create table importer
-                var importer = parameters.GetInitializedTableImportTask();
-
-                RegisterCancelable(workflowInstanceId, activityInstanceId, importer);
-
-                try
+                using (var importer = parameters.GetInitializedTableImportTask())
                 {
-                    importer.Open();
-                    importer.Execute();
-                }
-                finally
-                {
-                    importer.Close();
-                }
+                    RegisterCancelable(workflowInstanceId, activityInstanceId, importer.Value);
 
-                UnregisterCancelable(workflowInstanceId, activityInstanceId, importer);
+                    try
+                    {
+                        importer.Value.Open();
+                        importer.Value.Execute();
+                    }
+                    finally
+                    {
+                        importer.Value.Close();
+                    }
+
+                    UnregisterCancelable(workflowInstanceId, activityInstanceId, importer.Value);
+                }
             };
         }
     }

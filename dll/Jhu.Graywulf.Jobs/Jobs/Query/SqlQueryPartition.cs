@@ -216,14 +216,15 @@ namespace Jhu.Graywulf.Jobs.Query
                 temptable,
                 TableInitializationOptions.Drop | TableInitializationOptions.Create);
 
-            var tc = CreateTableCopyTask(source, dest, false);
+            using (var tc = CreateTableCopyTask(source, dest, false))
+            {
+                var guid = Guid.NewGuid();
+                RegisterCancelable(guid, tc.Value);
 
-            var guid = Guid.NewGuid();
-            RegisterCancelable(guid, tc);
+                tc.Value.Execute();
 
-            tc.Execute();
-
-            UnregisterCancelable(guid);
+                UnregisterCancelable(guid);
+            }
         }
 
         /// <summary>
@@ -489,14 +490,15 @@ namespace Jhu.Graywulf.Jobs.Query
                         DumpSqlCommand(source.Query, CommandTarget.Temp);
 
                         // Create bulk copy task and execute it
-                        var tc = CreateTableCopyTask(source, destination, false);
+                        using (var tc = CreateTableCopyTask(source, destination, false))
+                        {
+                            var guid = Guid.NewGuid();
+                            RegisterCancelable(guid, tc.Value);
 
-                        var guid = Guid.NewGuid();
-                        RegisterCancelable(guid, tc);
+                            tc.Value.Execute();
 
-                        tc.Execute();
-
-                        UnregisterCancelable(guid);
+                            UnregisterCancelable(guid);
+                        }
                     }
                     break;
                 default:

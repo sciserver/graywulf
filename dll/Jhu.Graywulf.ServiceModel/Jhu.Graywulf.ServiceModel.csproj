@@ -55,6 +55,7 @@
     <Compile Include="ServiceModel\LimitedAccessServiceExtension.cs" />
     <Compile Include="ServiceModel\NetDataContractAttribute.cs" />
     <Compile Include="ServiceModel\NetDataContractSerializerOperationBehavior.cs" />
+    <Compile Include="ServiceModel\ServiceProxy.cs" />
     <Compile Include="ServiceModel\ServiceHelper.cs" />
     <Compile Include="ServiceModel\ServiceLoggingBehavior.cs" />
     <Compile Include="ServiceModel\ServiceLoggingContext.cs" />

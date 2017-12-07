@@ -54,11 +54,11 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
-                c.Execute();
-
-                Assert.IsFalse(c.IsCanceled);
-
+                using (var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
+                {
+                    c.Value.Execute();
+                    Assert.IsFalse(c.Value.IsCanceled);
+                }
             }
         }
 
@@ -69,18 +69,74 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
-                c.Period = 10000;
+                using (var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
+                {
+                    c.Value.Period = 10000;
 
-                var start = DateTime.Now;
-                c.BeginExecute();
+                    var start = DateTime.Now;
+                    c.Value.BeginExecute();
 
-                System.Threading.Thread.Sleep(1000);
-                c.Cancel();
+                    System.Threading.Thread.Sleep(1000);
+                    c.Value.Cancel();
 
-                c.EndExecute();
-                Assert.IsTrue((DateTime.Now - start).TotalMilliseconds < 5000);
-                Assert.IsTrue(c.IsCanceled);
+                    c.Value.EndExecute();
+                    Assert.IsTrue((DateTime.Now - start).TotalMilliseconds < 5000);
+                    Assert.IsTrue(c.Value.IsCanceled);
+                }
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.ServiceModel.FaultException<System.ServiceModel.ExceptionDetail>))]
+        public void CancelFailingRemoteExecuteTest()
+        {
+            using (RemoteServiceTester.Instance.GetToken())
+            {
+                RemoteServiceTester.Instance.EnsureRunning();
+
+                using (var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
+                {
+                    c.Value.Period = 1000;
+                    c.Value.ThrowException = true;
+
+                    var start = DateTime.Now;
+                    c.Value.BeginExecute();
+
+                    System.Threading.Thread.Sleep(2000);
+                    c.Value.Cancel();
+
+                    c.Value.EndExecute();
+                }
+            }
+        }
+
+        [TestMethod]
+        public void CancelFailedRemoteExecuteTest()
+        {
+            using (RemoteServiceTester.Instance.GetToken())
+            {
+                RemoteServiceTester.Instance.EnsureRunning();
+
+                using (var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
+                    {
+                    c.Value.Period = 1000;
+                    c.Value.ThrowException = true;
+
+                    c.Value.BeginExecute();
+                    System.Threading.Thread.Sleep(2000);
+
+                    try
+                    {
+                        c.Value.EndExecute();
+                        Assert.Fail();
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+
+                    System.Threading.Thread.Sleep(2000);
+                    c.Value.Cancel();
+                }
             }
         }
 
@@ -91,14 +147,17 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var c1 = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
-                var c2 = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
+                using (var c1 = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
+                {
+                    using (var c2 = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
+                    {
+                        c2.Value.Period = 2;
+                        c1.Value.Period = 1;
 
-                c2.Period = 2;
-                c1.Period = 1;
-
-                Assert.AreEqual(1, c1.Period);
-                Assert.AreEqual(2, c2.Period);
+                        Assert.AreEqual(1, c1.Value.Period);
+                        Assert.AreEqual(2, c2.Value.Period);
+                    }
+                }
             }
         }
     }

@@ -57,16 +57,16 @@ namespace Jhu.Graywulf.Jobs.CopyTables
 
         #endregion
 
-        public ICopyTable GetInitializedCopyTableTask(CopyTablesParameters parameters)
+        public ServiceModel.ServiceProxy<ICopyTable> GetInitializedCopyTableTask(CopyTablesParameters parameters)
         {
             // Get server name from the data source
             // This will be the database server responsible for executing the table copy
             var host = ((Jhu.Graywulf.Schema.SqlServer.SqlServerDataset)source.Dataset).HostName;
             var task = RemoteServiceHelper.CreateObject<ICopyTable>(host, true);
 
-            task.Source = this.source;
-            task.Destination = this.destination;
-            task.Timeout = parameters.Timeout;
+            task.Value.Source = this.source;
+            task.Value.Destination = this.destination;
+            task.Value.Timeout = parameters.Timeout;
 
             return task;
         }

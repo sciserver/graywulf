@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.RemoteService
     {
         #region Remote object creation functions
 
-        public static IRemoteServiceControl GetControlObject(string host)
+        public static ServiceProxy<IRemoteServiceControl> GetControlObject(string host)
         {
             return GetControlObject(host, TimeSpan.FromSeconds(5));
         }
@@ -32,15 +32,15 @@ namespace Jhu.Graywulf.RemoteService
         /// </summary>
         /// <param name="host"></param>
         /// <returns></returns>
-        public static IRemoteServiceControl GetControlObject(string host, TimeSpan timeout)
+        public static ServiceProxy<IRemoteServiceControl> GetControlObject(string host, TimeSpan timeout)
         {
             return CreateChannel<IRemoteServiceControl>(host, "Control", RemoteServiceBase.Configuration.Endpoint, timeout);
         }
 
-        public static T CreateObject<T>(string host, bool allowInProcess)
+        public static ServiceProxy<T> CreateObject<T>(string host, bool allowInProcess)
             where T : IRemoteService
         {
-            return CreateObject<T>(host, allowInProcess, TimeSpan.FromSeconds(5));
+            return CreateObject<T>(host, allowInProcess, TimeSpan.FromSeconds(Constants.DefaultChannelTimeout));
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.RemoteService
         /// If the remote service does not serve the requested type of service yet, the
         /// function registers it before creating a proxy.
         /// </remarks>
-        public static T CreateObject<T>(string host, bool allowInProcess, TimeSpan timeout)
+        public static ServiceProxy<T> CreateObject<T>(string host, bool allowInProcess, TimeSpan timeout)
             where T : IRemoteService
         {
             var fdqn = DnsHelper.GetFullyQualifiedDnsName(host);
@@ -62,13 +62,13 @@ namespace Jhu.Graywulf.RemoteService
             {
                 // Create the object in-process
                 var st = GetServiceType(typeof(T));
-                return (T)Activator.CreateInstance(st);
+                return new ServiceProxy<T>((T)Activator.CreateInstance(st));
             }
             else
             {
                 // Get the uri to the requested service from the remote server
                 var sc = GetControlObject(fdqn, timeout);
-                var uri = sc.GetServiceEndpointUri(typeof(T).AssemblyQualifiedName);
+                var uri = sc.Value.GetServiceEndpointUri(typeof(T).AssemblyQualifiedName);
                 var ep = CreateEndpointAddress(uri, RemoteServiceBase.Configuration.Endpoint.ServicePrincipalName);
                 return CreateChannel<T>(ep, timeout);
             }

@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.IO.Tasks
             return FileFormatFactory.Create(null);
         }
 
-        protected IImportTable GetImportTableTask(string path, bool remote, bool generateIdentityColumn)
+        protected ServiceModel.ServiceProxy<IImportTable> GetImportTableTask(string path, bool remote, bool generateIdentityColumn)
         {
             var ds = IOTestDataset;
             ds.IsMutable = true;
@@ -47,19 +47,19 @@ namespace Jhu.Graywulf.IO.Tasks
                 TableNamePattern = table,
             };
 
-            IImportTable it = null;
+            ServiceModel.ServiceProxy<IImportTable> it = null;
             if (remote)
             {
                 it = RemoteServiceHelper.CreateObject<IImportTable>(Test.Constants.Localhost, false);
             }
             else
             {
-                it = new ImportTable();
+                it = new ServiceModel.ServiceProxy<IImportTable>(new ImportTable());
             }
 
-            it.Source = source;
-            it.Destination = destination;
-            it.Options = new ImportTableOptions()
+            it.Value.Source = source;
+            it.Value.Destination = destination;
+            it.Value.Options = new ImportTableOptions()
             {
                 GenerateIdentityColumn = generateIdentityColumn
             };
@@ -84,20 +84,25 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             var path = GetTestFilePath(@"graywulf\test\files\csv_numbers.csv");
 
-            var it = GetImportTableTask(path, false, false);
-            var t = ExecuteImportTableTask(it);
-            Assert.AreEqual(5, t.Columns.Count);
-            DropTable(t);
+            using (var it = GetImportTableTask(path, false, false))
+            {
+                var t = ExecuteImportTableTask(it.Value);
+                Assert.AreEqual(5, t.Columns.Count);
+                DropTable(t);
+            }
         }
 
         [TestMethod]
         public void ImportGenerateIdentityTest()
         {
             var path = GetTestFilePath(@"graywulf\test\files\csv_numbers.csv");
-            var it = GetImportTableTask(path, false, false);
-            var t = ExecuteImportTableTask(it);
-            Assert.AreEqual(5, t.Columns.Count);
-            DropTable(t);
+
+            using (var it = GetImportTableTask(path, false, false))
+            {
+                var t = ExecuteImportTableTask(it.Value);
+                Assert.AreEqual(5, t.Columns.Count);
+                DropTable(t);
+            }
         }
 
         [TestMethod]
@@ -108,10 +113,13 @@ namespace Jhu.Graywulf.IO.Tasks
                 RemoteServiceTester.Instance.EnsureRunning();
 
                 var path = GetTestFilePath(@"graywulf\test\files\csv_numbers.csv");
-                var it = GetImportTableTask(path, false, false);
-                var t = ExecuteImportTableTask(it);
-                Assert.AreEqual(5, t.Columns.Count);
-                DropTable(t);
+
+                using (var it = GetImportTableTask(path, false, false))
+                {
+                    var t = ExecuteImportTableTask(it.Value);
+                    Assert.AreEqual(5, t.Columns.Count);
+                    DropTable(t);
+                }
             }
         }
 
@@ -119,10 +127,12 @@ namespace Jhu.Graywulf.IO.Tasks
         public void ImportFromHttpTestHelper(string url)
         {
             var path = url;
-            var it = GetImportTableTask(path, false, false);
-            var t = ExecuteImportTableTask(it);
-            Assert.AreEqual(5, t.Columns.Count);
-            DropTable(t);
+            using (var it = GetImportTableTask(path, false, false))
+            {
+                var t = ExecuteImportTableTask(it.Value);
+                Assert.AreEqual(5, t.Columns.Count);
+                DropTable(t);
+            }
         }
 
         [TestMethod]

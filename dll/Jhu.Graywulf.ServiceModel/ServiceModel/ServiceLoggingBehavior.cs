@@ -45,7 +45,6 @@ namespace Jhu.Graywulf.ServiceModel
 
         public void ApplyDispatchBehavior(OperationDescription operationDescription, DispatchOperation dispatchOperation)
         {
-
             dispatchOperation.Invoker = new ServiceLoggingOperationInvoker(operationDescription.Name, dispatchOperation.Invoker);
         }
 

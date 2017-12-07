@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.IO.Tasks
         // TODO: change this if same-machine remoting works
         private const bool allowInProc = false;
 
-        private IExportTableArchive GetTableExportTask(Uri uri, string path, bool remote)
+        private ServiceModel.ServiceProxy<IExportTableArchive> GetTableExportTask(Uri uri, string path, bool remote)
         {
             var source = new SourceTableQuery()
             {
@@ -30,19 +30,19 @@ namespace Jhu.Graywulf.IO.Tasks
                 Uri = Util.UriConverter.FromFilePath(path)
             };
 
-            IExportTableArchive te = null;
+            ServiceModel.ServiceProxy<IExportTableArchive> te = null;
             if (remote)
             {
                 te = RemoteServiceHelper.CreateObject<IExportTableArchive>(Test.Constants.Localhost, allowInProc);
             }
             else
             {
-                te = new ExportTableArchive();
+                te = new ServiceModel.ServiceProxy<IExportTableArchive>(new ExportTableArchive());
             }
 
-            te.Sources = new[] { source };
-            te.Destinations = new[] { destination };
-            te.Uri = uri;
+            te.Value.Sources = new[] { source };
+            te.Value.Destinations = new[] { destination };
+            te.Value.Uri = uri;
 
             return te;
         }
@@ -52,14 +52,16 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             var zippath = "TableExportArchiveTest_ExportZipTest.zip";
             var path = "test.csv";
-            var task = GetTableExportTask(Util.UriConverter.FromFilePath(zippath), path, false);
 
-            task.Open();
-            task.Execute();
-            task.Close();
+            using (var task = GetTableExportTask(Util.UriConverter.FromFilePath(zippath), path, false))
+            {
+                task.Value.Open();
+                task.Value.Execute();
+                task.Value.Close();
 
-            Assert.IsTrue(File.Exists(zippath));
-            File.Delete(zippath);
+                Assert.IsTrue(File.Exists(zippath));
+                File.Delete(zippath);
+            }
         }
         
         [TestMethod]
@@ -71,14 +73,16 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 var zippath = String.Format(@"\\{0}\{1}\files\{2}.zip", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, "TableExportArchiveTest_RemoteExportZipTest");
                 var path = "test.csv";
-                var task = GetTableExportTask(Util.UriConverter.FromFilePath(zippath), path, true);
 
-                task.Open();
-                task.Execute();
-                task.Close();
+                using (var task = GetTableExportTask(Util.UriConverter.FromFilePath(zippath), path, true))
+                {
+                    task.Value.Open();
+                    task.Value.Execute();
+                    task.Close();
 
-                Assert.IsTrue(File.Exists(zippath));
-                File.Delete(zippath);
+                    Assert.IsTrue(File.Exists(zippath));
+                    File.Delete(zippath);
+                }
             }
         }
     }

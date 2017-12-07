@@ -22,6 +22,15 @@ namespace Jhu.Graywulf.Tasks
             [OperationContract]
             set;
         }
+
+        bool ThrowException
+        {
+            [OperationContract]
+            get;
+
+            [OperationContract]
+            set;
+        }
     }
 
     /// <summary>
@@ -35,6 +44,7 @@ namespace Jhu.Graywulf.Tasks
     public class CancelableDelay : RemoteServiceBase, ICancelableDelay
     {
         private int period;
+        private bool throwException;
 
         public int Period
         {
@@ -43,6 +53,15 @@ namespace Jhu.Graywulf.Tasks
 
             [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { period = value; }
+        }
+
+        public bool ThrowException
+        {
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+            get { return throwException; }
+
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+            set { throwException = value; }
         }
 
         public CancelableDelay()
@@ -60,6 +79,7 @@ namespace Jhu.Graywulf.Tasks
         private void InitializeMembers()
         {
             this.period = 1000;
+            this.throwException = false;
         }
 
         protected override void OnExecute()
@@ -68,9 +88,17 @@ namespace Jhu.Graywulf.Tasks
 
             Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Test, String.Format("Sleeping..."));
 
-            while (!IsCanceled && (DateTime.Now - start).TotalMilliseconds < period)
+            if (throwException)
             {
                 Thread.Sleep(1000);
+                throw new Exception("Exception thrown from cancelable delay.");
+            }
+            else
+            {
+                while (!IsCanceled && (DateTime.Now - start).TotalMilliseconds < period)
+                {
+                    Thread.Sleep(1000);
+                }
             }
 
             Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Test, String.Format("Finished."));

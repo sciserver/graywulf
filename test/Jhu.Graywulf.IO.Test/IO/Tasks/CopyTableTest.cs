@@ -14,16 +14,16 @@ namespace Jhu.Graywulf.IO.Tasks
     [TestClass]
     public class CopyTableTest : TestClassBase
     {
-        private ICopyTable GetTableCopy(string tableName, bool remote)
+        private ServiceModel.ServiceProxy<ICopyTable> GetTableCopy(string tableName, bool remote)
         {
-            ICopyTable q = null;
+            ServiceModel.ServiceProxy<ICopyTable> q = null;
             if (remote)
             {
                 q = RemoteServiceHelper.CreateObject<ICopyTable>(Test.Constants.Localhost, false);
             }
             else
             {
-                q = new CopyTable();
+                q = new ServiceModel.ServiceProxy<ICopyTable>(new CopyTable());
             }
 
             var ds = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString)
@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 Query = "SELECT * FROM SampleData_PrimaryKey"
             };
 
-            q.Source = source;
+            q.Value.Source = source;
 
           
             var destination = new DestinationTable()
@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 Options = TableInitializationOptions.Create
             };
 
-            q.Destination = destination;
+            q.Value.Destination = destination;
 
             return q;
         }
@@ -58,13 +58,15 @@ namespace Jhu.Graywulf.IO.Tasks
         public void ImportTableTest()
         {
             var table = GetTestUniqueName();
-            var q = GetTableCopy(table, false);
 
-            DropTable(q.Destination.GetTable());
+            using (var q = GetTableCopy(table, false))
+            {
+                DropTable(q.Value.Destination.GetTable());
 
-            q.Execute();
+                q.Value.Execute();
 
-            DropTable(q.Destination.GetTable());
+                DropTable(q.Value.Destination.GetTable());
+            }
         }
 
         [TestMethod]
@@ -75,13 +77,15 @@ namespace Jhu.Graywulf.IO.Tasks
                 RemoteServiceTester.Instance.EnsureRunning();
 
                 var table = GetTestUniqueName();
-                var q = GetTableCopy(table, true);
 
-                DropTable(q.Destination.GetTable());
+                using (var q = GetTableCopy(table, true))
+                {
+                    DropTable(q.Value.Destination.GetTable());
 
-                q.Execute();
+                    q.Value.Execute();
 
-                DropTable(q.Destination.GetTable());
+                    DropTable(q.Value.Destination.GetTable());
+                }
             }
         }
 
