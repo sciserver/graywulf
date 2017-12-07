@@ -35,8 +35,8 @@ namespace Jhu.Graywulf.Util
         public static MailMessage CreateMessage(string fromEmail, string fromName, string toEmail, string toName, string subject, string body)
         {
             var msg = new MailMessage();
-            msg.From = new MailAddress(fromEmail, fromName);
-            msg.To.Add(new MailAddress(toEmail, toName));
+            msg.From = new MailAddress(fromEmail, fromName, global::System.Text.Encoding.UTF8);
+            msg.To.Add(new MailAddress(toEmail, toName, global::System.Text.Encoding.UTF8));
             msg.Subject = subject;
             msg.Body = body;
             msg.BodyEncoding = global::System.Text.Encoding.UTF8;

@@ -137,8 +137,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Common
             }
             else if (mode == Mode.JobError)
             {
-
-
                 templatefile = "~/Templates/ErrorFeedbackEmail.xml";
             }
             else
@@ -179,7 +177,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Common
             }
 
             var msg = Util.EmailTemplateUtility.CreateMessage(
-                RegistryContext.Federation.Email, RegistryContext.Federation.ShortTitle,
+                Email.Text, Name.Text,
                 RegistryContext.Federation.Email, RegistryContext.Federation.ShortTitle,
                 subject, body);
 

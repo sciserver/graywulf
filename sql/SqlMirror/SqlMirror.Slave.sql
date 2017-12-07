@@ -1,13 +1,13 @@
 USE [master]
 
 RESTORE DATABASE [Graywulf] 
-FROM DISK = N'\\ba01w-pp\data\data1\sql_db\Graywulf.bak' 
+FROM DISK = N'C:\data\data1\sql_db\Graywulf.bak' 
 WITH FILE = 1,  NORECOVERY,  NOUNLOAD,  STATS = 5
 
 GO
 
 RESTORE LOG [Graywulf] 
-FROM DISK = N'\\ba01w-pp\data\data1\sql_db\Graywulf.bak' 
+FROM DISK = N'C:\data\data1\sql_db\Graywulf.bak' 
 WITH FILE = 2,  NORECOVERY,  NOUNLOAD,  STATS = 5
 
 GO
@@ -21,7 +21,7 @@ ALTER DATABASE [Graywulf]
 GO
 
 ALTER DATABASE [Graywulf]   
-   SET PARTNER = 'TCP://172.23.254.85:5022'  
+   SET PARTNER = 'TCP://172.23.254.81:5022'  
 
 
 ---------- Graywulf_Persistence
@@ -30,13 +30,13 @@ ALTER DATABASE [Graywulf]
 USE [master]
 
 RESTORE DATABASE [Graywulf_Persistence] 
-FROM DISK = N'\\ba01w-pp\data\data1\sql_db\Graywulf_Persistence.bak' 
+FROM DISK = N'C:\data\data1\sql_db\Graywulf_Persistence.bak' 
 WITH FILE = 1,  NORECOVERY,  NOUNLOAD,  STATS = 5
 
 GO
 
 RESTORE LOG [Graywulf_Persistence] 
-FROM DISK = N'\\ba01w-pp\data\data1\sql_db\Graywulf_Persistence.bak' 
+FROM DISK = N'C:\data\data1\sql_db\Graywulf_Persistence.bak' 
 WITH FILE = 2,  NORECOVERY,  NOUNLOAD,  STATS = 5
 
 GO
@@ -48,4 +48,7 @@ ALTER DATABASE [Graywulf_Persistence]
 GO
 
 ALTER DATABASE [Graywulf_Persistence]   
-   SET PARTNER = 'TCP://172.23.254.85:5022'  
+   SET PARTNER = 'TCP://172.23.254.81:5022'  
+   
+   
+-- MAKE SURE TO TEST FAIL-OVER AND ENABLE CLR

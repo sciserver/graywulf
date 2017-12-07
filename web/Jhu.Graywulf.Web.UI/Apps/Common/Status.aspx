@@ -99,7 +99,7 @@
                                 }
                                 else if (check is Jhu.Graywulf.Web.Check.UrlCheck)
                                 {
-                                    Response.Write("WEBSCV");
+                                    Response.Write("WEBSVC");
                                 }
                             %>
                         </li>

@@ -17,7 +17,16 @@ namespace Jhu.Graywulf.Logging
             "enabled", typeof(bool), false, ConfigurationPropertyOptions.None);
 
         private static readonly ConfigurationProperty propIsAsync = new ConfigurationProperty(
-            "isAsync", typeof(bool), true, ConfigurationPropertyOptions.None);
+            "isAsync", typeof(bool), false, ConfigurationPropertyOptions.None);
+
+        private static readonly ConfigurationProperty propAsyncQueueSize = new ConfigurationProperty(
+            "asyncQueueSize", typeof(int), Constants.DefaultLogWriterAsyncQueueSize, ConfigurationPropertyOptions.None);
+
+        private static readonly ConfigurationProperty propAsyncTimeout = new ConfigurationProperty(
+            "asyncTimeout", typeof(int), Constants.DefaultLogWriterAsyncTimeout, ConfigurationPropertyOptions.None);
+
+        private static readonly ConfigurationProperty propFailOnError = new ConfigurationProperty(
+            "failOnError", typeof(bool), true, ConfigurationPropertyOptions.None);
 
         private static readonly ConfigurationProperty propSourceMask = new ConfigurationProperty(
             "sourceMask", typeof(string), "*", ConfigurationPropertyOptions.None);
@@ -34,6 +43,9 @@ namespace Jhu.Graywulf.Logging
 
             properties.Add(propIsEnabled);
             properties.Add(propIsAsync);
+            properties.Add(propAsyncQueueSize);
+            properties.Add(propAsyncTimeout);
+            properties.Add(propFailOnError);
             properties.Add(propSourceMask);
             properties.Add(propSeverityMask);
             properties.Add(propStatusMask);
@@ -54,6 +66,27 @@ namespace Jhu.Graywulf.Logging
         {
             get { return (bool)base[propIsAsync]; }
             set { base[propIsAsync] = value; }
+        }
+
+        [ConfigurationProperty("asyncQueueSize", DefaultValue = Constants.DefaultLogWriterAsyncQueueSize)]
+        public int AsyncQueueSize
+        {
+            get { return (int)base[propAsyncQueueSize]; }
+            set { base[propAsyncQueueSize] = value; }
+        }
+
+        [ConfigurationProperty("asyncTimeout", DefaultValue = Constants.DefaultLogWriterAsyncTimeout)]
+        public int AsyncTimeout
+        {
+            get { return (int)base[propAsyncTimeout]; }
+            set { base[propAsyncTimeout] = value; }
+        }
+
+        [ConfigurationProperty("failOnError", DefaultValue = true)]
+        public bool FailOnError
+        {
+            get { return (bool)base[propFailOnError]; }
+            set { base[propFailOnError] = value; }
         }
 
         [ConfigurationProperty("sourceMask", DefaultValue = "*")]
@@ -83,7 +116,9 @@ namespace Jhu.Graywulf.Logging
         {
             var writer = OnCreateLogWriter();
 
-            writer.IsAsync = IsAsync;
+            writer.IsAsync = this.IsAsync;
+            writer.AsyncQueueSize = this.AsyncQueueSize;
+            writer.AsyncTimeout = this.AsyncTimeout;
             writer.SourceMask = ParseMask<EventSource>(SourceMask);
             writer.SeverityMask = ParseMask<EventSeverity>(SeverityMask);
             writer.StatusMask = ParseMask<ExecutionStatus>(StatusMask);

@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AsyncTimeout" xml:space="preserve">
-    <value>Log writing operation has time out with writer '{0}'. Please check config.</value>
+    <value>Log writing operation has timed out with writer '{0}'. Please check config.</value>
   </data>
   <data name="OperationNull" xml:space="preserve">
     <value>The operation field cannot be null</value>
