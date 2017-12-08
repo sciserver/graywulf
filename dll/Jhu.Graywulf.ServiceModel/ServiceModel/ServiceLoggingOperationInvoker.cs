@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.ServiceModel
             catch (Exception ex)
             {
                 LogError(ex);
-                throw;
+                throw new FaultException<Exception>(ex, ex.Message);
             }
             finally
             {

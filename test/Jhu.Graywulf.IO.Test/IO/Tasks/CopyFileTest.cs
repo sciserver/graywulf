@@ -14,20 +14,20 @@ namespace Jhu.Graywulf.IO.Tasks
     [DeploymentItem("eseutil.exe")]
     public class CopyFileTest : TestClassBase
     {
-        private ICopyFile GetFileCopy(CancellationContext cancellationContext, string name, bool remote)
+        private ServiceModel.ServiceProxy<ICopyFile> GetFileCopy(CancellationContext cancellationContext, string name, bool remote)
         {
-            ICopyFile fc;
+            ServiceModel.ServiceProxy<ICopyFile> fc;
             if (remote)
             {
                 fc = RemoteServiceHelper.CreateObject<ICopyFile>(cancellationContext, Test.Constants.Localhost, false);
             }
             else
             {
-                fc = new CopyFile(cancellationContext);
+                fc = new ServiceModel.ServiceProxy<ICopyFile>(new CopyFile(cancellationContext));
             }
 
-            fc.Source = String.Format(@"\\{0}\{1}\{2}.txt", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, name);
-            fc.Destination = String.Format(@"\\{0}\{1}\{2}_2.txt", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, name);
+            fc.Value.Source = String.Format(@"\\{0}\{1}\{2}.txt", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, name);
+            fc.Value.Destination = String.Format(@"\\{0}\{1}\{2}_2.txt", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, name);
 
             return fc;
         }
@@ -40,18 +40,20 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             using (var cancellationContext = new CancellationContext())
             {
-                var fc = GetFileCopy(cancellationContext, "FileCopyTest_ExecuteTest", false);
-                fc.Overwrite = true;
-                fc.Method = FileCopyMethod.Win32FileCopy;
+                using (var fc = GetFileCopy(cancellationContext, "FileCopyTest_ExecuteTest", false))
+                {
+                    fc.Value.Overwrite = true;
+                    fc.Value.Method = FileCopyMethod.Win32FileCopy;
 
-                File.WriteAllText(fc.Source, "test data");
+                    File.WriteAllText(fc.Value.Source, "test data");
 
-                fc.ExecuteAsync().Wait();
+                    fc.Value.ExecuteAsync().Wait();
 
-                Assert.IsTrue(File.Exists(fc.Destination));
+                    Assert.IsTrue(File.Exists(fc.Value.Destination));
 
-                File.Delete(fc.Source);
-                File.Delete(fc.Destination);
+                    File.Delete(fc.Value.Source);
+                    File.Delete(fc.Value.Destination);
+                }
             }
         }
 
@@ -67,18 +69,20 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 using (var cancellationContext = new CancellationContext())
                 {
-                    var fc = GetFileCopy(cancellationContext, "FileCopyTest_RemoteExecuteTest", true);
-                    fc.Overwrite = true;
-                    fc.Method = FileCopyMethod.Win32FileCopy;
+                    using (var fc = GetFileCopy(cancellationContext, "FileCopyTest_RemoteExecuteTest", true))
+                    {
+                        fc.Value.Overwrite = true;
+                        fc.Value.Method = FileCopyMethod.Win32FileCopy;
 
-                    File.WriteAllText(fc.Source, "test data");
+                        File.WriteAllText(fc.Value.Source, "test data");
 
-                    fc.ExecuteAsync().Wait();
+                        fc.Value.ExecuteAsync().Wait();
 
-                    Assert.IsTrue(File.Exists(fc.Destination));
+                        Assert.IsTrue(File.Exists(fc.Value.Destination));
 
-                    File.Delete(fc.Source);
-                    File.Delete(fc.Destination);
+                        File.Delete(fc.Value.Source);
+                        File.Delete(fc.Value.Destination);
+                    }
                 }
             }
         }

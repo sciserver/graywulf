@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Scheduler
                 try
                 {
                     var control = ServiceHelper.CreateChannel<ISchedulerControl>(DnsHelper.Localhost, "Control", Scheduler.Configuration.Endpoint, TimeSpan.FromSeconds(q));
-                    control.Hello();
+                    control.Value.Hello();
                     break;
                 }
                 catch

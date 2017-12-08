@@ -223,8 +223,10 @@ namespace Jhu.Graywulf.Jobs.Query
                 temptable,
                 TableInitializationOptions.Drop | TableInitializationOptions.Create);
 
-            var tc = CreateTableCopyTask(source, dest, false);
-            await tc.ExecuteAsync();
+            using (var tc = CreateTableCopyTask(source, dest, false))
+            {
+                await tc.Value.ExecuteAsync();
+            }
         }
 
         /// <summary>
@@ -417,8 +419,10 @@ namespace Jhu.Graywulf.Jobs.Query
                         DumpSqlCommand(source.Query, CommandTarget.Temp);
 
                         // Create bulk copy task and execute it
-                        var tc = CreateTableCopyTask(source, destination, false);
-                        await tc.ExecuteAsync();
+                        using (var tc = CreateTableCopyTask(source, destination, false))
+                        {
+                            await tc.Value.ExecuteAsync();
+                        }
                     }
                     break;
                 default:

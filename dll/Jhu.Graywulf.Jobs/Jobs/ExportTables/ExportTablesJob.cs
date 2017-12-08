@@ -41,16 +41,17 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             }
 
             // Create table exporter
-            var exporter = parameters.GetInitializedTableExportTask(cancellationContext);
-            
-            try
+            using (var exporter = parameters.GetInitializedTableExportTask(cancellationContext))
             {
-                await exporter.OpenAsync();
-                await exporter.ExecuteAsync();
-            }
-            finally
-            {
-                exporter.Close();
+                try
+                {
+                    await exporter.Value.OpenAsync();
+                    await exporter.Value.ExecuteAsync();
+                }
+                finally
+                {
+                    exporter.Value.Close();
+                }
             }
         }
     }

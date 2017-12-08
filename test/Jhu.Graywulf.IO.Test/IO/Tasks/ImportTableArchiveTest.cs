@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.IO.Tasks
             StopLogger();
         }
 
-        private IImportTableArchive GetImportTableArchiveTask(CancellationContext cancellationContext, string path, string tableNamePattern, bool remote, bool generateIdentityColumn)
+        private ServiceModel.ServiceProxy<IImportTableArchive> GetImportTableArchiveTask(CancellationContext cancellationContext, string path, string tableNamePattern, bool remote, bool generateIdentityColumn)
         {
             var ds = IOTestDataset;
             ds.IsMutable = true;
@@ -43,20 +43,20 @@ namespace Jhu.Graywulf.IO.Tasks
                 TableNamePattern = tableNamePattern,
             };
 
-            IImportTableArchive it = null;
+            ServiceModel.ServiceProxy<IImportTableArchive> it = null;
             if (remote)
             {
                 it = RemoteServiceHelper.CreateObject<IImportTableArchive>(cancellationContext, Test.Constants.Localhost, false);
             }
             else
             {
-                it = new ImportTableArchive(cancellationContext);
+                it = new ServiceModel.ServiceProxy<IImportTableArchive>(new ImportTableArchive(cancellationContext));
             }
 
-            it.BatchName = Path.GetFileNameWithoutExtension(path);
-            it.Uri = Util.UriConverter.FromFilePath(path);
-            it.Destination = destination;
-            it.Options = new ImportTableOptions()
+            it.Value.BatchName = Path.GetFileNameWithoutExtension(path);
+            it.Value.Uri = Util.UriConverter.FromFilePath(path);
+            it.Value.Destination = destination;
+            it.Value.Options = new ImportTableOptions()
             {
                 GenerateIdentityColumn = generateIdentityColumn,
             };
@@ -125,15 +125,17 @@ namespace Jhu.Graywulf.IO.Tasks
                 }
             }
 
-            var it = GetImportTableArchiveTask(cancellationContext, path, tableNamePattern, remote, generateIdentity);
-            ExecuteImportTableArchiveTest(it);
-
-            for (int i = 0; i < it.Results.Count(); i++)
+            using (var it = GetImportTableArchiveTask(cancellationContext, path, tableNamePattern, remote, generateIdentity))
             {
-                table = IOTestDataset.Tables[null, it.Results[i].SchemaName, it.Results[i].TableName];
-                Assert.AreEqual(columnCount[i], table.Columns.Count);
+                ExecuteImportTableArchiveTest(it.Value);
+
+                for (int i = 0; i < it.Value.Results.Count(); i++)
+                {
+                    table = IOTestDataset.Tables[null, it.Value.Results[i].SchemaName, it.Value.Results[i].TableName];
+                    Assert.AreEqual(columnCount[i], table.Columns.Count);
+                }
             }
-            
+
             if (remote)
             {
                 token.Dispose();

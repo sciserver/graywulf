@@ -39,16 +39,17 @@ namespace Jhu.Graywulf.Jobs.ImportTables
             }
 
             // Create table importer
-            var importer = parameters.GetInitializedTableImportTask(cancellationContext);
-
-            try
+            using (var importer = parameters.GetInitializedTableImportTask(cancellationContext))
             {
-                await importer.OpenAsync();
-                await importer.ExecuteAsync();
-            }
-            finally
-            {
-                importer.Close();
+                try
+                {
+                    await importer.Value.OpenAsync();
+                    await importer.Value.ExecuteAsync();
+                }
+                finally
+                {
+                    importer.Value.Close();
+                }
             }
         }
     }

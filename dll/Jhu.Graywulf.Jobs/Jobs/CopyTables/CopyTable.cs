@@ -22,8 +22,10 @@ namespace Jhu.Graywulf.Jobs.CopyTables
             var parameters = Parameters.Get(activityContext);
             var item = Item.Get(activityContext);
 
-            var task = item.GetInitializedCopyTableTask(cancellationContext, parameters);
-            await task.ExecuteAsync();
+            using (var task = item.GetInitializedCopyTableTask(cancellationContext, parameters))
+            {
+                await task.Value.ExecuteAsync();
+            }
         }
     }
 }

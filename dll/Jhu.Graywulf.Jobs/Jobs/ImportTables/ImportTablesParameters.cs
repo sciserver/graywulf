@@ -175,7 +175,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
         /// Returns an initialized table export task based on the job parameters
         /// </summary>
         /// <returns></returns>
-        public ICopyDataStream GetInitializedTableImportTask(CancellationContext cancellationContext)
+        public ServiceModel.IServiceProxy<ICopyDataStream> GetInitializedTableImportTask(CancellationContext cancellationContext)
         {
             var sf = StreamFactory.Create(streamFactoryType);
 
@@ -203,12 +203,12 @@ namespace Jhu.Graywulf.Jobs.ImportTables
 
                 var task = RemoteServiceHelper.CreateObject<IImportTable>(cancellationContext, host, true);
 
-                task.Source = this.sources[0];
-                task.Destination = this.destinations[0];
-                task.FileFormatFactoryType = this.fileFormatFactoryType;
-                task.StreamFactoryType = this.streamFactoryType;
-                task.Options = this.options;
-                task.Timeout = this.timeout;
+                task.Value.Source = this.sources[0];
+                task.Value.Destination = this.destinations[0];
+                task.Value.FileFormatFactoryType = this.fileFormatFactoryType;
+                task.Value.StreamFactoryType = this.streamFactoryType;
+                task.Value.Options = this.options;
+                task.Value.Timeout = this.timeout;
 
                 return task;
             }
@@ -218,14 +218,14 @@ namespace Jhu.Graywulf.Jobs.ImportTables
 
                 var task = RemoteServiceHelper.CreateObject<IImportTableArchive>(cancellationContext, host, true);
 
-                task.BatchName = Util.UriConverter.GetFileNameWithoutExtension(this.uri);
-                task.Uri = this.uri;
-                task.Credentials = this.credentials;
-                task.Destination = this.destinations[0];
-                task.FileFormatFactoryType = this.fileFormatFactoryType;
-                task.StreamFactoryType = this.streamFactoryType;
-                task.Options = this.options;
-                task.Timeout = this.timeout;
+                task.Value.BatchName = Util.UriConverter.GetFileNameWithoutExtension(this.uri);
+                task.Value.Uri = this.uri;
+                task.Value.Credentials = this.credentials;
+                task.Value.Destination = this.destinations[0];
+                task.Value.FileFormatFactoryType = this.fileFormatFactoryType;
+                task.Value.StreamFactoryType = this.streamFactoryType;
+                task.Value.Options = this.options;
+                task.Value.Timeout = this.timeout;
 
                 return task;
             }

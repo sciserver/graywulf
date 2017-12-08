@@ -46,13 +46,14 @@ namespace Jhu.Graywulf.Scheduler
 
             yield return ReportInfo("Testing scheduler service on {0}...", host);
 
-            var sc = ServiceHelper.CreateChannel<ISchedulerControl>(host, "Control", Scheduler.Configuration.Endpoint, TimeSpan.FromSeconds(1));
+            using (var sc = ServiceHelper.CreateChannel<ISchedulerControl>(host, "Control", Scheduler.Configuration.Endpoint, TimeSpan.FromSeconds(1)))
+            {
+                sc.Value.WhoAmI(out name, out isAuthenticated, out authenticationType);
+                yield return ReportInfo("Client user: {0} ({1})", name, authenticationType);
 
-            sc.WhoAmI(out name, out isAuthenticated, out authenticationType);
-            yield return ReportInfo("Client user: {0} ({1})", name, authenticationType);
-
-            sc.WhoAreYou(out name, out isAuthenticated, out authenticationType);
-            yield return ReportInfo("Service user: {0} ({1})", name, authenticationType);
+                sc.Value.WhoAreYou(out name, out isAuthenticated, out authenticationType);
+                yield return ReportInfo("Service user: {0} ({1})", name, authenticationType);
+            }
 
             yield return ReportSuccess("OK");
         }

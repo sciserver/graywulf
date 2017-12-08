@@ -86,10 +86,7 @@ namespace Jhu.Graywulf.Format
 
         public override bool HasRows
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         public List<TypeMapping> TypeMappings
@@ -344,7 +341,7 @@ namespace Jhu.Graywulf.Format
             }
 
             Array.Copy(data, fieldOffset, buffer, bufferoffset, res);
-            
+
             return res;
         }
 

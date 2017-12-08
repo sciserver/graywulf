@@ -212,14 +212,14 @@ namespace Jhu.Graywulf.ServiceModel
         /// <param name="tcp"></param>
         /// <param name="endpoint"></param>
         /// <returns></returns>
-        public static T CreateChannel<T>(string host, string serviceName, TcpEndpointConfiguration configuration, TimeSpan timeout)
+        public static ServiceProxy<T> CreateChannel<T>(string host, string serviceName, TcpEndpointConfiguration configuration, TimeSpan timeout)
         {
             var fdqn = DnsHelper.GetFullyQualifiedDnsName(host);
             var ep = CreateEndpointAddress(fdqn, "Control", configuration);
             return CreateChannel<T>(ep, timeout);
         }
 
-        public static T CreateChannel<T>(EndpointAddress endpoint, TimeSpan timeout)
+        public static ServiceProxy<T> CreateChannel<T>(EndpointAddress endpoint, TimeSpan timeout)
         {
             var tcp = CreateNetTcpBinding(timeout);
             var cf = new ChannelFactory<T>(tcp, endpoint);
@@ -228,7 +228,10 @@ namespace Jhu.Graywulf.ServiceModel
             cf.Credentials.Windows.ClientCredential = System.Net.CredentialCache.DefaultNetworkCredentials;
             cf.Credentials.Windows.AllowedImpersonationLevel = TokenImpersonationLevel.Impersonation;
 
-            return cf.CreateChannel();
+            var c = cf.CreateChannel();
+            var proxy = new ServiceProxy<T>(cf, c);
+
+            return proxy;
         }
 
         private void TurnOnDetailedDebugInfo()

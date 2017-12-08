@@ -23,16 +23,16 @@ namespace Jhu.Graywulf.IO.Tasks
             StopLogger();
         }
 
-        private ICopyTable GetTableCopy(CancellationContext cancellationContext, string tableName, bool remote)
+        private ServiceModel.ServiceProxy<ICopyTable> GetTableCopy(CancellationContext cancellationContext, string tableName, bool remote)
         {
-            ICopyTable q = null;
+            ServiceModel.ServiceProxy<ICopyTable> q = null;
             if (remote)
             {
                 q = RemoteServiceHelper.CreateObject<ICopyTable>(cancellationContext, Test.Constants.Localhost, false);
             }
             else
             {
-                q = new CopyTable(cancellationContext);
+                q = new ServiceModel.ServiceProxy<ICopyTable>(new CopyTable(cancellationContext));
             }
 
             var ds = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString)
@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 Query = "SELECT * FROM SampleData_PrimaryKey"
             };
 
-            q.Source = source;
+            q.Value.Source = source;
 
           
             var destination = new DestinationTable()
@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 Options = TableInitializationOptions.Create
             };
 
-            q.Destination = destination;
+            q.Value.Destination = destination;
 
             return q;
         }
@@ -69,13 +69,15 @@ namespace Jhu.Graywulf.IO.Tasks
             using (var cancellationContext = new CancellationContext())
             {
                 var table = GetTestUniqueName();
-                var q = GetTableCopy(cancellationContext, table, false);
 
-                DropTable(q.Destination.GetTable());
+                using (var q = GetTableCopy(cancellationContext, table, false))
+                {
+                    DropTable(q.Value.Destination.GetTable());
 
-                q.ExecuteAsync().Wait();
+                    q.Value.ExecuteAsync().Wait();
 
-                DropTable(q.Destination.GetTable());
+                    DropTable(q.Value.Destination.GetTable());
+                }
             }
         }
 
@@ -89,13 +91,14 @@ namespace Jhu.Graywulf.IO.Tasks
                 using (var cancellationContext = new CancellationContext())
                 {
                     var table = GetTestUniqueName();
-                    var q = GetTableCopy(cancellationContext, table, true);
+                    using (var q = GetTableCopy(cancellationContext, table, true))
+                    {
+                        DropTable(q.Value.Destination.GetTable());
 
-                    DropTable(q.Destination.GetTable());
+                        q.Value.ExecuteAsync().Wait();
 
-                    q.ExecuteAsync().Wait();
-
-                    DropTable(q.Destination.GetTable());
+                        DropTable(q.Value.Destination.GetTable());
+                    }
                 }
             }
         }

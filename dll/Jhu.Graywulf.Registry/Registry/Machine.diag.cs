@@ -67,8 +67,10 @@ namespace Jhu.Graywulf.Registry
 
             try
             {
-                var c = RemoteServiceHelper.GetControlObject(hostName.ResolvedValue);
-                string res = c.Hello();
+                using (var c = RemoteServiceHelper.GetControlObject(hostName.ResolvedValue))
+                {
+                    c.Value.Hello();
+                }
 
                 msg.Status = DiagnosticMessageStatus.OK;
             }

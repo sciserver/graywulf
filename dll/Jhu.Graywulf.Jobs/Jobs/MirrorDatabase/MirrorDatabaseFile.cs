@@ -72,14 +72,15 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                 !File.Exists(destinationfilename) ||
                 new FileInfo(sourcefilename).Length != new FileInfo(destinationfilename).Length)
             {
-                var fc = RemoteServiceHelper.CreateObject<ICopyFile>(cancellationContext, hostname, true);
+                using (var fc = RemoteServiceHelper.CreateObject<ICopyFile>(cancellationContext, hostname, true))
+                {
+                    fc.Value.Source = sourcefilename;
+                    fc.Value.Destination = destinationfilename;
+                    fc.Value.Overwrite = true;
+                    fc.Value.Method = FileCopyMethod.AsyncFileCopy;
 
-                fc.Source = sourcefilename;
-                fc.Destination = destinationfilename;
-                fc.Overwrite = true;
-                fc.Method = FileCopyMethod.AsyncFileCopy;
-
-                await fc.ExecuteAsync();
+                    await fc.Value.ExecuteAsync();
+                }
             }
         }
     }

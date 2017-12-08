@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.IO.Tasks
             return FileFormatFactory.Create(null);
         }
 
-        protected IImportTable GetImportTableTask(CancellationContext cancellationContext, string path, bool remote, bool generateIdentityColumn)
+        protected ServiceModel.ServiceProxy<IImportTable> GetImportTableTask(CancellationContext cancellationContext, string path, bool remote, bool generateIdentityColumn)
         {
             var ds = IOTestDataset;
             ds.IsMutable = true;
@@ -45,19 +45,19 @@ namespace Jhu.Graywulf.IO.Tasks
                 TableNamePattern = table,
             };
 
-            IImportTable it = null;
+            ServiceModel.ServiceProxy<IImportTable> it = null;
             if (remote)
             {
                 it = RemoteServiceHelper.CreateObject<IImportTable>(cancellationContext, Test.Constants.Localhost, false);
             }
             else
             {
-                it = new ImportTable(cancellationContext);
+                it = new ServiceModel.ServiceProxy<IImportTable>(new ImportTable(cancellationContext));
             }
 
-            it.Source = source;
-            it.Destination = destination;
-            it.Options = new ImportTableOptions()
+            it.Value.Source = source;
+            it.Value.Destination = destination;
+            it.Value.Options = new ImportTableOptions()
             {
                 GenerateIdentityColumn = generateIdentityColumn
             };
@@ -84,10 +84,12 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 var path = GetTestFilePath(@"modules\graywulf\test\files\csv_numbers.csv");
 
-                var it = GetImportTableTask(cancellationContext, path, false, false);
-                var t = ExecuteImportTableTask(it);
-                Assert.AreEqual(5, t.Columns.Count);
-                DropTable(t);
+                using (var it = GetImportTableTask(cancellationContext, path, false, false))
+                {
+                    var t = ExecuteImportTableTask(it.Value);
+                    Assert.AreEqual(5, t.Columns.Count);
+                    DropTable(t);
+                }
             }
         }
 
@@ -97,10 +99,14 @@ namespace Jhu.Graywulf.IO.Tasks
             using (var cancellationContext = new CancellationContext())
             {
                 var path = GetTestFilePath(@"modules\graywulf\test\files\csv_numbers.csv");
-                var it = GetImportTableTask(cancellationContext, path, false, false);
-                var t = ExecuteImportTableTask(it);
-                Assert.AreEqual(5, t.Columns.Count);
-                DropTable(t);
+
+                using (var it = GetImportTableTask(cancellationContext, path, false, false))
+                {
+                    var t = ExecuteImportTableTask(it.Value);
+
+                    Assert.AreEqual(5, t.Columns.Count);
+                    DropTable(t);
+                }
             }
         }
 
@@ -114,10 +120,14 @@ namespace Jhu.Graywulf.IO.Tasks
                 using (var cancellationContext = new CancellationContext())
                 {
                     var path = GetTestFilePath(@"modules\graywulf\test\files\csv_numbers.csv");
-                    var it = GetImportTableTask(cancellationContext, path, false, false);
-                    var t = ExecuteImportTableTask(it);
-                    Assert.AreEqual(5, t.Columns.Count);
-                    DropTable(t);
+
+                    using (var it = GetImportTableTask(cancellationContext, path, false, false))
+                    {
+                        var t = ExecuteImportTableTask(it.Value);
+
+                        Assert.AreEqual(5, t.Columns.Count);
+                        DropTable(t);
+                    }
                 }
             }
         }
@@ -128,10 +138,14 @@ namespace Jhu.Graywulf.IO.Tasks
             using (var cancellationContext = new CancellationContext())
             {
                 var path = url;
-                var it = GetImportTableTask(cancellationContext, path, false, false);
-                var t = ExecuteImportTableTask(it);
-                Assert.AreEqual(5, t.Columns.Count);
-                DropTable(t);
+
+                using (var it = GetImportTableTask(cancellationContext, path, false, false))
+                {
+                    var t = ExecuteImportTableTask(it.Value);
+
+                    Assert.AreEqual(5, t.Columns.Count);
+                    DropTable(t);
+                }
             }
         }
 
