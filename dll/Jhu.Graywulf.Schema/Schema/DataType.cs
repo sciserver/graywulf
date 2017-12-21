@@ -560,6 +560,17 @@ namespace Jhu.Graywulf.Schema
             set { isNullable = value; }
         }
 
+        [IgnoreDataMember]
+        public bool IsUnicode
+        {
+            get
+            {
+                return
+                    (type == typeof(string) || type == typeof(char)) &&
+                    byteSize == 2;
+            }
+        }
+
         [DataMember]
         public bool IsUserDefined
         {
