@@ -113,7 +113,6 @@
     <Compile Include="Format\XmlDataFileBlock.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Format\XmlStreamReader.cs" />
     <Compile Include="IO\AuthenticationHeaderCollection.cs" />
     <Compile Include="IO\BufferedTextReader.cs" />
     <Compile Include="IO\Constants.cs" />
