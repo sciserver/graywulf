@@ -70,7 +70,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="build.config" />
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
