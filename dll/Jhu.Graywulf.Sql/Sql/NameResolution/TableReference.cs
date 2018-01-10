@@ -13,10 +13,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #region Property storage variables
 
         private string alias;
-
-        private bool isTableOrView;
-        private bool isUdf;
-        private bool isSubquery;
+        private TableReferenceType type;
         private bool isComputed;
 
         private List<ColumnReference> columnReferences;
@@ -32,30 +29,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
             set { alias = value; }
         }
 
-        /// <summary>
-        /// Gets the value indicating whether the table source is a table or view
-        /// </summary>
-        public bool IsTableOrView
+        public TableReferenceType Type
         {
-            get { return isTableOrView; }
+            get { return type; }
+            set { type = value; }
         }
 
         public TableOrView TableOrView
         {
             get { return (TableOrView)DatabaseObject; }
-        }
-
-        /// <summary>
-        /// Gets the value indicating whether the table source is a table valued function
-        /// </summary>
-        public bool IsUdf
-        {
-            get { return isUdf; }
-        }
-
-        public bool IsSubquery
-        {
-            get { return isSubquery; }
         }
 
         /// <summary>
@@ -74,7 +56,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public bool IsCachable
         {
-            get { return !IsSubquery && !IsUdf && !IsComputed; }
+            get
+            {
+                return
+                  type != TableReferenceType.Subquery &&
+                  type != TableReferenceType.UserDefinedFunction &&
+                  !IsComputed;
+            }
         }
 
         /// <summary>
@@ -136,10 +124,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public TableReference(string alias)
         {
             this.alias = alias;
-
-            this.isTableOrView = false;
-            this.isUdf = false;
-            this.isSubquery = false;
+            this.type = TableReferenceType.Unknown;
             this.isComputed = false;
         }
 
@@ -147,10 +132,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             : base(table)
         {
             this.alias = alias;
-
-            this.isTableOrView = true;
-            this.isUdf = false;
-            this.isSubquery = false;
+            this.type = TableReferenceType.Unknown;
             this.isComputed = false;
 
             this.columnReferences = new List<ColumnReference>();
@@ -218,10 +200,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void InitializeMembers()
         {
             this.alias = null;
-
-            this.isTableOrView = false;
-            this.isUdf = false;
-            this.isSubquery = false;
+            this.type = TableReferenceType.Unknown;
             this.isComputed = false;
 
             this.columnReferences = new List<ColumnReference>();
@@ -230,10 +209,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void CopyMembers(TableReference old)
         {
             this.alias = old.alias;
-
-            this.isTableOrView = old.isTableOrView;
-            this.isUdf = old.isUdf;
-            this.isSubquery = old.isSubquery;
+            this.type = old.type;
             this.isComputed = old.isComputed;
 
             // Deep copy of column references
@@ -298,7 +274,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var tn = ti.FindDescendant<TableName>();
             DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
 
-            isTableOrView = true;
+            this.type = TableReferenceType.TableOrView;
         }
 
         private void InterpretTableValuedFunctionCall(TableValuedFunctionCall tvf)
@@ -321,7 +297,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 var tn = udfi.FindDescendant<FunctionName>();
                 DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
 
-                isUdf = true;
+                type = TableReferenceType.UserDefinedFunction;
             }
             else
             {
@@ -331,9 +307,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void InterpretSubquery()
         {
-            this.isTableOrView = false;
-            this.isUdf = false;
-            this.isSubquery = true;
+            this.type = TableReferenceType.Subquery;
             this.isComputed = false;
         }
 
@@ -341,27 +315,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             this.columnReferences.Clear();
 
-            if (this.IsSubquery)
+            switch (type)
             {
-                // In case of a subquery
-
-                throw new InvalidOperationException();
-            }
-            else if (this.IsUdf)
-            {
-                // In case of a user-defined function
-
-                LoadUdfColumnReferences(schemaManager);
-            }
-            else if (this.IsTableOrView)
-            {
-                // In case of a table
-
-                LoadTableOrViewColumnReferences(schemaManager);
-            }
-            else
-            {
-                throw new NotImplementedException();
+                case TableReferenceType.Subquery:
+                    throw new InvalidOperationException();
+                case TableReferenceType.UserDefinedFunction:
+                    LoadUdfColumnReferences(schemaManager);
+                    break;
+                case TableReferenceType.TableOrView:
+                    LoadTableOrViewColumnReferences(schemaManager);
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
         }
 

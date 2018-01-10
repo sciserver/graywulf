@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Sql.NameResolution {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class ExceptionMessages {
@@ -97,6 +97,15 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate column alias &apos;{0}&apos; found at ({1},{2})..
+        /// </summary>
+        internal static string DuplicateColumnAlias {
+            get {
+                return ResourceManager.GetString("DuplicateColumnAlias", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate table alias &apos;{0}&apos; found at ({1},{2})..
         /// </summary>
         internal static string DuplicateTableAlias {
@@ -120,6 +129,15 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         internal static string FunctionCallNotAllowed {
             get {
                 return ResourceManager.GetString("FunctionCallNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alias not defined for subquery column at ({1},{2})..
+        /// </summary>
+        internal static string MissingColumnAlias {
+            get {
+                return ResourceManager.GetString("MissingColumnAlias", resourceCulture);
             }
         }
         

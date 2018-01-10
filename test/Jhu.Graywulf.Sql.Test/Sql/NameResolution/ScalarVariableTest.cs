@@ -74,7 +74,7 @@ SELECT @var1 = 6");
 
             ReferencedVariableHelper("@var1",
 @"DECLARE @var1 int = 5
-SELECT @var1 AS 12");
+SELECT @var1 AS vv");
         }
 
         [TestMethod]

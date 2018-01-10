@@ -43,6 +43,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return CreateException(ExceptionMessages.DuplicateTableAlias, null, alias, node);
         }
 
+        public static NameResolverException DuplicateColumnAlias(string alias, Node node)
+        {
+            return CreateException(ExceptionMessages.DuplicateColumnAlias, null, alias, node);
+        }
+
+        public static NameResolverException MissingColumnAlias(Node node)
+        {
+            return CreateException(ExceptionMessages.MissingColumnAlias, null, null, node);
+        }
+
         public static NameResolverException UnresolvableDatasetReference(IDatabaseObjectReference node)
         {
             return UnresolvableDatasetReference(null, node);

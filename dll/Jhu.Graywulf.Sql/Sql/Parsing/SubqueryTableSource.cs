@@ -16,13 +16,13 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public DatabaseObjectReference DatabaseObjectReference
         {
-            get { return QueryExpression.TableReference; }
+            get { return QueryExpression.ResultsTableReference; }
         }
 
         public TableReference TableReference
         {
-            get { return QueryExpression.TableReference; }
-            set { QueryExpression.TableReference = value; }
+            get { return QueryExpression.ResultsTableReference; }
+            set { QueryExpression.ResultsTableReference = value; }
         }
 
         public bool IsSubquery

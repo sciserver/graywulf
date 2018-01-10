@@ -129,6 +129,9 @@
   <data name="DifferentTableReferenceInHintNotAllowed" xml:space="preserve">
     <value>Reference to a different table '{0}' is not allowed in table hint expression but found at ({1},{2}).</value>
   </data>
+  <data name="DuplicateColumnAlias" xml:space="preserve">
+    <value>Duplicate column alias '{0}' found at ({1},{2}).</value>
+  </data>
   <data name="DuplicateTableAlias" xml:space="preserve">
     <value>Duplicate table alias '{0}' found at ({1},{2}).</value>
   </data>
@@ -137,6 +140,9 @@
   </data>
   <data name="FunctionCallNotAllowed" xml:space="preserve">
     <value>System function calls are not allowed as table sources. Use user-defined function instead.</value>
+  </data>
+  <data name="MissingColumnAlias" xml:space="preserve">
+    <value>Alias not defined for subquery column at ({1},{2}).</value>
   </data>
   <data name="ScalarVariableExpected" xml:space="preserve">
     <value>Scalar variable or variable with user-defined type expected at ({1},{2}).</value>

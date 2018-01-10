@@ -729,7 +729,9 @@ namespace Jhu.Graywulf.Jobs.Query
 
             foreach (var tr in ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateSourceTableReferences(true))
             {
-                if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
+                if (tr.Type != TableReferenceType.UserDefinedFunction &&
+                    tr.Type != TableReferenceType.Subquery
+                    && !tr.IsComputed)
                 {
                     if (!dss.ContainsKey(tr.DatasetName))
                     {

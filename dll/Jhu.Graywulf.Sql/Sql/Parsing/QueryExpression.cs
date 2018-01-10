@@ -7,26 +7,21 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class QueryExpression : ITableReference
+    public partial class QueryExpression
     {
-        private TableReference tableReference;
-
-        public DatabaseObjectReference DatabaseObjectReference
+        private TableReference resultsTableReference;
+        
+        public TableReference ResultsTableReference
         {
-            get { return tableReference; }
-        }
-
-        public TableReference TableReference
-        {
-            get { return tableReference; }
-            set { tableReference = value; }
+            get { return resultsTableReference; }
+            set { resultsTableReference = value; }
         }
 
         protected override void OnInitializeMembers()
         {
             base.OnInitializeMembers();
 
-            this.tableReference = null;
+            this.resultsTableReference = null;
         }
 
         protected override void OnCopyMembers(object other)
@@ -35,7 +30,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             var old = (QueryExpression)other;
 
-            this.tableReference = old.tableReference;
+            this.resultsTableReference = old.resultsTableReference;
         }
 
         public static QueryExpression Create(QuerySpecification qs)
@@ -44,7 +39,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             qe.Stack.AddLast(qs);
 
-            qe.tableReference = new TableReference(qe);
+            qe.resultsTableReference = new TableReference(qe);
 
             return qe;
         }
@@ -55,7 +50,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             qe.Stack.AddLast(qeb);
 
-            qe.tableReference = new TableReference(qe);
+            qe.resultsTableReference = new TableReference(qe);
 
             return qe;
         }
@@ -74,7 +69,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             qe.Stack.AddLast(Whitespace.CreateNewLine());
             qe.Stack.AddLast(qe2);
 
-            qe.tableReference = new TableReference(qe);
+            qe.resultsTableReference = new TableReference(qe);
 
             return qe;
         }
@@ -83,7 +78,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             base.Interpret();
 
-            this.tableReference = new TableReference(this);
+            this.resultsTableReference = new TableReference(this);
         }
 
         public IEnumerable<QuerySpecification> EnumerateQuerySpecifications()

@@ -293,7 +293,8 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var sc = queryObject.GetSchemaManager();
 
-            if (!tr.IsSubquery && !tr.IsComputed && tr.DatabaseName != null)
+            if (tr.Type != TableReferenceType.Subquery &&
+                !tr.IsComputed && tr.DatabaseName != null)
             {
                 var ds = sc.Datasets[tr.DatasetName];
 

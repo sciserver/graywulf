@@ -377,11 +377,43 @@ namespace Jhu.Graywulf.Sql.Parsing
         public void SimpleSubqueryTest()
         {
             var sql = "SELECT Name FROM (SELECT Name FROM Author) a";
-
             var qs = Parse<QuerySpecification>(sql);
-
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
+        }
+
+        [TestMethod]
+        public void SimpleSubqueryWithCustomAliasTest()
+        {
+            var sql = "SELECT Name FROM (SELECT Name AS Name FROM Author) a";
+            var qs = Parse<QuerySpecification>(sql);
+            var res = GenerateCode(qs);
+                            
+            Assert.AreEqual("SELECT [a].[Name] AS [Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NameResolverException))]
+        public void SimpleSubqueryWithMissingAliasTest()
+        {
+            var sql = "SELECT Name FROM (SELECT Name + Name FROM Author) a";
+            var qs = Parse<QuerySpecification>(sql);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NameResolverException))]
+        public void SimpleSubqueryWithDuplicateAliasTest1()
+        {
+            var sql = "SELECT Name FROM (SELECT Name, Name FROM Author) a";
+            var qs = Parse<QuerySpecification>(sql);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NameResolverException))]
+        public void SimpleSubqueryWithDuplicateAliasTest2()
+        {
+            var sql = "SELECT Name FROM (SELECT Name AS Name, Name AS Name FROM Author) a";
+            var qs = Parse<QuerySpecification>(sql);
         }
 
         [TestMethod]
@@ -557,7 +589,7 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
             var tables = qs.EnumerateSourceTableReferences(false).ToArray();
 
             Assert.AreEqual(1, tables.Length);
-            Assert.IsTrue(tables[0].IsUdf);
+            Assert.AreEqual(TableReferenceType.UserDefinedFunction, tables[0].Type);
             Assert.AreEqual("f", tables[0].Alias);
             Assert.AreEqual("[f]", tables[0].ToString());
 

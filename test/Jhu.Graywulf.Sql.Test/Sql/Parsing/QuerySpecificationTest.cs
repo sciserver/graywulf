@@ -98,9 +98,9 @@ INNER JOIN Author ON Author.ID = BookAuthor.AuthorID";
             tables = EnumerateTableSourcesTestHelper(sql, true);
             Assert.AreEqual(2, tables.Length);
             Assert.AreEqual("a", tables[0].TableReference.Alias);
-            Assert.IsTrue(tables[0].TableReference.IsSubquery);
+            Assert.AreEqual(NameResolution.TableReferenceType.Subquery, tables[0].TableReference.Type);
             Assert.AreEqual("table1", tables[1].TableReference.DatabaseObjectName);
-            Assert.IsFalse(tables[1].TableReference.IsSubquery);
+            Assert.AreEqual(NameResolution.TableReferenceType.TableOrView, tables[1].TableReference.Type);
         }
 
         [TestMethod]
@@ -113,9 +113,9 @@ INNER JOIN Author ON Author.ID = BookAuthor.AuthorID";
             tables = EnumerateTableSourcesTestHelper(sql, true);
             Assert.AreEqual(2, tables.Length);
             Assert.AreEqual("table1", tables[0].TableReference.DatabaseObjectName);
-            Assert.IsFalse(tables[0].TableReference.IsSubquery);
+            Assert.AreEqual(NameResolution.TableReferenceType.TableOrView, tables[0].TableReference.Type);
             Assert.AreEqual("table2", tables[1].TableReference.DatabaseObjectName);
-            Assert.IsFalse(tables[1].TableReference.IsSubquery);
+            Assert.AreEqual(NameResolution.TableReferenceType.TableOrView, tables[1].TableReference.Type);
         }
 
     }
