@@ -96,6 +96,7 @@
     <Compile Include="Sql\NameResolution\ScalarVariableTest.cs" />
     <Compile Include="Sql\NameResolution\SelectStatementTest.cs" />
     <Compile Include="Sql\NameResolution\SqlNameResolverTestBase.cs" />
+    <Compile Include="Sql\NameResolution\SubqueryTest.cs" />
     <Compile Include="Sql\Parsing\ArithmeticOperatorTest.cs" />
     <Compile Include="Sql\Parsing\BeginEndStatementTest.cs" />
     <Compile Include="Sql\Parsing\BitwiseOperatorTest.cs" />

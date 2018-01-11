@@ -95,6 +95,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get
             {
+                // TODO: review this and make sure kez is unique even if table
+                // is referenced deep down in CTEs
+
                 if (String.IsNullOrWhiteSpace(alias))
                 {
                     return base.UniqueName;
@@ -102,6 +105,31 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 else
                 {
                     return String.Format("[{0}]", alias);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns the exported name of a subquery or a table
+        /// </summary>
+        public string ExportedName
+        {
+            get
+            {
+                if (type == TableReferenceType.Subquery ||
+                    type == TableReferenceType.CommonTable ||
+                    type == TableReferenceType.UserDefinedFunction ||
+                    isComputed ||
+                    alias != null)
+                {
+                    return alias;
+                }
+                else
+                {
+                    // If no alias is used then use table name
+                    // SQL Server doesn't allow two tables with the same name without alias
+                    // so this behavior is fine
+                    return DatabaseObjectName;
                 }
             }
         }

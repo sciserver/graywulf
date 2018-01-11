@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         [TestMethod]
         public void SimpleCteTest()
         {
-            var sql = 
+            var sql =
 @"WITH a AS
 (
     SELECT * FROM Author
@@ -23,9 +23,9 @@ SELECT Name FROM a";
             var gt =
 @"WITH [a] AS
 (
-    SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author]
+    SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]
 )
-SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [a]";
+SELECT [a].[Name] AS [a_Name] FROM [a]";
 
             var ss = Parse<SelectStatement>(sql);
 
@@ -42,7 +42,40 @@ SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [a]";
 
             Assert.AreEqual(1, cs.Length);
             Assert.AreEqual("Name", cs[0].ColumnName);
-            Assert.AreEqual(ts[0], cs[0].TableReference);
+        }
+
+        [TestMethod]
+        public void SimpleCteWithTableAliasTest()
+        {
+            var sql =
+@"WITH a AS
+(
+    SELECT * FROM Author
+)
+SELECT a.Name FROM a";
+
+            var gt =
+@"WITH [a] AS
+(
+    SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]
+)
+SELECT [a].[Name] AS [a_Name] FROM [a]";
+
+            var ss = Parse<SelectStatement>(sql);
+
+            var res = GenerateCode(ss);
+            Assert.AreEqual(gt, res);
+
+            var ct = ss.CommonTableExpression.EnumerateCommonTableSpecifications().ToArray();
+            var ts = ct[0].Subquery.QueryExpression.EnumerateSourceTableReferences(false).ToArray();
+
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
+
+            var cs = ss.QueryExpression.EnumerateQuerySpecifications().FirstOrDefault().ResultsTableReference.ColumnReferences.ToArray();
+
+            Assert.AreEqual(1, cs.Length);
+            Assert.AreEqual("Name", cs[0].ColumnName);
         }
 
         [TestMethod]
@@ -52,19 +85,45 @@ SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [a]";
 @"WITH
     a AS (SELECT * FROM Author),
     b AS (SELECT * FROM Book)
-SELECT Name FROM a INNER JOIN b ON a.ID = b.ID";
+SELECT Name, Title FROM a INNER JOIN b ON a.ID = b.ID";
 
             var gt =
-@"WITH [a] AS
-(
-    SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author]
-)
-SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [a]";
+@"WITH
+    [a] AS (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]),
+    [b] AS (SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID], [Graywulf_Schema_Test].[dbo].[Book].[Title], [Graywulf_Schema_Test].[dbo].[Book].[Year] FROM [Graywulf_Schema_Test].[dbo].[Book])
+SELECT [a].[Name] AS [a_Name], [b].[Title] AS [b_Title] FROM [a] INNER JOIN [b] ON [a].[ID] = [b].[ID]";
 
             var ss = Parse<SelectStatement>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
         }
+
+        [TestMethod]
+        public void RecursiveCteTest()
+        {
+            var sql =
+@"WITH a AS
+(
+    SELECT * FROM Author
+    UNION ALL
+    SELECT * FROM a
+)
+SELECT Name FROM a";
+
+            var gt =
+@"WITH [a] AS
+(
+    SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]
+    UNION ALL
+    SELECT [a].[ID], [a].[Name] FROM [a]
+)
+SELECT [a].[Name] AS [a_Name] FROM [a]";
+
+            var ss = Parse<SelectStatement>(sql);
+
+            var res = GenerateCode(ss);
+            Assert.AreEqual(gt, res);
         }
+    }
 }

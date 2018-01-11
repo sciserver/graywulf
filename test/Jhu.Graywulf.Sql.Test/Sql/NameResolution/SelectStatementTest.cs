@@ -374,57 +374,20 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         [TestMethod]
-        public void SimpleSubqueryTest()
+        public void SameTableNameTest()
         {
-            var sql = "SELECT Name FROM (SELECT Name FROM Author) a";
-            var qs = Parse<QuerySpecification>(sql);
-            var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
-        }
-
-        [TestMethod]
-        public void SimpleSubqueryWithCustomAliasTest()
-        {
-            var sql = "SELECT Name FROM (SELECT Name AS Name FROM Author) a";
-            var qs = Parse<QuerySpecification>(sql);
-            var res = GenerateCode(qs);
-                            
-            Assert.AreEqual("SELECT [a].[Name] AS [Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(NameResolverException))]
-        public void SimpleSubqueryWithMissingAliasTest()
-        {
-            var sql = "SELECT Name FROM (SELECT Name + Name FROM Author) a";
-            var qs = Parse<QuerySpecification>(sql);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(NameResolverException))]
-        public void SimpleSubqueryWithDuplicateAliasTest1()
-        {
-            var sql = "SELECT Name FROM (SELECT Name, Name FROM Author) a";
-            var qs = Parse<QuerySpecification>(sql);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(NameResolverException))]
-        public void SimpleSubqueryWithDuplicateAliasTest2()
-        {
-            var sql = "SELECT Name FROM (SELECT Name AS Name, Name AS Name FROM Author) a";
-            var qs = Parse<QuerySpecification>(sql);
-        }
-
-        [TestMethod]
-        public void SubqueryWithOrderByTest()
-        {
-            var sql = "SELECT Name FROM (SELECT TOP 10 Name FROM Author ORDER BY Name) a";
+            var sql = "SELECT * FROM dbo.Author a CROSS JOIN test.Author b";
 
             var qs = Parse<QuerySpecification>(sql);
+
+            Assert.AreEqual(4, qs.ResultsTableReference.ColumnReferences.Count);
+            Assert.AreEqual("[a].[ID]", qs.ResultsTableReference.ColumnReferences[0].ToString());
+            Assert.AreEqual("[a].[Name]", qs.ResultsTableReference.ColumnReferences[1].ToString());
+            Assert.AreEqual("[b].[ID]", qs.ResultsTableReference.ColumnReferences[2].ToString());
+            Assert.AreEqual("[b].[Name]", qs.ResultsTableReference.ColumnReferences[3].ToString());
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM (SELECT TOP 10 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[Name]) [a]", res);
+            Assert.AreEqual("SELECT [a].[ID] AS [a_ID], [a].[Name] AS [a_Name], [b].[ID] AS [b_ID], [b].[Name] AS [b_Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[test].[Author] [b]", res);
         }
 
         [TestMethod]

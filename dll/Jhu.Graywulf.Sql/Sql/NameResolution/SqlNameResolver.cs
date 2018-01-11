@@ -383,7 +383,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void ResolveCommonTableSpecification(StatementBlock script, CommonTableExpression cte, CommonTableSpecification ts)
         {
             var subquery = ts.Subquery;
-            ResolveSubquery(script, cte, subquery, 0);
+            ResolveSubquery(script, cte, subquery, 1);
         }
 
         // TODO: make this protected once full script support is implemented
@@ -415,21 +415,27 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         protected void ResolveQueryExpression(StatementBlock script, CommonTableExpression cte, QueryExpression qe, int depth)
         {
-            // TODO: resolve the first part of the query expression independently
+            // Resolve the first part of the query expression independently
             // and make sure it's set as ResultsTableReference
             // This is necessary for CTE evaluation which can be recursive
+
+            int q = 0;
 
             // Resolve query specifications in the FROM clause
             foreach (var qs in qe.EnumerateDescendants<QuerySpecification>())
             {
                 ResolveQuerySpecification(script, cte, qs, depth);
-            }
 
-            // Copy select list columns from the very first query specification.
-            // All subsequent query specifications combined with set operators
-            // (UNION, UNION ALL etc.) must mach the column list.
-            var firstqs = qe.FindDescendant<QuerySpecification>();
-            qe.ResultsTableReference.ColumnReferences.AddRange(firstqs.ResultsTableReference.ColumnReferences);
+                if (q == 0)
+                {
+                    // Copy select list columns from the very first query specification.
+                    // All subsequent query specifications combined with set operators
+                    // (UNION, UNION ALL etc.) must mach the column list.
+                    qe.ResultsTableReference.ColumnReferences.AddRange(qs.ResultsTableReference.ColumnReferences);
+                }
+
+                q++;
+            }
         }
 
         /// <summary>
@@ -507,49 +513,34 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             foreach (var tr in qs.EnumerateSourceTableReferences(false))
             {
-                string tablekey;
-                if (tr.Type == TableReferenceType.Subquery || 
-                    tr.Type == TableReferenceType.CommonTable ||
-                    tr.Type == TableReferenceType.UserDefinedFunction || 
-                    tr.IsComputed || 
-                    tr.Alias != null)
-                {
-                    tablekey = tr.Alias;
-                }
-                else
-                {
-                    // If no alias is used then use table name
-                    tablekey = tr.DatabaseObjectName;
-                }
-
+                var exportedName = tr.ExportedName;
+                
                 // Make sure that table key is used only once
-                if (qs.SourceTableReferences.ContainsKey(tablekey))
+                if (qs.SourceTableReferences.ContainsKey(exportedName))
                 {
-                    throw NameResolutionError.DuplicateTableAlias(tablekey, tr.Node);
+                    throw NameResolutionError.DuplicateTableAlias(exportedName, tr.Node);
                 }
                 else
                 {
                     var ntr = ResolveSourceTableReference(script, cte, tr);
-                    qs.SourceTableReferences.Add(tablekey, ntr);
+                    qs.SourceTableReferences.Add(exportedName, ntr);
                 }
             }
         }
 
         public TableReference ResolveSourceTableReference(StatementBlock script, CommonTableExpression cte, TableReference tr)
         {
-            var ntr = new TableReference(tr);
+            TableReference ntr;
 
-            if (cte != null && ntr.IsPossiblyAlias && cte.CommonTableReferences.ContainsKey(ntr.DatabaseObjectName))
+            if (cte != null && tr.IsPossiblyAlias && cte.CommonTableReferences.ContainsKey(tr.ExportedName))
             {
-                var ts = cte.CommonTableReferences[ntr.DatabaseObjectName];
-
+                ntr = new TableReference(cte.CommonTableReferences[tr.DatabaseObjectName]);
                 ntr.Type = TableReferenceType.CommonTable;
-                ntr.Alias = ntr.DatabaseObjectName;
-                ntr.DatabaseObjectName = null;
-                ntr.ColumnReferences.AddRange(ts.ColumnReferences);
             }
-            else if (ntr.Type != TableReferenceType.Subquery && !ntr.IsComputed)
+            else if (tr.Type != TableReferenceType.Subquery && !tr.IsComputed)
             {
+                ntr = new TableReference(tr);
+
                 // Load table description from underlying schema
                 // Attempt to load dataset and throw exception of name cannot be resolved
                 DatasetBase ds;
@@ -571,6 +562,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 // Load column descriptions for the table
                 ntr.LoadColumnReferences(schemaManager);
+            }
+            else
+            {
+                ntr = new TableReference(tr);
             }
 
             return ntr;
