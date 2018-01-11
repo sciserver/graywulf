@@ -49,6 +49,20 @@ namespace Jhu.Graywulf.Sql.NameResolution
             "PATINDEX", "TEXTVALID", "TEXTPTR",
         };
 
+        private static readonly HashSet<string> SystemVariableNames = new HashSet<string>(Schema.SchemaManager.Comparer)
+        {
+            "ERROR", "IDENTITY", "ROWCOUNT", "FETCH_STATUS",
+
+            "CONNECTION", "CPU_BUSY", "IDLE", "IO_BUSY", "PACK_SENT", "PACK_RECEIVED", "PACKET_ERRORS",
+            "TIMETICKS", "TOTAL_ERRORS", "TOTAL_READ", "TOTAL_WRITER",
+            "TRANCOUNT",
+            "CURSOR_ROWS", "DATEFIRST", "DBTS", "DEF_SORTORDER_ID", "DEFAULT_LANGID", 
+            "FETCH_STATUS", "LANGID", "LANGUAGE", "LOCK_TIMEOUT", "MAX_CONNECTION",
+            "MAX_PRECISION", "MICROSOFTVERSION", "NESTLEVEL", "OPTIONS", 
+            "PROCID", "REMSERVER", "SERVERNAME", "SERVICENAME", "SPID",
+            "TEXTSIZE", "VERSION"
+        };
+
         #region Property storage variables
 
         // The schema manager is used to resolve identifiers that are not local to the script,
@@ -179,6 +193,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     case ThrowStatement ss:
                         ResolveThrowStatement(script, ss);
                         break;
+                    case DeclareVariableStatement ss:
+                        ResolveDeclareVariableStatement(script, ss);
+                        break;
+                    case DeclareTableStatement ss:
+                        ResolveDeclareTableStatement(script, ss);
+                        break;
                     case DeclareCursorStatement ss:
                         ResolveDeclareCursorStatement(script, ss);
                         break;
@@ -191,14 +211,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     case FetchStatement ss:
                         ResolveFetchStatement(script, ss);
                         break;
-                    case DeclareVariableStatement ss:
-                        ResolveDeclareVariableStatement(script, ss);
-                        break;
+                    
                     case SetVariableStatement ss:
                         ResolveSetVariableStatement(script, ss);
-                        break;
-                    case DeclareTableStatement ss:
-                        ResolveDeclareTableStatement(script, ss);
                         break;
                     case CreateTableStatement ss:
                         ResolveCreateTableStatement(script, ss);
@@ -297,7 +312,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveSetVariableStatement(StatementBlock script, SetVariableStatement statement)
         {
-            throw new NotImplementedException();
+            if (script.VariableReferences.ContainsKey(statement.VariableReference.Name))
+            {
+                statement.VariableReference = script.VariableReferences[statement.VariableReference.Name];
+            }
+            else
+            {
+                throw NameResolutionError.UnresolvableVariableReference(statement.Variable);
+            }
         }
 
         private void ResolveDeclareTableStatement(StatementBlock script, DeclareTableStatement statement)
@@ -367,6 +389,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         #endregion
+        #region Query constructs
 
         private void ResolveCommonTableExpression(StatementBlock script, CommonTableExpression cte)
         {
@@ -491,14 +514,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 ResolveVariables(script, firstqs, orderBy, ColumnContext.OrderBy);
             }
         }
-
-        // ----------------------------------
-
-        private void ResolveDataTypeReferences()
-        {
-            throw new NotImplementedException();
-        }
-
+        
         /// <summary>
         /// Collect list of table sources and load columns from the schema.
         /// </summary>
@@ -752,16 +768,25 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveScalarVariableReference(StatementBlock script, IVariableReference vr)
         {
-            // TODO: extend this to UDTs
+            // TODO: extend this to UDTs, including member access
 
-            if (vr.VariableReference.IsCursor || vr.VariableReference.IsTable)
+            if (vr.VariableReference.Type == VariableReferenceType.System)
             {
-                throw NameResolutionError.ScalarVariableExpected(vr);
-            }
+                var name = vr.VariableReference.Name.TrimStart('@');
 
-            if (script.VariableReferences.ContainsKey(vr.VariableReference.Name))
+                if (!SystemVariableNames.Contains(name))
+                {
+                    throw NameResolutionError.UnresolvableVariableReference(vr);
+                }
+            }
+            else if (script.VariableReferences.ContainsKey(vr.VariableReference.Name))
             {
                 vr.VariableReference = script.VariableReferences[vr.VariableReference.Name];
+
+                if (vr.VariableReference.Type != VariableReferenceType.Scalar)
+                {
+                    throw NameResolutionError.ScalarVariableExpected(vr);
+                }
             }
             else
             {
@@ -1062,13 +1087,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             foreach (var fi in node.EnumerateDescendantsRecursive<FunctionIdentifier>())
             {
-                try
+                if (!fi.FunctionReference.IsSystem)
                 {
-                    fi.FunctionReference.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
-                }
-                catch (KeyNotFoundException ex)
-                {
-                    throw NameResolutionError.UnresolvableDatasetReference(ex, fi);
+                    try
+                    {
+                        fi.FunctionReference.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
+                    }
+                    catch (KeyNotFoundException ex)
+                    {
+                        throw NameResolutionError.UnresolvableDatasetReference(ex, fi);
+                    }
                 }
             }
         }
@@ -1099,6 +1127,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 cr.SelectListIndex = index++;
                 qs.ResultsTableReference.ColumnReferences.Add(cr);
             }
+        }
+
+        #endregion
+
+        private void ResolveDataTypeReferences()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

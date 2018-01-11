@@ -191,7 +191,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public TableReference(VariableTableSource ts)
         {
-            throw new NotImplementedException();
+            InterpretTableSource(ts);
+
+            this.Node = ts;
         }
 
         public TableReference(SubqueryTableSource ts)

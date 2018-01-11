@@ -7,13 +7,8 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class SetVariableStatement : IStatement, IVariableReference
+    public partial class TableDeclaration : IVariableReference
     {
-        public bool IsResolvable
-        {
-            get { return true; }
-        }
-
         public VariableReference VariableReference
         {
             get { return Variable.VariableReference; }
@@ -24,15 +19,11 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return FindDescendant<UserVariable>(); }
         }
-
-        public Expression Expression
+        
+        public override void Interpret()
         {
-            get { return FindDescendant<Expression>(); }
-        }
-
-        public IEnumerable<Statement> EnumerateSubStatements()
-        {
-            yield break;
+            base.Interpret();
+            Variable.VariableReference.InterpretTableDeclaration(this);
         }
     }
 }

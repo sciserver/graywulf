@@ -108,6 +108,35 @@ SELECT 1 GROUP BY 2 HAVING AVG(@var1) = 2");
 @"DECLARE @var1 int = 5
 SELECT 1 ORDER BY @var1");
         }
-        
+
+        [TestMethod]
+        public void SetNumberTest()
+        {
+            var sql =
+@"DECLARE @var int
+SET @var = 5";
+
+            var ss = Parse(sql);
+        }
+
+        [TestMethod]
+        public void SetStringTest()
+        {
+            var sql =
+@"DECLARE @var nvarchar(50)
+SET @var = 'this is a text'";
+
+            var ss = Parse(sql);
+        }
+
+        [TestMethod]
+        public void SetFromQueryTest()
+        {
+            var sql =
+@"DECLARE @var int
+SET @var = (SELECT 1)";
+
+            var ss = Parse(sql);
+        }
     }
 }

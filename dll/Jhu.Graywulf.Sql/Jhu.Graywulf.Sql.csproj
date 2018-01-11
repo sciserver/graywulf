@@ -151,11 +151,14 @@
     <Compile Include="Sql\NameResolution\SqlNameResolver.cs" />
     <Compile Include="Sql\NameResolution\TableReference.cs" />
     <Compile Include="Sql\NameResolution\Util.cs" />
+    <Compile Include="Sql\NameResolution\VariableReferenceType.cs" />
     <Compile Include="Sql\Parsing\Argument.cs" />
     <Compile Include="Sql\Parsing\ArgumentList.cs" />
     <Compile Include="Sql\Parsing\CommonTableExpression.cs" />
     <Compile Include="Sql\Parsing\CommonTableSpecification.cs" />
     <Compile Include="Sql\Parsing\DataType.cs" />
+    <Compile Include="Sql\Parsing\SystemVariable.cs" />
+    <Compile Include="Sql\Parsing\TableVariable.cs" />
     <Compile Include="Sql\Parsing\UserVariable.cs" />
     <Compile Include="Sql\Parsing\DropIndexStatement.cs" />
     <Compile Include="Sql\Parsing\CreateIndexStatement.cs" />
@@ -179,6 +182,7 @@
     <Compile Include="Sql\Parsing\ReturnStatement.cs" />
     <Compile Include="Sql\Parsing\ContinueStatement.cs" />
     <Compile Include="Sql\Parsing\BreakStatement.cs" />
+    <Compile Include="Sql\Parsing\TableDeclaration.cs" />
     <Compile Include="Sql\Parsing\VariableDeclaration.cs" />
     <Compile Include="Sql\Parsing\WhileStatement.cs" />
     <Compile Include="Sql\Parsing\BooleanExpression.cs" />

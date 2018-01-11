@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Terminal> StringConstant = () => @"\G('([^']|'')*')";
         public static Expression<Terminal> Identifier = () => @"\G([a-zA-Z_]+[0-9a-zA-Z_]*|\[[^\]]+\])";
         public static Expression<Terminal> Variable = () => @"\G(@[a-zA-Z_][0-9a-zA-Z_]*)";
-        public static Expression<Terminal> SystemVariable = () => @"\G(@@[a-zA-Z_][0-9a-zA-Z_]*)";
+        public static Expression<Terminal> Variable2 = () => @"\G(@@[a-zA-Z_][0-9a-zA-Z_]*)";
         public static Expression<Terminal> Cursor = () => @"\G([$a-zA-Z_]+)";
 
         #endregion
@@ -167,6 +167,8 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             );
 
         public static Expression<Rule> UserVariable = () => Variable;
+
+        public static Expression<Rule> SystemVariable = () => Variable2;
 
         #endregion
         #region Boolean expressions
@@ -687,7 +689,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             );
 
         #endregion
-
         #region Scalar variables and cursors
 
         public static Expression<Rule> VariableList = () =>
@@ -857,7 +858,13 @@ FOR select_statement
             (
                 Keyword("DECLARE"),
                 CommentOrWhitespace,
-                UserVariable,
+                TableDeclaration
+            );
+
+        public static Expression<Rule> TableDeclaration = () =>
+            Sequence
+            (
+                TableVariable,
                 CommentOrWhitespace,
                 Keyword("TABLE"),
                 May(CommentOrWhitespace),
@@ -1100,9 +1107,11 @@ FOR select_statement
         public static Expression<Rule> VariableTableSource = () =>
             Sequence
             (
-                UserVariable,
+                TableVariable,
                 May(Sequence(May(CommentOrWhitespace), May(Sequence(Keyword("AS"), May(CommentOrWhitespace))), TableAlias))
             );
+
+        public static Expression<Rule> TableVariable = () => Variable;
 
         public static Expression<Rule> SubqueryTableSource = () =>
             Sequence

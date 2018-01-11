@@ -9,8 +9,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
     public class VariableReference
     {
         private string name;
-        private bool isCursor;
-        private bool isTable;
+        private VariableReferenceType type;
         private DataTypeReference dataTypeReference;
 
         public string Name
@@ -19,14 +18,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             set { name = value; }
         }
 
-        public bool IsCursor
+        public VariableReferenceType Type
         {
-            get { return isCursor; }
-        }
-
-        public bool IsTable
-        {
-            get { return isTable; }
+            get { return type; }
+            set { type = value; }
         }
 
         public DataTypeReference DataTypeReference
@@ -56,33 +51,69 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             InterpretUserVariable(variable);
         }
-        
+
+        public VariableReference(Parsing.TableVariable variable)
+            : this()
+        {
+            InterpretTableVariable(variable);
+        }
+
+        public VariableReference(Parsing.SystemVariable variable)
+            : this()
+        {
+            InterpretSystemVariable(variable);
+        }
+
         private void InitializeMembers()
         {
             this.name = null;
-            this.isCursor = false;
-            this.isTable = false;
+            this.type = VariableReferenceType.Unknown;
             this.dataTypeReference = null;
         }
 
         private void CopyMembers(VariableReference old)
         {
             this.name = old.name;
-            this.isCursor = old.isCursor;
-            this.isTable = old.isTable;
+            this.type = old.type;
             this.dataTypeReference = old.dataTypeReference;
         }
 
         public void InterpretUserVariable(Parsing.UserVariable variable)
         {
             name = variable.Name;
+            type = VariableReferenceType.Scalar;
+        }
+
+        public void InterpretTableVariable(Parsing.TableVariable variable)
+        {
+            name = variable.Name;
+            type = VariableReferenceType.Table;
+        }
+
+        public void InterpretSystemVariable(Parsing.SystemVariable variable)
+        {
+            name = variable.Name;
+            type = VariableReferenceType.System;
         }
 
         public void InterpretVariableDeclaration(Parsing.VariableDeclaration vd)
         {
-            isCursor = vd.IsCursor;
-            isTable = false;
+            if (vd.IsCursor)
+            {
+                this.type = VariableReferenceType.Cursor;
+            }
+            else
+            {
+                this.type = VariableReferenceType.Scalar;
+            }
+
             dataTypeReference = vd.DataType.DataTypeReference;
+        }
+
+        public void InterpretTableDeclaration(Parsing.TableDeclaration td)
+        {
+            // TODO: implement
+            throw new NotImplementedException();
         }
     }
 }

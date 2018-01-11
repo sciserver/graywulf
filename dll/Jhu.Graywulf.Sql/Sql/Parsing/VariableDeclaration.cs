@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return FindDescendant<DataType>(); }
         }
-
+        
         public bool IsCursor
         {
             get

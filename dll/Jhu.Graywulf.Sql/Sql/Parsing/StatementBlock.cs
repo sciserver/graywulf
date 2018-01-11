@@ -9,7 +9,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class StatementBlock : IStatement
     {
-        #region PrivateMemberVariables
+        #region Private member variables
 
         private Dictionary<string, VariableReference> variableReferences;
 
