@@ -88,7 +88,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public string GenerateEscapedUniqueName(TableReference table)
         {
-            if (table.Type == TableReferenceType.Subquery || table.IsComputed)
+            if (table.Type == TableReferenceType.Subquery ||
+                table.Type == TableReferenceType.CommonTable ||
+                table.IsComputed)
             {
                 // We consider a table alias unique within a query, although this is
                 // not a requirement by SQL Server which support using the same alias
@@ -133,7 +135,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public string GetResolvedTableName(TableReference table)
         {
-            if (table.Type == TableReferenceType.Subquery || table.IsComputed)
+            if (table.Type == TableReferenceType.Subquery || 
+                table.Type == TableReferenceType.CommonTable ||
+                table.IsComputed)
             {
                 return GetQuotedIdentifier(table.Alias);
             }
@@ -154,7 +158,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public string GetResolvedTableNameWithAlias(TableReference table)
         {
-            if (table.Type == TableReferenceType.Subquery || table.IsComputed)
+            if (table.Type == TableReferenceType.Subquery || 
+                table.Type == TableReferenceType.CommonTable ||
+                table.IsComputed)
             {
                 return GetQuotedIdentifier(table.Alias);
             }
@@ -186,7 +192,10 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public string GetUniqueName(TableReference table)
         {
-            if (table.Type == TableReferenceType.Subquery || table.IsComputed || !String.IsNullOrWhiteSpace(table.Alias))
+            if (table.Type == TableReferenceType.Subquery || 
+                table.Type == TableReferenceType.CommonTable ||
+                table.IsComputed || 
+                !String.IsNullOrWhiteSpace(table.Alias))
             {
                 return GetQuotedIdentifier(table.Alias);
             }

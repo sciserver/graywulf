@@ -294,7 +294,9 @@ namespace Jhu.Graywulf.Jobs.Query
             var sc = queryObject.GetSchemaManager();
 
             if (tr.Type != TableReferenceType.Subquery &&
-                !tr.IsComputed && tr.DatabaseName != null)
+                tr.Type != TableReferenceType.CommonTable &&
+                !tr.IsComputed && 
+                tr.DatabaseName != null)
             {
                 var ds = sc.Datasets[tr.DatasetName];
 

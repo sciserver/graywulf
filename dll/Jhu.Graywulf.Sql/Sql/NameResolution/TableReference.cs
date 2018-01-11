@@ -60,6 +60,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 return
                   type != TableReferenceType.Subquery &&
+                  type != TableReferenceType.CommonTable &&
                   type != TableReferenceType.UserDefinedFunction &&
                   !IsComputed;
             }
@@ -173,6 +174,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.Node = ts;
         }
 
+        public TableReference(CommonTableSpecification ts)
+            : this()
+        {
+            InterpretTableSource(ts);
+
+            this.Node = ts;
+        }
+
         public TableReference(ColumnIdentifier ci)
             : this()
         {
@@ -239,7 +248,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 alias = null;
             }
 
-            if (tableSource is SubqueryTableSource)
+            if (tableSource is SubqueryTableSource ||
+                tableSource is CommonTableSpecification)
             {
                 InterpretSubquery();
             }
@@ -317,6 +327,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             switch (type)
             {
+                case TableReferenceType.CommonTable:
                 case TableReferenceType.Subquery:
                     throw new InvalidOperationException();
                 case TableReferenceType.UserDefinedFunction:

@@ -334,14 +334,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveSelectStatement(StatementBlock script, SelectStatement statement)
         {
-            // CTE
             var cte = statement.FindDescendant<CommonTableExpression>();
             if (cte != null)
             {
-                // TODO: ResolveCommonTableExpression();
+                ResolveCommonTableExpression(script, cte);
             }
 
-            ResolveSelectStatement(script, statement, 0);
+            ResolveSelectStatement(script, cte, statement, 0);
         }
 
         private void ResolveInsertStatement(StatementBlock script, InsertStatement statement)
@@ -369,40 +368,61 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         #endregion
 
+        private void ResolveCommonTableExpression(StatementBlock script, CommonTableExpression cte)
+        {
+            foreach (var ct in cte.EnumerateCommonTableSpecifications())
+            {
+                // Because CTEs can reference themselves (i.e. recursive queries) make sure
+                // the specification is added to the dictionary before the resolver
+                // is called on it
+                cte.CommonTableReferences.Add(ct.TableReference.Alias, ct.TableReference);
+                ResolveCommonTableSpecification(script, cte, ct);
+            }
+        }
+
+        private void ResolveCommonTableSpecification(StatementBlock script, CommonTableExpression cte, CommonTableSpecification ts)
+        {
+            var subquery = ts.Subquery;
+            ResolveSubquery(script, cte, subquery, 0);
+        }
 
         // TODO: make this protected once full script support is implemented
-        public void ResolveSelectStatement(StatementBlock script, SelectStatement select, int depth)
+        public void ResolveSelectStatement(StatementBlock script, CommonTableExpression cte, SelectStatement select, int depth)
         {
             var qe = select.QueryExpression;
 
-            ResolveQueryExpression(script, qe, depth);
+            ResolveQueryExpression(script, cte, qe, depth);
 
             var firstqs = qe.FindDescendant<QuerySpecification>();
             var orderby = select.OrderByClause;
 
-            ResolveOrderByClause(script, orderby, firstqs);
+            ResolveOrderByClause(script, cte, orderby, firstqs);
         }
 
-        protected void ResolveSubquery(StatementBlock script, Subquery subquery, int depth)
+        protected void ResolveSubquery(StatementBlock script, CommonTableExpression cte, Subquery subquery, int depth)
         {
             var qe = subquery.FindDescendant<QueryExpression>();
-            ResolveQueryExpression(script, qe, depth);
+            ResolveQueryExpression(script, cte, qe, depth);
 
             var qs = qe.EnumerateQuerySpecifications().FirstOrDefault();
             var orderBy = subquery.FindDescendant<OrderByClause>();
 
             if (orderBy != null)
             {
-                ResolveOrderByClause(script, orderBy, qs);
+                ResolveOrderByClause(script, cte, orderBy, qs);
             }
         }
 
-        protected void ResolveQueryExpression(StatementBlock script, QueryExpression qe, int depth)
+        protected void ResolveQueryExpression(StatementBlock script, CommonTableExpression cte, QueryExpression qe, int depth)
         {
+            // TODO: resolve the first part of the query expression independently
+            // and make sure it's set as ResultsTableReference
+            // This is necessary for CTE evaluation which can be recursive
+
             // Resolve query specifications in the FROM clause
             foreach (var qs in qe.EnumerateDescendants<QuerySpecification>())
             {
-                ResolveQuerySpecification(script, qs, depth);
+                ResolveQuerySpecification(script, cte, qs, depth);
             }
 
             // Copy select list columns from the very first query specification.
@@ -417,7 +437,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// query specification
         /// </summary>
         /// <param name="qs"></param>
-        protected void ResolveQuerySpecification(StatementBlock script, QuerySpecification qs, int depth)
+        protected void ResolveQuerySpecification(StatementBlock script, CommonTableExpression cte, QuerySpecification qs, int depth)
         {
             // At this point the table and column references are all parsed
             // from the query but no name resolution and cross-identification
@@ -430,19 +450,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // expressions
             foreach (var sq in qs.EnumerateSubqueries())
             {
-                ResolveSubquery(script, sq, depth + 1);
+                ResolveSubquery(script, cte, sq, depth + 1);
             }
 
             // Substitute default dataset names and schema names
             // This is typically the MYDB and dbo
-            SubstituteTableAndColumnDefaults(qs);
+            SubstituteTableAndColumnDefaults(script, cte, qs);
 
             // Column references will be stored under the query specification
-            CollectSourceTableReferences(qs);
+            CollectSourceTableReferences(script, cte, qs);
 
             // Column identifiers can contain table names, aliases or nothing,
             // resolve them now
-            ResolveTableReferences(qs);
+            ResolveTableReferences(script, cte, qs);
 
             // Substitute SELECT * expressions
             SubstituteStars(qs);
@@ -457,11 +477,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             AssignDefaultColumnAliases(qs, depth != 0);
         }
 
-        protected void ResolveOrderByClause(StatementBlock script, OrderByClause orderBy, QuerySpecification firstqs)
+        protected void ResolveOrderByClause(StatementBlock script, CommonTableExpression cte, OrderByClause orderBy, QuerySpecification firstqs)
         {
             if (orderBy != null)
             {
-                ResolveTableReferences(firstqs, orderBy, ColumnContext.OrderBy);
+                ResolveTableReferences(script, cte, firstqs, orderBy, ColumnContext.OrderBy);
                 ResolveVariables(script, firstqs, orderBy, ColumnContext.OrderBy);
             }
         }
@@ -481,14 +501,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// or table name.
         /// </remarks>
         /// <param name="qs"></param>
-        private void CollectSourceTableReferences(QuerySpecification qs)
+        private void CollectSourceTableReferences(StatementBlock script, CommonTableExpression cte, QuerySpecification qs)
         {
             // --- Collect column references from subqueries or load from the database schema
 
             foreach (var tr in qs.EnumerateSourceTableReferences(false))
             {
                 string tablekey;
-                if (tr.Type == TableReferenceType.Subquery || tr.Type == TableReferenceType.UserDefinedFunction || tr.IsComputed || tr.Alias != null)
+                if (tr.Type == TableReferenceType.Subquery || 
+                    tr.Type == TableReferenceType.CommonTable ||
+                    tr.Type == TableReferenceType.UserDefinedFunction || 
+                    tr.IsComputed || 
+                    tr.Alias != null)
                 {
                     tablekey = tr.Alias;
                 }
@@ -505,18 +529,26 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 else
                 {
-                    var ntr = ResolveSourceTableReference(tr);
-
+                    var ntr = ResolveSourceTableReference(script, cte, tr);
                     qs.SourceTableReferences.Add(tablekey, ntr);
                 }
             }
         }
 
-        public TableReference ResolveSourceTableReference(TableReference tr)
+        public TableReference ResolveSourceTableReference(StatementBlock script, CommonTableExpression cte, TableReference tr)
         {
             var ntr = new TableReference(tr);
 
-            if (ntr.Type != TableReferenceType.Subquery && !ntr.IsComputed)
+            if (cte != null && ntr.IsPossiblyAlias && cte.CommonTableReferences.ContainsKey(ntr.DatabaseObjectName))
+            {
+                var ts = cte.CommonTableReferences[ntr.DatabaseObjectName];
+
+                ntr.Type = TableReferenceType.CommonTable;
+                ntr.Alias = ntr.DatabaseObjectName;
+                ntr.DatabaseObjectName = null;
+                ntr.ColumnReferences.AddRange(ts.ColumnReferences);
+            }
+            else if (ntr.Type != TableReferenceType.Subquery && !ntr.IsComputed)
             {
                 // Load table description from underlying schema
                 // Attempt to load dataset and throw exception of name cannot be resolved
@@ -549,14 +581,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// not descending into subqueries
         /// </summary>
         /// <param name="qs"></param>
-        private void ResolveTableReferences(QuerySpecification qs)
+        private void ResolveTableReferences(StatementBlock script, CommonTableExpression cte, QuerySpecification qs)
         {
-            ResolveTableReferences(qs, (Node)qs, ColumnContext.None);
+            ResolveTableReferences(script, cte, qs, (Node)qs, ColumnContext.None);
         }
 
-        public void ResolveTableReferences(Node n, ColumnContext context)
+        public void ResolveTableReferences(StatementBlock script, CommonTableExpression cte, Node n, ColumnContext context)
         {
-            ResolveTableReferences(null, n, context);
+            ResolveTableReferences(script, cte, null, n, context);
         }
 
         /// <summary>
@@ -565,7 +597,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         /// <param name="qs"></param>
         /// <param name="n"></param>
-        private void ResolveTableReferences(QuerySpecification qs, Node n, ColumnContext context)
+        private void ResolveTableReferences(StatementBlock script, CommonTableExpression cte, QuerySpecification qs, Node n, ColumnContext context)
         {
             context = GetColumnContext(n, context);
 
@@ -576,14 +608,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     if (o is Node)
                     {
-                        ResolveTableReferences(qs, (Node)o, context);   // Recursive call
+                        ResolveTableReferences(script, cte, qs, (Node)o, context);   // Recursive call
                     }
                 }
             }
 
             if (n is ITableReference && ((ITableReference)n).TableReference != null)
             {
-                ResolveTableReference(qs, (ITableReference)n, context);
+                ResolveTableReference(script, cte, qs, (ITableReference)n, context);
             }
         }
 
@@ -592,7 +624,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         /// <param name="qs"></param>
         /// <param name="tr"></param>
-        private void ResolveTableReference(QuerySpecification qs, ITableReference node, ColumnContext context)
+        private void ResolveTableReference(StatementBlock script, CommonTableExpression cte, QuerySpecification qs, ITableReference node, ColumnContext context)
         {
             // Try to resolve the table alias part of a table reference
             // If and alias or table name is specified, this can be done based on
@@ -776,7 +808,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                         }
                     }
                 }
-                else if (!cr.ColumnReference.TableReference.IsUndefined)
+                else
                 {
                     // This has a table reference already so only check
                     // columns of that particular table
@@ -996,13 +1028,17 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// Substitutes dataset and schema defaults into table source table references
         /// </summary>
         /// <param name="qs"></param>
-        protected void SubstituteTableAndColumnDefaults(QuerySpecification qs)
+        protected void SubstituteTableAndColumnDefaults(StatementBlock script, CommonTableExpression cte, QuerySpecification qs)
         {
             foreach (var tr in qs.EnumerateSourceTableReferences(false))
             {
                 try
                 {
-                    if (tr.Type == TableReferenceType.TableOrView)
+                    if (cte != null && tr.IsPossiblyAlias && cte.CommonTableReferences.ContainsKey(tr.DatabaseObjectName))
+                    {
+                        // Don't do any substitution if referencing a common table
+                    }
+                    else if (tr.Type == TableReferenceType.TableOrView)
                     {
                         tr.SubstituteDefaults(SchemaManager, defaultTableDatasetName);
                     }

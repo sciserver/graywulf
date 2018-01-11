@@ -11,6 +11,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         Unknown,
         TableOrView,
         Subquery,
+        CommonTable,
         Variable,
         UserDefinedFunction,
     }

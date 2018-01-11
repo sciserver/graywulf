@@ -7,9 +7,9 @@ using System.IO;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
-using Jhu.Graywulf.Sql.NameResolution;
+using Jhu.Graywulf.Sql.Parsing;
 
-namespace Jhu.Graywulf.Sql.Parsing
+namespace Jhu.Graywulf.Sql.NameResolution
 {
     public class SqlNameResolverTestBase
     {

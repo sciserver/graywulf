@@ -18,6 +18,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return true; }
         }
 
+        public CommonTableExpression CommonTableExpression
+        {
+            get { return FindDescendant<CommonTableExpression>(); }
+        }
+
         public QueryExpression QueryExpression
         {
             get { return FindDescendant<QueryExpression>(); }
