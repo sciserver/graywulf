@@ -1,7 +1,25 @@
 USE [Graywulf_Schema_Test]
 GO
 
+-- CREATE SCHEMAS --
+
+CREATE SCHEMA test
+
+GO
+
 -- CREATE TABLES --
+
+CREATE TABLE [test].[Author]
+(
+	[ID] [bigint] NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	CONSTRAINT [PK_Author] PRIMARY KEY CLUSTERED 
+	(
+		[ID] ASC
+	)
+)
+
+GO
 
 CREATE TABLE [dbo].[Author]
 (
