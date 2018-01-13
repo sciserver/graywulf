@@ -135,10 +135,17 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private IEnumerable<Entity> EnumerateChildrenForSerialize(Entity entity)
         {
+            // TODO: For now all jobs are excluded due to a serialization bug.
+            // TODO: RunninState can take different values than listed in the enum
+            // since JobExecutionState defines different numbers.
+            // TODO: Fix serialization bug then modify this to export admin jobs,
+            // such as predefined recurring maintenance jobs etc.
+
             // See if this particular type of entity is included by the masks
             if ((entity.EntityGroup & entityGroupMask) != 0 &&
                 (entity.EntityType & entityTypeMask) != 0 &&
-                (!excludeUserCreated || systemUsers.Contains(entity.UserGuidOwner)))
+                (!excludeUserCreated || systemUsers.Contains(entity.UserGuidOwner)) &&
+                (!excludeUserCreated || !(entity is JobInstance)))
             {
                 yield return entity;
             }
