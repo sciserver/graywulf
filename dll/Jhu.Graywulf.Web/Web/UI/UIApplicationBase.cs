@@ -63,7 +63,8 @@ namespace Jhu.Graywulf.Web.UI
         public UIApplicationBase()
         {
             virtualPathProvider = new EmbeddedVirtualPathProvider();
-            applicationLoggingContext = new LoggingContext();
+
+            applicationLoggingContext = new LoggingContext(true, Components.AmbientContextStoreLocation.Default);
             applicationLoggingContext.Pop();
         }
 
@@ -71,6 +72,7 @@ namespace Jhu.Graywulf.Web.UI
         {
             applicationLoggingContext.Push();
             applicationLoggingContext.Dispose();
+
             base.Dispose();
         }
 

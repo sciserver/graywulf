@@ -61,6 +61,7 @@ namespace Jhu.Graywulf.Components
         private void InitializeMembers()
         {
             this.outerContext = null;
+            this.supportedLocation = AmbientContextStoreLocation.Default;
             this.contextGuid = Guid.NewGuid();
             this.isValid = true;
         }
@@ -68,6 +69,7 @@ namespace Jhu.Graywulf.Components
         private void CopyMembers(AmbientContextBase old)
         {
             this.outerContext = old.outerContext;
+            this.supportedLocation = old.supportedLocation;
             this.contextGuid = old.contextGuid;
             this.isValid = old.isValid;
         }

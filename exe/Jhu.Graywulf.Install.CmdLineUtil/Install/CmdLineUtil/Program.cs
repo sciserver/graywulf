@@ -15,6 +15,7 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
             // Initialize logger
+            new Logging.LoggingContext();
             Logging.LoggingContext.Current.StartLogger(Logging.EventSource.CommandLineTool, true);
 
             List<Type> verbs = new List<Type>()
