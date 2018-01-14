@@ -121,20 +121,26 @@ namespace Jhu.Graywulf.Tasks
         #region Constructors and initializers
 
         public CancelableTask()
+            :this(null)
         {
-            InitializeMembers();
-
-            cancellationContext = new Tasks.CancellationContext();
-            ownsCancellationContext = true;
+            // Overload
         }
 
         public CancelableTask(CancellationContext cancellationContext)
         {
             InitializeMembers();
 
-            this.cancellationContext = cancellationContext;
-            this.ownsCancellationContext = false;
-            this.cancellationContext.Register(this);
+            if (cancellationContext == null)
+            {
+                cancellationContext = new Tasks.CancellationContext();
+                ownsCancellationContext = true;
+            }
+            else
+            {
+                this.cancellationContext = cancellationContext;
+                this.ownsCancellationContext = false;
+                this.cancellationContext.Register(this);
+            }
         }
 
         private void InitializeMembers()

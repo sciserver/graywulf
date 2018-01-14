@@ -53,7 +53,8 @@ namespace Jhu.Graywulf.Jobs.Query
         protected override SqlQuery CreateQueryBase(Node root)
         {
             SqlQuery res;
-            if (root is SelectStatement)
+
+            if (root is StatementBlock)
             {
                 res = new SqlQuery(null, RegistryContext);
             }

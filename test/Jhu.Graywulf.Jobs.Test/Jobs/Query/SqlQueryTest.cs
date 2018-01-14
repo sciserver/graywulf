@@ -15,6 +15,8 @@ namespace Jhu.Graywulf.Test.Jobs.Query
     [TestClass]
     public class SqlQueryTest : SqlQueryTestBase
     {
+        // TODO: rewrite all these to use a TEST database instead of SkyQuery stuff
+
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
@@ -174,7 +176,7 @@ CROSS JOIN SDSSDR7:PhotoObjAll b";
         [TestCategory("Query")]
         public void AliasSelectStarQueryTest()
         {
-            var sql = "SELECT TOP 10 p.* INTO [$into] FROM SDSSDR7:PhotoObj p";
+            var sql = "SELECT TOP 10 p.* INTO [$into] FROM SDSSDR13:PhotoObj p";
 
             RunQuery(sql);
         }

@@ -393,7 +393,7 @@ WHERE DateFinished IS NULL";
                 }
             }
 
-            return "Not called from a test method";
+            throw new Exception("Not called from a test method");
         }
 
         protected object CallMethod(object obj, string name, params object[] pars)

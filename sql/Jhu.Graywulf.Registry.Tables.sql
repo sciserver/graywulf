@@ -51,6 +51,30 @@ WITH (FILLFACTOR = 60)
 
 GO
 
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Entity_Jobs] ON [dbo].[Entity]
+(
+	[UserGuidOwner] ASC,
+	[DateCreated] ASC,
+	[Guid] ASC
+)
+INCLUDE (
+	[ParentGuid],
+	[Number],
+	[Version],
+	[System],
+	[Hidden],
+	[ReadOnly],
+	[Primary],
+	[Deleted],
+	[LockOwner],
+	[RunningState],
+	[AlertState],
+	[DeploymentState]) 
+WHERE ([EntityType]=0x00200400)
+WITH (FILLFACTOR = 60) ON [PRIMARY]
+
+GO
+
 ---------------------------------------------------------------
 
 IF (OBJECT_ID('[dbo].[EntityReference]') IS NOT NULL)

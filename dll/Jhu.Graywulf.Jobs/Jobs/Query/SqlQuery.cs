@@ -115,6 +115,11 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Constructors and initializer
 
+        public SqlQuery()
+        {
+            InitializeMembers(new StreamingContext());
+        }
+
         protected SqlQuery(CancellationContext cancellationContext)
             : base(cancellationContext)
         {
