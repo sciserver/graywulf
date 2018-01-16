@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.Jobs.Query
         private string queryName;
 
         /// <summary>
-        /// Database version to be used to execute the queries (HOT)
+        /// Database version to be used to execute the queries (PROD)
         /// </summary>
         private string sourceDatabaseVersionName;
 
@@ -84,7 +84,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// True, if the FinishInterpret function has completed.
         /// </summary>
         [NonSerialized]
-        private bool isInterpretFinished;
+        private bool isNamesResolved;
 
         /// <summary>
         /// Individual query time-out, overall job timeout is enforced by
@@ -499,7 +499,7 @@ namespace Jhu.Graywulf.Jobs.Query
             this.statDatabaseVersionName = String.Empty;
 
             this.parsingTree = null;
-            this.isInterpretFinished = false;
+            this.isNamesResolved = false;
 
             this.queryTimeout = 60;
             this.maxPartitions = 0;
@@ -549,7 +549,7 @@ namespace Jhu.Graywulf.Jobs.Query
             this.statDatabaseVersionName = old.statDatabaseVersionName;
 
             this.parsingTree = null;
-            this.isInterpretFinished = false;
+            this.isNamesResolved = false;
 
             this.queryTimeout = old.queryTimeout;
             this.maxPartitions = old.maxPartitions;
@@ -650,15 +650,15 @@ namespace Jhu.Graywulf.Jobs.Query
                 }
 
                 // TODO: try to take these out from lock
-                Parse(forceReinitialize);
-                Interpret(forceReinitialize);
+                ParseQuery(forceReinitialize);
+                ResolveNames(forceReinitialize);
             }
         }
 
         /// <summary>
         /// Parses the query
         /// </summary>
-        protected void Parse(bool forceReinitialize)
+        protected void ParseQuery(bool forceReinitialize)
         {
             // Reparse only if needed
             if (parsingTree == null || forceReinitialize)
@@ -671,17 +671,17 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <summary>
         /// Interprets the parsed query
         /// </summary>
-        protected bool Interpret(bool forceReinitialize)
+        protected bool ResolveNames(bool forceReinitialize)
         {
-            if (!isInterpretFinished || forceReinitialize)
+            if (!isNamesResolved || forceReinitialize)
             {
                 // --- Execute name resolution
                 var nr = CreateNameResolver(forceReinitialize);
                 nr.Execute(parsingTree);
 
-                FinishInterpret(forceReinitialize);
+                OnNamesResolved(forceReinitialize);
 
-                this.isInterpretFinished = true;
+                this.isNamesResolved = true;
                 return true;
             }
             else
@@ -689,6 +689,8 @@ namespace Jhu.Graywulf.Jobs.Query
                 return false;
             }
         }
+
+        protected abstract void OnNamesResolved(bool forceReinitialize);
 
         /// <summary>
         /// Returns a new name resolver to be used with the parsed query string.
@@ -707,8 +709,6 @@ namespace Jhu.Graywulf.Jobs.Query
 
             return nr;
         }
-
-        protected abstract void FinishInterpret(bool forceReinitialize);
 
         public virtual void Validate()
         {

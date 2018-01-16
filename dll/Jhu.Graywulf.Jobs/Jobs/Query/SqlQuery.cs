@@ -25,26 +25,15 @@ namespace Jhu.Graywulf.Jobs.Query
         #region Property storage member variables
 
         /// <summary>
-        /// Destination table including target table naming pattern.
-        /// Output table names are either automatically generater or
-        /// taken from the INTO clause.
+        /// Destination tables including target table naming patterns.
+        /// Output table names are either automatically generated or
+        /// taken from the INTO clauses.
         /// </summary>
         private DestinationTable destination;
 
-        /// <summary>
-        /// If 1, query destination table has already been initialized.
-        /// TODO: these will need to be changed for multi-select queries
-        /// </summary>
-        [NonSerialized]
-        public int IsDestinationTableCreated;
+        private Dictionary<string, Table> outputTables;
 
-        [NonSerialized]
-        public int IsDestinationTablePrimaryKeyCreated;
-
-        /// <summary>
-        /// Points to the output table of the query.
-        /// </summary>
-        private Table output;
+        private bool isPartitioned;
 
         /// <summary>
         /// Holds the individual partitions. Usually many, but for simple queries
@@ -70,7 +59,7 @@ namespace Jhu.Graywulf.Jobs.Query
         #region Properties
 
         /// <summary>
-        /// Gets or sets the destination table of the query
+        /// Gets or sets the destination table naming pattern of the query
         /// </summary>
         [DataMember]
         public DestinationTable Destination
@@ -78,18 +67,12 @@ namespace Jhu.Graywulf.Jobs.Query
             get { return destination; }
             set { destination = value; }
         }
-        
-        [DataMember]
-        public Table Output
-        {
-            get { return output; }
-            set { output = value; }
-        }
 
-        [IgnoreDataMember]
-        public List<SqlQueryPartition> Partitions
+        [DataMember]
+        public Dictionary<string, Table> OutputTables
         {
-            get { return partitions; }
+            get { return outputTables; }
+            set { outputTables = value; }
         }
 
         /// <summary>
@@ -98,12 +81,16 @@ namespace Jhu.Graywulf.Jobs.Query
         [IgnoreDataMember]
         public virtual bool IsPartitioned
         {
-            get {
-                // TODO: modify this
-                //return ParsingTree.IsPartitioned;
-
-                return false;
+            get
+            {
+                return isPartitioned;
             }
+        }
+
+        [IgnoreDataMember]
+        public List<SqlQueryPartition> Partitions
+        {
+            get { return partitions; }
         }
 
         [IgnoreDataMember]
@@ -125,7 +112,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             InitializeMembers(new StreamingContext());
         }
-        
+
         public SqlQuery(CancellationContext cancellationContext, RegistryContext registryContext)
             : base(cancellationContext, registryContext)
         {
@@ -181,8 +168,9 @@ namespace Jhu.Graywulf.Jobs.Query
             InitializeQueryObject(null, null, null, true);
         }
 
-        protected override void FinishInterpret(bool forceReinitialize)
+        protected override void OnNamesResolved(bool forceReinitialize)
         {
+            /* TODO: delete
             // Retrieve target table information
             IntoClause into = ParsingTree.FindDescendantRecursive<IntoClause>();
             if (into != null)
@@ -204,6 +192,42 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 // Turn off unique name generation in case an into clause is used
                 destination.Options &= ~TableInitializationOptions.GenerateUniqueName;
+            }
+            */
+
+            IdentifyDestinationTables();
+        }
+
+        private void IdentifyDestinationTables()
+        {
+            // Descend the parsing tree and identify SELECT statements and
+            // INTO clauses to determine the output tables
+
+            // TODO: how to associate destinations with parsing tree nodes?
+
+            outputTables = new Dictionary<string, Table>();
+            
+            foreach (var select in ParsingTree.EnumerateDescendantsRecursive<SelectStatement>(typeof(Subquery)))
+            {
+                var into = select.FindDescendantRecursive<IntoClause>();
+                var table = destination.GetQueryOutputTable(BatchName, QueryName, null, null);
+
+                if (into != null)
+                {
+                    if (into.TableReference.DatasetName != null)
+                    {
+                        var ds = (SqlServerDataset)sm.Datasets[into.TableReference.DatasetName];
+                        dest.Dataset = ds;
+                        dest.DatabaseName = ds.DatabaseName;
+                    }
+
+                    destination.SchemaName = into.TableReference.SchemaName ?? destination.Dataset.DefaultSchemaName;
+                    destination.TableNamePattern = into.TableReference.DatabaseObjectName;
+                }
+                else
+                {
+
+                }
             }
         }
 
@@ -302,7 +326,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 });
             }
         }
-        
+
         #endregion
         #region Query partitioning
 

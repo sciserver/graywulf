@@ -138,7 +138,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return new SqlQueryCodeGenerator(this);
         }
 
-        protected override void FinishInterpret(bool forceReinitialize)
+        protected override void OnNamesResolved(bool forceReinitialize)
         {
         }
 

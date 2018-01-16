@@ -10,6 +10,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 {
     public class SqlNameResolver
     {
+        #region Constants 
         private static readonly HashSet<string> SystemFunctionNames = new HashSet<string>(Schema.SchemaManager.Comparer)
         {
             "OPENDATASOURCE", "OPENQUERY", "OPENROWSET", "OPENXML",
@@ -56,13 +57,22 @@ namespace Jhu.Graywulf.Sql.NameResolution
             "CONNECTION", "CPU_BUSY", "IDLE", "IO_BUSY", "PACK_SENT", "PACK_RECEIVED", "PACKET_ERRORS",
             "TIMETICKS", "TOTAL_ERRORS", "TOTAL_READ", "TOTAL_WRITER",
             "TRANCOUNT",
-            "CURSOR_ROWS", "DATEFIRST", "DBTS", "DEF_SORTORDER_ID", "DEFAULT_LANGID", 
+            "CURSOR_ROWS", "DATEFIRST", "DBTS", "DEF_SORTORDER_ID", "DEFAULT_LANGID",
             "FETCH_STATUS", "LANGID", "LANGUAGE", "LOCK_TIMEOUT", "MAX_CONNECTION",
-            "MAX_PRECISION", "MICROSOFTVERSION", "NESTLEVEL", "OPTIONS", 
+            "MAX_PRECISION", "MICROSOFTVERSION", "NESTLEVEL", "OPTIONS",
             "PROCID", "REMSERVER", "SERVERNAME", "SERVICENAME", "SPID",
             "TEXTSIZE", "VERSION"
         };
 
+        #endregion
+        #region Private variables
+
+        private StatementBlock script;
+        private CommonTableExpression cte;
+        private QuerySpecification qs;
+        private ColumnContext context;
+
+        #endregion
         #region Property storage variables
 
         // The schema manager is used to resolve identifiers that are not local to the script,
@@ -123,6 +133,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         #endregion
+        #region Statements
 
         /// <summary>
         /// Executes the name resolution over a query
@@ -151,34 +162,27 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // 5. Resolve table aliases
             // 6. Assign default column aliases
 
-            // TODO: move this somewhere inside
-            SubstituteFunctionDefaults((Node)script);
-            ResolveFunctionReferences((Node)script);
+            this.script = script;
+            this.cte = null;
 
-            ResolveStatementBlock(script);
+            ResolveStatementBlock();
         }
 
-        protected void ResolveStatementBlock(StatementBlock script)
+        protected void ResolveStatementBlock()
         {
             foreach (var statement in script.EnumerateDescendants<Statement>(true))
             {
-                ResolveStatement(script, statement);
+                ResolveStatement(statement);
             }
         }
 
-        private void ResolveStatement(StatementBlock script, Statement statement)
+        private void ResolveStatement(Statement statement)
         {
             var s = statement.SpecificStatement;
 
-            // Call recursively for sub-statements
-            foreach (var ss in s.EnumerateSubStatements())
-            {
-                ResolveStatement(script, ss);
-            }
-
+            // Resolve current statement
             if (s.IsResolvable)
             {
-                // Resolve current statement
                 switch (s)
                 {
                     case WhileStatement ss:
@@ -211,7 +215,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     case FetchStatement ss:
                         ResolveFetchStatement(script, ss);
                         break;
-                    
                     case SetVariableStatement ss:
                         ResolveSetVariableStatement(script, ss);
                         break;
@@ -242,26 +245,31 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     default:
                         throw new NotImplementedException();
                 }
+            }
 
+            // Call recursively for sub-statements
+            foreach (var ss in s.EnumerateSubStatements())
+            {
+                ResolveStatement(ss);
             }
         }
 
-        #region Statement resolution dispatch functions
-
         private void ResolveWhileStatement(StatementBlock script, WhileStatement statement)
         {
-            ResolveBooleanExpression(statement.Condition);
+            ResolveSubqueries(statement.Condition, 0);
+            ResolveSubtree(statement.Condition);
         }
 
         private void ResolveReturnStatement(StatementBlock script, ReturnStatement statement)
         {
             // it might have a query in the parameter
+            // do we support functions or stored procedures?
             throw new NotImplementedException();
         }
 
         private void ResolveIfStatement(StatementBlock script, IfStatement statement)
         {
-            ResolveBooleanExpression(statement.Condition);
+            ResolveSubtree(statement.Condition);
         }
 
         private void ResolveThrowStatement(StatementBlock script, ThrowStatement statement)
@@ -300,6 +308,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveVariableDeclaration(StatementBlock script, VariableDeclaration vd)
         {
+            var exp = vd.Expression;
+            if (exp != null)
+            {
+                ResolveSubtree(exp);
+            }
+
             if (!script.VariableReferences.ContainsKey(vd.VariableReference.Name))
             {
                 script.VariableReferences.Add(vd.VariableReference.Name, vd.VariableReference);
@@ -356,10 +370,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveSelectStatement(StatementBlock script, SelectStatement statement)
         {
-            var cte = statement.FindDescendant<CommonTableExpression>();
+            cte = statement.FindDescendant<CommonTableExpression>();
+
             if (cte != null)
             {
-                ResolveCommonTableExpression(script, cte);
+                ResolveCommonTableExpression();
             }
 
             ResolveSelectStatement(script, cte, statement, 0);
@@ -381,48 +396,231 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         #endregion
-        #region Boolean expression resolution
+        #region Expression resolution
 
-        private void ResolveBooleanExpression(BooleanExpression condition)
+        /// <summary>
+        /// Resolves an entire subtree of the parsing tree stopping only at 
+        /// sustatements and subqueries which
+        /// must be resolved recursively prior to calling this function
+        /// </summary>
+        /// <param name="script"></param>
+        /// <param name="cte"></param>
+        /// <param name="node"></param>
+        /// <param name="context"></param>
+        private void ResolveSubtree(Node node)
         {
-            throw new NotImplementedException();
+            foreach (var n in node.Nodes)
+            {
+                if (n is Subquery || n is Statement)
+                {
+                    return;
+                }
+
+                // Skip the into clause and subqueries
+                // Subqueries are already processed recursively.
+                if (n is Node)
+                {
+                    ResolveSubtree((Node)node);   // Recursive call
+
+                    if (n is IFunctionReference)
+                    {
+                        ResolveFunctionReference((IFunctionReference)n);
+                    }
+                    else if (n is IVariableReference)
+                    {
+                        ResolveScalarVariableReference((IVariableReference)n);
+                    }
+                    else if (n is IColumnReference)
+                    {
+                        ResolveColumnReference((IColumnReference)n);
+                    }
+                }
+            }
+        }
+
+        protected virtual bool IsSystemFunctionName(string name)
+        {
+            return SystemFunctionNames.Contains(name);
+        }
+
+        /// <summary>
+        /// Substitutes dataset and schema defaults into function references.
+        /// </summary>
+        /// <remarks>
+        /// This is non-standard SQL as SQL requires the schema name to be specified and the database is
+        /// always taken from the current context. In applications, like SkyQuery, functions are always
+        /// taken from the CODE database.
+        /// </remarks>
+        /// <param name="node"></param>
+        private void SubstituteFunctionDefaults(IFunctionReference node)
+        {
+            if (!node.FunctionReference.IsSystem)
+            {
+                try
+                {
+                    node.FunctionReference.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw NameResolutionError.UnresolvableDatasetReference(ex, node);
+                }
+            }
+        }
+        private void ResolveFunctionReference(IFunctionReference node)
+        {
+            // TODO: extend this to CLR static function calls
+
+            SubstituteFunctionDefaults(node);
+
+            if (!node.FunctionReference.IsUdf)
+            {
+                if (!IsSystemFunctionName(node.FunctionReference.SystemFunctionName))
+                {
+                    throw NameResolutionError.UnknownFunctionName(node);
+                }
+            }
+            else
+            {
+                // Check if dataset specified and make sure it's valid
+                if (node.FunctionReference.DatasetName != null)
+                {
+                    if (!schemaManager.Datasets.ContainsKey(node.FunctionReference.DatasetName))
+                    {
+                        throw NameResolutionError.UnresolvableDatasetReference(node);
+                    }
+                }
+
+                var ds = schemaManager.Datasets[node.FunctionReference.DatasetName];
+
+                var dbo = ds.GetObject(node.FunctionReference.DatabaseName, node.FunctionReference.SchemaName, node.FunctionReference.DatabaseObjectName);
+
+                if (dbo == null)
+                {
+                    throw NameResolutionError.UnresolvableFunctionReference(node);
+                }
+
+                node.FunctionReference.DatabaseObject = dbo;
+            }
+        }
+
+        private void ResolveScalarVariableReference(IVariableReference vr)
+        {
+            // TODO: extend this to UDTs, including member access
+
+            if (vr.VariableReference.Type == VariableReferenceType.System)
+            {
+                var name = vr.VariableReference.Name.TrimStart('@');
+
+                if (!SystemVariableNames.Contains(name))
+                {
+                    throw NameResolutionError.UnresolvableVariableReference(vr);
+                }
+            }
+            else if (script.VariableReferences.ContainsKey(vr.VariableReference.Name))
+            {
+                vr.VariableReference = script.VariableReferences[vr.VariableReference.Name];
+
+                if (vr.VariableReference.Type != VariableReferenceType.Scalar)
+                {
+                    throw NameResolutionError.ScalarVariableExpected(vr);
+                }
+            }
+            else
+            {
+                throw NameResolutionError.UnresolvableVariableReference(vr);
+            }
+        }
+
+        private void ResolveColumnReference(IColumnReference cr)
+        {
+            // Star columns cannot be resolved, treat them separately
+            if (!cr.ColumnReference.IsStar && !cr.ColumnReference.IsComplexExpression)
+            {
+                ColumnReference ncr = null;
+                int q = 0;
+
+                if (cr.ColumnReference.TableReference.IsUndefined)
+                {
+                    // This has an empty table reference (only column name specified)
+                    // Look for a match based on column name only
+                    foreach (var tr in qs.SourceTableReferences.Values)
+                    {
+                        foreach (var ccr in tr.ColumnReferences)
+                        {
+                            if (cr.ColumnReference.Compare(ccr))
+                            {
+                                if (q != 0)
+                                {
+                                    throw NameResolutionError.AmbigousColumnReference(cr);
+                                }
+
+                                ncr = ccr;
+                                q++;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // This has a table reference already so only check
+                    // columns of that particular table
+                    foreach (var ccr in cr.ColumnReference.TableReference.ColumnReferences)
+                    {
+                        if (cr.ColumnReference.Compare(ccr))
+                        {
+                            if (q != 0)
+                            {
+                                throw NameResolutionError.AmbigousColumnReference(cr);
+                            }
+
+                            ncr = ccr;
+                            q++;
+                        }
+                    }
+                }
+
+                if (q == 0)
+                {
+                    throw NameResolutionError.UnresolvableColumnReference(cr);
+                }
+
+                // Make copy here and preserve alias!
+                ncr.ColumnContext |= context;
+
+                ncr = new ColumnReference(ncr);
+                if (cr.ColumnReference != null && cr.ColumnReference.ColumnAlias != null)
+                {
+                    ncr.ColumnAlias = cr.ColumnReference.ColumnAlias;
+                }
+                cr.ColumnReference = ncr;
+            }
         }
 
         #endregion
         #region Query constructs
 
-        private void ResolveCommonTableExpression(StatementBlock script, CommonTableExpression cte)
+        /// <summary>
+        /// Descend into subtree and resolve subqueries bottom-up
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="depth"></param>
+        private void ResolveSubqueries(Node node, int depth)
         {
-            foreach (var ct in cte.EnumerateCommonTableSpecifications())
+            foreach (var n in node.Nodes)
             {
-                // Because CTEs can reference themselves (i.e. recursive queries) make sure
-                // the specification is added to the dictionary before the resolver
-                // is called on it
-                cte.CommonTableReferences.Add(ct.TableReference.Alias, ct.TableReference);
-                ResolveCommonTableSpecification(script, cte, ct);
+                if (n is Node)
+                {
+                    ResolveSubqueries((Node)n, depth);
+                }
+
+                if (n is Subquery)
+                {
+                    ResolveSubquery((Subquery)n, depth + 1);
+                }
             }
         }
 
-        private void ResolveCommonTableSpecification(StatementBlock script, CommonTableExpression cte, CommonTableSpecification ts)
-        {
-            var subquery = ts.Subquery;
-            ResolveSubquery(script, cte, subquery, 1);
-        }
-
-        // TODO: make this protected once full script support is implemented
-        public void ResolveSelectStatement(StatementBlock script, CommonTableExpression cte, SelectStatement select, int depth)
-        {
-            var qe = select.QueryExpression;
-
-            ResolveQueryExpression(script, cte, qe, depth);
-
-            var firstqs = qe.FindDescendant<QuerySpecification>();
-            var orderby = select.OrderByClause;
-
-            ResolveOrderByClause(script, cte, orderby, firstqs);
-        }
-
-        protected void ResolveSubquery(StatementBlock script, CommonTableExpression cte, Subquery subquery, int depth)
+        protected void ResolveSubquery(Subquery subquery, int depth)
         {
             var qe = subquery.FindDescendant<QueryExpression>();
             ResolveQueryExpression(script, cte, qe, depth);
@@ -436,7 +634,38 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        protected void ResolveQueryExpression(StatementBlock script, CommonTableExpression cte, QueryExpression qe, int depth)
+        private void ResolveCommonTableExpression()
+        {
+            foreach (var ct in cte.EnumerateCommonTableSpecifications())
+            {
+                // Because CTEs can reference themselves (i.e. recursive queries) make sure
+                // the specification is added to the dictionary before the resolver
+                // is called on it
+                cte.CommonTableReferences.Add(ct.TableReference.Alias, ct.TableReference);
+                ResolveCommonTableSpecification(script, cte, ct);
+            }
+        }
+
+        private void ResolveCommonTableSpecification(CommonTableSpecification ts)
+        {
+            var subquery = ts.Subquery;
+            ResolveSubquery(subquery, 1);
+        }
+
+        // TODO: make this protected once full script support is implemented
+        public void ResolveSelectStatement(SelectStatement select, int depth)
+        {
+            var qe = select.QueryExpression;
+
+            ResolveQueryExpression(script, cte, qe, depth);
+
+            var firstqs = qe.FindDescendant<QuerySpecification>();
+            var orderby = select.OrderByClause;
+
+            ResolveOrderByClause(script, cte, orderby, firstqs);
+        }
+        
+        protected void ResolveQueryExpression(QueryExpression qe, int depth)
         {
             // Resolve the first part of the query expression independently
             // and make sure it's set as ResultsTableReference
@@ -466,7 +695,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// query specification
         /// </summary>
         /// <param name="qs"></param>
-        protected void ResolveQuerySpecification(StatementBlock script, CommonTableExpression cte, QuerySpecification qs, int depth)
+        protected void ResolveQuerySpecification(QuerySpecification qs, int depth)
         {
             // At this point the table and column references are all parsed
             // from the query but no name resolution and cross-identification
@@ -479,11 +708,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // expressions
             foreach (var sq in qs.EnumerateSubqueries())
             {
-                ResolveSubquery(script, cte, sq, depth + 1);
+                ResolveSubquery(sq, depth + 1);
             }
 
-            // Substitute default dataset names and schema names
-            // This is typically the MYDB and dbo
+            // TODO: this goes somewhere else
             SubstituteTableAndColumnDefaults(script, cte, qs);
 
             // Column references will be stored under the query specification
@@ -514,7 +742,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 ResolveVariables(script, firstqs, orderBy, ColumnContext.OrderBy);
             }
         }
-        
+
         /// <summary>
         /// Collect list of table sources and load columns from the schema.
         /// </summary>
@@ -530,7 +758,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             foreach (var tr in qs.EnumerateSourceTableReferences(false))
             {
                 var exportedName = tr.ExportedName;
-                
+
                 // Make sure that table key is used only once
                 if (qs.SourceTableReferences.ContainsKey(exportedName))
                 {
@@ -731,6 +959,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             ResolveVariables(script, qs, (Node)qs, ColumnContext.None);
         }
 
+#if false
+
+        // TODO: delete
+
         /// <summary>
         /// Resolves all table references of all nodes below a node,
         /// not descending into subqueries
@@ -766,104 +998,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        private void ResolveScalarVariableReference(StatementBlock script, IVariableReference vr)
-        {
-            // TODO: extend this to UDTs, including member access
-
-            if (vr.VariableReference.Type == VariableReferenceType.System)
-            {
-                var name = vr.VariableReference.Name.TrimStart('@');
-
-                if (!SystemVariableNames.Contains(name))
-                {
-                    throw NameResolutionError.UnresolvableVariableReference(vr);
-                }
-            }
-            else if (script.VariableReferences.ContainsKey(vr.VariableReference.Name))
-            {
-                vr.VariableReference = script.VariableReferences[vr.VariableReference.Name];
-
-                if (vr.VariableReference.Type != VariableReferenceType.Scalar)
-                {
-                    throw NameResolutionError.ScalarVariableExpected(vr);
-                }
-            }
-            else
-            {
-                throw NameResolutionError.UnresolvableVariableReference(vr);
-            }
-        }
-
-        private void ResolveColumnReference(QuerySpecification qs, IColumnReference cr, ColumnContext context)
-        {
-            // Try to resolve the table belonging to a column based solely on
-            // column name. This function is called only on column references with
-            // unspecified table parts.
-            // Star columns cannot be resolved, treat them separately
-
-            if (!cr.ColumnReference.IsStar && !cr.ColumnReference.IsComplexExpression)
-            {
-
-                ColumnReference ncr = null;
-                int q = 0;
-
-                if (cr.ColumnReference.TableReference.IsUndefined)
-                {
-                    // This has an empty table reference (only column name specified)
-                    // Look for a match based on column name only
-                    foreach (var tr in qs.SourceTableReferences.Values)
-                    {
-                        foreach (var ccr in tr.ColumnReferences)
-                        {
-                            if (cr.ColumnReference.Compare(ccr))
-                            {
-                                if (q != 0)
-                                {
-                                    throw NameResolutionError.AmbigousColumnReference(cr);
-                                }
-
-                                ncr = ccr;
-                                q++;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    // This has a table reference already so only check
-                    // columns of that particular table
-                    foreach (var ccr in cr.ColumnReference.TableReference.ColumnReferences)
-                    {
-                        if (cr.ColumnReference.Compare(ccr))
-                        {
-                            if (q != 0)
-                            {
-                                throw NameResolutionError.AmbigousColumnReference(cr);
-                            }
-
-                            ncr = ccr;
-                            q++;
-                        }
-                    }
-                }
-
-                if (q == 0)
-                {
-                    throw NameResolutionError.UnresolvableColumnReference(cr);
-                }
-
-                // Make copy here and preserve alias!
-                ncr.ColumnContext |= context;
-
-                ncr = new ColumnReference(ncr);
-                if (cr.ColumnReference != null && cr.ColumnReference.ColumnAlias != null)
-                {
-                    ncr.ColumnAlias = cr.ColumnReference.ColumnAlias;
-                }
-                cr.ColumnReference = ncr;
-            }
-        }
-
+#endif
+        
         protected virtual ColumnContext GetColumnContext(Node n, ColumnContext context)
         {
             if (n is SelectList)
@@ -919,65 +1055,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     n = n.Next;
                 }
             }
-        }
-
-        protected void ResolveFunctionReferences(Node n)
-        {
-            foreach (object o in n.Nodes)
-            {
-                // Skip the into and clause and subqueries
-                if (!(o is IntoClause))
-                {
-                    if (o is Node)
-                    {
-                        ResolveFunctionReferences((Node)o);   // Recursive call
-                    }
-                }
-            }
-
-            if (n is IFunctionReference && ((IFunctionReference)n).FunctionReference != null)
-            {
-                ResolveFunctionReference((IFunctionReference)n);
-            }
-        }
-
-        protected void ResolveFunctionReference(IFunctionReference node)
-        {
-            // *** TODO: handle sys functions here
-            if (!node.FunctionReference.IsUdf)
-            {
-                if (!IsSystemFunctionName(node.FunctionReference.SystemFunctionName))
-                {
-                    throw NameResolutionError.UnknownFunctionName(node);
-                }
-            }
-            else
-            {
-                // Check if dataset specified and make sure it's valid
-                if (node.FunctionReference.DatasetName != null)
-                {
-                    if (!schemaManager.Datasets.ContainsKey(node.FunctionReference.DatasetName))
-                    {
-                        throw NameResolutionError.UnresolvableDatasetReference(node);
-                    }
-                }
-
-                var ds = schemaManager.Datasets[node.FunctionReference.DatasetName];
-
-                var dbo = ds.GetObject(node.FunctionReference.DatabaseName, node.FunctionReference.SchemaName, node.FunctionReference.DatabaseObjectName);
-
-                if (dbo == null)
-                {
-                    throw NameResolutionError.UnresolvableFunctionReference(node);
-                }
-
-                node.FunctionReference.DatabaseObject = dbo;
-            }
-        }
-
-        protected virtual bool IsSystemFunctionName(string name)
-        {
-            return SystemFunctionNames.Contains(name);
         }
 
         /// <summary>
@@ -1070,33 +1147,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 catch (KeyNotFoundException ex)
                 {
                     throw NameResolutionError.UnresolvableDatasetReference(ex, tr);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Substitutes dataset and schema defaults into function references.
-        /// </summary>
-        /// <remarks>
-        /// This is non-standard SQL as SQL requires the schema name to be specified and the database is
-        /// always taken from the current context. In applications, like SkyQuery, functions are always
-        /// taken from the CODE database.
-        /// </remarks>
-        /// <param name="node"></param>
-        protected void SubstituteFunctionDefaults(Node node)
-        {
-            foreach (var fi in node.EnumerateDescendantsRecursive<FunctionIdentifier>())
-            {
-                if (!fi.FunctionReference.IsSystem)
-                {
-                    try
-                    {
-                        fi.FunctionReference.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
-                    }
-                    catch (KeyNotFoundException ex)
-                    {
-                        throw NameResolutionError.UnresolvableDatasetReference(ex, fi);
-                    }
                 }
             }
         }
