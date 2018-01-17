@@ -13,8 +13,111 @@ namespace Jhu.Graywulf.Jobs.Query
     [TestClass]
     public class TableReferenceTest : SqlQueryTestBase
     {
-        // TODO: move this to name resolver test or somewhere else
+        // TODO: rewrite all these to use a TEST database instead of SkyQuery stuff
 
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            StartLogger();
+            InitializeJobTests();
+        }
+
+        [ClassCleanup]
+        public static void CleanUp()
+        {
+            CleanupJobTests();
+            StopLogger();
+        }
+
+        #region Query preprocessing tests
+
+        [TestMethod]
+        public void CollectSourceTablesTest1()
+        {
+            // Test if tables are correctly collected from all select statements
+            var sql =
+@"SELECT * FROM TEST:CatalogA
+SELECT * FROM TEST:CatalogB";
+            var q = CreateQuery(sql);
+
+            Assert.AreEqual(2, q.SourceTables.Count);
+        }
+
+        [TestMethod]
+        public void CollectSourceTablesTest2()
+        {
+            // Test is tables are correctly collected from all select statements
+            var sql = @"SELECT * FROM (SELECT * FROM TEST:CatalogA) a";
+            var q = CreateQuery(sql);
+
+            Assert.AreEqual(1, q.SourceTables.Count);
+        }
+
+        [TestMethod]
+        public void CollectSourceTablesTest3()
+        {
+            // Test is tables are correctly collected from all select statements
+            var sql =
+@"DECLARE @v int = (SELECT TOP 1 objid FROM TEST:CatalogA)
+SELECT * FROM TEST:CatalogB";
+            var q = CreateQuery(sql);
+
+            Assert.AreEqual(2, q.SourceTables.Count);
+        }
+
+        [TestMethod]
+        public void SourceTableColumnsTest1()
+        {
+            // Test is tables are correctly collected from all select statements
+            var sql = @"SELECT objid FROM TEST:CatalogA";
+            var q = CreateQuery(sql);
+            var tr = q.SourceTables.Values.First();
+
+            Assert.AreEqual(1, q.SourceTables.Count);
+            Assert.AreEqual(12, tr.ColumnReferences.Count);
+            Assert.AreEqual("objId", tr.ColumnReferences[0].ColumnName);
+            Assert.AreEqual(ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].ColumnContext);
+            Assert.AreEqual("ra", tr.ColumnReferences[1].ColumnName);
+            Assert.AreEqual(ColumnContext.None, tr.ColumnReferences[1].ColumnContext);
+        }
+
+        [TestMethod]
+        public void SourceTableColumnsTest2()
+        {
+            // Test is tables are correctly collected from all select statements
+            var sql =
+@"SELECT objid FROM TEST:CatalogA
+SELECT ra FROM TEST:CatalogA";
+            var q = CreateQuery(sql);
+            var tr = q.SourceTables.Values.First();
+
+            Assert.AreEqual(1, q.SourceTables.Count);
+            Assert.AreEqual(12, tr.ColumnReferences.Count);
+            Assert.AreEqual("objId", tr.ColumnReferences[0].ColumnName);
+            Assert.AreEqual(ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].ColumnContext);
+            Assert.AreEqual("ra", tr.ColumnReferences[1].ColumnName);
+            Assert.AreEqual(ColumnContext.SelectList, tr.ColumnReferences[1].ColumnContext);
+        }
+
+        [TestMethod]
+        public void SourceTableColumnsTest3()
+        {
+            // Test is tables are correctly collected from all select statements
+            var sql =
+@"SELECT objid FROM TEST:CatalogA
+SELECT ra FROM TEST:CatalogA WHERE objid = 2";
+            var q = CreateQuery(sql);
+            var tr = q.SourceTables.Values.First();
+
+            Assert.AreEqual(1, q.SourceTables.Count);
+            Assert.AreEqual(12, tr.ColumnReferences.Count);
+            Assert.AreEqual("objId", tr.ColumnReferences[0].ColumnName);
+            Assert.AreEqual(ColumnContext.PrimaryKey | ColumnContext.SelectList | ColumnContext.Where, tr.ColumnReferences[0].ColumnContext);
+            Assert.AreEqual("ra", tr.ColumnReferences[1].ColumnName);
+            Assert.AreEqual(ColumnContext.SelectList, tr.ColumnReferences[1].ColumnContext);
+        }
+
+        #endregion
         #region Column list functions
 
         private List<Column> GetColumnListTestHelper(string sql, ColumnContext context)
@@ -111,6 +214,6 @@ FROM TEST:SDSSDR7PhotoObjAll p";
             Assert.AreEqual(23, cols.Count);
         }
 
-        #endregion
+#endregion
     }
 }
