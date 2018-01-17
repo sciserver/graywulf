@@ -602,12 +602,43 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var qe = select.QueryExpression;
             ResolveQueryExpression(script, cte, qe, depth);
 
-            var qs = qe.EnumerateQuerySpecifications().FirstOrDefault();
+            int q = 0;
             var orderBy = select.OrderByClause;
-
-            if (orderBy != null)
+                        
+            foreach (var qs in qe.EnumerateQuerySpecifications())
             {
-                ResolveOrderByClause(script, cte, orderBy, qs);
+                if (q == 0 && orderBy != null)
+                {
+                    ResolveOrderByClause(script, cte, orderBy, qs);
+                }
+
+                foreach (var tr in qs.EnumerateSourceTableReferences(true))
+                {
+                    // Save the table in the main list. If it's already there then
+                    // merge the column context
+
+                    if (tr.Type == TableReferenceType.TableOrView)
+                    {
+                        var uniqueName = tr.DatabaseObject.UniqueKey;
+
+                        if (script.SourceTableReferences.ContainsKey(uniqueName))
+                        {
+                            var ntr = script.SourceTableReferences[uniqueName];
+
+                            for (int i = 0; i < tr.ColumnReferences.Count; i++)
+                            {
+                                ntr.ColumnReferences[i].ColumnContext |= tr.ColumnReferences[i].ColumnContext;
+                            }
+                        }
+                        else
+                        {
+                            var ntr = new TableReference(tr);
+                            script.SourceTableReferences.Add(uniqueName, ntr);
+                        }
+                    }
+                }
+
+                q++;
             }
         }
 
@@ -714,7 +745,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// <param name="qs"></param>
         private void CollectSourceTableReferences(StatementBlock script, CommonTableExpression cte, QuerySpecification qs)
         {
-            // --- Collect column references from subqueries or load from the database schema
+            // Collect column references from subqueries or load from the database schema
 
             foreach (var tr in qs.EnumerateSourceTableReferences(false))
             {
@@ -728,6 +759,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 else
                 {
                     var ntr = ResolveSourceTableReference(script, cte, tr);
+
+                    // Save the table in the query specification
                     qs.SourceTableReferences.Add(exportedName, ntr);
                 }
             }
