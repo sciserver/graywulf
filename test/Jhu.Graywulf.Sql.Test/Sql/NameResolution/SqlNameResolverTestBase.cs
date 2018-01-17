@@ -68,6 +68,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
             nameResolver.Execute(script);
         }
 
+        protected StatementBlock Parse(string query)
+        {
+            var p = new SqlParser();
+            var script = p.Execute<StatementBlock>(query);
+
+            ResolveNames(script);
+
+            return script;
+        }
+
         protected T Parse<T>(string query)
             where T : Jhu.Graywulf.Parsing.Node
         {

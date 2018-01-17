@@ -47,11 +47,18 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public static SelectList Create(ColumnReference cr)
         {
-            // Create new expression
-            var nsl = new SelectList();
+            var ncr = new ColumnReference(cr);
 
+            // Columns from subquery expressions have no names, only aliases
+            if (ncr.ColumnName == null)
+            {
+                ncr.ColumnName = cr.ColumnAlias;
+                ncr.ColumnAlias = null;
+            }
+            
+            var nsl = new SelectList();
             var nce = new ColumnExpression();
-            nce.ColumnReference = new ColumnReference(cr);
+            nce.ColumnReference = ncr;
             nsl.Stack.AddLast(nce);
 
             var nex = new Expression();
@@ -60,7 +67,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var nav = new AnyVariable();
             nex.Stack.AddLast(nav);
 
-            nav.Stack.AddLast(ColumnIdentifier.Create(new ColumnReference(cr)));
+            nav.Stack.AddLast(ColumnIdentifier.Create(ncr));
 
             return nsl;
         }
@@ -120,43 +127,6 @@ namespace Jhu.Graywulf.Sql.Parsing
                 }
 
                 n = n.Next;
-            }
-        }
-
-        public SelectList SubstituteStars()
-        {
-            var ce = FindDescendant<ColumnExpression>();
-            var subsl = FindDescendant<SelectList>();
-
-            SelectList sl = null;
-            if (ce.ColumnReference.IsStar)
-            {
-                // Build select list from the column list of
-                // the referenced table, then replace current node
-                if (ce.TableReference.IsUndefined)
-                {
-                    sl = SelectList.Create(FindAscendant<QuerySpecification>());
-                }
-                else
-                {
-                    sl = SelectList.Create(ce.TableReference);
-                }
-
-                if (subsl != null)
-                {
-                    sl.Append(subsl.SubstituteStars());
-                }
-
-                return sl;
-            }
-            else
-            {
-                if (subsl != null)
-                {
-                    Replace(subsl.SubstituteStars());
-                }
-
-                return this;
             }
         }
     }

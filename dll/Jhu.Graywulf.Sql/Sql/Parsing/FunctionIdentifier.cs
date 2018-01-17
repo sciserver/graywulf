@@ -14,7 +14,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return functionReference; }
         }
-
         public FunctionReference FunctionReference
         {
             get { return functionReference; }
@@ -34,8 +33,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         protected override void OnInitializeMembers()
         {
             base.OnInitializeMembers();
-
-            this.functionReference = null;
         }
 
         protected override void OnCopyMembers(object other)
@@ -43,30 +40,56 @@ namespace Jhu.Graywulf.Sql.Parsing
             base.OnCopyMembers(other);
 
             var old = (FunctionIdentifier)other;
-
-            this.functionReference = old.functionReference;
         }
 
         public static FunctionIdentifier Create(string functionName)
         {
             var fid = new FunctionIdentifier();
             fid.functionReference = new FunctionReference(functionName);
+
+            var fn = FunctionName.Create(functionName);
+            fid.Stack.AddLast(fn);
+
             return fid;
         }
 
         public static FunctionIdentifier Create(FunctionReference functionReference)
         {
-            var fid = new FunctionIdentifier();
-            fid.Stack.AddLast(UdfIdentifier.Create());
-            fid.functionReference = functionReference;
-            return fid;
+            if (functionReference.IsSystem)
+            {
+                return Create(functionReference.SystemFunctionName);
+            }
+            else
+            {
+                var fid = new FunctionIdentifier();
+                fid.functionReference = functionReference;
+
+                var udf = UdfIdentifier.Create();
+                fid.Stack.AddLast(udf);
+
+                return fid;
+            }
         }
 
         public override void Interpret()
         {
             base.Interpret();
 
-            this.functionReference = new FunctionReference(this);
+            var udf = UdfIdentifier;
+            var fn = FunctionName;
+
+            if (udf != null)
+            {
+                this.functionReference = new FunctionReference(udf);
+            }
+            else if (fn != null)
+            {
+                this.functionReference = new FunctionReference(fn);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

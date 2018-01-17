@@ -112,5 +112,7 @@ INNER JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID], [Graywulf_Schema_Te
             Assert.AreEqual(TableReferenceType.Subquery, qs.SourceTableReferences["a"].Type);
             Assert.AreEqual(TableReferenceType.Subquery, qs.SourceTableReferences["b"].Type);
         }
+
+        // Add SELECT * tests, function, sunquery in where etc.
     }
 }

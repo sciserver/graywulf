@@ -72,10 +72,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
             InterpretSystemFunction(functionName);
         }
 
-        public FunctionReference(FunctionIdentifier fi)
+        public FunctionReference(FunctionName fn)
         {
             InitializeMembers();
-            InterpretFunctionIdentifier(fi);
+            InterpretFunctionName(fn);
+        }
+
+        public FunctionReference(UdfIdentifier fi)
+        {
+            InitializeMembers();
+            InterpretUdfIdentifier(fi);
         }
 
         private void InitializeMembers()
@@ -102,48 +108,28 @@ namespace Jhu.Graywulf.Sql.NameResolution
             isUdf = false;
         }
 
-        private void InterpretFunctionIdentifier(FunctionIdentifier fi)
+        private void InterpretFunctionName(FunctionName fn)
         {
-            var fn = fi.FunctionName;
+            InterpretSystemFunction(fn.Value);
+        }
 
-            if (fn != null)
-            {
-                DatasetName = null;
-                DatabaseName = null;
-                SchemaName = null;
-                DatabaseObjectName = null;
+        private void InterpretUdfIdentifier(UdfIdentifier udfi)
+        {
+            var ds = udfi.FindDescendant<DatasetName>();
+            DatasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
 
-                systemFunctionName = fn.Value;
+            var dbn = udfi.FindDescendant<DatabaseName>();
+            DatabaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
 
-                isUdf = false;
-            }
-            else
-            {
-                var udfi = fi.UdfIdentifier;
+            var sn = udfi.FindDescendant<SchemaName>();
+            SchemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
 
-                if (udfi != null)
-                {
-                    var ds = udfi.FindDescendant<DatasetName>();
-                    DatasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
+            var tn = udfi.FindDescendant<FunctionName>();
+            DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
 
-                    var dbn = udfi.FindDescendant<DatabaseName>();
-                    DatabaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
+            systemFunctionName = null;
 
-                    var sn = udfi.FindDescendant<SchemaName>();
-                    SchemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
-
-                    var tn = udfi.FindDescendant<FunctionName>();
-                    DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
-
-                    systemFunctionName = null;
-
-                    isUdf = true;
-                }
-                else
-                {
-                    throw new InvalidOperationException();  // *** TODO
-                }
-            }
+            isUdf = true;
         }
 
         /*

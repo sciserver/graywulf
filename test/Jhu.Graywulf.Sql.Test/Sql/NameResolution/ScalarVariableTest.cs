@@ -11,14 +11,6 @@ namespace Jhu.Graywulf.Sql.Parsing.NameResolver
     [TestClass]
     public class ScalarVariableTest : SqlNameResolverTestBase
     {
-        private StatementBlock Parse(string sql)
-        {
-            var p = new SqlParser().Execute<StatementBlock>(sql);
-            var nr = new SqlNameResolver();
-            nr.Execute(p);
-            return p;
-        }
-
         [TestMethod]
         public void DeclareSingleVariableTest()
         {
@@ -130,11 +122,49 @@ SET @var = 'this is a text'";
         }
 
         [TestMethod]
+        public void InitFromQueryTest()
+        {
+            var sql = @"DECLARE @var int = (SELECT TOP 1 ID FROM Author a)";
+            var ss = Parse(sql);
+
+            var sq = ss.FindDescendantRecursive<Subquery>();
+            var qs = sq.QueryExpression.EnumerateQuerySpecifications().FirstOrDefault();
+            Assert.AreEqual(1, qs.SourceTableReferences.Count);
+            Assert.AreEqual("Author", qs.SourceTableReferences["a"].DatabaseObjectName);
+            Assert.AreEqual(2, qs.SourceTableReferences["a"].ColumnReferences.Count);
+            Assert.AreEqual(ColumnContext.SelectList | ColumnContext.PrimaryKey, qs.SourceTableReferences["a"].ColumnReferences[0].ColumnContext);
+        }
+
+        [TestMethod]
+        public void InitFromQueryTest2()
+        {
+            var sql = @"DECLARE @var int = (SELECT TOP 1 ID FROM (SELECT * FROM Author) a)";
+            var ss = Parse(sql);
+            
+            var sq = ss.FindDescendantRecursive<Subquery>();
+            var qs = sq.QueryExpression.EnumerateQuerySpecifications().FirstOrDefault();
+            Assert.AreEqual(1, qs.SourceTableReferences.Count);
+            Assert.AreEqual("a", qs.SourceTableReferences["a"].Alias);
+            Assert.AreEqual(2, qs.SourceTableReferences["a"].ColumnReferences.Count);
+            Assert.AreEqual(ColumnContext.SelectList | ColumnContext.PrimaryKey, qs.SourceTableReferences["a"].ColumnReferences[0].ColumnContext);
+        }
+
+        [TestMethod]
         public void SetFromQueryTest()
         {
             var sql =
 @"DECLARE @var int
 SET @var = (SELECT 1)";
+
+            var ss = Parse(sql);
+        }
+
+        [TestMethod]
+        public void SelectFromQueryTest()
+        {
+            var sql =
+@"DECLARE @var int
+SELECT @var = 1";
 
             var ss = Parse(sql);
         }

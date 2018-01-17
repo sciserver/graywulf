@@ -543,6 +543,17 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
         }
 
         [TestMethod]
+        public void ScalarFunctionInSubqueryTest()
+        {
+            var sql = "SELECT * FROM (SELECT dbo.TestScalarFunction(1) t) a";
+
+            var qs = Parse<QuerySpecification>(sql);
+
+            var res = GenerateCode(qs);
+            Assert.AreEqual("SELECT [a].[t] AS [a_t] FROM (SELECT [Graywulf_Schema_Test].[dbo].[TestScalarFunction](1) AS [t]) [a]", res);
+        }
+
+        [TestMethod]
         public void TableValuedFunctionTest()
         {
             var sql = "SELECT * FROM dbo.TestTableValuedFunction(0) AS f";
@@ -558,7 +569,6 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [f].[b] AS [f_b], [f].[a] AS [f_a] FROM [Graywulf_Schema_Test].[dbo].[TestTableValuedFunction](0) AS [f]", res);
-                           //SELECT [f].[b] AS [f_b], [f].[a] AS [f_a] FROM [Graywulf_Schema_Test].[dbo].[TestTableValuedFunction] AS [f]
         }
 
 #endregion

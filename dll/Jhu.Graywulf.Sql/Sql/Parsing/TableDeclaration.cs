@@ -15,9 +15,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { Variable.VariableReference = value; }
         }
 
-        public UserVariable Variable
+        public TableVariable Variable
         {
-            get { return FindDescendant<UserVariable>(); }
+            get { return FindDescendant<TableVariable>(); }
         }
         
         public override void Interpret()
