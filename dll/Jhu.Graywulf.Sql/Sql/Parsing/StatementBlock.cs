@@ -12,7 +12,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         #region Private member variables
 
         private Dictionary<string, VariableReference> variableReferences;
-        private Dictionary<string, TableReference> sourceTableReferences;
 
         #endregion
         #region Properties
@@ -27,11 +26,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return variableReferences; }
         }
 
-        public Dictionary<string, TableReference> SourceTableReferences
-        {
-            get { return sourceTableReferences; }
-        }
-
         #endregion
         #region Constructors and initializers
 
@@ -40,7 +34,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             base.OnInitializeMembers();
 
             this.variableReferences = new Dictionary<string, VariableReference>(Schema.SchemaManager.Comparer);
-            this.sourceTableReferences = new Dictionary<string, TableReference>(Schema.SchemaManager.Comparer);
         }
 
         protected override void OnCopyMembers(object other)
@@ -50,7 +43,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             var old = (StatementBlock)other;
 
             this.variableReferences = new Dictionary<string, VariableReference>(old.variableReferences);
-            this.sourceTableReferences = new Dictionary<string, TableReference>(old.sourceTableReferences);
         }
 
         #endregion

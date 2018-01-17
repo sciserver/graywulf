@@ -601,44 +601,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var qe = select.QueryExpression;
             ResolveQueryExpression(script, cte, qe, depth);
-
-            int q = 0;
+            
             var orderBy = select.OrderByClause;
-                        
-            foreach (var qs in qe.EnumerateQuerySpecifications())
+
+            if (orderBy != null)
             {
-                if (q == 0 && orderBy != null)
-                {
-                    ResolveOrderByClause(script, cte, orderBy, qs);
-                }
-
-                foreach (var tr in qs.EnumerateSourceTableReferences(true))
-                {
-                    // Save the table in the main list. If it's already there then
-                    // merge the column context
-
-                    if (tr.Type == TableReferenceType.TableOrView)
-                    {
-                        var uniqueName = tr.DatabaseObject.UniqueKey;
-
-                        if (script.SourceTableReferences.ContainsKey(uniqueName))
-                        {
-                            var ntr = script.SourceTableReferences[uniqueName];
-
-                            for (int i = 0; i < tr.ColumnReferences.Count; i++)
-                            {
-                                ntr.ColumnReferences[i].ColumnContext |= tr.ColumnReferences[i].ColumnContext;
-                            }
-                        }
-                        else
-                        {
-                            var ntr = new TableReference(tr);
-                            script.SourceTableReferences.Add(uniqueName, ntr);
-                        }
-                    }
-                }
-
-                q++;
+                var qs = qe.EnumerateQuerySpecifications().FirstOrDefault();
+                ResolveOrderByClause(script, cte, orderBy, qs);
             }
         }
 

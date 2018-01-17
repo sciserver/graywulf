@@ -34,7 +34,6 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         [TestMethod]
         public void DiscoverParametersTest()
         {
-
             var jd = new JobDefinition();
             jd.WorkflowTypeName = Util.TypeNameFormatter.ToUnversionedAssemblyQualifiedName(typeof(Jhu.Graywulf.Jobs.Query.SqlQueryJob));
             jd.DiscoverWorkflowParameters();
@@ -49,7 +48,102 @@ namespace Jhu.Graywulf.Test.Jobs.Query
             Assert.IsTrue(sc.Execute(t));
         }
 
-        #region Simple SQL query tests
+        #region Query preprocessing tests
+
+        [TestMethod]
+        public void CollectSourceTablesTest1()
+        {
+            // Test is tables are correctly collected from all select statements
+            var sql =
+@"SELECT * FROM Author
+SELECT * FROM Book";
+            var q = CreateQuery(sql);
+
+            Assert.AreEqual(2, q.SourceTables.Count);
+        }
+
+        [TestMethod]
+        public void CollectSourceTablesTest2()
+        {
+            // Test is tables are correctly collected from all select statements
+            var sql = @"SELECT * FROM (SELECT * FROM Author) a";
+            var q = CreateQuery(sql);
+
+            Assert.AreEqual(1, q.SourceTables.Count);
+        }
+
+#if false
+
+        [TestMethod]
+        public void CollectSourceTablesTest3()
+        {
+            // Test is tables are correctly collected from all select statements
+            var sql =
+@"DECLARE @v int = (SELECT TOP 1 ID FROM Author)
+SELECT * FROM Book";
+
+            var ss = Parse(sql);
+
+            Assert.AreEqual(2, ss.SourceTableReferences.Count);
+        }
+
+        [TestMethod]
+        public void SourceTableColumnsTest1()
+        {
+            // Test is tables are correctly collected from all select statements
+            var sql = @"SELECT ID FROM Author";
+            var ss = Parse(sql);
+            var tr = ss.SourceTableReferences.Values.First();
+
+            Assert.AreEqual(1, ss.SourceTableReferences.Count);
+            Assert.AreEqual(2, tr.ColumnReferences.Count);
+            Assert.AreEqual("ID", tr.ColumnReferences[0].ColumnName);
+            Assert.AreEqual(ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].ColumnContext);
+            Assert.AreEqual("Name", tr.ColumnReferences[1].ColumnName);
+            Assert.AreEqual(ColumnContext.None, tr.ColumnReferences[1].ColumnContext);
+        }
+
+        [TestMethod]
+        public void SourceTableColumnsTest2()
+        {
+            // Test is tables are correctly collected from all select statements
+            var sql =
+@"SELECT ID FROM Author
+SELECT Name FROM Author";
+            var ss = Parse(sql);
+            var tr = ss.SourceTableReferences.Values.First();
+
+            Assert.AreEqual(1, ss.SourceTableReferences.Count);
+            Assert.AreEqual(2, tr.ColumnReferences.Count);
+            Assert.AreEqual("ID", tr.ColumnReferences[0].ColumnName);
+            Assert.AreEqual(ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].ColumnContext);
+            Assert.AreEqual("Name", tr.ColumnReferences[1].ColumnName);
+            Assert.AreEqual(ColumnContext.SelectList, tr.ColumnReferences[1].ColumnContext);
+        }
+
+        [TestMethod]
+        public void SourceTableColumnsTest3()
+        {
+            // Test is tables are correctly collected from all select statements
+            var sql =
+@"SELECT ID FROM Author
+SELECT Name FROM Author WHERE ID = 2";
+            var ss = Parse(sql);
+            var tr = ss.SourceTableReferences.Values.First();
+
+            Assert.AreEqual(1, ss.SourceTableReferences.Count);
+            Assert.AreEqual(2, tr.ColumnReferences.Count);
+            Assert.AreEqual("ID", tr.ColumnReferences[0].ColumnName);
+            Assert.AreEqual(ColumnContext.PrimaryKey | ColumnContext.SelectList | ColumnContext.Where, tr.ColumnReferences[0].ColumnContext);
+            Assert.AreEqual("Name", tr.ColumnReferences[1].ColumnName);
+            Assert.AreEqual(ColumnContext.SelectList, tr.ColumnReferences[1].ColumnContext);
+        }
+
+#endif
+
+#endregion
+
+#region Simple SQL query tests
 
         [TestMethod]
         [TestCategory("Query")]
@@ -253,8 +347,8 @@ WHERE point.GetAngleEq(0, 0, p.ra, p.dec) > 1000";
             RunQuery(sql);
         }
 
-        #endregion
-        #region MyDB query tests
+#endregion
+#region MyDB query tests
 
         /// <summary>
         /// Executes a simple query on a single MyDB table
@@ -348,8 +442,8 @@ CROSS JOIN MyCatalog b";
             RunQuery(sql);
         }
 
-        #endregion
-        #region Partitioned query tests
+#endregion
+#region Partitioned query tests
 
         [TestMethod]
         [TestCategory("Query")]
@@ -436,6 +530,6 @@ CROSS JOIN MyCatalog b
             q.Destination.CheckTableExistence();
         }
 
-        #endregion
+#endregion
     }
 }

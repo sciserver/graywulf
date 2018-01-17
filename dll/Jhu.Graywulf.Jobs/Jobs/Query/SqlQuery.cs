@@ -12,6 +12,7 @@ using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.CodeGeneration;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.IO.Tasks;
@@ -24,13 +25,15 @@ namespace Jhu.Graywulf.Jobs.Query
     {
         #region Property storage member variables
 
+        private Dictionary<string, TableReference> sourceTables;
+
         /// <summary>
         /// Destination tables including target table naming patterns.
         /// Output table names are either automatically generated or
         /// taken from the INTO clauses.
         /// </summary>
         private DestinationTable destination;
-
+        
         private Dictionary<string, Table> outputTables;
 
         private bool isPartitioned;
@@ -58,6 +61,12 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Properties
 
+        [IgnoreDataMember]
+        public Dictionary<string, TableReference> SourceTables
+        {
+            get { return sourceTables; }
+        }
+
         /// <summary>
         /// Gets or sets the destination table naming pattern of the query
         /// </summary>
@@ -67,7 +76,7 @@ namespace Jhu.Graywulf.Jobs.Query
             get { return destination; }
             set { destination = value; }
         }
-
+        
         [DataMember]
         public Dictionary<string, Table> OutputTables
         {
@@ -128,10 +137,8 @@ namespace Jhu.Graywulf.Jobs.Query
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
+            this.sourceTables = null;
             this.destination = null;
-            this.IsDestinationTableCreated = 0;
-            this.IsDestinationTablePrimaryKeyCreated = 0;
-            this.output = null;
 
             this.partitions = new List<SqlQueryPartition>();
 
@@ -141,10 +148,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private void CopyMembers(SqlQuery old)
         {
+            this.sourceTables = old.sourceTables;
             this.destination = old.destination;
-            this.IsDestinationTableCreated = old.IsDestinationTableCreated;
-            this.IsDestinationTablePrimaryKeyCreated = old.IsDestinationTablePrimaryKeyCreated;
-            this.output = old.output;
 
             this.partitions = new List<SqlQueryPartition>(old.partitions.Select(p => (SqlQueryPartition)p.Clone()));
 
@@ -195,11 +200,47 @@ namespace Jhu.Graywulf.Jobs.Query
             }
             */
 
+            IdentifySourceTables();
             IdentifyDestinationTables();
+        }
+
+        private void IdentifySourceTables()
+        {
+            sourceTables = new Dictionary<string, TableReference>();
+
+            foreach (var qe in ParsingTree.EnumerateDescendantsRecursive<QueryExpression>())
+            {
+                foreach (var tr in qe.EnumerateSourceTableReferences(false))
+                {
+                    // Save the table in the main list. If it's already there then
+                    // merge the column context
+
+                    if (tr.Type == TableReferenceType.TableOrView)
+                    {
+                        var uniqueName = tr.DatabaseObject.UniqueKey;
+
+                        if (sourceTables.ContainsKey(uniqueName))
+                        {
+                            var ntr = sourceTables[uniqueName];
+
+                            for (int i = 0; i < tr.ColumnReferences.Count; i++)
+                            {
+                                ntr.ColumnReferences[i].ColumnContext |= tr.ColumnReferences[i].ColumnContext;
+                            }
+                        }
+                        else
+                        {
+                            var ntr = new TableReference(tr);
+                            sourceTables.Add(uniqueName, ntr);
+                        }
+                    }
+                }
+            }
         }
 
         private void IdentifyDestinationTables()
         {
+            /*
             // Descend the parsing tree and identify SELECT statements and
             // INTO clauses to determine the output tables
 
@@ -229,6 +270,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 }
             }
+
+            */
         }
 
         public override void Validate()

@@ -328,6 +328,9 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public async Task PrepareDestinationTableAsync()
         {
+            throw new NotImplementedException();
+
+            /*
             // Only initialize target table if it's still uninitialized
             if (Interlocked.Exchange(ref query.IsDestinationTableCreated, 1) == 0)
             {
@@ -344,10 +347,14 @@ namespace Jhu.Graywulf.Jobs.Query
                 // mark it as the output
                 query.Output = table;
             }
+            */
         }
 
         public async Task<Table> PrepareCreateDestinationTablePrimaryKeyAsync()
         {
+            throw new NotImplementedException();
+
+            /*
             Table destination = null;
 
             if (Interlocked.Exchange(ref Query.IsDestinationTablePrimaryKeyCreated, 1) == 0)
@@ -365,6 +372,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             return destination;
+            */
         }
 
         public async Task CreateDestinationTablePrimaryKeyAsync(Table destination)
@@ -405,6 +413,9 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         public async Task CopyResultsetAsync()
         {
+            throw new NotImplementedException();
+
+            /*
             switch (Query.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
@@ -428,6 +439,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 default:
                     throw new NotImplementedException();
             }
+            */
         }
 
         #endregion

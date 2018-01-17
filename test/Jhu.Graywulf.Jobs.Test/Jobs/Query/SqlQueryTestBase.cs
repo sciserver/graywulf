@@ -88,7 +88,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 return ji.Guid;
             }
         }
-
+        
         protected void RunQuery(string sql)
         {
             var timeout = new TimeSpan(0, 2, 0);
