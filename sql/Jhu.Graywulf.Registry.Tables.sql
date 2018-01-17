@@ -407,7 +407,6 @@ CREATE TABLE [dbo].[JobInstance]
 	[WorkflowTypeName] [nvarchar](1024) NULL,
 	[DateStarted] [datetime] NULL,
 	[DateFinished] [datetime] NULL,
-	[JobExecutionStatus] [int] NOT NULL,
 	[JobTimeout] [bigint] NULL,
 	[SuspendTimeout] [datetime] NULL,
 	[ScheduleType] [int] NOT NULL,
