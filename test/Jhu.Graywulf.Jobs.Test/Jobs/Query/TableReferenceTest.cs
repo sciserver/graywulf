@@ -36,8 +36,8 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             // Test if tables are correctly collected from all select statements
             var sql =
-@"SELECT * FROM TEST:CatalogA
-SELECT * FROM TEST:CatalogB";
+@"SELECT * FROM TEST:CatalogA a
+SELECT * FROM TEST:CatalogB b";
             var q = CreateQuery(sql);
 
             Assert.AreEqual(2, q.SourceTables.Count);
@@ -71,7 +71,7 @@ SELECT * FROM TEST:CatalogB";
             // Test is tables are correctly collected from all select statements
             var sql = @"SELECT objid FROM TEST:CatalogA";
             var q = CreateQuery(sql);
-            var tr = q.SourceTables.Values.First();
+            var tr = q.SourceTables.Values.First()[0];
 
             Assert.AreEqual(1, q.SourceTables.Count);
             Assert.AreEqual(12, tr.ColumnReferences.Count);
@@ -89,7 +89,7 @@ SELECT * FROM TEST:CatalogB";
 @"SELECT objid FROM TEST:CatalogA
 SELECT ra FROM TEST:CatalogA";
             var q = CreateQuery(sql);
-            var tr = q.SourceTables.Values.First();
+            var tr = q.SourceTables.Values.First()[0];
 
             Assert.AreEqual(1, q.SourceTables.Count);
             Assert.AreEqual(12, tr.ColumnReferences.Count);
@@ -107,7 +107,7 @@ SELECT ra FROM TEST:CatalogA";
 @"SELECT objid FROM TEST:CatalogA
 SELECT ra FROM TEST:CatalogA WHERE objid = 2";
             var q = CreateQuery(sql);
-            var tr = q.SourceTables.Values.First();
+            var tr = q.SourceTables.Values.First()[0];
 
             Assert.AreEqual(1, q.SourceTables.Count);
             Assert.AreEqual(12, tr.ColumnReferences.Count);

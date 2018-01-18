@@ -27,16 +27,15 @@ namespace Jhu.Graywulf.Jobs.Query
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
             SqlQueryPartition querypartition = (SqlQueryPartition)QueryPartition.Get(activityContext);
-            TableReference remotetable = null;
+            string remoteTable = RemoteTable.Get(activityContext);
             SourceTableQuery source;
 
             using (RegistryContext context = querypartition.Query.CreateContext())
             {
-                remotetable = querypartition.RemoteTableReferences[RemoteTable.Get(activityContext)];
-                querypartition.PrepareCopyRemoteTable(remotetable, out source);
+                querypartition.PrepareCopyRemoteTable(remoteTable, out source);
             }
 
-            await querypartition.CopyRemoteTableAsync(remotetable, source);
+            await querypartition.CopyRemoteTableAsync(remoteTable, source);
         }
     }
 }

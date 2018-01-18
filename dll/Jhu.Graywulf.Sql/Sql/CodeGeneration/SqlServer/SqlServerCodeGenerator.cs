@@ -118,17 +118,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
         #endregion
         #region Most restrictive query generation
 
-        public override string GenerateMostRestrictiveTableQuery(QuerySpecification querySpecification, TableReference table, ColumnContext columnContext, int top)
+        protected override string OnGenerateMostRestrictiveTableQuery(string tableName, string tableAlias, string columnList, string where, int top)
         {
-            // Run the normalizer to convert where clause to a normal form
-            var cnr = new SearchConditionNormalizer();
-            cnr.CollectConditions(querySpecification);
-            var where = cnr.GenerateWhereClauseSpecificToTable(table);
-
-            var columnlist = CreateColumnListGenerator(table, columnContext, ColumnListType.SelectWithOriginalNameNoAlias);
-            columnlist.TableAlias = null;
-
-            // Build table specific query
             var sql = new StringBuilder();
 
             sql.Append("SELECT ");
@@ -139,30 +130,25 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
             }
 
             sql.AppendLine();
-            sql.AppendLine(columnlist.Execute());
-            sql.AppendFormat("FROM {0} ", GetResolvedTableName(table));
+            sql.AppendLine(columnList);
+            sql.AppendFormat("FROM {0} ", tableName);
 
-            if (!String.IsNullOrWhiteSpace(table.Alias))
+            if (!String.IsNullOrWhiteSpace(tableAlias))
             {
-                sql.AppendFormat("AS {0} ", GetQuotedIdentifier(table.Alias));
+                sql.AppendFormat("AS {0} ", GetQuotedIdentifier(tableAlias));
             }
 
             sql.AppendLine();
-            sql.AppendLine(Execute(where));
+            sql.AppendLine(where);
 
             return sql.ToString();
         }
 
         #endregion
 
-        public override SqlColumnListGeneratorBase CreateColumnListGenerator(TableReference table, ColumnContext columnContext, ColumnListType listType)
+        public override SqlColumnListGeneratorBase CreateColumnListGenerator()
         {
-            var cl = new SqlServerColumnListGenerator(table.FilterColumnReferences(columnContext))
-            {
-                ListType = listType,
-            };
-
-            return cl;
+            return new SqlServerColumnListGenerator();
         }
 
         private void GenerateIndexColumns(StringBuilder sql, Index index)

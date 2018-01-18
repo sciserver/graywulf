@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.Jobs.Query
         private IComparable partitioningKeyMax;
 
         [NonSerialized]
-        private Dictionary<string, TableReference> remoteTableReferences;
+        private Dictionary<string, List<TableReference>> remoteTables;
 
         #endregion
         #region Properties
@@ -62,9 +62,9 @@ namespace Jhu.Graywulf.Jobs.Query
             set { partitioningKeyMax = value; }
         }
 
-        public Dictionary<string, TableReference> RemoteTableReferences
+        public Dictionary<string, List<TableReference>> RemoteTables
         {
-            get { return remoteTableReferences; }
+            get { return remoteTables; }
         }
 
         [IgnoreDataMember]
@@ -111,7 +111,7 @@ namespace Jhu.Graywulf.Jobs.Query
             this.partitioningKeyMin = null;
             this.partitioningKeyMax = null;
 
-            this.remoteTableReferences = new Dictionary<string, TableReference>(SchemaManager.Comparer);
+            this.remoteTables = new Dictionary<string, List<TableReference>>(SchemaManager.Comparer);
         }
 
         private void CopyMembers(SqlQueryPartition old)
@@ -123,7 +123,7 @@ namespace Jhu.Graywulf.Jobs.Query
             this.partitioningKeyMin = old.partitioningKeyMin;
             this.partitioningKeyMax = old.partitioningKeyMax;
 
-            this.remoteTableReferences = new Dictionary<string, TableReference>(old.remoteTableReferences, SchemaManager.Comparer);
+            this.remoteTables = new Dictionary<string, List<TableReference>>(old.remoteTables);
         }
 
         public override object Clone()
@@ -153,16 +153,24 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             if (ExecutionMode == ExecutionMode.Graywulf)
             {
-                var sc = GetSchemaManager();
-
-                // TODO: add support for multiple statements
-
-                foreach (var tr in ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateSourceTableReferences(true))
+                foreach (var key in Query.SourceTables.Keys)
                 {
-                    if (tr.IsCachable && !remoteTableReferences.ContainsKey(tr.UniqueName) &&
-                        IsRemoteDataset(sc.Datasets[tr.DatasetName]))
+                    foreach (var tr in Query.SourceTables[key])
                     {
-                        remoteTableReferences.Add(tr.UniqueName, tr);
+                        if (tr.Type == TableReferenceType.TableOrView)
+                        {
+                            var uniqueKey = tr.DatabaseObject.UniqueKey;
+
+                            if (tr.IsCachable && IsRemoteDataset(tr.DatabaseObject.Dataset))
+                            {
+                                if (!remoteTables.ContainsKey(uniqueKey))
+                                {
+                                    remoteTables.Add(key, new List<TableReference>());
+                                }
+
+                                remoteTables[key].Add(tr);
+                            }
+                        }
                     }
                 }
             }
@@ -175,13 +183,13 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <summary>
         /// Composes a source query for a remote table
         /// </summary>
-        /// <param name="table"></param>
+        /// <param name="tableKey"></param>
         /// <returns></returns>
-        public void PrepareCopyRemoteTable(TableReference table, out SourceTableQuery query)
+        public void PrepareCopyRemoteTable(string tableKey, out SourceTableQuery query)
         {
-            // -- Load schema
+            var tr = remoteTables[tableKey][0];
             var sm = GetSchemaManager();
-            var ds = sm.Datasets[table.DatasetName];
+            var ds = sm.Datasets[tr.DatasetName];
 
             // Graywulf dataset has to be converted to prevent registry access
             if (ds is GraywulfDataset)
@@ -190,15 +198,9 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             // Generate most restrictive query
-            // Use code generator specific to the remote database platform!
-            // TODO: For some reason, the remote table object contains referenced columns
-            // only and column context is not set for them, so we need to generate
-            // the column list from all available columns. Check this and figure
-            // out why columns are not resolved.
             var cg = SqlCodeGeneratorFactory.CreateCodeGenerator(ds);
-            var qs = ((TableSource)table.Node).QuerySpecification;
-            var sql = cg.GenerateMostRestrictiveTableQuery(qs, table, ColumnContext.All, 0);
-
+            var sql = cg.GenerateMostRestrictiveTableQuery(remoteTables[tableKey], ColumnContext.All, 0);
+            
             query = new SourceTableQuery()
             {
                 Dataset = ds,
@@ -212,12 +214,15 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="table"></param>
         /// <param name="source"></param>
-        public async Task CopyRemoteTableAsync(TableReference table, SourceTableQuery source)
+        public async Task CopyRemoteTableAsync(string tableKey, SourceTableQuery source)
         {
+            var tr = remoteTables[tableKey][0];
+
             // Create a target table name
             var cg = new SqlServerCodeGenerator();
-            var temptable = GetTemporaryTable(cg.GenerateEscapedUniqueName(table));
-            TemporaryTables.TryAdd(table.UniqueName, temptable);
+            var temptable = GetTemporaryTable(cg.GenerateEscapedUniqueName(tr));
+                        
+            TemporaryTables.TryAdd(tr.TableOrView.UniqueKey, temptable);
 
             var dest = new DestinationTable(
                 temptable,
@@ -237,9 +242,9 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         public string SubstituteRemoteTableName(TableReference tr)
         {
-            if (RemoteTableReferences.ContainsKey(tr.UniqueName))
+            if (RemoteTables.ContainsKey(tr.TableOrView.UniqueKey))
             {
-                return CodeGenerator.GetResolvedTableName(TemporaryTables[tr.UniqueName]);
+                return CodeGenerator.GetResolvedTableName(TemporaryTables[tr.TableOrView.UniqueKey]);
             }
             else
             {
@@ -256,9 +261,9 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         public string SubstituteRemoteTableNameWithAlias(TableReference tr)
         {
-            if (RemoteTableReferences.ContainsKey(tr.UniqueName))
+            if (RemoteTables.ContainsKey(tr.TableOrView.UniqueKey))
             {
-                return CodeGenerator.GetResolvedTableNameWithAlias(TemporaryTables[tr.UniqueName], tr.Alias);
+                return CodeGenerator.GetResolvedTableNameWithAlias(TemporaryTables[tr.TableOrView.UniqueKey], tr.Alias);
             }
             else
             {
@@ -328,7 +333,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public async Task PrepareDestinationTableAsync()
         {
-            throw new NotImplementedException();
+            Task.CompletedTask;
 
             /*
             // Only initialize target table if it's still uninitialized

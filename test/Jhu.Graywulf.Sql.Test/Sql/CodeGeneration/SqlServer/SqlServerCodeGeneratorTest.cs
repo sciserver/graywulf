@@ -27,19 +27,17 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 
         private string[] GenerateMostRestrictiveTableQueryTestHelper(string sql, ColumnContext columnContext, int top)
         {
+            var ss = CreateSelect(sql);
+            var res = new List<string>();
             var cg = new SqlServerCodeGenerator();
             cg.ResolveNames = true;
-
-            var ss = CreateSelect(sql);
-
-            var res = new List<string>();
-
+            
             foreach (var qs in ss.QueryExpression.EnumerateQuerySpecifications())
             {
                 // TODO: use qs.SourceTableReferences
                 foreach (var tr in qs.EnumerateSourceTableReferences(true))
                 {
-                    res.Add(cg.GenerateMostRestrictiveTableQuery(qs, tr, columnContext, top));
+                    res.Add(cg.GenerateMostRestrictiveTableQuery(tr, columnContext, top));
                 }
             }
 

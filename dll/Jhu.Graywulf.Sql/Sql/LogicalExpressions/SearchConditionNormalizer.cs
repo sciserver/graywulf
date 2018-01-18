@@ -17,6 +17,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 
         private void InitializeMembers()
         {
+            conditions = new List<LogicalExpressions.Expression>();
         }
         
         public void CollectConditions(Parsing.QueryExpression qe)
@@ -29,14 +30,19 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 
         public void CollectConditions(Parsing.QuerySpecification qs)
         {
+            // TODO: review processing of subqueries here
+            // TODO: what to do with conditions that involve other tables (subqueries)
+            //       probably those are filtered out in GenerateWhereClauseSpecificToTable?
+
+            /* TODO: delete
             foreach (var sq in qs.EnumerateSubqueries())
             {
                 CollectConditions(sq.QueryExpression);
-            }
+            }*/
 
             // Process join conditions
-            conditions = new List<LogicalExpressions.Expression>();
             var from = qs.FindDescendant<Parsing.FromClause>();
+
             if (from != null)
             {
                 var tablesource = from.FindDescendant<Parsing.TableSourceExpression>();
@@ -53,6 +59,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 
             // Process where clause
             var where = qs.FindDescendant<Parsing.WhereClause>();
+
             if (where != null)
             {
                 var sc = where.FindDescendant<Parsing.BooleanExpression>();

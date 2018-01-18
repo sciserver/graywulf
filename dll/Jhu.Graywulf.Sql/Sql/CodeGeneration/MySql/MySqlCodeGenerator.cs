@@ -17,14 +17,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
         {
         }
 
-        public override SqlColumnListGeneratorBase CreateColumnListGenerator(TableReference table, ColumnContext columnContext, ColumnListType listType)
+        public override SqlColumnListGeneratorBase CreateColumnListGenerator()
         {
-            var cl = new MySqlColumnListGenerator(table.FilterColumnReferences(columnContext))
-            {
-                ListType = listType
-            };
-
-            return cl;
+            return new MySqlColumnListGenerator();
         }
 
         #region Identifier formatting functions
@@ -102,29 +97,21 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
             return topstr;
         }
 
-        public override string GenerateMostRestrictiveTableQuery(QuerySpecification querySpecification, TableReference table, ColumnContext columnContext, int top)
+        protected override string OnGenerateMostRestrictiveTableQuery(string tableName, string tableAlias, string columnList, string where, int top)
         {
-            // Normalize search conditions and extract where clause
-            var cn = new SearchConditionNormalizer();
-            cn.CollectConditions(querySpecification);
-            var where = cn.GenerateWhereClauseSpecificToTable(table);
-
-            var columnlist = CreateColumnListGenerator(table, columnContext, ColumnListType.SelectWithOriginalNameNoAlias);
-
-            // Build table specific query
             var sql = new StringBuilder();
 
             sql.AppendLine("SELECT ");
-            sql.AppendLine(columnlist.Execute());
-            sql.AppendFormat(" FROM {0}", GetQuotedIdentifier(table.DatabaseObjectName));
+            sql.AppendLine(columnList);
+            sql.AppendFormat(" FROM {0}", tableName);
 
-            if (!String.IsNullOrWhiteSpace(table.Alias))
+            if (!String.IsNullOrWhiteSpace(tableAlias))
             {
-                sql.AppendFormat("AS {0} ", GetQuotedIdentifier(table.Alias));
+                sql.AppendFormat("AS {0} ", tableAlias);
             }
 
             sql.AppendLine();
-            sql.AppendLine(Execute(where));
+            sql.AppendLine(where);
 
             if (top > 0)
             {
@@ -133,7 +120,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
 
             return sql.ToString();
         }
-
+        
         #endregion
     }
 }

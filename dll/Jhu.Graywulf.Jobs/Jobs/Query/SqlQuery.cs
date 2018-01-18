@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Jobs.Query
     {
         #region Property storage member variables
 
-        private Dictionary<string, TableReference> sourceTables;
+        private Dictionary<string, List<TableReference>> sourceTables;
 
         /// <summary>
         /// Destination tables including target table naming patterns.
@@ -62,7 +62,7 @@ namespace Jhu.Graywulf.Jobs.Query
         #region Properties
 
         [IgnoreDataMember]
-        public Dictionary<string, TableReference> SourceTables
+        public Dictionary<string, List<TableReference>> SourceTables
         {
             get { return sourceTables; }
         }
@@ -175,6 +175,38 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected override void OnNamesResolved(bool forceReinitialize)
         {
+            IdentifySourceTables();
+            IdentifyDestinationTables();
+        }
+
+        private void IdentifySourceTables()
+        {
+            sourceTables = new Dictionary<string, List<TableReference>>();
+
+            foreach (var qe in ParsingTree.EnumerateDescendantsRecursive<QueryExpression>())
+            {
+                foreach (var tr in qe.EnumerateSourceTableReferences(false))
+                {
+                    // Save the table in the main list. If it's already there then
+                    // merge the column context
+
+                    if (tr.Type == TableReferenceType.TableOrView)
+                    {
+                        var uniqueKey = tr.DatabaseObject.UniqueKey;
+
+                        if (!sourceTables.ContainsKey(uniqueKey))
+                        {
+                            sourceTables.Add(uniqueKey, new List<TableReference>());
+                        }
+                        
+                        sourceTables[uniqueKey].Add(tr);
+                    }
+                }
+            }
+        }
+
+        private void IdentifyDestinationTables()
+        {
             /* TODO: delete
             // Retrieve target table information
             IntoClause into = ParsingTree.FindDescendantRecursive<IntoClause>();
@@ -200,46 +232,6 @@ namespace Jhu.Graywulf.Jobs.Query
             }
             */
 
-            IdentifySourceTables();
-            IdentifyDestinationTables();
-        }
-
-        private void IdentifySourceTables()
-        {
-            sourceTables = new Dictionary<string, TableReference>();
-
-            foreach (var qe in ParsingTree.EnumerateDescendantsRecursive<QueryExpression>())
-            {
-                foreach (var tr in qe.EnumerateSourceTableReferences(false))
-                {
-                    // Save the table in the main list. If it's already there then
-                    // merge the column context
-
-                    if (tr.Type == TableReferenceType.TableOrView)
-                    {
-                        var uniqueName = tr.DatabaseObject.UniqueKey;
-
-                        if (sourceTables.ContainsKey(uniqueName))
-                        {
-                            var ntr = sourceTables[uniqueName];
-
-                            for (int i = 0; i < tr.ColumnReferences.Count; i++)
-                            {
-                                ntr.ColumnReferences[i].ColumnContext |= tr.ColumnReferences[i].ColumnContext;
-                            }
-                        }
-                        else
-                        {
-                            var ntr = new TableReference(tr);
-                            sourceTables.Add(uniqueName, ntr);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void IdentifyDestinationTables()
-        {
             /*
             // Descend the parsing tree and identify SELECT statements and
             // INTO clauses to determine the output tables
@@ -295,7 +287,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// executing the query
         /// </summary>
         /// <returns></returns>
-        public virtual void CollectTablesForStatistics()
+        public virtual void IdentifyTablesForStatistics()
         {
             TableStatistics.Clear();
 

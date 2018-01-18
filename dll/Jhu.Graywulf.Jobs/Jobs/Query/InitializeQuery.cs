@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     {
                         query.InitializeQueryObject(registryContext);
                         query.Validate();
-                        query.CollectTablesForStatistics();
+                        query.IdentifyTablesForStatistics();
                     }
                     break;
                 default:

@@ -9,6 +9,11 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.PostgreSql
 {
     public class PostgreSqlColumnListGenerator : SqlColumnListGeneratorBase
     {
+        public PostgreSqlColumnListGenerator()
+        {
+            InitializeMembers();
+        }
+
         public PostgreSqlColumnListGenerator(IEnumerable<ColumnReference> columns)
             : base(columns)
         {

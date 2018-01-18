@@ -9,6 +9,11 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
 {
     public class MySqlColumnListGenerator : SqlColumnListGeneratorBase
     {
+        public MySqlColumnListGenerator()
+        {
+            InitializeMembers();
+        }
+
         public MySqlColumnListGenerator(IEnumerable<ColumnReference> columns)
             : base(columns)
         {

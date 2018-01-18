@@ -221,7 +221,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 {
                     cmd.Connection = cn;
 
-                    using (var dr = (ISmartDataReader)cmd.ExecuteReaderAsync(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo, cancellationToken))
+                    using (var dr = await cmd.ExecuteReaderAsync(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo, cancellationToken))
                     {
                         return dr.Columns;
                     }

@@ -7,6 +7,7 @@ using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
+using Jhu.Graywulf.Sql.LogicalExpressions;
 
 namespace Jhu.Graywulf.Sql.CodeGeneration
 {
@@ -45,7 +46,15 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         #endregion
 
-        public abstract SqlColumnListGeneratorBase CreateColumnListGenerator(TableReference table, ColumnContext columnContext, ColumnListType listType); 
+        public abstract SqlColumnListGeneratorBase CreateColumnListGenerator();
+
+        public SqlColumnListGeneratorBase CreateColumnListGenerator(TableReference table, ColumnContext columnContext, ColumnListType listType)
+        {
+            var cg = CreateColumnListGenerator();
+            cg.ListType = listType;
+            cg.Columns.AddRange(table.FilterColumnReferences(columnContext));
+            return cg;
+        }
 
         #region Identifier formatting functions
 
@@ -135,7 +144,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public string GetResolvedTableName(TableReference table)
         {
-            if (table.Type == TableReferenceType.Subquery || 
+            if (table.Type == TableReferenceType.Subquery ||
                 table.Type == TableReferenceType.CommonTable ||
                 table.IsComputed)
             {
@@ -158,7 +167,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public string GetResolvedTableNameWithAlias(TableReference table)
         {
-            if (table.Type == TableReferenceType.Subquery || 
+            if (table.Type == TableReferenceType.Subquery ||
                 table.Type == TableReferenceType.CommonTable ||
                 table.IsComputed)
             {
@@ -192,9 +201,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public string GetUniqueName(TableReference table)
         {
-            if (table.Type == TableReferenceType.Subquery || 
+            if (table.Type == TableReferenceType.Subquery ||
                 table.Type == TableReferenceType.CommonTable ||
-                table.IsComputed || 
+                table.IsComputed ||
                 !String.IsNullOrWhiteSpace(table.Alias))
             {
                 return GetQuotedIdentifier(table.Alias);
@@ -410,7 +419,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             if (resolveNames)
             {
                 // Write the expression first as it is
-                var exp = node.FindDescendant<Expression>();
+                var exp = node.FindDescendant<Parsing.Expression>();
                 WriteNode(exp);
 
                 // If it's not a * column and there's an alias, write it
@@ -462,7 +471,59 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         protected abstract string GenerateTopExpression(int top);
 
-        public abstract string GenerateMostRestrictiveTableQuery(QuerySpecification querySpecification, TableReference table, ColumnContext columnContext, int top);
+        public string GenerateMostRestrictiveTableQuery(TableReference table, ColumnContext columnContext, int top)
+        {
+            // Run the normalizer to convert where clause to a normal form
+            var cnr = new SearchConditionNormalizer();
+            var qs = ((TableSource)table.Node).QuerySpecification;
+            cnr.CollectConditions(qs);
+
+            // Generate where clause
+            var where = cnr.GenerateWhereClauseSpecificToTable(table);
+
+            // Generate the column list to be retrieved
+            var columnlist = CreateColumnListGenerator();
+            columnlist.ListType = ColumnListType.SelectWithOriginalNameNoAlias;
+            columnlist.TableAlias = null;
+            columnlist.Columns.AddRange(table.FilterColumnReferences(columnContext));
+
+            return OnGenerateMostRestrictiveTableQuery(GetResolvedTableName(table), table.Alias, columnlist.Execute(), Execute(where), top);
+        }
+
+        public string GenerateMostRestrictiveTableQuery(List<TableReference> tables, ColumnContext columnContext, int top)
+        {
+            // Run the normalizer to convert where clause to a normal form
+            var cnr = new SearchConditionNormalizer();
+
+            foreach (var tr in tables)
+            {
+                var qs = ((TableSource)tr.Node).QuerySpecification;
+                cnr.CollectConditions(qs);
+            }
+
+            // Generate where clause
+            var table = tables[0];
+            var where = cnr.GenerateWhereClauseSpecificToTable(tables[0]);
+
+            // Generate the column list to be retrieved
+            var columnlist = CreateColumnListGenerator();
+            columnlist.ListType = ColumnListType.SelectWithOriginalNameNoAlias;
+            columnlist.TableAlias = null;
+
+            foreach (var tr in tables)
+            {
+                columnlist.Columns.AddRange(table.FilterColumnReferences(columnContext));
+            }
+
+            return OnGenerateMostRestrictiveTableQuery(
+                GetResolvedTableName(table), 
+                table.Alias, 
+                columnlist.Execute(), 
+                Execute(where), 
+                top);
+        }
+
+        protected abstract string OnGenerateMostRestrictiveTableQuery(string tableName, string tableAlias, string columnList, string where, int top);
 
         public virtual string GenerateCountStarQuery(string subquery)
         {

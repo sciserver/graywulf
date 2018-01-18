@@ -90,7 +90,7 @@
             <Sequence sap2010:WorkflowViewState.IdRef="Sequence_1">
               <local:AssignServerInstance EntityGuid="{x:Null}" sap2010:WorkflowViewState.IdRef="AssignServerInstance_2" JobInfo="[JobInfo]" QueryObject="[queryPartition]" />
               <local:FindRemoteTables sap2010:WorkflowViewState.IdRef="FindRemoteTables_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" />
-              <ParallelForEach x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="ParallelForEach`1_2" Values="[queryPartition.RemoteTableReferences.Keys]">
+              <ParallelForEach x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="ParallelForEach`1_2" Values="[queryPartition.RemoteTables.Keys]">
                 <ActivityAction x:TypeArguments="x:String">
                   <ActivityAction.Argument>
                     <DelegateInArgument x:TypeArguments="x:String" Name="tableReference" />
@@ -125,7 +125,7 @@
         </ActivityAction>
       </ParallelForEach>
     </CancellationScope.CancellationHandler>
-    <sads:DebugSymbol.Symbol>d2JDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjRcZ3JheXd1bGZcZGxsXEpodS5HcmF5d3VsZi5Kb2JzXEpvYnNcUXVlcnlcU3FsUXVlcnlKb2IueGFtbEFEA4EBFwIBAUUFdRACAQp3B34ZAgECRgdGjgECAV1HB0eEAQIBWEgHSMEBAgFTSQdSGQIBRlMHU5QBAgFBVAdrGQIBGGwHbJoBAgETbQd0GQIBC3e2AXfKAQIBCXwLfNUBAgEDRnBGewIBYEaCAUaLAQIBXkdmR3ECAVtHeEeBAQIBWUidAUioAQIBVki1AUi+AQIBVEmrAUnJAQIBUk4LUBcCAUdTdlOBAQIBRFOIAVORAQIBQlS2AVTKAQIBQFkLaRcCARlsfGyHAQIBFmyOAWyXAQIBFG22AW3KAQIBEnILcs4BAgEMfKoBfLwBAgEHfMwBfNIBAgEGfI8BfJoBAgEETnJOdQIBSk5bTmYCAUhPDU+oAQIBS1lyWXUCARxZW1lmAgEaWg1oGAIBHXKjAXK1AQIBEHLFAXLLAQIBD3KIAXKTAQIBDU9uT3kCAVBPlgFPpQECAU5PgAFPiQECAUxbD1uvAQIBO1wPXJQBAgE2XQ9kIQIBLWUPZYwBAgEoZg9mogECASNnD2eOAQIBHluCAVuNAQIBPluaAVusAQIBPFx/XJEBAgE5XGRcbwIBN114XaUBAgE1YhNitQECAS5ld2WJAQIBK2VcZWcCASlmjQFmnwECASZmcmZ9AgEkZ3lniwECASFnXmdpAgEfYoEBYpMBAgEzYqABYrIBAgExYmZicQIBLw==</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d2pDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjRcbW9kdWxlc1xncmF5d3VsZlxkbGxcSmh1LkdyYXl3dWxmLkpvYnNcSm9ic1xRdWVyeVxTcWxRdWVyeUpvYi54YW1sQUQDgQEXAgEBRQV1EAIBCncHfhkCAQJGB0aOAQIBXUcHR4QBAgFYSAdIwQECAVNJB1IZAgFGUwdTlAECAUFUB2sZAgEYbAdsmgECARNtB3QZAgELd7YBd8oBAgEJfAt81QECAQNGcEZ7AgFgRoIBRosBAgFeR2ZHcQIBW0d4R4EBAgFZSJ0BSKgBAgFWSLUBSL4BAgFUSasBSckBAgFSTgtQFwIBR1N2U4EBAgFEU4gBU5EBAgFCVLYBVMoBAgFAWQtpFwIBGWx8bIcBAgEWbI4BbJcBAgEUbbYBbcoBAgEScgtyzgECAQx8qgF8vAECAQd8zAF80gECAQZ8jwF8mgECAQROck51AgFKTltOZgIBSE8NT6gBAgFLWXJZdQIBHFlbWWYCARpaDWgYAgEdcqMBcrUBAgEQcsUBcssBAgEPcogBcpMBAgENT25PeQIBUE+WAU+lAQIBTk+AAU+JAQIBTFsPW68BAgE7XA9clAECATZdD2QhAgEtZQ9ljAECAShmD2aiAQIBI2cPZ44BAgEeW4IBW40BAgE+W5oBW6wBAgE8XH9ckQECATlcZFxvAgE3XXhdnAECATViE2K1AQIBLmV3ZYkBAgErZVxlZwIBKWaNAWafAQIBJmZyZn0CASRneWeLAQIBIWdeZ2kCAR9igQFikwECATNioAFisgECATFiZmJxAgEv</sads:DebugSymbol.Symbol>
   </CancellationScope>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
