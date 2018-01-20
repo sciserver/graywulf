@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.Activities
                 }
                 else
                 {
-                    throw helper.DispatchException();
+                    System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(helper.DispatchException()).Throw();
                 }
             }
             finally
