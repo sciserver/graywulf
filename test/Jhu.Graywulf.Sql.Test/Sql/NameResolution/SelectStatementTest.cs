@@ -148,6 +148,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         [TestMethod]
+        public void SimpleSelectWithTableNameQueryTest()
+        {
+            var sql = "SELECT Author.Name FROM Author";
+
+            var qs = Parse<QuerySpecification>(sql);
+            var ts = qs.SourceTableReferences.Values.ToArray();
+
+            var res = GenerateCode(qs);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
+        }
+
+        [TestMethod]
         public void TwoTableAliasQueryTest()
         {
             var sql = "SELECT a.Name, b.Name FROM Author a, Author b";

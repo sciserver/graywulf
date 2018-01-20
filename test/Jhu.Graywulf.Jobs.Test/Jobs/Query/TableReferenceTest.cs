@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Jobs.Query
             StopLogger();
         }
 
-        #region Query preprocessing tests
+        #region Source table tests
 
         [TestMethod]
         public void CollectSourceTablesTest1()
@@ -115,6 +115,21 @@ SELECT ra FROM TEST:CatalogA WHERE objid = 2";
             Assert.AreEqual(ColumnContext.PrimaryKey | ColumnContext.SelectList | ColumnContext.Where, tr.ColumnReferences[0].ColumnContext);
             Assert.AreEqual("ra", tr.ColumnReferences[1].ColumnName);
             Assert.AreEqual(ColumnContext.SelectList, tr.ColumnReferences[1].ColumnContext);
+        }
+
+        #endregion
+        #region Output table tests
+
+        [TestMethod]
+        public void CollectOutputTablesTest1()
+        {
+            var sql =
+@"SELECT TOP 1 * 
+INTO MYDB:newtable
+FROM TEST:CatalogA";
+            var q = CreateQuery(sql);
+
+            Assert.AreEqual(1, q.OutputTables.Count);
         }
 
         #endregion

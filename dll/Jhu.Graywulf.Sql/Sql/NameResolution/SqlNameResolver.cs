@@ -73,6 +73,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private string defaultTableDatasetName;
         private string defaultFunctionDatasetName;
+        private string defaultOutputDatasetName;
 
         #endregion
         #region Properties
@@ -100,6 +101,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get { return defaultFunctionDatasetName; }
             set { defaultFunctionDatasetName = value; }
+        }
+
+        public string DefaultOutputDatasetName
+        {
+            get { return defaultOutputDatasetName; }
+            set { defaultOutputDatasetName = value; }
         }
 
         #endregion
@@ -301,7 +308,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             if (exp != null)
             {
                 ResolveSubtree(script, exp);
-            } 
+            }
 
             if (!script.VariableReferences.ContainsKey(vd.VariableReference.Name))
             {
@@ -367,6 +374,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
 
             ResolveSelect(script, cte, 0, statement);
+
+            var firstqs = statement.QueryExpression.FirstQuerySpecification;
+
+            if (firstqs != null)
+            {
+                SubstituteOutputTableDefaults(script, firstqs);
+                statement.OutputTableReference = ResolveOutputTableReference(script, firstqs);
+            }
         }
 
         private void ResolveInsertStatement(StatementBlock script, InsertStatement statement)
@@ -442,7 +457,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             return SystemFunctionNames.Contains(name);
         }
-        
+
         private void ResolveFunctionReference(IFunctionReference node)
         {
             // TODO: extend this to CLR static function calls
@@ -511,7 +526,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void ResolveColumnReference(StatementBlock script, CommonTableExpression cte, QuerySpecification qs, ColumnContext context, IColumnReference cr)
         {
             // Star columns cannot be resolved, treat them separately
-            if (!cr.ColumnReference.IsStar && !cr.ColumnReference.IsComplexExpression)
+            if (!cr.ColumnReference.IsResolved && !cr.ColumnReference.IsStar && !cr.ColumnReference.IsComplexExpression)
             {
                 ColumnReference ncr = null;
                 int q = 0;
@@ -561,14 +576,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     throw NameResolutionError.UnresolvableColumnReference(cr);
                 }
 
-                // Make copy here and preserve alias!
+                // Column context must be updated on source
                 ncr.ColumnContext |= context;
+                ncr.IsResolved = true;
 
+                // Make copy here to preserve alias!
                 ncr = new ColumnReference(ncr);
+
                 if (cr.ColumnReference != null && cr.ColumnReference.ColumnAlias != null)
                 {
                     ncr.ColumnAlias = cr.ColumnReference.ColumnAlias;
                 }
+                
                 cr.ColumnReference = ncr;
             }
         }
@@ -601,7 +620,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var qe = select.QueryExpression;
             ResolveQueryExpression(script, cte, qe, depth);
-            
+
             var orderBy = select.OrderByClause;
 
             if (orderBy != null)
@@ -628,7 +647,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var subquery = ts.Subquery;
             ResolveSelect(script, cte, 1, subquery);
         }
-        
+
         protected void ResolveQueryExpression(StatementBlock script, CommonTableExpression cte, QueryExpression qe, int depth)
         {
             // Resolve the first part of the query expression independently
@@ -699,7 +718,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             if (orderBy != null)
             {
-                ResolveTableReferences(script, cte, firstqs, ColumnContext.OrderBy, orderBy);
+                ResolveTableReferences(script, cte, firstqs, TableContext.None, ColumnContext.OrderBy, orderBy);
                 ResolveExpressionReferences(script, cte, firstqs, ColumnContext.OrderBy, orderBy);
             }
         }
@@ -741,12 +760,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             if (cte != null && tr.IsPossiblyAlias && cte.CommonTableReferences.ContainsKey(tr.ExportedName))
             {
+                // This is a reference to a CTE query
+
                 ntr = new TableReference(cte.CommonTableReferences[tr.DatabaseObjectName]);
                 ntr.Type = TableReferenceType.CommonTable;
             }
             else if (tr.Type != TableReferenceType.Subquery && !tr.IsComputed)
             {
-                ntr = new TableReference(tr);
+                // This is a direct reference to a table or a view but not to a function or subquery
+
+                ntr = tr;
 
                 // Load table description from underlying schema
                 // Attempt to load dataset and throw exception of name cannot be resolved
@@ -772,10 +795,62 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
             else
             {
+                // This is a reference to a subquery with an obligatory alias
                 ntr = new TableReference(tr);
             }
 
+            ntr.IsResolved = true;
+
             return ntr;
+        }
+
+        private TableReference ResolveOutputTableReference(StatementBlock script, QuerySpecification qs)
+        {
+            var into = qs.IntoClause;
+            var tr = into?.TableName.TableReference;
+
+            if (tr != null)
+            {
+                DatasetBase ds;
+
+                try
+                {
+                    ds = schemaManager.Datasets[tr.DatasetName];
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw NameResolutionError.UnresolvableDatasetReference(ex, tr);
+                }
+                catch (SchemaException ex)
+                {
+                    throw NameResolutionError.UnresolvableDatasetReference(ex, tr);
+                }
+
+                if (!ds.IsMutable)
+                {
+                    throw NameResolutionError.TargetDatasetReadOnly((ITableReference)tr.Node);
+                }
+
+                tr.DatabaseObject = ds.GetObject(tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName);
+
+                if (tr == null)
+                {
+                    tr.DatabaseObject = new Table(ds)
+                    {
+                        DatabaseName = tr.DatabaseName ?? ds.DatabaseName,
+                        SchemaName = tr.SchemaName ?? ds.DefaultSchemaName,
+                        TableName = tr.DatabaseObjectName,
+                    };
+                }
+
+                // TODO: if it is a new table, consider figuring out the columns from the query
+
+                return tr;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -785,12 +860,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// <param name="qs"></param>
         private void ResolveTableReferences(StatementBlock script, CommonTableExpression cte, QuerySpecification qs)
         {
-            ResolveTableReferences(script, cte, qs, ColumnContext.None, (Node)qs);
+            ResolveTableReferences(script, cte, qs, TableContext.None, ColumnContext.None, (Node)qs);
         }
 
-        public void ResolveTableReferences(StatementBlock script, CommonTableExpression cte, ColumnContext context, Node n)
+        public void ResolveTableReferences(StatementBlock script, CommonTableExpression cte, TableContext tableContext, ColumnContext columnContext, Node n)
         {
-            ResolveTableReferences(script, cte, null, context, n);
+            ResolveTableReferences(script, cte, null, tableContext, columnContext, n);
         }
 
         /// <summary>
@@ -799,22 +874,23 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         /// <param name="qs"></param>
         /// <param name="n"></param>
-        private void ResolveTableReferences(StatementBlock script, CommonTableExpression cte, QuerySpecification qs, ColumnContext context, Node n)
+        private void ResolveTableReferences(StatementBlock script, CommonTableExpression cte, QuerySpecification qs, TableContext tableContext, ColumnContext columnContext, Node n)
         {
-            context = GetColumnContext(n, context);
+            tableContext = GetTableContext(n, tableContext);
+            columnContext = GetColumnContext(n, columnContext);
 
             foreach (object o in n.Nodes)
             {
                 // Skip the into and clause and subqueries
                 if (o is Node && !(o is IntoClause) && !(o is SubqueryTableSource))
                 {
-                        ResolveTableReferences(script, cte, qs, context, (Node)o);   // Recursive call
+                    ResolveTableReferences(script, cte, qs, tableContext, columnContext, (Node)o);   // Recursive call
                 }
             }
 
-            if (n is ITableReference && ((ITableReference)n).TableReference != null)
+            if (n is ITableReference)
             {
-                ResolveTableReference(script, cte, qs, (ITableReference)n, context);
+                ResolveTableReference(script, cte, qs, (ITableReference)n, tableContext, columnContext);
             }
         }
 
@@ -823,7 +899,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         /// <param name="qs"></param>
         /// <param name="tr"></param>
-        private void ResolveTableReference(StatementBlock script, CommonTableExpression cte, QuerySpecification qs, ITableReference node, ColumnContext context)
+        private void ResolveTableReference(StatementBlock script, CommonTableExpression cte, QuerySpecification qs, ITableReference node, TableContext tableContext, ColumnContext columnContext)
         {
             // Try to resolve the table alias part of a table reference
             // If and alias or table name is specified, this can be done based on
@@ -834,7 +910,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             // TODO: add support for variables
 
-            if (!node.TableReference.IsUndefined)
+            if (node.TableReference != null && !node.TableReference.IsUndefined && !node.TableReference.IsResolved)
             {
                 TableReference ntr = null;
                 string alias = null;
@@ -891,11 +967,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     throw NameResolutionError.UnresolvableTableReference(node);
                 }
 
+                ntr.IsResolved = true;
+
                 node.TableReference = ntr;
             }
 
             // If we are inside a table hint, make sure the reference is to the current table
-            if (context == ColumnContext.Hint)
+            if (columnContext == ColumnContext.Hint)
             {
                 // In this case a column reference appears inside a table hint (WITH clause)
                 // If the table reference is undefined it must refer to the table itself
@@ -914,52 +992,23 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-#if false
-
-        // TODO: delete
-
-        private void ResolveVariables(StatementBlock script, QuerySpecification qs)
+        protected virtual TableContext GetTableContext(Node n, TableContext context)
         {
-            ResolveVariables(script, qs, (Node)qs, ColumnContext.None);
+            if (n is FromClause)
+            {
+                context = TableContext.From;
+            }
+            else if (n is IntoClause)
+            {
+                context = TableContext.Into;
+            }
+            else if (n is Subquery)
+            {
+                context = TableContext.Subquery;
+            }
+
+            return context;
         }
-
-
-        /// <summary>
-        /// Resolves all table references of all nodes below a node,
-        /// not descending into subqueries
-        /// </summary>
-        /// <param name="qs"></param>
-        /// <param name="n"></param>
-        private void ResolveVariables(StatementBlock script, QuerySpecification qs, Node n, ColumnContext context)
-        {
-            context = GetColumnContext(n, context);
-
-            foreach (object o in n.Nodes)
-            {
-                // Skip the into clause and subqueries
-                // Subqueries are already processed recursively.
-                if (!(o is IntoClause) && !(o is SubqueryTableSource))
-                {
-                    if (o is Node)
-                    {
-                        ResolveVariables(script, qs, (Node)o, context);   // Recursive call
-                    }
-                }
-            }
-
-            // TODO: extend this to CLR static function calls
-
-            if (n is IVariableReference)
-            {
-                ResolveScalarVariableReference(script, (IVariableReference)n);
-            }
-            else if (n is IColumnReference)
-            {
-                ResolveColumnReference(qs, (IColumnReference)n, context);
-            }
-        }
-
-#endif
 
         protected virtual ColumnContext GetColumnContext(Node n, ColumnContext context)
         {
@@ -1047,6 +1096,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     throw NameResolutionError.UnresolvableDatasetReference(ex, tr);
                 }
+            }
+        }
+
+        private void SubstituteOutputTableDefaults(StatementBlock script, QuerySpecification qs)
+        {
+            // TODO: what to do with table variables?
+
+            var tr = qs.IntoClause?.TableName?.TableReference;
+
+            if (tr != null)
+            {
+                tr.Type = TableReferenceType.SelectInto;
+                tr.SubstituteDefaults(schemaManager, defaultOutputDatasetName);
             }
         }
 

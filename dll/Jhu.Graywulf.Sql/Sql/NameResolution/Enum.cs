@@ -29,4 +29,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         All = NonReferenced | AllReferenced
     }
+
+    [Flags]
+    public enum TableContext : long
+    {
+        None = 0,
+        From = 1,
+        Subquery = 2,
+        Into = 4,
+        CreateTable = 8,
+    }
 }

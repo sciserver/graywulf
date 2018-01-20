@@ -15,6 +15,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private string alias;
         private TableReferenceType type;
         private bool isComputed;
+        private bool isResolved;
 
         private List<ColumnReference> columnReferences;
 
@@ -54,6 +55,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             set { isComputed = value; }
         }
 
+        public bool IsResolved
+        {
+            get { return isResolved; }
+            set { isResolved = value; }
+        }
+        
         public bool IsCachable
         {
             get
@@ -62,6 +69,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
                   type != TableReferenceType.Subquery &&
                   type != TableReferenceType.CommonTable &&
                   type != TableReferenceType.UserDefinedFunction &&
+                  type != TableReferenceType.CreateTable &&
+                  type != TableReferenceType.SelectInto &&
                   !IsComputed;
             }
         }
@@ -155,6 +164,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.alias = alias;
             this.type = TableReferenceType.Unknown;
             this.isComputed = false;
+            this.isResolved = false;
         }
 
         public TableReference(TableOrView table, string alias, bool copyColumns)
@@ -163,6 +173,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.alias = alias;
             this.type = TableReferenceType.Unknown;
             this.isComputed = false;
+            this.isResolved = true;
 
             this.columnReferences = new List<ColumnReference>();
 
@@ -241,6 +252,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.alias = null;
             this.type = TableReferenceType.Unknown;
             this.isComputed = false;
+            this.isResolved = false;
 
             this.columnReferences = new List<ColumnReference>();
         }
@@ -250,6 +262,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.alias = old.alias;
             this.type = old.type;
             this.isComputed = old.isComputed;
+            this.isResolved = old.isResolved;
 
             // Deep copy of column references
             this.columnReferences = new List<ColumnReference>();

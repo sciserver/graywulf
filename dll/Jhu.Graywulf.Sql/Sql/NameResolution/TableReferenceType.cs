@@ -14,5 +14,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         CommonTable,
         Variable,
         UserDefinedFunction,
+        SelectInto,
+        CreateTable,
     }
 }

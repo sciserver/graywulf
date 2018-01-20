@@ -150,6 +150,9 @@
   <data name="StarColumnNotAllowed" xml:space="preserve">
     <value>Stars (*) in column expressions are not allowed but found at ({1},{2}).</value>
   </data>
+  <data name="TargetDatasetReadOnly" xml:space="preserve">
+    <value>The target dataset '{0}' specified at ({1},{2}) is read only.</value>
+  </data>
   <data name="UnknownFunctionName" xml:space="preserve">
     <value>Unknown function name found at ({1},{2}).</value>
   </data>

@@ -331,9 +331,9 @@ namespace Jhu.Graywulf.Jobs.Query
             };
         }
 
-        public async Task PrepareDestinationTableAsync()
+        public Task PrepareDestinationTableAsync()
         {
-            Task.CompletedTask;
+            return Task.CompletedTask;
 
             /*
             // Only initialize target table if it's still uninitialized

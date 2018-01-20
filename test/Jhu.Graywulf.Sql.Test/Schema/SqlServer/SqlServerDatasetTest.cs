@@ -253,7 +253,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
             ds.Tables.LoadAll(true);
 
-            Assert.IsTrue(8 < ds.Tables.Count);
+            Assert.IsTrue(0 < ds.Tables.Count);
             Assert.IsTrue(ds.Tables.IsAllLoaded);
         }
 

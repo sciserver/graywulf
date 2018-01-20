@@ -109,9 +109,12 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public void AppendUserDatabase(SqlQuery query, SqlServerDataset userDatabase, ServerInstance serverInstance)
         {
+            // TODO: modify this to change default output database
+
             userDatabase.IsMutable = true;
             query.CustomDatasets.Add(userDatabase);
-            query.DefaultDataset = userDatabase;
+            query.DefaultSourceDataset = userDatabase;
+            query.DefaultOutputDataset = userDatabase;
         }
 
         #region Job scheduling functions

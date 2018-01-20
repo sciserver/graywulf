@@ -160,6 +160,15 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The target dataset &apos;{0}&apos; specified at ({1},{2}) is read only..
+        /// </summary>
+        internal static string TargetDatasetReadOnly {
+            get {
+                return ResourceManager.GetString("TargetDatasetReadOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unknown function name found at ({1},{2})..
         /// </summary>
         internal static string UnknownFunctionName {

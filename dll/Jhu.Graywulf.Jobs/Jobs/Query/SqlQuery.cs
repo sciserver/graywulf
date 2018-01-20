@@ -25,16 +25,15 @@ namespace Jhu.Graywulf.Jobs.Query
     {
         #region Property storage member variables
 
-        private Dictionary<string, List<TableReference>> sourceTables;
-
         /// <summary>
         /// Destination tables including target table naming patterns.
         /// Output table names are either automatically generated or
         /// taken from the INTO clauses.
         /// </summary>
         private DestinationTable destination;
-        
-        private Dictionary<string, Table> outputTables;
+
+        private Dictionary<string, List<TableReference>> sourceTables;
+        private Dictionary<string, List<TableReference>> outputTables;
 
         private bool isPartitioned;
 
@@ -61,12 +60,6 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Properties
 
-        [IgnoreDataMember]
-        public Dictionary<string, List<TableReference>> SourceTables
-        {
-            get { return sourceTables; }
-        }
-
         /// <summary>
         /// Gets or sets the destination table naming pattern of the query
         /// </summary>
@@ -76,9 +69,15 @@ namespace Jhu.Graywulf.Jobs.Query
             get { return destination; }
             set { destination = value; }
         }
-        
-        [DataMember]
-        public Dictionary<string, Table> OutputTables
+
+        [IgnoreDataMember]
+        public Dictionary<string, List<TableReference>> SourceTables
+        {
+            get { return sourceTables; }
+        }
+
+        [IgnoreDataMember]
+        public Dictionary<string, List<TableReference>> OutputTables
         {
             get { return outputTables; }
             set { outputTables = value; }
@@ -100,12 +99,6 @@ namespace Jhu.Graywulf.Jobs.Query
         public List<SqlQueryPartition> Partitions
         {
             get { return partitions; }
-        }
-
-        [IgnoreDataMember]
-        private SqlQueryCodeGenerator CodeGenerator
-        {
-            get { return CreateCodeGenerator(); }
         }
 
         #endregion
@@ -176,7 +169,7 @@ namespace Jhu.Graywulf.Jobs.Query
         protected override void OnNamesResolved(bool forceReinitialize)
         {
             IdentifySourceTables();
-            IdentifyDestinationTables();
+            IdentifyOutputTables();
         }
 
         private void IdentifySourceTables()
@@ -185,85 +178,57 @@ namespace Jhu.Graywulf.Jobs.Query
 
             foreach (var qe in ParsingTree.EnumerateDescendantsRecursive<QueryExpression>())
             {
-                foreach (var tr in qe.EnumerateSourceTableReferences(false))
+                foreach (var qs in qe.EnumerateQuerySpecifications())
                 {
                     // Save the table in the main list. If it's already there then
                     // merge the column context
-
-                    if (tr.Type == TableReferenceType.TableOrView)
+                    foreach (var tr in qs.SourceTableReferences.Values)
                     {
-                        var uniqueKey = tr.DatabaseObject.UniqueKey;
-
-                        if (!sourceTables.ContainsKey(uniqueKey))
+                        if (tr.Type == TableReferenceType.TableOrView)
                         {
-                            sourceTables.Add(uniqueKey, new List<TableReference>());
+                            var uniqueKey = tr.DatabaseObject.UniqueKey;
+
+                            if (!sourceTables.ContainsKey(uniqueKey))
+                            {
+                                sourceTables.Add(uniqueKey, new List<TableReference>());
+                            }
+
+                            sourceTables[uniqueKey].Add(tr);
                         }
-                        
-                        sourceTables[uniqueKey].Add(tr);
                     }
                 }
             }
         }
 
-        private void IdentifyDestinationTables()
+        private void IdentifyOutputTables()
         {
-            /* TODO: delete
-            // Retrieve target table information
-            IntoClause into = ParsingTree.FindDescendantRecursive<IntoClause>();
-            if (into != null)
-            {
-                var sm = GetSchemaManager();
-
-                if (into.TableReference.DatabaseObjectName != null)
-                {
-                    if (into.TableReference.DatasetName != null)
-                    {
-                        var ds = (SqlServerDataset)sm.Datasets[into.TableReference.DatasetName];
-                        destination.Dataset = ds;
-                        destination.DatabaseName = ds.DatabaseName;
-                    }
-
-                    destination.SchemaName = into.TableReference.SchemaName ?? destination.Dataset.DefaultSchemaName;
-                    destination.TableNamePattern = into.TableReference.DatabaseObjectName;
-                }
-
-                // Turn off unique name generation in case an into clause is used
-                destination.Options &= ~TableInitializationOptions.GenerateUniqueName;
-            }
-            */
-
-            /*
-            // Descend the parsing tree and identify SELECT statements and
-            // INTO clauses to determine the output tables
-
-            // TODO: how to associate destinations with parsing tree nodes?
-
-            outputTables = new Dictionary<string, Table>();
+            // TODO: extend this to support CREATE TABLE
             
-            foreach (var select in ParsingTree.EnumerateDescendantsRecursive<SelectStatement>(typeof(Subquery)))
-            {
-                var into = select.FindDescendantRecursive<IntoClause>();
-                var table = destination.GetQueryOutputTable(BatchName, QueryName, null, null);
+            // TODO: what to do with SELECTs without INTO?
+            //       collect them at the end?
 
-                if (into != null)
+            outputTables = new Dictionary<string, List<TableReference>>();
+
+            foreach (var select in ParsingTree.EnumerateDescendantsRecursive<SelectStatement>(typeof(SelectStatement)))
+            {
+                var tr = select.OutputTableReference;
+                
+                if (tr != null && tr.Type == TableReferenceType.SelectInto)
                 {
-                    if (into.TableReference.DatasetName != null)
+                    var uniqueKey = tr.DatabaseObject.UniqueKey;
+
+                    if (!outputTables.ContainsKey(uniqueKey))
                     {
-                        var ds = (SqlServerDataset)sm.Datasets[into.TableReference.DatasetName];
-                        dest.Dataset = ds;
-                        dest.DatabaseName = ds.DatabaseName;
+                        outputTables.Add(uniqueKey, new List<TableReference>());
+                    }
+                    else
+                    {
+                        throw new Exception("Duplicate output table name");    // TODO: ***
                     }
 
-                    destination.SchemaName = into.TableReference.SchemaName ?? destination.Dataset.DefaultSchemaName;
-                    destination.TableNamePattern = into.TableReference.DatabaseObjectName;
-                }
-                else
-                {
-
+                    outputTables[uniqueKey].Add(tr);
                 }
             }
-
-            */
         }
 
         public override void Validate()
@@ -344,8 +309,9 @@ namespace Jhu.Graywulf.Jobs.Query
         public async Task ComputeTableStatisticsAsync(ITableSource tableSource, DatasetBase statisticsDataset)
         {
             var stat = TableStatistics[tableSource];
+            var cg = CreateCodeGenerator();
 
-            using (var cmd = CodeGenerator.GetTableStatisticsCommand(tableSource, statisticsDataset))
+            using (var cmd = cg.GetTableStatisticsCommand(tableSource, statisticsDataset))
             {
                 await ExecuteSqlOnAssignedServerReaderAsync(cmd, CommandTarget.Code, async (dr, ct) =>
                 {

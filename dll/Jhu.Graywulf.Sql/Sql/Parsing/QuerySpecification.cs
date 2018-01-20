@@ -22,6 +22,10 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return sourceTableReferences; }
         }
 
+        /// <summary>
+        /// Gets the reference to the table that represents
+        /// the resultset of the query
+        /// </summary>
         public TableReference ResultsTableReference
         {
             get { return resultsTableReference; }
@@ -30,6 +34,11 @@ namespace Jhu.Graywulf.Sql.Parsing
         public SelectList SelectList
         {
             get { return FindDescendant<SelectList>(); }
+        }
+
+        public IntoClause IntoClause
+        {
+            get { return FindDescendant<IntoClause>(); }
         }
 
         public FromClause FromClause

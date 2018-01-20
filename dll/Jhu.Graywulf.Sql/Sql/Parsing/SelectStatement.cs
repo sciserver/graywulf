@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jhu.Graywulf.Parsing;
+using Jhu.Graywulf.Sql.NameResolution;
 
 
 namespace Jhu.Graywulf.Sql.Parsing
@@ -12,6 +12,22 @@ namespace Jhu.Graywulf.Sql.Parsing
     /// </summary>
     public partial class SelectStatement : IStatement, ISelect
     {
+        #region Private member variables
+
+        private TableReference outputTableReference;
+
+        #endregion
+        #region Properties
+        
+        /// <summary>
+        /// Gets the reference to the table that represents
+        /// the resultset of the query
+        /// </summary>
+        public TableReference OutputTableReference
+        {
+            get { return outputTableReference; }
+            set { outputTableReference = value; }
+        }
 
         public bool IsResolvable
         {
@@ -50,6 +66,8 @@ namespace Jhu.Graywulf.Sql.Parsing
                 return ((SimpleTableSource)ts).IsPartitioned;
             }
         }
+
+        #endregion
 
         public static SelectStatement Create(QueryExpression qe)
         {

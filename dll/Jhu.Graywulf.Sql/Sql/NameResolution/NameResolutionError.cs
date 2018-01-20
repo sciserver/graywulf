@@ -117,5 +117,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             return CreateException(ExceptionMessages.ScalarVariableExpected, null, node.VariableReference.Name, (Node)node);
         }
+
+        public static NameResolverException TargetDatasetReadOnly(ITableReference node)
+        {
+            return CreateException(ExceptionMessages.TargetDatasetReadOnly, null, node.TableReference.DatasetName, (Node)node);
+        }
     }
 }

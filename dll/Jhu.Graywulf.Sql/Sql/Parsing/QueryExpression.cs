@@ -17,6 +17,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { resultsTableReference = value; }
         }
 
+        public QuerySpecification FirstQuerySpecification
+        {
+            get { return FindDescendant<QuerySpecification>(); }
+        }
+
         protected override void OnInitializeMembers()
         {
             base.OnInitializeMembers();

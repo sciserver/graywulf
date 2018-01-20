@@ -115,7 +115,13 @@ namespace Jhu.Graywulf.Jobs.Query
         /// The dataset to be assumed when no DATASET: part in
         /// table names appear.
         /// </summary>
-        private SqlServerDataset defaultDataset;
+        private SqlServerDataset defaultSourceDataset;
+
+        /// <summary>
+        /// The dataset to be assumes when no DATASET: part in
+        /// SELECT INTO and CREATE TABLE statements appear
+        /// </summary>
+        private SqlServerDataset defaultOutputDataset;
 
         /// <summary>
         /// Dataset to store temporary tables during query execution.
@@ -307,10 +313,20 @@ namespace Jhu.Graywulf.Jobs.Query
         /// when no dataset part is specified in table names.
         /// </summary>
         [DataMember]
-        public SqlServerDataset DefaultDataset
+        public SqlServerDataset DefaultSourceDataset
         {
-            get { return defaultDataset; }
-            set { defaultDataset = value; }
+            get { return defaultSourceDataset; }
+            set { defaultSourceDataset = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the default dataset for table output
+        /// </summary>
+        [DataMember]
+        public SqlServerDataset DefaultOutputDataset
+        {
+            get { return defaultOutputDataset; }
+            set { defaultOutputDataset = value; }
         }
 
         /// <summary>
@@ -508,7 +524,8 @@ namespace Jhu.Graywulf.Jobs.Query
             this.context = null;
             this.scheduler = null;
 
-            this.defaultDataset = null;
+            this.defaultSourceDataset = null;
+            this.defaultOutputDataset = null;
             this.temporaryDataset = null;
             this.codeDataset = null;
             this.customDatasets = new List<DatasetBase>();
@@ -558,7 +575,8 @@ namespace Jhu.Graywulf.Jobs.Query
             this.context = old.context;
             this.scheduler = old.scheduler;
 
-            this.defaultDataset = old.defaultDataset;
+            this.defaultSourceDataset = old.defaultSourceDataset;
+            this.defaultOutputDataset = old.defaultOutputDataset;
             this.temporaryDataset = old.temporaryDataset;
             this.codeDataset = old.codeDataset;
             this.customDatasets = new List<DatasetBase>(old.customDatasets);
@@ -704,9 +722,10 @@ namespace Jhu.Graywulf.Jobs.Query
             var nr = QueryFactory.CreateNameResolver();
             nr.SchemaManager = GetSchemaManager();
 
-            nr.DefaultTableDatasetName = DefaultDataset.Name;
+            nr.DefaultTableDatasetName = DefaultSourceDataset.Name;
+            nr.DefaultOutputDatasetName = DefaultOutputDataset.Name;
             nr.DefaultFunctionDatasetName = CodeDataset.Name;
-
+            
             return nr;
         }
 

@@ -9,6 +9,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
 {
     public class ColumnReference
     {
+        #region Private member variables
+
         private ColumnExpression columnExpression;
         private ColumnIdentifier columnIdentifier;
         private TableReference tableReference;
@@ -20,7 +22,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private bool isStar;
         private bool isComplexExpression;
         private int selectListIndex;
+
+        private bool isResolved;
         private ColumnContext columnContext;
+
+        #endregion
+        #region Properties
 
         public TableReference TableReference
         {
@@ -63,6 +70,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             set { selectListIndex = value; }
         }
 
+        public bool IsResolved
+        {
+            get { return isResolved; }
+            set { isResolved = value; }
+        }
+
         public ColumnContext ColumnContext
         {
             get { return columnContext; }
@@ -76,6 +89,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 return columnContext != 0;
             }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         public ColumnReference()
         {
@@ -134,6 +150,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.isStar = false;
             this.isComplexExpression = false;
             this.selectListIndex = -1;
+
+            this.IsResolved = false;
             this.columnContext = ColumnContext.None;
         }
 
@@ -150,8 +168,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.isStar = old.isStar;
             this.isComplexExpression = old.isComplexExpression;
             this.selectListIndex = old.selectListIndex;
+
+            this.isResolved = old.isResolved;
             this.columnContext = old.columnContext;
         }
+
+        #endregion
 
         public static ColumnReference CreateStar()
         {

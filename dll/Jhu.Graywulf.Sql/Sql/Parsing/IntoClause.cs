@@ -7,22 +7,16 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class IntoClause : ITableReference
+    public partial class IntoClause
     {
         public TableOrViewName TableName
         {
-            get { return FindDescendant<TableOrViewName>(); }
+            get { return FindDescendantRecursive<TableOrViewName>(); }
         }
 
-        public DatabaseObjectReference DatabaseObjectReference
+        public UserVariable Variable
         {
-            get { return TableName.TableReference; }
-        }
-
-        public TableReference TableReference
-        {
-            get { return TableName.TableReference; }
-            set { TableName.TableReference = value; }
+            get { return FindDescendantRecursive<UserVariable>(); }
         }
     }
 }
