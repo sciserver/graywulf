@@ -32,30 +32,11 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         private DestinationTable destination;
 
-        private Dictionary<string, List<TableReference>> sourceTables;
-        private Dictionary<string, List<TableReference>> outputTables;
-
-        private bool isPartitioned;
-
         /// <summary>
         /// Holds the individual partitions. Usually many, but for simple queries
         /// only one.
         /// </summary>
         private List<SqlQueryPartition> partitions;
-
-        /// <summary>
-        /// Name of the table used for partitioning
-        /// TODO: use Table class or TableReference here!
-        /// </summary>
-        [NonSerialized]
-        private string partitioningTable;
-
-        /// <summary>
-        /// Name of the column to partition on
-        /// TODO: use ColumnReference here
-        /// </summary>
-        [NonSerialized]
-        private string partitioningKey;
 
         #endregion
         #region Properties
@@ -69,32 +50,7 @@ namespace Jhu.Graywulf.Jobs.Query
             get { return destination; }
             set { destination = value; }
         }
-
-        [IgnoreDataMember]
-        public Dictionary<string, List<TableReference>> SourceTables
-        {
-            get { return sourceTables; }
-        }
-
-        [IgnoreDataMember]
-        public Dictionary<string, List<TableReference>> OutputTables
-        {
-            get { return outputTables; }
-            set { outputTables = value; }
-        }
-
-        /// <summary>
-        /// Gets whether the query is partitioned
-        /// </summary>
-        [IgnoreDataMember]
-        public virtual bool IsPartitioned
-        {
-            get
-            {
-                return isPartitioned;
-            }
-        }
-
+        
         [IgnoreDataMember]
         public List<SqlQueryPartition> Partitions
         {
@@ -130,24 +86,14 @@ namespace Jhu.Graywulf.Jobs.Query
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.sourceTables = null;
             this.destination = null;
-
             this.partitions = new List<SqlQueryPartition>();
-
-            this.partitioningTable = null;
-            this.partitioningKey = null;
         }
 
         private void CopyMembers(SqlQuery old)
         {
-            this.sourceTables = old.sourceTables;
             this.destination = old.destination;
-
             this.partitions = new List<SqlQueryPartition>(old.partitions.Select(p => (SqlQueryPartition)p.Clone()));
-
-            this.partitioningTable = old.partitioningTable;
-            this.partitioningKey = old.partitioningKey;
         }
 
         public override object Clone()
@@ -166,78 +112,15 @@ namespace Jhu.Graywulf.Jobs.Query
             InitializeQueryObject(null, null, null, true);
         }
 
-        protected override void OnNamesResolved(bool forceReinitialize)
-        {
-            IdentifySourceTables();
-            IdentifyOutputTables();
-        }
-
-        private void IdentifySourceTables()
-        {
-            sourceTables = new Dictionary<string, List<TableReference>>();
-
-            foreach (var qe in ParsingTree.EnumerateDescendantsRecursive<QueryExpression>())
-            {
-                foreach (var qs in qe.EnumerateQuerySpecifications())
-                {
-                    // Save the table in the main list. If it's already there then
-                    // merge the column context
-                    foreach (var tr in qs.SourceTableReferences.Values)
-                    {
-                        if (tr.Type == TableReferenceType.TableOrView)
-                        {
-                            var uniqueKey = tr.DatabaseObject.UniqueKey;
-
-                            if (!sourceTables.ContainsKey(uniqueKey))
-                            {
-                                sourceTables.Add(uniqueKey, new List<TableReference>());
-                            }
-
-                            sourceTables[uniqueKey].Add(tr);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void IdentifyOutputTables()
-        {
-            // TODO: extend this to support CREATE TABLE
-            
-            // TODO: what to do with SELECTs without INTO?
-            //       collect them at the end?
-
-            outputTables = new Dictionary<string, List<TableReference>>();
-
-            foreach (var select in ParsingTree.EnumerateDescendantsRecursive<SelectStatement>(typeof(SelectStatement)))
-            {
-                var tr = select.OutputTableReference;
-                
-                if (tr != null && tr.Type == TableReferenceType.SelectInto)
-                {
-                    var uniqueKey = tr.DatabaseObject.UniqueKey;
-
-                    if (!outputTables.ContainsKey(uniqueKey))
-                    {
-                        outputTables.Add(uniqueKey, new List<TableReference>());
-                    }
-                    else
-                    {
-                        throw new Exception("Duplicate output table name");    // TODO: ***
-                    }
-
-                    outputTables[uniqueKey].Add(tr);
-                }
-            }
-        }
-
         public override void Validate()
         {
             base.Validate();
 
             // Perform validation on the query string
             var validator = QueryFactory.CreateValidator();
-            validator.Execute(ParsingTree);
+
+            // TODO: run it on the info class
+            validator.Execute(QueryDetails.ParsingTree);
 
             // TODO: add additional validation here
             Destination.CheckTableExistence();
@@ -257,12 +140,13 @@ namespace Jhu.Graywulf.Jobs.Query
             TableStatistics.Clear();
 
             // TODO: add multi-statement support
+            // TODO: move all this to name resolver
 
-            if (IsPartitioned)
+            if (QueryDetails.IsPartitioned)
             {
                 // Partitioning is always done on the table specified right after the FROM keyword
                 // TODO: what if more than one QS?
-                var qs = ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateQuerySpecifications().FirstOrDefault();
+                var qs = QueryDetails.ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateQuerySpecifications().FirstOrDefault();
                 var ts = (SimpleTableSource)qs.EnumerateSourceTables(false).First();
 
                 // TODO: modify this when expression output type functions are implemented
@@ -353,7 +237,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     // Single server mode will run on one partition by definition,
                     // Graywulf mode has to look at the registry for available machines
                     // If query is partitioned, statistics must be gathered
-                    if (IsPartitioned)
+                    if (QueryDetails.IsPartitioned)
                     {
                         var mirroredDatasets = FindMirroredGraywulfDatasets().Values.Select(i => i.DatabaseDefinitionReference.Value).ToArray();
                         var specificDatasets = FindServerSpecificGraywulfDatasets().Values.Select(i => i.DatabaseInstanceReference.Value).ToArray();
@@ -388,8 +272,6 @@ namespace Jhu.Graywulf.Jobs.Query
             // Partitioning is only supperted using Graywulf mode, single server mode always
             // falls back to a single partition
 
-            // TODO: add multi-statement support
-
             int partitionCount = DeterminePartitionCount();
 
             switch (ExecutionMode)
@@ -400,7 +282,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     }
                     break;
                 case ExecutionMode.Graywulf:
-                    if (!IsPartitioned)
+                    if (!QueryDetails.IsPartitioned)
                     {
                         OnGeneratePartitions(1, null);
                     }

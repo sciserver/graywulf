@@ -15,6 +15,9 @@ namespace Jhu.Graywulf.IO.Tasks
     [DataContract]
     public class DestinationTable
     {
+        // TODO: implement multi-table support
+
+
         #region Private member variables
 
         [IgnoreDataMember]

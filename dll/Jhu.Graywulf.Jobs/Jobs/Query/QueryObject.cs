@@ -61,7 +61,20 @@ namespace Jhu.Graywulf.Jobs.Query
         /// The original query to be executed
         /// </summary>
         private string queryString;
+
+        /// <summary>
+        /// Query details after parsing and name resolution
+        /// </summary>
+        private QueryDetails queryDetails;
+
+        /// <summary>
+        /// Batch name for automatic output table naming
+        /// </summary>
         private string batchName;
+
+        /// <summary>
+        /// Query name for automatic output table naming
+        /// </summary>
         private string queryName;
 
         /// <summary>
@@ -73,18 +86,6 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Database version to be used to calculate statistics (STAT)
         /// </summary>
         private string statDatabaseVersionName;
-
-        /// <summary>
-        /// The root object of the query parsing tree
-        /// </summary>
-        [NonSerialized]
-        private StatementBlock parsingTree;
-
-        /// <summary>
-        /// True, if the FinishInterpret function has completed.
-        /// </summary>
-        [NonSerialized]
-        private bool isNamesResolved;
 
         /// <summary>
         /// Individual query time-out, overall job timeout is enforced by
@@ -103,7 +104,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Cache for registry context
         /// </summary>
         [NonSerialized]
-        private RegistryContext context;
+        private RegistryContext registryContext;
 
         /// <summary>
         /// Cache for the scheduler interface
@@ -214,6 +215,17 @@ namespace Jhu.Graywulf.Jobs.Query
             set { queryString = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the query details, including the query parsing tree and
+        /// name resolution results.
+        /// </summary>
+        [DataMember]
+        public QueryDetails QueryDetails
+        {
+            get { return queryDetails; }
+            protected set { queryDetails = value; }
+        }
+
         [DataMember]
         public string BatchName
         {
@@ -240,16 +252,6 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             get { return statDatabaseVersionName; }
             set { statDatabaseVersionName = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the root object of the query parsing tree.
-        /// </summary>
-        [IgnoreDataMember]
-        public StatementBlock ParsingTree
-        {
-            get { return parsingTree; }
-            protected set { parsingTree = value; }
         }
 
         /// <summary>
@@ -291,11 +293,8 @@ namespace Jhu.Graywulf.Jobs.Query
         [IgnoreDataMember]
         public RegistryContext RegistryContext
         {
-            get { return context; }
-            set
-            {
-                UpdateContext(value);
-            }
+            get { return registryContext; }
+            set { UpdateContext(value); }
         }
 
         /// <summary>
@@ -490,7 +489,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             InitializeMembers(new StreamingContext());
 
-            this.context = context;
+            this.registryContext = context;
         }
 
         public QueryObject(QueryObject old)
@@ -508,20 +507,19 @@ namespace Jhu.Graywulf.Jobs.Query
             this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(queryFactoryTypeName)), false);
 
             this.queryString = null;
+            this.queryDetails = new QueryDetails();
+
             this.batchName = null;
             this.queryName = null;
 
             this.sourceDatabaseVersionName = String.Empty;
             this.statDatabaseVersionName = String.Empty;
 
-            this.parsingTree = null;
-            this.isNamesResolved = false;
-
             this.queryTimeout = 60;
             this.maxPartitions = 0;
             this.dumpSql = false;
 
-            this.context = null;
+            this.registryContext = null;
             this.scheduler = null;
 
             this.defaultSourceDataset = null;
@@ -559,20 +557,19 @@ namespace Jhu.Graywulf.Jobs.Query
             this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(queryFactoryTypeName)), false);
 
             this.queryString = old.queryString;
+            this.queryDetails = new QueryDetails(old.queryDetails);
+
             this.batchName = old.batchName;
             this.queryName = old.queryName;
 
             this.sourceDatabaseVersionName = old.sourceDatabaseVersionName;
             this.statDatabaseVersionName = old.statDatabaseVersionName;
 
-            this.parsingTree = null;
-            this.isNamesResolved = false;
-
             this.queryTimeout = old.queryTimeout;
             this.maxPartitions = old.maxPartitions;
             this.dumpSql = old.dumpSql;
 
-            this.context = old.context;
+            this.registryContext = old.registryContext;
             this.scheduler = old.scheduler;
 
             this.defaultSourceDataset = old.defaultSourceDataset;
@@ -679,10 +676,10 @@ namespace Jhu.Graywulf.Jobs.Query
         protected void ParseQuery(bool forceReinitialize)
         {
             // Reparse only if needed
-            if (parsingTree == null || forceReinitialize)
+            if (queryDetails.ParsingTree == null || forceReinitialize)
             {
                 var parser = queryFactory.Value.CreateParser();
-                parsingTree = parser.Execute<StatementBlock>(queryString);
+                queryDetails.ParsingTree = parser.Execute<StatementBlock>(queryString);
             }
         }
 
@@ -691,15 +688,14 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         protected bool ResolveNames(bool forceReinitialize)
         {
-            if (!isNamesResolved || forceReinitialize)
+            if (!queryDetails.IsResolved || forceReinitialize)
             {
                 // --- Execute name resolution
                 var nr = CreateNameResolver(forceReinitialize);
-                nr.Execute(parsingTree);
+                nr.Execute(queryDetails);
 
                 OnNamesResolved(forceReinitialize);
 
-                this.isNamesResolved = true;
                 return true;
             }
             else
@@ -708,7 +704,9 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        protected abstract void OnNamesResolved(bool forceReinitialize);
+        protected virtual void OnNamesResolved(bool forceReinitialize)
+        {
+        }
 
         /// <summary>
         /// Returns a new name resolver to be used with the parsed query string.
@@ -725,7 +723,7 @@ namespace Jhu.Graywulf.Jobs.Query
             nr.DefaultTableDatasetName = DefaultSourceDataset.Name;
             nr.DefaultOutputDatasetName = DefaultOutputDataset.Name;
             nr.DefaultFunctionDatasetName = CodeDataset.Name;
-            
+
             return nr;
         }
 
@@ -745,8 +743,9 @@ namespace Jhu.Graywulf.Jobs.Query
             var dss = new Dictionary<string, GraywulfDataset>(SchemaManager.Comparer);
 
             // TODO: add support for multiple statements
+            // TODO: move this to name resolver and add support for in-query data sets
 
-            foreach (var tr in ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateSourceTableReferences(true))
+            foreach (var tr in queryDetails.ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateSourceTableReferences(true))
             {
                 if (tr.Type != TableReferenceType.UserDefinedFunction &&
                     tr.Type != TableReferenceType.Subquery &&
@@ -856,7 +855,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected virtual void UpdateContext(RegistryContext context)
         {
-            this.context = context;
+            this.registryContext = context;
         }
 
         protected void LoadAssignedServerInstance(bool forceReinitialize)
@@ -1238,7 +1237,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 case ExecutionMode.SingleServer:
                     return new Schema.SqlServer.SqlServerSchemaManager();
                 case ExecutionMode.Graywulf:
-                    return GraywulfSchemaManager.Create(new FederationContext(context, null));
+                    return GraywulfSchemaManager.Create(new FederationContext(registryContext, null));
                 default:
                     throw new NotImplementedException();
             }

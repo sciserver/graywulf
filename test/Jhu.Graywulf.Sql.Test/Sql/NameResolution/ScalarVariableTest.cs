@@ -14,28 +14,28 @@ namespace Jhu.Graywulf.Sql.Parsing.NameResolver
         [TestMethod]
         public void DeclareSingleVariableTest()
         {
-            var script = Parse("DECLARE @var int");
-            var d = script.FindDescendantRecursive<VariableDeclaration>();
-            Assert.AreEqual(1, script.VariableReferences.Count);
-            Assert.IsTrue(script.VariableReferences.ContainsKey("@var"));
+            var query = Parse("DECLARE @var int");
+            var d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
+            Assert.AreEqual(1, query.VariableReferences.Count);
+            Assert.IsTrue(query.VariableReferences.ContainsKey("@var"));
         }
 
         [TestMethod]
         public void DeclareMultipleVariableTest()
         {
-            var script = Parse("DECLARE @var1 int, @var2 float");
-            var d = script.FindDescendantRecursive<VariableDeclaration>();
-            Assert.AreEqual(2, script.VariableReferences.Count);
-            Assert.IsTrue(script.VariableReferences.ContainsKey("@var1"));
-            Assert.IsTrue(script.VariableReferences.ContainsKey("@var2"));
+            var query = Parse("DECLARE @var1 int, @var2 float");
+            var d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
+            Assert.AreEqual(2, query.VariableReferences.Count);
+            Assert.IsTrue(query.VariableReferences.ContainsKey("@var1"));
+            Assert.IsTrue(query.VariableReferences.ContainsKey("@var2"));
 
-            script = Parse(
+            query = Parse(
 @"DECLARE @var1 int
 DECLARE @var2 float");
-            d = script.FindDescendantRecursive<VariableDeclaration>();
-            Assert.AreEqual(2, script.VariableReferences.Count);
-            Assert.IsTrue(script.VariableReferences.ContainsKey("@var1"));
-            Assert.IsTrue(script.VariableReferences.ContainsKey("@var2"));
+            d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
+            Assert.AreEqual(2, query.VariableReferences.Count);
+            Assert.IsTrue(query.VariableReferences.ContainsKey("@var1"));
+            Assert.IsTrue(query.VariableReferences.ContainsKey("@var2"));
         }
 
         [TestMethod]
@@ -47,10 +47,10 @@ DECLARE @var2 float");
 
         private void ReferencedVariableHelper(string name, string sql)
         {
-            var script = Parse(sql);
-            var s = script.FindDescendantRecursive<SelectStatement>();
+            var query = Parse(sql);
+            var s = query.ParsingTree.FindDescendantRecursive<SelectStatement>();
             var v = s.FindDescendantRecursive<UserVariable>();
-            Assert.AreEqual(script.VariableReferences[name], v.VariableReference);
+            Assert.AreEqual(query.VariableReferences[name], v.VariableReference);
         }
 
         [TestMethod]
@@ -125,9 +125,9 @@ SET @var = 'this is a text'";
         public void InitFromQueryTest()
         {
             var sql = @"DECLARE @var int = (SELECT TOP 1 ID FROM Author a)";
-            var ss = Parse(sql);
+            var query = Parse(sql);
 
-            var sq = ss.FindDescendantRecursive<Subquery>();
+            var sq = query.ParsingTree.FindDescendantRecursive<Subquery>();
             var qs = sq.QueryExpression.EnumerateQuerySpecifications().FirstOrDefault();
             Assert.AreEqual(1, qs.SourceTableReferences.Count);
             Assert.AreEqual("Author", qs.SourceTableReferences["a"].DatabaseObjectName);
@@ -139,9 +139,9 @@ SET @var = 'this is a text'";
         public void InitFromQueryTest2()
         {
             var sql = @"DECLARE @var int = (SELECT TOP 1 ID FROM (SELECT * FROM Author) a)";
-            var ss = Parse(sql);
+            var query = Parse(sql);
             
-            var sq = ss.FindDescendantRecursive<Subquery>();
+            var sq = query.ParsingTree.FindDescendantRecursive<Subquery>();
             var qs = sq.QueryExpression.EnumerateQuerySpecifications().FirstOrDefault();
             Assert.AreEqual(1, qs.SourceTableReferences.Count);
             Assert.AreEqual("a", qs.SourceTableReferences["a"].Alias);

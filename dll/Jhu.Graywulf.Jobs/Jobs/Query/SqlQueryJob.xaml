@@ -68,7 +68,6 @@
   <CancellationScope sap2010:WorkflowViewState.IdRef="CancellationScope_1">
     <Sequence sap2010:WorkflowViewState.IdRef="Sequence_2">
       <local:InitializeQuery EntityGuid="{x:Null}" sap2010:WorkflowViewState.IdRef="InitializeQuery_1" JobInfo="[JobInfo]" Query="[Query]" />
-      <local:CheckDestinationTable sap2010:WorkflowViewState.IdRef="CheckDestinationTable_1" JobInfo="[JobInfo]" Query="[Query]" />
       <local:AssignServerInstance EntityGuid="{x:Null}" DisplayName="AssignServerInstance" sap2010:WorkflowViewState.IdRef="AssignServerInstance_1" JobInfo="[JobInfo]" QueryObject="[Query]" />
       <ParallelForEach x:TypeArguments="jgsp:ITableSource" DisplayName="ParallelForEach&lt;ITableSource&gt;" sap2010:WorkflowViewState.IdRef="ParallelForEach`1_1" Values="[Query.TableStatistics.Keys]">
         <ActivityAction x:TypeArguments="jgsp:ITableSource">
@@ -125,12 +124,11 @@
         </ActivityAction>
       </ParallelForEach>
     </CancellationScope.CancellationHandler>
-    <sads:DebugSymbol.Symbol>d2pDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjRcbW9kdWxlc1xncmF5d3VsZlxkbGxcSmh1LkdyYXl3dWxmLkpvYnNcSm9ic1xRdWVyeVxTcWxRdWVyeUpvYi54YW1sQUQDgQEXAgEBRQV1EAIBCncHfhkCAQJGB0aOAQIBXUcHR4QBAgFYSAdIwQECAVNJB1IZAgFGUwdTlAECAUFUB2sZAgEYbAdsmgECARNtB3QZAgELd7YBd8oBAgEJfAt81QECAQNGcEZ7AgFgRoIBRosBAgFeR2ZHcQIBW0d4R4EBAgFZSJ0BSKgBAgFWSLUBSL4BAgFUSasBSckBAgFSTgtQFwIBR1N2U4EBAgFEU4gBU5EBAgFCVLYBVMoBAgFAWQtpFwIBGWx8bIcBAgEWbI4BbJcBAgEUbbYBbcoBAgEScgtyzgECAQx8qgF8vAECAQd8zAF80gECAQZ8jwF8mgECAQROck51AgFKTltOZgIBSE8NT6gBAgFLWXJZdQIBHFlbWWYCARpaDWgYAgEdcqMBcrUBAgEQcsUBcssBAgEPcogBcpMBAgENT25PeQIBUE+WAU+lAQIBTk+AAU+JAQIBTFsPW68BAgE7XA9clAECATZdD2QhAgEtZQ9ljAECAShmD2aiAQIBI2cPZ44BAgEeW4IBW40BAgE+W5oBW6wBAgE8XH9ckQECATlcZFxvAgE3XXhdnAECATViE2K1AQIBLmV3ZYkBAgErZVxlZwIBKWaNAWafAQIBJmZyZn0CASRneWeLAQIBIWdeZ2kCAR9igQFikwECATNioAFisgECATFiZmJxAgEv</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d2pDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjRcbW9kdWxlc1xncmF5d3VsZlxkbGxcSmh1LkdyYXl3dWxmLkpvYnNcSm9ic1xRdWVyeVxTcWxRdWVyeUpvYi54YW1sPkQDgAEXAgEBRQV0EAIBCnYHfRkCAQJGB0aOAQIBWEcHR8EBAgFTSAdRGQIBRlIHUpQBAgFBUwdqGQIBGGsHa5oBAgETbAdzGQIBC3a2AXbKAQIBCXsLe9UBAgEDRnBGewIBW0aCAUaLAQIBWUedAUeoAQIBVke1AUe+AQIBVEirAUjJAQIBUk0LTxcCAUdSdlKBAQIBRFKIAVKRAQIBQlO2AVPKAQIBQFgLaBcCARlrfGuHAQIBFmuOAWuXAQIBFGy2AWzKAQIBEnELcc4BAgEMe6oBe7wBAgEHe8wBe9IBAgEGe48Be5oBAgEETXJNdQIBSk1bTWYCAUhODU6oAQIBS1hyWHUCARxYW1hmAgEaWQ1nGAIBHXGjAXG1AQIBEHHFAXHLAQIBD3GIAXGTAQIBDU5uTnkCAVBOlgFOpQECAU5OgAFOiQECAUxaD1qvAQIBO1sPW5QBAgE2XA9jIQIBLWQPZIwBAgEoZQ9logECASNmD2aOAQIBHlqCAVqNAQIBPlqaAVqsAQIBPFt/W5EBAgE5W2RbbwIBN1x4XJwBAgE1YRNhtQECAS5kd2SJAQIBK2RcZGcCASlljQFlnwECASZlcmV9AgEkZnlmiwECASFmXmZpAgEfYYEBYZMBAgEzYaABYbIBAgExYWZhcQIBLw==</sads:DebugSymbol.Symbol>
   </CancellationScope>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
       <sap2010:ViewStateData Id="InitializeQuery_1" sap:VirtualizedContainerService.HintSize="353,22" />
-      <sap2010:ViewStateData Id="CheckDestinationTable_1" sap:VirtualizedContainerService.HintSize="353,22" />
       <sap2010:ViewStateData Id="AssignServerInstance_1" sap:VirtualizedContainerService.HintSize="353,22" />
       <sap2010:ViewStateData Id="ComputeTableStatistics_1" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="Retry_1" sap:VirtualizedContainerService.HintSize="214,128" />
@@ -155,7 +153,7 @@
       <sap2010:ViewStateData Id="CreateDestinationTablePrimaryKey_1" sap:VirtualizedContainerService.HintSize="353,22" />
       <sap2010:ViewStateData Id="DropTemporaryTables_1" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="ParallelForEach`1_4" sap:VirtualizedContainerService.HintSize="353,208" />
-      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="375,1894">
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="375,1832">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -164,8 +162,8 @@
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="DropTemporaryTables_2" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="ParallelForEach`1_5" sap:VirtualizedContainerService.HintSize="287,208" />
-      <sap2010:ViewStateData Id="CancellationScope_1" sap:VirtualizedContainerService.HintSize="411,2309" />
-      <sap2010:ViewStateData Id="Jhu.Graywulf.Jobs.Query.SqlQueryJob_1" sap:VirtualizedContainerService.HintSize="451,2389" />
+      <sap2010:ViewStateData Id="CancellationScope_1" sap:VirtualizedContainerService.HintSize="411,2247" />
+      <sap2010:ViewStateData Id="Jhu.Graywulf.Jobs.Query.SqlQueryJob_1" sap:VirtualizedContainerService.HintSize="451,2327" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

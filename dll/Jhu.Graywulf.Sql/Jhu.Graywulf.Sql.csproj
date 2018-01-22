@@ -132,6 +132,7 @@
     <Compile Include="Sql\NameResolution\DatabaseObjectReference.cs" />
     <Compile Include="Sql\NameResolution\IDatabaseObjectReference.cs" />
     <Compile Include="Sql\NameResolution\NameResolutionError.cs" />
+    <Compile Include="Sql\NameResolution\QueryDetails.cs" />
     <Compile Include="Sql\NameResolution\TableReferenceType.cs" />
     <Compile Include="Sql\NameResolution\VariableReference.cs" />
     <Compile Include="Sql\NameResolution\DataTypeReference.cs" />

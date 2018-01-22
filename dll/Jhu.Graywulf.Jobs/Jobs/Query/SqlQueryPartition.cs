@@ -153,9 +153,9 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             if (ExecutionMode == ExecutionMode.Graywulf)
             {
-                foreach (var key in Query.SourceTables.Keys)
+                foreach (var key in QueryDetails.SourceTables.Keys)
                 {
-                    foreach (var tr in Query.SourceTables[key])
+                    foreach (var tr in QueryDetails.SourceTables[key])
                     {
                         if (tr.Type == TableReferenceType.TableOrView)
                         {
@@ -283,7 +283,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             // Source query will be run on the code database to have
             // access to UDTs
-            var source = CodeGenerator.GetExecuteQuery(ParsingTree);
+            var source = CodeGenerator.GetExecuteQuery(QueryDetails.ParsingTree);
             source.Dataset = CodeDataset;
             return source;
         }

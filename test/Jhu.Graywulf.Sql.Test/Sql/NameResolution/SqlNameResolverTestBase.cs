@@ -62,20 +62,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return nameResolver;
         }
 
-        protected void ResolveNames(StatementBlock script)
+        protected QueryDetails ResolveNames(StatementBlock script)
         {
             CreateNameResolver();
-            nameResolver.Execute(script);
+            return nameResolver.Execute(script);
         }
 
-        protected StatementBlock Parse(string query)
+        protected QueryDetails Parse(string query)
         {
             var p = new SqlParser();
             var script = p.Execute<StatementBlock>(query);
 
-            ResolveNames(script);
-
-            return script;
+            return ResolveNames(script);
         }
 
         protected T Parse<T>(string query)

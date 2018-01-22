@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Jobs.Query
 SELECT * FROM TEST:CatalogB b";
             var q = CreateQuery(sql);
 
-            Assert.AreEqual(2, q.SourceTables.Count);
+            Assert.AreEqual(2, q.QueryInfo.SourceTables.Count);
         }
 
         [TestMethod]
@@ -50,7 +50,7 @@ SELECT * FROM TEST:CatalogB b";
             var sql = @"SELECT * FROM (SELECT * FROM TEST:CatalogA) a";
             var q = CreateQuery(sql);
 
-            Assert.AreEqual(1, q.SourceTables.Count);
+            Assert.AreEqual(1, q.QueryInfo.SourceTables.Count);
         }
 
         [TestMethod]
@@ -62,7 +62,7 @@ SELECT * FROM TEST:CatalogB b";
 SELECT * FROM TEST:CatalogB";
             var q = CreateQuery(sql);
 
-            Assert.AreEqual(2, q.SourceTables.Count);
+            Assert.AreEqual(2, q.QueryInfo.SourceTables.Count);
         }
 
         [TestMethod]
@@ -71,9 +71,9 @@ SELECT * FROM TEST:CatalogB";
             // Test is tables are correctly collected from all select statements
             var sql = @"SELECT objid FROM TEST:CatalogA";
             var q = CreateQuery(sql);
-            var tr = q.SourceTables.Values.First()[0];
+            var tr = q.QueryInfo.SourceTables.Values.First()[0];
 
-            Assert.AreEqual(1, q.SourceTables.Count);
+            Assert.AreEqual(1, q.QueryInfo.SourceTables.Count);
             Assert.AreEqual(12, tr.ColumnReferences.Count);
             Assert.AreEqual("objId", tr.ColumnReferences[0].ColumnName);
             Assert.AreEqual(ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].ColumnContext);
@@ -89,9 +89,9 @@ SELECT * FROM TEST:CatalogB";
 @"SELECT objid FROM TEST:CatalogA
 SELECT ra FROM TEST:CatalogA";
             var q = CreateQuery(sql);
-            var tr = q.SourceTables.Values.First()[0];
+            var tr = q.QueryInfo.SourceTables.Values.First()[0];
 
-            Assert.AreEqual(1, q.SourceTables.Count);
+            Assert.AreEqual(1, q.QueryInfo.SourceTables.Count);
             Assert.AreEqual(12, tr.ColumnReferences.Count);
             Assert.AreEqual("objId", tr.ColumnReferences[0].ColumnName);
             Assert.AreEqual(ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].ColumnContext);
@@ -107,9 +107,9 @@ SELECT ra FROM TEST:CatalogA";
 @"SELECT objid FROM TEST:CatalogA
 SELECT ra FROM TEST:CatalogA WHERE objid = 2";
             var q = CreateQuery(sql);
-            var tr = q.SourceTables.Values.First()[0];
+            var tr = q.QueryInfo.SourceTables.Values.First()[0];
 
-            Assert.AreEqual(1, q.SourceTables.Count);
+            Assert.AreEqual(1, q.QueryInfo.SourceTables.Count);
             Assert.AreEqual(12, tr.ColumnReferences.Count);
             Assert.AreEqual("objId", tr.ColumnReferences[0].ColumnName);
             Assert.AreEqual(ColumnContext.PrimaryKey | ColumnContext.SelectList | ColumnContext.Where, tr.ColumnReferences[0].ColumnContext);
@@ -129,7 +129,7 @@ INTO MYDB:newtable
 FROM TEST:CatalogA";
             var q = CreateQuery(sql);
 
-            Assert.AreEqual(1, q.OutputTables.Count);
+            Assert.AreEqual(1, q.QueryInfo.OutputTables.Count);
         }
 
         #endregion
@@ -139,7 +139,7 @@ FROM TEST:CatalogA";
         {
             var q = CreateQuery(sql);
             var cg = new SqlQueryCodeGenerator(q);
-            var ts = q.ParsingTree.FindDescendantRecursive<SelectStatement>().QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
+            var ts = q.QueryParsingTree.FindDescendantRecursive<SelectStatement>().QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
             var table = (IColumns)ts.TableReference.DatabaseObject;
             var cr = ts.TableReference.FilterColumnReferences(context);
             var cs = cr.Select(c => table.Columns[c.ColumnName]);

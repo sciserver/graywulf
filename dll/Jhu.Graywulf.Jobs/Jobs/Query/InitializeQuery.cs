@@ -32,6 +32,8 @@ namespace Jhu.Graywulf.Jobs.Query
                     {
                         query.InitializeQueryObject(registryContext);
                         query.Validate();
+
+                        // TODO: add this back
                         query.IdentifyTablesForStatistics();
                     }
                     break;
