@@ -132,6 +132,9 @@
   <data name="DuplicateColumnAlias" xml:space="preserve">
     <value>Duplicate column alias '{0}' found at ({1},{2}).</value>
   </data>
+  <data name="DuplicateOutputTable" xml:space="preserve">
+    <value>Duplicate output table name '{0}' found at ({1},{2}).</value>
+  </data>
   <data name="DuplicateTableAlias" xml:space="preserve">
     <value>Duplicate table alias '{0}' found at ({1},{2}).</value>
   </data>

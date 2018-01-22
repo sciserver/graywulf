@@ -49,6 +49,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var ds = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString);
             schemaManager.Datasets[ds.Name] = ds;
 
+            var mydb = new SqlServerDataset(Jhu.Graywulf.Test.Constants.MyDBDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString);
+            mydb.IsMutable = true;
+            schemaManager.Datasets[mydb.Name] = mydb;
+
             return schemaManager;
         }
 
@@ -58,6 +62,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             nameResolver.SchemaManager = CreateSchemaManager();
             nameResolver.DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
             nameResolver.DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
+            nameResolver.DefaultOutputDatasetName = Jhu.Graywulf.Test.Constants.MyDBDatasetName;
 
             return nameResolver;
         }

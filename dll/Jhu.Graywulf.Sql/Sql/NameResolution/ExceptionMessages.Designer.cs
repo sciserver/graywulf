@@ -106,6 +106,15 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate output table name &apos;{0}&apos; found at ({1},{2})..
+        /// </summary>
+        internal static string DuplicateOutputTable {
+            get {
+                return ResourceManager.GetString("DuplicateOutputTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate table alias &apos;{0}&apos; found at ({1},{2})..
         /// </summary>
         internal static string DuplicateTableAlias {

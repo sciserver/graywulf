@@ -133,7 +133,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         #endregion
         #region Statements
-        
+
         /// <summary>
         /// Executes the name resolution over a query
         /// </summary>
@@ -596,7 +596,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     ncr.ColumnAlias = cr.ColumnReference.ColumnAlias;
                 }
-                
+
                 cr.ColumnReference = ncr;
             }
         }
@@ -759,6 +759,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                     // Save the table in the query specification
                     qs.SourceTableReferences.Add(exportedName, ntr);
+
+                    // Collect in the global store
+                    if (ntr.Type == TableReferenceType.TableOrView)
+                    {
+                        var uniqueKey = ntr.DatabaseObject.UniqueKey;
+
+                        if (!details.SourceTables.ContainsKey(uniqueKey))
+                        {
+                            details.SourceTables.Add(uniqueKey, new List<TableReference>());
+                        }
+
+                        details.SourceTables[uniqueKey].Add(ntr);
+                    }
                 }
             }
         }
@@ -842,7 +855,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 tr.DatabaseObject = ds.GetObject(tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName);
 
-                if (tr == null)
+                if (tr.DatabaseObject == null)
                 {
                     tr.DatabaseObject = new Table(ds)
                     {
@@ -853,6 +866,20 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
 
                 // TODO: if it is a new table, consider figuring out the columns from the query
+
+                // Save it to the global store
+                var uniqueKey = tr.DatabaseObject.UniqueKey;
+
+                if (!details.OutputTables.ContainsKey(uniqueKey))
+                {
+                    details.OutputTables.Add(uniqueKey, new List<TableReference>());
+                }
+                else
+                {
+                    throw NameResolutionError.DuplicateOutputTable(into.TableName);
+                }
+
+                details.OutputTables[uniqueKey].Add(tr);
 
                 return tr;
             }

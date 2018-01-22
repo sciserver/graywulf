@@ -167,12 +167,10 @@
     <Compile Include="Jobs\Query\ExecuteQuery.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Jobs\Query\FindRemoteTables.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Jobs\Query\GeneratePartitions.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Jobs\Query\IdentifyRemoteSourceTables.cs" />
     <Compile Include="Jobs\Query\InitializeQuery.cs">
       <SubType>Code</SubType>
     </Compile>

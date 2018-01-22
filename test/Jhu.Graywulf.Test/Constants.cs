@@ -13,6 +13,7 @@ namespace Jhu.Graywulf.Test
         // to avoid the need to reference the registry dll from all projects
         public static readonly string TestDatasetName = "TEST";
         public static readonly string CodeDatasetName = "CODE";
+        public static readonly string MyDBDatasetName = "MYDB";
 
         public static readonly string RemoteHost1 = "localhost";
         public static readonly string RemoteHost2 = "localhost";

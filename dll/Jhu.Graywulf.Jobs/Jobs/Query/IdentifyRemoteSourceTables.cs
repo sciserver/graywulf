@@ -9,7 +9,7 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class FindRemoteTables : JobCodeActivity, IJobActivity
+    public class IdentifyRemoteSourceTables : JobCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }

@@ -93,6 +93,7 @@
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerCodeGeneratorTestBase.cs" />
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerColumnListGeneratorTest.cs" />
     <Compile Include="Sql\NameResolution\CommonTableExpressionTest.cs" />
+    <Compile Include="Sql\NameResolution\SourceTableTest.cs" />
     <Compile Include="Sql\NameResolution\StatementBlockTest.cs" />
     <Compile Include="Sql\NameResolution\SystemVariableTest.cs" />
     <Compile Include="Sql\NameResolution\ScalarVariableTest.cs" />

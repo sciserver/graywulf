@@ -88,13 +88,13 @@
           <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_2" JobInfo="[JobInfo]" MaxRetries="3">
             <Sequence sap2010:WorkflowViewState.IdRef="Sequence_1">
               <local:AssignServerInstance EntityGuid="{x:Null}" sap2010:WorkflowViewState.IdRef="AssignServerInstance_2" JobInfo="[JobInfo]" QueryObject="[queryPartition]" />
-              <local:FindRemoteTables sap2010:WorkflowViewState.IdRef="FindRemoteTables_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" />
+              <local:IdentifyRemoteSourceTables sap2010:WorkflowViewState.IdRef="IdentifyRemoteSourceTables_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" />
               <ParallelForEach x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="ParallelForEach`1_2" Values="[queryPartition.RemoteTables.Keys]">
                 <ActivityAction x:TypeArguments="x:String">
                   <ActivityAction.Argument>
-                    <DelegateInArgument x:TypeArguments="x:String" Name="tableReference" />
+                    <DelegateInArgument x:TypeArguments="x:String" Name="tableKey" />
                   </ActivityAction.Argument>
-                  <local:CopyRemoteTable sap2010:WorkflowViewState.IdRef="CopyRemoteTable_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" RemoteTable="[tableReference]" />
+                  <local:CopyRemoteTable sap2010:WorkflowViewState.IdRef="CopyRemoteTable_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" RemoteTable="[tableKey]" />
                 </ActivityAction>
               </ParallelForEach>
               <local:ExecuteQuery sap2010:WorkflowViewState.IdRef="ExecuteQuery_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" />
@@ -124,7 +124,7 @@
         </ActivityAction>
       </ParallelForEach>
     </CancellationScope.CancellationHandler>
-    <sads:DebugSymbol.Symbol>d2pDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjRcbW9kdWxlc1xncmF5d3VsZlxkbGxcSmh1LkdyYXl3dWxmLkpvYnNcSm9ic1xRdWVyeVxTcWxRdWVyeUpvYi54YW1sPkQDgAEXAgEBRQV0EAIBCnYHfRkCAQJGB0aOAQIBWEcHR8EBAgFTSAdRGQIBRlIHUpQBAgFBUwdqGQIBGGsHa5oBAgETbAdzGQIBC3a2AXbKAQIBCXsLe9UBAgEDRnBGewIBW0aCAUaLAQIBWUedAUeoAQIBVke1AUe+AQIBVEirAUjJAQIBUk0LTxcCAUdSdlKBAQIBRFKIAVKRAQIBQlO2AVPKAQIBQFgLaBcCARlrfGuHAQIBFmuOAWuXAQIBFGy2AWzKAQIBEnELcc4BAgEMe6oBe7wBAgEHe8wBe9IBAgEGe48Be5oBAgEETXJNdQIBSk1bTWYCAUhODU6oAQIBS1hyWHUCARxYW1hmAgEaWQ1nGAIBHXGjAXG1AQIBEHHFAXHLAQIBD3GIAXGTAQIBDU5uTnkCAVBOlgFOpQECAU5OgAFOiQECAUxaD1qvAQIBO1sPW5QBAgE2XA9jIQIBLWQPZIwBAgEoZQ9logECASNmD2aOAQIBHlqCAVqNAQIBPlqaAVqsAQIBPFt/W5EBAgE5W2RbbwIBN1x4XJwBAgE1YRNhtQECAS5kd2SJAQIBK2RcZGcCASlljQFlnwECASZlcmV9AgEkZnlmiwECASFmXmZpAgEfYYEBYZMBAgEzYaABYbIBAgExYWZhcQIBLw==</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d2pDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjRcbW9kdWxlc1xncmF5d3VsZlxkbGxcSmh1LkdyYXl3dWxmLkpvYnNcSm9ic1xRdWVyeVxTcWxRdWVyeUpvYi54YW1sPkQDgAEXAgEBRQV0EAIBCnYHfRkCAQJGB0aOAQIBWEcHR8EBAgFTSAdRGQIBRlIHUpQBAgFBUwdqGQIBGGsHa5oBAgETbAdzGQIBC3a2AXbKAQIBCXsLe9UBAgEDRnBGewIBW0aCAUaLAQIBWUedAUeoAQIBVke1AUe+AQIBVEirAUjJAQIBUk0LTxcCAUdSdlKBAQIBRFKIAVKRAQIBQlO2AVPKAQIBQFgLaBcCARlrfGuHAQIBFmuOAWuXAQIBFGy2AWzKAQIBEnELcc4BAgEMe6oBe7wBAgEHe8wBe9IBAgEGe48Be5oBAgEETXJNdQIBSk1bTWYCAUhODU6oAQIBS1hyWHUCARxYW1hmAgEaWQ1nGAIBHXGjAXG1AQIBEHHFAXHLAQIBD3GIAXGTAQIBDU5uTnkCAVBOlgFOpQECAU5OgAFOiQECAUxaD1qvAQIBO1sPW6gBAgE2XA9jIQIBLWQPZIwBAgEoZQ9logECASNmD2aOAQIBHlqCAVqNAQIBPlqaAVqsAQIBPFuTAVulAQIBOVt4W4MBAgE3XHhcnAECATVhE2GvAQIBLmR3ZIkBAgErZFxkZwIBKWWNAWWfAQIBJmVyZX0CASRmeWaLAQIBIWZeZmkCAR9hgQFhkwECATNhoAFhrAECATFhZmFxAgEv</sads:DebugSymbol.Symbol>
   </CancellationScope>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
@@ -135,7 +135,7 @@
       <sap2010:ViewStateData Id="ParallelForEach`1_1" sap:VirtualizedContainerService.HintSize="353,276" />
       <sap2010:ViewStateData Id="GeneratePartitions_1" sap:VirtualizedContainerService.HintSize="353,22" />
       <sap2010:ViewStateData Id="AssignServerInstance_2" sap:VirtualizedContainerService.HintSize="287,22" />
-      <sap2010:ViewStateData Id="FindRemoteTables_1" sap:VirtualizedContainerService.HintSize="287,22" />
+      <sap2010:ViewStateData Id="IdentifyRemoteSourceTables_1" sap:VirtualizedContainerService.HintSize="287,22" />
       <sap2010:ViewStateData Id="CopyRemoteTable_1" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="ParallelForEach`1_2" sap:VirtualizedContainerService.HintSize="287,208" />
       <sap2010:ViewStateData Id="ExecuteQuery_1" sap:VirtualizedContainerService.HintSize="287,22" />
