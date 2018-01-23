@@ -32,6 +32,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
         [NonSerialized]
         private ColumnReference partitioningKey;
 
+        // TODO: key these with object instead of unique name?
+        //       the schema objects should be the same since they're cached
+
         private Dictionary<string, VariableReference> variableReferences;
         private Dictionary<string, List<TableReference>> sourceTableReferences;
         private Dictionary<string, List<TableReference>> outputTableReferences;

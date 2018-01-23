@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.LogicalExpressions
@@ -19,10 +20,18 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
         {
             conditions = new List<LogicalExpressions.Expression>();
         }
-        
+
+        public void CollectConditions(Parsing.StatementBlock script)
+        {
+            foreach (var qs in script.EnumerateDescendantsRecursive<Parsing.QuerySpecification>())
+            {
+                CollectConditions(qs);
+            }
+        }
+
         public void CollectConditions(Parsing.QueryExpression qe)
         {
-            foreach (var qs in qe.EnumerateDescendants<Parsing.QuerySpecification>())
+            foreach (var qs in qe.EnumerateDescendantsRecursive<Parsing.QuerySpecification>())
             {
                 CollectConditions(qs);
             }
@@ -33,12 +42,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             // TODO: review processing of subqueries here
             // TODO: what to do with conditions that involve other tables (subqueries)
             //       probably those are filtered out in GenerateWhereClauseSpecificToTable?
-
-            /* TODO: delete
-            foreach (var sq in qs.EnumerateSubqueries())
-            {
-                CollectConditions(sq.QueryExpression);
-            }*/
+            //       subqueries may reference tables outside the subquery!
 
             // Process join conditions
             var from = qs.FindDescendant<Parsing.FromClause>();
@@ -69,6 +73,31 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 
         public Parsing.WhereClause GenerateWhereClauseSpecificToTable(TableReference table)
         {
+            return GenerateWhereClauseSpecificToTable(table, null);
+        }
+
+        public Parsing.WhereClause GenerateWhereClauseSpecificToTable(DatabaseObject table)
+        {
+            return GenerateWhereClauseSpecificToTable(null, table);
+        }
+
+        public Parsing.WhereClause GenerateWhereClauseSpecificToTable(TableReference tr, DatabaseObject dbobj)
+        {
+            var sc = GenerateWherePredicateSpecificToTable(tr, dbobj);
+
+            // Prefix with the WHERE keyword
+            if (sc != null)
+            {
+                return Parsing.WhereClause.Create(sc);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public Parsing.BooleanExpression GenerateWherePredicateSpecificToTable(TableReference tr, DatabaseObject dbobj)
+        {
             Parsing.BooleanExpression sc = null;
 
             // Loop over all conditions (JOIN ONs and WHERE conditions)
@@ -78,7 +107,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             // Chain up search conditions with AND operator
             foreach (var condition in conditions)
             {
-                foreach (var ex in EnumerateCnfTermsSpecificToTable(condition, table))
+                foreach (var ex in EnumerateCnfTermsSpecificToTable(condition, tr, dbobj))
                 {
                     var nsc = ex.GetParsingTree();
 
@@ -94,15 +123,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
                 }
             }
 
-            // Prefix with the WHERE keyword
-            if (sc != null)
-            {
-                return Parsing.WhereClause.Create(sc);
-            }
-            else
-            {
-                return null;
-            }
+            return sc;
         }
 
         /// <summary>
@@ -147,20 +168,32 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
         /// <param name="table"></param>
         /// <returns></returns>
         /// <remarks>The expression must be in CNF</remarks>
-        private static IEnumerable<LogicalExpressions.Expression> EnumerateCnfTermsSpecificToTable(LogicalExpressions.Expression node, TableReference table)
+        private static IEnumerable<LogicalExpressions.Expression> EnumerateCnfTermsSpecificToTable(LogicalExpressions.Expression node, TableReference tr, DatabaseObject dbobj)
         {
+            bool specifictotable;
+
             foreach (var term in EnumerateCnfTerms(node))
             {
                 if (term is LogicalExpressions.OperatorOr)
                 {
                     // A term is only specific to a table if it contains predicates
                     // only specific to the particular table
-                    var specifictotable = true;
+                    specifictotable = true;
                     foreach (var exp in EnumerateCnfTermPredicates(term))
                     {
-                        if (!GetCnfLiteralPredicate(exp).IsSpecificToTable(table))
+                        var predicate = GetCnfLiteralPredicate(exp);
+
+                        if (tr != null)
                         {
-                            specifictotable = false;
+                            specifictotable &= predicate.IsSpecificToTable(tr);
+                        }
+                        else
+                        {
+                            specifictotable &= predicate.IsSpecificToTable(dbobj);
+                        }
+
+                        if (!specifictotable)
+                        {
                             break;
                         }
                     }
@@ -172,7 +205,18 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
                 }
                 else
                 {
-                    if (GetCnfLiteralPredicate(term).IsSpecificToTable(table))
+                    var predicate = GetCnfLiteralPredicate(term);
+
+                    if (tr != null)
+                    {
+                        specifictotable = predicate.IsSpecificToTable(tr);
+                    }
+                    else
+                    {
+                        specifictotable = predicate.IsSpecificToTable(dbobj);
+                    }
+
+                    if (specifictotable)
                     {
                         yield return term;
                     }

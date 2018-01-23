@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jhu.Graywulf.Parsing;
+using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
@@ -13,6 +14,19 @@ namespace Jhu.Graywulf.Sql.Parsing
             foreach (var tr in NodeExtensions.EnumerateTableReferences(this))
             {
                 if (tr != null && !tr.Compare(table))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool IsSpecificToTable(DatabaseObject table)
+        {
+            foreach (var tr in NodeExtensions.EnumerateTableReferences(this))
+            {
+                if (tr != null && tr.DatabaseObject != null && tr.DatabaseObject != table)
                 {
                     return false;
                 }

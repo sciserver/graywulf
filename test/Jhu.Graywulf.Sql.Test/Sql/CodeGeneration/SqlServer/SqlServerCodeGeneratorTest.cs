@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Sql.NameResolution;
+using Jhu.Graywulf.Sql.LogicalExpressions;
 
 namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 {
@@ -27,18 +28,18 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 
         private string[] GenerateMostRestrictiveTableQueryTestHelper(string sql, ColumnContext columnContext, int top)
         {
-            var ss = CreateSelect(sql);
+            var details = Parse(sql);
             var res = new List<string>();
             var cg = new SqlServerCodeGenerator();
             cg.ResolveNames = true;
-            
-            foreach (var qs in ss.QueryExpression.EnumerateQuerySpecifications())
+
+            var scn = new SearchConditionNormalizer();
+            scn.CollectConditions(details.ParsingTree);
+
+            // TODO: use qs.SourceTableReferences
+            foreach (var key in details.SourceTables.Keys)
             {
-                // TODO: use qs.SourceTableReferences
-                foreach (var tr in qs.EnumerateSourceTableReferences(true))
-                {
-                    res.Add(cg.GenerateMostRestrictiveTableQuery(tr, columnContext, top));
-                }
+                res.Add(cg.GenerateMostRestrictiveTableQuery(scn, details.SourceTables[key], columnContext, top));
             }
 
             return res.ToArray();
@@ -121,6 +122,29 @@ WHERE [b].[ID] = 1
 @"SELECT a.Title, b.ID
 FROM Book a CROSS JOIN Book b
 WHERE b.ID = 1 AND a.ID IN (3, 4)";
+
+            var gt =
+@"SELECT 
+[a].[ID], [a].[Title]
+FROM [Graywulf_Schema_Test].[dbo].[Book] AS [a] 
+WHERE [a].[ID] IN (3, 4)
+";
+
+            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, ColumnContext.Default, 0);
+
+            Assert.AreEqual(1, res.Length);
+            Assert.AreEqual(gt, res[0]);
+        }
+
+        [TestMethod]
+        public void GenerateMostRestrictiveTableQuery_MultipleSelectsTest()
+        {
+            var sql =
+@"SELECT a.Title FROM Book a
+WHERE a.ID IN (3, 4)
+
+SELECT b.Year FROM Book b
+WHERE b.Title = 'Test'";
 
             var gta =
 @"SELECT 
@@ -248,7 +272,7 @@ ADD CONSTRAINT [PK_TableWithPrimaryKey] PRIMARY KEY CLUSTERED (
 
             var sql = cg.GenerateDropPrimaryKeyScript(t);
 
-            var gt = 
+            var gt =
 @"ALTER TABLE [Graywulf_Schema_Test].[dbo].[TableWithPrimaryKey]
 DROP CONSTRAINT [PK_TableWithPrimaryKey]";
 

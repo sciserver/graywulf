@@ -42,8 +42,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private string[] GetWhereClauses(string query)
         {
-
-            SearchConditionNormalizer cn = new SearchConditionNormalizer();
+            var cn = new LogicalExpressions.SearchConditionNormalizer();
 
             var select = CreateSelect(query);
             var res = new List<string>();
@@ -83,11 +82,11 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var select = CreateSelect(query);
 
-            var scn = new SearchConditionNormalizer();
+            var scn = new LogicalExpressions.SearchConditionNormalizer();
             scn.CollectConditions(select.QueryExpression);
 
-            var conditions = typeof(SearchConditionNormalizer).GetField("conditions", BindingFlags.Instance | BindingFlags.NonPublic);
-            var enumterms = typeof(SearchConditionNormalizer).GetMethod("EnumerateCnfTerms", BindingFlags.Static | BindingFlags.NonPublic);
+            var conditions = typeof(LogicalExpressions.SearchConditionNormalizerTest).GetField("conditions", BindingFlags.Instance | BindingFlags.NonPublic);
+            var enumterms = typeof(LogicalExpressions.SearchConditionNormalizerTest).GetMethod("EnumerateCnfTerms", BindingFlags.Static | BindingFlags.NonPublic);
 
             return (IEnumerable<LogicalExpressions.Expression>)enumterms.Invoke(null, new object[] { ((List<LogicalExpressions.Expression>)conditions.GetValue(scn)).First() });
         }
@@ -116,11 +115,11 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var select = CreateSelect(query);
 
-            var scn = new SearchConditionNormalizer();
+            var scn = new LogicalExpressions.SearchConditionNormalizer();
             scn.CollectConditions(select.QueryExpression);
 
-            var conditions = typeof(SearchConditionNormalizer).GetField("conditions", BindingFlags.Instance | BindingFlags.NonPublic);
-            var enumterms = typeof(SearchConditionNormalizer).GetMethod("EnumerateCnfTermsSpecificToTable", BindingFlags.Static | BindingFlags.NonPublic);
+            var conditions = typeof(LogicalExpressions.SearchConditionNormalizerTest).GetField("conditions", BindingFlags.Instance | BindingFlags.NonPublic);
+            var enumterms = typeof(LogicalExpressions.SearchConditionNormalizerTest).GetMethod("EnumerateCnfTermsSpecificToTable", BindingFlags.Static | BindingFlags.NonPublic);
 
             return (IEnumerable<LogicalExpressions.Expression>)enumterms.Invoke(null, new object[] { ((List<LogicalExpressions.Expression>)conditions.GetValue(scn)).FirstOrDefault(), select.QueryExpression.EnumerateSourceTableReferences(false).First() });
         }
@@ -152,7 +151,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var terms = EnumerateCnfTermsTestHelper(query);
 
-            var enumpreds = typeof(SearchConditionNormalizer).GetMethod("EnumerateCnfTermPredicates", BindingFlags.Static | BindingFlags.NonPublic);
+            var enumpreds = typeof(LogicalExpressions.SearchConditionNormalizerTest).GetMethod("EnumerateCnfTermPredicates", BindingFlags.Static | BindingFlags.NonPublic);
 
             return (IEnumerable<LogicalExpressions.Expression>)enumpreds.Invoke(null, new object[] { terms.First() });
         }

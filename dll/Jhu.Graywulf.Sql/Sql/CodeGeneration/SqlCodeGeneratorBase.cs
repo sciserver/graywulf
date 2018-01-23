@@ -471,12 +471,12 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         protected abstract string GenerateTopExpression(int top);
 
-        public string GenerateMostRestrictiveTableQuery(TableReference table, ColumnContext columnContext, int top)
+        public string GenerateMostRestrictiveTableQuery(SearchConditionNormalizer cnr, TableReference table, ColumnContext columnContext, int top)
         {
             // Run the normalizer to convert where clause to a normal form
-            var cnr = new SearchConditionNormalizer();
-            var qs = ((TableSource)table.Node).QuerySpecification;
-            cnr.CollectConditions(qs);
+            // var cnr = new SearchConditionNormalizer();
+            //var qs = ((TableSource)table.Node).QuerySpecification;
+            // cnr.CollectConditions(qs);
 
             // Generate where clause
             var where = cnr.GenerateWhereClauseSpecificToTable(table);
@@ -490,20 +490,39 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             return OnGenerateMostRestrictiveTableQuery(GetResolvedTableName(table), table.Alias, columnlist.Execute(), Execute(where), top);
         }
 
-        public string GenerateMostRestrictiveTableQuery(List<TableReference> tables, ColumnContext columnContext, int top)
+        public string GenerateMostRestrictiveTableQuery(SearchConditionNormalizer cnr, List<TableReference> tables, ColumnContext columnContext, int top)
         {
             // Run the normalizer to convert where clause to a normal form
-            var cnr = new SearchConditionNormalizer();
+            //var cnr = new SearchConditionNormalizer();
+            DatabaseObject t = null;
 
             foreach (var tr in tables)
             {
+                if (tr.Type != TableReferenceType.TableOrView)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                if (t == null)
+                {
+                    t = tr.DatabaseObject;
+                }
+                else
+                {
+                    if (t != tr.DatabaseObject)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                }
+
+                // TODO: conditions from different queries should be OR'ed
                 var qs = ((TableSource)tr.Node).QuerySpecification;
                 cnr.CollectConditions(qs);
             }
 
             // Generate where clause
             var table = tables[0];
-            var where = cnr.GenerateWhereClauseSpecificToTable(tables[0]);
+            var where = cnr.GenerateWhereClauseSpecificToTable(table);
 
             // Generate the column list to be retrieved
             var columnlist = CreateColumnListGenerator();
@@ -516,10 +535,10 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             }
 
             return OnGenerateMostRestrictiveTableQuery(
-                GetResolvedTableName(table), 
-                table.Alias, 
-                columnlist.Execute(), 
-                Execute(where), 
+                GetResolvedTableName(table),
+                table.Alias,
+                columnlist.Execute(),
+                Execute(where),
                 top);
         }
 
