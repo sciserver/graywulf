@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Schema
+namespace Jhu.Graywulf.Sql.Schema
 {
     [Serializable]
     [DataContract(Namespace = "")]

@@ -5,7 +5,7 @@ using System.Text;
 using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Schema
+namespace Jhu.Graywulf.Sql.Schema
 {
     public class UserDatabaseCheck : Jhu.Graywulf.Check.CheckRoutineBase
     {

@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
         }
 
-        public View(Jhu.Graywulf.Schema.View view)
+        public View(Jhu.Graywulf.Sql.Schema.View view)
             : base(view)
         {
             this.Columns = view.Columns.Values.Select(c => new Column(c)).ToArray();

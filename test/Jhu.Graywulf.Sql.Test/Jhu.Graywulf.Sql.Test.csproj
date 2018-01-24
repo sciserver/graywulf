@@ -90,11 +90,7 @@
     <Compile Include="Data\SmartCommandTest.cs" />
     <Compile Include="Data\SmartDataReaderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Schema\AppSettings.cs" />
-    <Compile Include="Schema\SerializationTest.cs" />
-    <Compile Include="Schema\SqlServer\SqlServerDatasetTest.cs" />
-    <Compile Include="Schema\SqlServer\SqlServerMetadataTest.cs" />
-    <Compile Include="Schema\SqlServer\SqlServerTestBase.cs" />
+    <Compile Include="Sql\CodeGeneration\MySql\MySqlCodeGeneratorTest.cs" />
     <Compile Include="Sql\CodeGeneration\SqlServer\RemoteQueryGeneratorTest.cs" />
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerCodeGeneratorTest.cs" />
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerCodeGeneratorTestBase.cs" />
@@ -152,6 +148,18 @@
     <Compile Include="Sql\Parsing\UnaryOperatorTest.cs" />
     <Compile Include="Sql\Parsing\UpdateStatementTest.cs" />
     <Compile Include="Sql\Parsing\WhileStatementTest.cs" />
+    <Compile Include="Sql\Schema\AppSettings.cs" />
+    <Compile Include="Sql\Schema\MySql\MySqlDatasetTest.cs" />
+    <Compile Include="Sql\Schema\MySql\MySqlMetadataTest.cs" />
+    <Compile Include="Sql\Schema\PostgreSql\PostgreSqlDatasetTest.cs" />
+    <Compile Include="Sql\Schema\PostgreSql\PostgreSqlMetadataTest.cs" />
+    <Compile Include="Sql\Schema\QuantityIndexTest.cs" />
+    <Compile Include="Sql\Schema\QuantityTest.cs" />
+    <Compile Include="Sql\Schema\SerializationTest.cs" />
+    <Compile Include="Sql\Schema\SqlServer\SqlServerDatasetTest.cs" />
+    <Compile Include="Sql\Schema\SqlServer\SqlServerMetadataTest.cs" />
+    <Compile Include="Sql\Schema\SqlServer\SqlServerTestBase.cs" />
+    <Compile Include="Sql\Schema\UnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">

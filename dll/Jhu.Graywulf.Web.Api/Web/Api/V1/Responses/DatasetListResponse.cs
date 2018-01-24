@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
         }
 
-        public DatasetListResponse(IEnumerable<Jhu.Graywulf.Schema.DatasetBase> datasets)
+        public DatasetListResponse(IEnumerable<Jhu.Graywulf.Sql.Schema.DatasetBase> datasets)
         {
             this.Datasets = datasets.Select(ds => new Dataset(ds)).ToArray();
         }

@@ -298,9 +298,9 @@ namespace Jhu.Graywulf.Registry
             return csb;
         }
 
-        public Schema.SqlServer.SqlServerDataset GetDataset()
+        public Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerDataset GetDataset()
         {
-            return new Schema.SqlServer.SqlServerDataset()
+            return new Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerDataset()
             {
                 ConnectionString = GetConnectionString().ConnectionString
             };

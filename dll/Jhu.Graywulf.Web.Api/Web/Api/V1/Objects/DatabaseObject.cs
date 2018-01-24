@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
         }
 
-        protected DatabaseObject(Schema.DatabaseObject obj)
+        protected DatabaseObject(Jhu.Graywulf.Sql.Schema.DatabaseObject obj)
         {
             this.Name = obj.DisplayName;
             this.Summary = obj.Metadata.Summary;

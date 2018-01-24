@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
         }
 
-        public ColumnListResponse(IEnumerable<Jhu.Graywulf.Schema.Column> columns)
+        public ColumnListResponse(IEnumerable<Jhu.Graywulf.Sql.Schema.Column> columns)
         {
             this.Columns = columns.Select(c => new Column(c)).ToArray();
         }

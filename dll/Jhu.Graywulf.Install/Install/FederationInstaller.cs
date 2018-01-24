@@ -178,8 +178,8 @@ namespace Jhu.Graywulf.Install
 
         public virtual void GenerateDefaultSettings()
         {
-            federation.SchemaManager = GetUnversionedTypeName(typeof(Jhu.Graywulf.Schema.GraywulfSchemaManager));
-            federation.UserDatabaseFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Schema.UserDatabaseFactory));
+            federation.SchemaManager = GetUnversionedTypeName(typeof(Jhu.Graywulf.Sql.Schema.GraywulfSchemaManager));
+            federation.UserDatabaseFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Sql.Schema.UserDatabaseFactory));
             federation.QueryFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Jobs.Query.SqlQueryFactory));
             federation.FileFormatFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Format.FileFormatFactory));
             federation.StreamFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.IO.StreamFactory));

@@ -282,9 +282,9 @@ namespace Jhu.Graywulf.Registry
             return csb;
         }
 
-        public Schema.SqlServer.SqlServerDataset GetDataset()
+        public Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerDataset GetDataset()
         {
-            var ds = new Schema.GraywulfDataset(RegistryContext);
+            var ds = new Jhu.Graywulf.Sql.Schema.GraywulfDataset(RegistryContext);
             ds.Name = this.DatabaseDefinition.Name;
             ds.DatabaseVersionReference.Value = this.DatabaseVersion;
             ds.DatabaseDefinitionReference.Value = this.DatabaseDefinition;

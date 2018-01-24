@@ -100,7 +100,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     {
         #region Dataset functions
 
-        private Schema.DatasetBase GetDatasetInternal(string datasetName)
+        private Jhu.Graywulf.Sql.Schema.DatasetBase GetDatasetInternal(string datasetName)
         {
             return FederationContext.SchemaManager.Datasets[datasetName];
         }
@@ -123,7 +123,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         #endregion
         #region Table functions
 
-        private Schema.Table GetTableInternal(string datasetName, string tableName)
+        private Jhu.Graywulf.Sql.Schema.Table GetTableInternal(string datasetName, string tableName)
         {
             var parts = tableName.Split('.');
             var dataset = FederationContext.SchemaManager.Datasets[datasetName];
@@ -156,7 +156,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         #endregion
         #region View functions
 
-        private Schema.View GetViewInternal(string datasetName, string viewName)
+        private Jhu.Graywulf.Sql.Schema.View GetViewInternal(string datasetName, string viewName)
         {
             var parts = viewName.Split('.');
             var dataset = FederationContext.SchemaManager.Datasets[datasetName];

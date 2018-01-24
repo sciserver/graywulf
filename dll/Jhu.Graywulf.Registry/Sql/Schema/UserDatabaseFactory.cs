@@ -6,9 +6,9 @@ using System.Runtime.Serialization;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.Sql.Schema.SqlServer;
 
-namespace Jhu.Graywulf.Schema
+namespace Jhu.Graywulf.Sql.Schema
 {
     public abstract class UserDatabaseFactory : ContextObject, ICheckable
     {

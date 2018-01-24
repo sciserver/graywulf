@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
         }
 
-        public Column(Jhu.Graywulf.Schema.Column column)
+        public Column(Jhu.Graywulf.Sql.Schema.Column column)
         {
             this.Name = column.Name;
             this.DataType = column.DataType.TypeNameWithLength;

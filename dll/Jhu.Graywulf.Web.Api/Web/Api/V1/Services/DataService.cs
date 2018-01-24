@@ -14,7 +14,7 @@ using System.Xml.Serialization;
 using System.ComponentModel;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Sql.Schema;
-using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
@@ -140,7 +140,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         public void UploadTable(string datasetName, string tableName, Stream data)
         {
             // Get dataset name from the parameters
-            var dataset = (Schema.SqlServer.SqlServerDataset)FederationContext.SchemaManager.Datasets[datasetName];
+            var dataset = (Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerDataset)FederationContext.SchemaManager.Datasets[datasetName];
 
             // Make sure the user has access to this dataset.
             // Because we have no access control in the registry yet, it is simply enough
@@ -165,7 +165,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             var table = ParserTableName(dataset, tableName);
 
             // Create a destination object targeted to the specific table
-            var destination = new IO.Tasks.DestinationTable(table, Schema.TableInitializationOptions.Create);
+            var destination = new IO.Tasks.DestinationTable(table, Jhu.Graywulf.Sql.Schema.TableInitializationOptions.Create);
 
             // Create import task and execute it
             var import = new ImportTable()
@@ -198,7 +198,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             table.Drop();
         }
 
-        private Schema.Table ParserTableName(Schema.DatasetBase dataset, string tableName)
+        private Jhu.Graywulf.Sql.Schema.Table ParserTableName(Jhu.Graywulf.Sql.Schema.DatasetBase dataset, string tableName)
         {
             // Use a SQL parser to extract table name parts from the string
             var parser = new Sql.Parsing.SqlParser();
@@ -206,7 +206,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             var tr = tn.TableReference;
             tr.SubstituteDefaults(FederationContext.SchemaManager, dataset.Name);
 
-            return new Schema.Table()
+            return new Jhu.Graywulf.Sql.Schema.Table()
             {
                 Dataset = dataset,
                 DatabaseName = dataset.DatabaseName,

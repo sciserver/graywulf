@@ -8,7 +8,7 @@ using System.Configuration;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Schema
+namespace Jhu.Graywulf.Sql.Schema
 {
     /// <summary>
     /// Implements a schema manager that works with a fully configured

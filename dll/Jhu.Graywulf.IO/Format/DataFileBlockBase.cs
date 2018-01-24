@@ -85,7 +85,7 @@ namespace Jhu.Graywulf.Format
         public Column[] Columns_ForXml
         {
             get { return columns.ToArray(); }
-            set { columns = new List<Schema.Column>(value); }
+            set { columns = new List<Column>(value); }
         }
 
         [IgnoreDataMember]

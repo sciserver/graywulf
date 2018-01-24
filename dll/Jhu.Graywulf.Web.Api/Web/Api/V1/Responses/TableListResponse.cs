@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
         }
 
-        public TableListResponse(IEnumerable<Jhu.Graywulf.Schema.Table> tables)
+        public TableListResponse(IEnumerable<Jhu.Graywulf.Sql.Schema.Table> tables)
         {
             this.Tables = tables.Select(t => new Table(t)).ToArray();
         }

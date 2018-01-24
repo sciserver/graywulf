@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Sql.Schema {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ExceptionMessages {
+    public class ExceptionMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Jhu.Graywulf.Sql.Schema.ExceptionMessages", typeof(ExceptionMessages).Assembly);
@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         /// <summary>
         ///   Looks up a localized string similar to Access to dataset &apos;{0}&apos; is denied..
         /// </summary>
-        internal static string AccessDeniedToDataset {
+        public static string AccessDeniedToDataset {
             get {
                 return ResourceManager.GetString("AccessDeniedToDataset", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         /// <summary>
         ///   Looks up a localized string similar to Ambigous data type name &apos;{0}&apos;..
         /// </summary>
-        internal static string AmbigousDataTypeName {
+        public static string AmbigousDataTypeName {
             get {
                 return ResourceManager.GetString("AmbigousDataTypeName", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         /// <summary>
         ///   Looks up a localized string similar to Ambigous object name &apos;{0}&apos;..
         /// </summary>
-        internal static string AmbigousObjectName {
+        public static string AmbigousObjectName {
             get {
                 return ResourceManager.GetString("AmbigousObjectName", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         /// <summary>
         ///   Looks up a localized string similar to Invalid dataset name: &apos;{0}&apos;..
         /// </summary>
-        internal static string InvalidDatasetName {
+        public static string InvalidDatasetName {
             get {
                 return ResourceManager.GetString("InvalidDatasetName", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         /// <summary>
         ///   Looks up a localized string similar to Invalid data type name: &apos;{0}&apos;..
         /// </summary>
-        internal static string InvalidDataTypeName {
+        public static string InvalidDataTypeName {
             get {
                 return ResourceManager.GetString("InvalidDataTypeName", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         /// <summary>
         ///   Looks up a localized string similar to Invalid object: &apos;{0}&apos;..
         /// </summary>
-        internal static string InvalidObject {
+        public static string InvalidObject {
             get {
                 return ResourceManager.GetString("InvalidObject", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         /// <summary>
         ///   Looks up a localized string similar to Invalid object type or unsupported by server..
         /// </summary>
-        internal static string InvalidObjectType {
+        public static string InvalidObjectType {
             get {
                 return ResourceManager.GetString("InvalidObjectType", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         /// <summary>
         ///   Looks up a localized string similar to Invalid scalar function name: &apos;{0}&apos;.
         /// </summary>
-        internal static string InvalidScalarFunctionName {
+        public static string InvalidScalarFunctionName {
             get {
                 return ResourceManager.GetString("InvalidScalarFunctionName", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         /// <summary>
         ///   Looks up a localized string similar to Invalid stored procedure name: &apos;{0}&apos;..
         /// </summary>
-        internal static string InvalidStoredProcedureName {
+        public static string InvalidStoredProcedureName {
             get {
                 return ResourceManager.GetString("InvalidStoredProcedureName", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         /// <summary>
         ///   Looks up a localized string similar to Invalid table name: &apos;{0}&apos;..
         /// </summary>
-        internal static string InvalidTableName {
+        public static string InvalidTableName {
             get {
                 return ResourceManager.GetString("InvalidTableName", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         /// <summary>
         ///   Looks up a localized string similar to Invalid table-valued function name: &apos;{0}&apos;..
         /// </summary>
-        internal static string InvalidTableValuedFunctionName {
+        public static string InvalidTableValuedFunctionName {
             get {
                 return ResourceManager.GetString("InvalidTableValuedFunctionName", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         /// <summary>
         ///   Looks up a localized string similar to Invalid view name: &apos;{0}&apos;..
         /// </summary>
-        internal static string InvalidViewName {
+        public static string InvalidViewName {
             get {
                 return ResourceManager.GetString("InvalidViewName", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace Jhu.Graywulf.Sql.Schema {
         /// <summary>
         ///   Looks up a localized string similar to Quantity &apos;{0}&apos; was not found..
         /// </summary>
-        internal static string QuantityNotFound {
+        public static string QuantityNotFound {
             get {
                 return ResourceManager.GetString("QuantityNotFound", resourceCulture);
             }

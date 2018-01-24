@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
         }
 
-        public ViewListResponse(IEnumerable<Jhu.Graywulf.Schema.View> views)
+        public ViewListResponse(IEnumerable<Jhu.Graywulf.Sql.Schema.View> views)
         {
             this.Views = views.Select(v => new View(v)).ToArray();
         }

@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
         }
 
-        public Dataset(Jhu.Graywulf.Schema.DatasetBase dataset)
+        public Dataset(Jhu.Graywulf.Sql.Schema.DatasetBase dataset)
         {
             this.Name = dataset.Name;
             this.IsMutable = dataset.IsMutable;

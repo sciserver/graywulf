@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
         }
 
-        public Table(Jhu.Graywulf.Schema.Table table)
+        public Table(Jhu.Graywulf.Sql.Schema.Table table)
             :base(table)
         {
             this.Columns = table.Columns.Values.Select(c => new Column(c)).ToArray();

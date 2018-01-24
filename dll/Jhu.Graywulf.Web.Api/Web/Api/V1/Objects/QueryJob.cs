@@ -9,7 +9,7 @@ using System.ComponentModel;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Sql.Schema;
-using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Api.V1

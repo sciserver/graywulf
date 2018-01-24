@@ -5,9 +5,9 @@ using System.Text;
 using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Install;
-using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.Sql.Schema.SqlServer;
 
-namespace Jhu.Graywulf.Schema
+namespace Jhu.Graywulf.Sql.Schema
 {
     public class GraywulfUserDatabaseFactory : UserDatabaseFactory, ICheckable
     {

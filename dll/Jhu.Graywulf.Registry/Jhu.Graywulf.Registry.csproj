@@ -338,11 +338,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Schema\GraywulfDataset.cs" />
-    <Compile Include="Schema\GraywulfSchemaManager.cs" />
-    <Compile Include="Schema\GraywulfUserDatabaseFactory.cs" />
-    <Compile Include="Schema\UserDatabaseCheck.cs" />
-    <Compile Include="Schema\UserDatabaseFactory.cs" />
+    <Compile Include="Sql\Schema\GraywulfDataset.cs" />
+    <Compile Include="Sql\Schema\GraywulfSchemaManager.cs" />
+    <Compile Include="Sql\Schema\GraywulfUserDatabaseFactory.cs" />
+    <Compile Include="Sql\Schema\UserDatabaseCheck.cs" />
+    <Compile Include="Sql\Schema\UserDatabaseFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Registry\EntityNames.resx">
