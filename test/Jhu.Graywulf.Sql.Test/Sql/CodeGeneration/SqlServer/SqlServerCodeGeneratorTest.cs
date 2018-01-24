@@ -20,9 +20,11 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
             var w = new StringWriter();
 
             var cg = new SqlServerCodeGenerator();
-            cg.TableNameRendering = NameRendering.FullyQualified;
-            cg.ColumnNameRendering = NameRendering.FullyQualified;
-            cg.FunctionNameRendering = NameRendering.FullyQualified;
+
+            cg.TableNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
+            cg.ColumnNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
+            cg.ColumnAliasRendering = resolveAliases ? AliasRendering.Always : AliasRendering.Default;
+            cg.FunctionNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.Execute(w, ss);
 
             return w.ToString();
@@ -52,7 +54,7 @@ INNER JOIN Author ON Author.ID = BookAuthor.AuthorID
 WHERE Author.ID = 3";
 
             Assert.AreEqual(
-@"SELECT [Graywulf_Schema_Test].[dbo].[Book].[Title] AS [Title], [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name]
+@"SELECT [Graywulf_Schema_Test].[dbo].[Book].[Title], [Graywulf_Schema_Test].[dbo].[Author].[Name]
 FROM [Graywulf_Schema_Test].[dbo].[Book]
 INNER JOIN [Graywulf_Schema_Test].[dbo].[BookAuthor] ON [Graywulf_Schema_Test].[dbo].[BookAuthor].[BookID] = [Graywulf_Schema_Test].[dbo].[Book].[ID] AND [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6
 INNER JOIN [Graywulf_Schema_Test].[dbo].[Author] ON [Graywulf_Schema_Test].[dbo].[Author].[ID] = [Graywulf_Schema_Test].[dbo].[BookAuthor].[AuthorID]
@@ -68,7 +70,7 @@ WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 3",
 FROM Book b1, Book b2
 WHERE b1.ID = 1 AND b2.ID = 2";
 
-            var res = GenerateCode(sql, false, true, false);
+            var res = GenerateCode(sql, true, true, false);
 
             Assert.AreEqual(
 @"SELECT [b1].[Title] AS [b1_Title], [b2].[Title] AS [b2_Title]
@@ -76,117 +78,6 @@ FROM [Graywulf_Schema_Test].[dbo].[Book] [b1], [Graywulf_Schema_Test].[dbo].[Boo
 WHERE [b1].[ID] = 1 AND [b2].[ID] = 2", res);
 
         }
-
-        #region Most restrictive remote query generation
-
-        private string[] GenerateMostRestrictiveTableQueryTestHelper(string sql, ColumnContext columnContext, int top)
-        {
-            var query = Parse(sql);
-            var cg = new RemoteQueryGenerator();
-            var res = cg.Execute(query, columnContext, top);
-
-            return res.Values.ToArray();
-        }
-
-        [TestMethod]
-        public void GenerateMostRestrictiveTableQuery_SimpleTest()
-        {
-            var sql =
-@"SELECT b.Title
-FROM Book b
-WHERE b.ID = 1";
-
-            var gt =
-@"SELECT 
-[ID], [Title]
-FROM [Graywulf_Schema_Test].[dbo].[Book] 
-WHERE ([b].[ID] = 1)
-";
-
-            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, ColumnContext.Default, 0);
-
-            Assert.AreEqual(1, res.Length);
-            Assert.AreEqual(gt, res[0]);
-        }
-
-        [TestMethod]
-        public void GenerateMostRestrictiveTableQuery_MultipleAliasesTest()
-        {
-            var sql =
-@"SELECT a.Title, b.ID
-FROM Book a CROSS JOIN Book b
-WHERE b.ID = 1 AND a.ID IN (3, 4)";
-
-            var gt =
-@"SELECT 
-[ID], [Title]
-FROM [Graywulf_Schema_Test].[dbo].[Book] 
-WHERE ([ID] = 1) OR ([ID] IN (3, 4))
-";
-
-            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, ColumnContext.Default, 0);
-
-            Assert.AreEqual(1, res.Length);
-            Assert.AreEqual(gt, res[0]);
-        }
-
-        [TestMethod]
-        public void GenerateMostRestrictiveTableQuery_MultipleSelectsTest()
-        {
-            var sql =
-@"SELECT a.Title FROM Book a
-WHERE a.ID IN (3, 4)
-
-SELECT b.Year FROM Book b
-WHERE b.Title = 'Test'";
-
-            var gt =
-@"SELECT 
-[ID], [Title], [Year]
-FROM [Graywulf_Schema_Test].[dbo].[Book] 
-WHERE ([Title] = 'Test') OR ([ID] IN (3, 4))
-";
-
-            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, ColumnContext.Default, 0);
-
-            Assert.AreEqual(1, res.Length);
-            Assert.AreEqual(gt, res[0]);
-        }
-
-        [TestMethod]
-        public void GenerateMostRestrictiveTableQuery_UnionTest()
-        {
-            var sql =
-@"SELECT Title, ID
-FROM Book
-WHERE ID IN (2, 3)
-UNION
-SELECT Title, ID + 1
-FROM Book
-WHERE ID = 1";
-
-            var gta =
-@"SELECT 
-[ID], [Title]
-FROM [Graywulf_Schema_Test].[dbo].[Book] 
-WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] IN (2, 3)
-";
-
-            var gtb =
-@"SELECT 
-[ID], [Title]
-FROM [Graywulf_Schema_Test].[dbo].[Book] 
-WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 1
-";
-
-            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, ColumnContext.Default, 0);
-
-            Assert.AreEqual(2, res.Length);
-            Assert.AreEqual(gta, res[0]);
-            Assert.AreEqual(gtb, res[1]);
-        }
-
-        #endregion
 
         /* TODO: rewrite this
         [TestMethod]

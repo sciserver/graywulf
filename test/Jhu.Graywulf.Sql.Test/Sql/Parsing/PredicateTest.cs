@@ -35,6 +35,9 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void IsSpecificToTableTest()
         {
+            // TODO: this won't work due to changes in predicate filtering logic
+            // Figure out how to fix test
+
             string sql;
             SelectStatement select;
             BooleanExpression where;

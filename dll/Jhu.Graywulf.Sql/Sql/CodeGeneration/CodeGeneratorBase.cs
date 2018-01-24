@@ -617,6 +617,11 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                         GetQuotedIdentifier(node.ColumnReference.ColumnAlias));
                 }
             }
+            else if (columnAliasRendering == AliasRendering.Never)
+            {
+                var exp = node.FindDescendant<Parsing.Expression>();
+                WriteNode(exp);
+            }
             else if (columnAliasRendering == AliasRendering.Default)
             {
                 // Fall back to original behavior

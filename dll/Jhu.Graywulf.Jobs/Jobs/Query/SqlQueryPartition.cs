@@ -187,6 +187,9 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         public void PrepareCopyRemoteTable(string tableKey, out SourceTableQuery query)
         {
+            throw new NotImplementedException();
+
+            /*
             var tr = remoteTables[tableKey][0];
             var sm = GetSchemaManager();
             var ds = sm.Datasets[tr.DatasetName];
@@ -206,6 +209,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 Dataset = ds,
                 Query = sql
             };
+            */
         }
 
         /// <summary>

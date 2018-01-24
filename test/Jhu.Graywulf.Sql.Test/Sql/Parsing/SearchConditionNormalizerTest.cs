@@ -88,8 +88,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             var scn = new LogicalExpressions.SearchConditionNormalizer();
             scn.CollectConditions(select.QueryExpression);
 
-            var conditions = typeof(LogicalExpressions.SearchConditionNormalizerTest).GetField("conditions", BindingFlags.Instance | BindingFlags.NonPublic);
-            var enumterms = typeof(LogicalExpressions.SearchConditionNormalizerTest).GetMethod("EnumerateCnfTerms", BindingFlags.Static | BindingFlags.NonPublic);
+            var conditions = typeof(LogicalExpressions.SearchConditionNormalizer).GetField("conditions", BindingFlags.Instance | BindingFlags.NonPublic);
+            var enumterms = typeof(LogicalExpressions.SearchConditionNormalizer).GetMethod("EnumerateCnfTerms", BindingFlags.Static | BindingFlags.NonPublic);
 
             return (IEnumerable<LogicalExpressions.Expression>)enumterms.Invoke(null, new object[] { ((List<LogicalExpressions.Expression>)conditions.GetValue(scn)).First() });
         }
@@ -121,10 +121,10 @@ namespace Jhu.Graywulf.Sql.Parsing
             var scn = new LogicalExpressions.SearchConditionNormalizer();
             scn.CollectConditions(select.QueryExpression);
 
-            var conditions = typeof(LogicalExpressions.SearchConditionNormalizerTest).GetField("conditions", BindingFlags.Instance | BindingFlags.NonPublic);
-            var enumterms = typeof(LogicalExpressions.SearchConditionNormalizerTest).GetMethod("EnumerateCnfTermsSpecificToTable", BindingFlags.Static | BindingFlags.NonPublic);
+            var conditions = typeof(LogicalExpressions.SearchConditionNormalizer).GetField("conditions", BindingFlags.Instance | BindingFlags.NonPublic);
+            var enumterms = typeof(LogicalExpressions.SearchConditionNormalizer).GetMethod("EnumerateCnfTermsSpecificToTable", BindingFlags.Static | BindingFlags.NonPublic);
 
-            return (IEnumerable<LogicalExpressions.Expression>)enumterms.Invoke(null, new object[] { ((List<LogicalExpressions.Expression>)conditions.GetValue(scn)).FirstOrDefault(), select.QueryExpression.EnumerateSourceTableReferences(false).First() });
+            return (IEnumerable<LogicalExpressions.Expression>)enumterms.Invoke(null, new object[] { ((List<LogicalExpressions.Expression>)conditions.GetValue(scn)).FirstOrDefault(), select.QueryExpression.EnumerateSourceTableReferences(false).First(), null });
         }
 
         [TestMethod]
@@ -154,7 +154,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var terms = EnumerateCnfTermsTestHelper(query);
 
-            var enumpreds = typeof(LogicalExpressions.SearchConditionNormalizerTest).GetMethod("EnumerateCnfTermPredicates", BindingFlags.Static | BindingFlags.NonPublic);
+            var enumpreds = typeof(LogicalExpressions.SearchConditionNormalizer).GetMethod("EnumerateCnfTermPredicates", BindingFlags.Static | BindingFlags.NonPublic);
 
             return (IEnumerable<LogicalExpressions.Expression>)enumpreds.Invoke(null, new object[] { terms.First() });
         }
@@ -194,7 +194,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 1);
-            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6", res[0]);
+            Assert.AreEqual("([ID] = 6)", res[0]);
         }
 
         [TestMethod]
@@ -204,7 +204,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 1);
-            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6 AND [Graywulf_Schema_Test].[dbo].[Book].[Title]='x'", res[0]);
+            Assert.AreEqual("([ID] = 6 AND [Title]='x')", res[0]);
         }
 
         [TestMethod]
@@ -214,7 +214,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 1);
-            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6 AND 2 = 3", res[0]);
+            Assert.AreEqual("([ID] = 6 AND 2 = 3)", res[0]);
         }
 
         [TestMethod]
@@ -243,7 +243,7 @@ WHERE Book.ID = 6";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 3);
-            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6", res[0]);
+            Assert.AreEqual("([ID] = 6)", res[0]);
         }
 
         [TestMethod]
@@ -258,9 +258,9 @@ WHERE Book.ID = 6 AND Author.ID = 3";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 3);
-            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6", res[0]);
+            Assert.AreEqual("([ID] = 6)", res[0]);
             Assert.AreEqual("", res[1]);
-            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 3", res[2]);
+            Assert.AreEqual("([ID] = 3)", res[2]);
         }
 
         [TestMethod]
@@ -275,9 +275,9 @@ WHERE Author.ID = 3";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 3);
-            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6", res[0]);
+            Assert.AreEqual("([ID] = 6)", res[0]);
             Assert.AreEqual("", res[1]);
-            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 3", res[2]);
+            Assert.AreEqual("([ID] = 3)", res[2]);
         }
 
         [TestMethod]
@@ -292,7 +292,7 @@ WHERE Book.ID IN (3, 6)";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 3);
-            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] IN (3, 6) AND [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6", res[0]);
+            Assert.AreEqual("([ID] IN (3, 6) AND [ID] = 6)", res[0]);
             Assert.AreEqual("", res[1]);
             Assert.AreEqual("", res[2]);
         }
@@ -308,7 +308,7 @@ WHERE a.ID = 3";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 2);
-            Assert.AreEqual("WHERE [a].[ID] = 3", res[0]);
+            Assert.AreEqual("([ID] = 3)", res[0]);
             Assert.AreEqual("", res[1]);
         }
     }

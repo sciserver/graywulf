@@ -95,6 +95,7 @@
     <Compile Include="Schema\SqlServer\SqlServerDatasetTest.cs" />
     <Compile Include="Schema\SqlServer\SqlServerMetadataTest.cs" />
     <Compile Include="Schema\SqlServer\SqlServerTestBase.cs" />
+    <Compile Include="Sql\CodeGeneration\SqlServer\RemoteQueryGeneratorTest.cs" />
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerCodeGeneratorTest.cs" />
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerCodeGeneratorTestBase.cs" />
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerColumnListGeneratorTest.cs" />

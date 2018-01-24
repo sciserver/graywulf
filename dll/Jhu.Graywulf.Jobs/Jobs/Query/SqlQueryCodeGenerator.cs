@@ -521,6 +521,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected virtual WhereClause GetTableSpecificWhereClause(ITableSource tableSource)
         {
+            /*
             var tr = tableSource.TableReference;
 
             var cnr = new Sql.LogicalExpressions.SearchConditionNormalizer();
@@ -528,6 +529,9 @@ namespace Jhu.Graywulf.Jobs.Query
             var where = cnr.GenerateWherePredicatesSpecificToTable(tr);
 
             return where;
+            */
+
+            throw new NotImplementedException();
         }
 
         #endregion
