@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Schema
 {

@@ -7,7 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Scheduler;

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Data;

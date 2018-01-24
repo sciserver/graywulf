@@ -5,7 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using Jhu.Graywulf.IO;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Data;
 using Jhu.Graywulf.Format;
 

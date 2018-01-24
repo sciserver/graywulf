@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Scheduler;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Tasks;
 

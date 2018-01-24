@@ -5,7 +5,7 @@ using System.Linq;
 using System.IO;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.LogicalExpressions;

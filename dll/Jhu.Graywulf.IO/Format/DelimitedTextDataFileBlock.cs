@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Format
 {

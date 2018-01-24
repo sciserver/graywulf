@@ -12,7 +12,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.ImportTables;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Test;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
 

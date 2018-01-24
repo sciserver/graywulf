@@ -11,7 +11,7 @@ using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Parser.Test
 {

@@ -6,7 +6,7 @@ using System.Web.UI.WebControls;
 using System.Collections.Generic;
 using Jhu.Graywulf.Jobs.ExportTables;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Web.Api.V1;
 using Jhu.Graywulf.IO;

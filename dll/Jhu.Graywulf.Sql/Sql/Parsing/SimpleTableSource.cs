@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing

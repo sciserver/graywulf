@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Jobs.SqlScript
 {

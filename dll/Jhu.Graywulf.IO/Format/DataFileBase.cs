@@ -7,7 +7,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Runtime.Serialization;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.Data;
 

@@ -78,10 +78,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
-      <Project>{5868b518-cbfc-43fb-b9c8-c617a65121c4}</Project>
-      <Name>Jhu.Graywulf.Schema</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Logging.Test\Jhu.Graywulf.Logging.Test.csproj">
       <Project>{d152dc9a-004c-4851-b0e7-b81a4325c9b7}</Project>
       <Name>Jhu.Graywulf.Logging.Test</Name>

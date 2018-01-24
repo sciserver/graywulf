@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using System.Data;
 using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.LogicalExpressions;

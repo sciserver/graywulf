@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
 using Jhu.Graywulf.Sql.Parsing;

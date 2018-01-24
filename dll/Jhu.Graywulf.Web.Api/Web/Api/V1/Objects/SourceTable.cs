@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using System.ComponentModel;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {

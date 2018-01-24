@@ -8,7 +8,7 @@ using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Test;
 
 namespace Jhu.Graywulf.Jobs.SqlScript

@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {

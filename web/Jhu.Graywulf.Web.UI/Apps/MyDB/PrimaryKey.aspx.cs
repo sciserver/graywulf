@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
 using Jhu.Graywulf.Jobs.SqlScript;

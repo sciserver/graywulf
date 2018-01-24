@@ -13,7 +13,7 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using System.ComponentModel;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;

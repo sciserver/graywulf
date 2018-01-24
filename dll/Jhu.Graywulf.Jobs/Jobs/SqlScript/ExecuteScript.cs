@@ -7,7 +7,7 @@ using System.Data;
 using System.Data.Common;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Tasks;
 using System.Threading;
 using System.Threading.Tasks;

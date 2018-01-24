@@ -10,7 +10,7 @@ using System.Runtime.Serialization;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Scheduler;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;

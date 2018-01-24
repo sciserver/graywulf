@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using Jhu.Graywulf.AccessControl;
 using Jhu.Graywulf.Check;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {

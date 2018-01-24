@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Web;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {

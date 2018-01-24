@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.Common;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Data
 {

@@ -10,7 +10,7 @@ using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.Format;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.IO.Tasks

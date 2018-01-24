@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;

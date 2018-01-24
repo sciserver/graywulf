@@ -3,7 +3,7 @@ using System.Xml;
 using System.Runtime.Serialization;
 using System.ComponentModel;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Jobs.CopyTables;
 
 namespace Jhu.Graywulf.Web.Api.V1

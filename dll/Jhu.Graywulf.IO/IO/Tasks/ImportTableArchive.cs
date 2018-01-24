@@ -6,7 +6,7 @@ using Jhu.Graywulf.Components;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.Format;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 
 namespace Jhu.Graywulf.IO.Tasks

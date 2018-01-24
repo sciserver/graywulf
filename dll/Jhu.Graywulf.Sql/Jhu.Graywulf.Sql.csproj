@@ -55,22 +55,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Microsoft SQL Server\120\SDK\Assemblies\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Microsoft SQL Server\120\SDK\Assemblies\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Smo, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Microsoft SQL Server\120\SDK\Assemblies\Microsoft.SqlServer.Smo.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.SqlEnum, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Microsoft SQL Server\120\SDK\Assemblies\Microsoft.SqlServer.SqlEnum.dll</HintPath>
-    </Reference>
     <Reference Include="MySql.Data, Version=6.9.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)\packages\MySql.Data.6.9.8\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
@@ -98,12 +82,6 @@
     <Compile Include="Data\SmartDataReader.cs" />
     <Compile Include="Data\TypeMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Schema\MySql\Constants.cs" />
-    <Compile Include="Schema\MySql\MySqlDataset.cs" />
-    <Compile Include="Schema\PostgreSql\Constants.cs" />
-    <Compile Include="Schema\PostgreSql\PostgreSqlDataset.cs" />
-    <Compile Include="Schema\SqlServer\SqlServerDataset.cs" />
-    <Compile Include="Schema\SqlServer\SqlServerSchemaManager.cs" />
     <Compile Include="Sql\CodeGeneration\CodeGeneratorBase.cs" />
     <Compile Include="Sql\CodeGeneration\CodeGeneratorFactory.cs" />
     <Compile Include="Sql\CodeGeneration\ColumnListGeneratorBase.cs" />
@@ -258,9 +236,9 @@
       <Project>{6215a919-1626-4f32-8c16-5764243b2748}</Project>
       <Name>Jhu.Graywulf.Parsing</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
-      <Project>{5868B518-CBFC-43FB-B9C8-C617A65121C4}</Project>
-      <Name>Jhu.Graywulf.Schema</Name>
+    <ProjectReference Include="..\Jhu.Graywulf.Sql.Schema\Jhu.Graywulf.Sql.Schema.csproj">
+      <Project>{0bf7a45a-80d5-4bd3-88a8-824912023fa3}</Project>
+      <Name>Jhu.Graywulf.Sql.Schema</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

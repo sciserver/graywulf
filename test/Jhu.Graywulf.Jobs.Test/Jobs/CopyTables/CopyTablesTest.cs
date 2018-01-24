@@ -11,7 +11,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.ExportTables;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Test;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.CopyTables

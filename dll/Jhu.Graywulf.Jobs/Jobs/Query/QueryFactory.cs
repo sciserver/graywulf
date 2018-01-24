@@ -6,7 +6,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 
 namespace Jhu.Graywulf.Jobs.Query

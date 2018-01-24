@@ -13,7 +13,7 @@ using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Jobs.SqlScript
 {

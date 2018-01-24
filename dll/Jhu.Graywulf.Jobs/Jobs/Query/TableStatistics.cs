@@ -5,7 +5,7 @@ using System.Text;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Jobs.Query
