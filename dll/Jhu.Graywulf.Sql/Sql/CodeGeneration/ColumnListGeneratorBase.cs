@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.CodeGeneration
 {
-    public abstract class SqlColumnListGeneratorBase
+    public abstract class ColumnListGeneratorBase
     {
         // TODO: add IDENTITY and ASC/DESC for index columns
 
@@ -56,19 +56,19 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             set { leadingSeparator = value; }
         }
 
-        protected SqlColumnListGeneratorBase()
+        protected ColumnListGeneratorBase()
         {
             InitializeMembers();
         }
 
-        protected SqlColumnListGeneratorBase(IEnumerable<ColumnReference> columns)
+        protected ColumnListGeneratorBase(IEnumerable<ColumnReference> columns)
         {
             InitializeMembers();
 
             this.columns = new List<ColumnReference>(columns);
         }
 
-        protected SqlColumnListGeneratorBase(TableOrView table)
+        protected ColumnListGeneratorBase(TableOrView table)
         {
             InitializeMembers();
 
@@ -83,7 +83,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             }
         }
 
-        protected SqlColumnListGeneratorBase(Index index)
+        protected ColumnListGeneratorBase(Index index)
         {
             InitializeMembers();
 

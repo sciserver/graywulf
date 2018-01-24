@@ -8,6 +8,16 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class BooleanExpression
     {
+        public Predicate Predicate
+        {
+            get { return FindAscendant<Predicate>(); }
+        }
+
+        public BooleanExpressionBrackets BooleanExpressionBrackets
+        {
+            get { return FindAscendant<BooleanExpressionBrackets>(); }
+        }
+
         #region Instance creation
 
         public static BooleanExpression Create()

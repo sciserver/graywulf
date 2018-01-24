@@ -5,6 +5,29 @@ using System.Text;
 
 namespace Jhu.Graywulf.Sql.CodeGeneration
 {
+    public enum IdentifierQuoting
+    {
+        AlwaysQuote,
+        SelectivelyQuote
+    }
+
+    public enum NameRendering
+    {
+        Original,
+        IdentifierOnly,
+        FullyQualified,
+
+        Default = Original
+    }
+
+    public enum AliasRendering
+    {
+        Default,
+        Always,
+        Never,
+    }
+
+
     /// <summary>
     /// Column list nullable type.
     /// </summary>

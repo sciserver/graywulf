@@ -71,32 +71,38 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             }
         }
 
-        public Parsing.WhereClause GenerateWhereClauseSpecificToTable(TableReference table)
+        public Parsing.BooleanExpression GenerateWherePredicatesSpecificToTable(IList<TableReference> trs)
         {
-            return GenerateWhereClauseSpecificToTable(table, null);
-        }
+            Parsing.BooleanExpression sc = null;
 
-        public Parsing.WhereClause GenerateWhereClauseSpecificToTable(DatabaseObject table)
-        {
-            return GenerateWhereClauseSpecificToTable(null, table);
-        }
-
-        public Parsing.WhereClause GenerateWhereClauseSpecificToTable(TableReference tr, DatabaseObject dbobj)
-        {
-            var sc = GenerateWherePredicateSpecificToTable(tr, dbobj);
-
-            // Prefix with the WHERE keyword
-            if (sc != null)
+            // Chain up search conditions with the AND operator
+            foreach (var tr in trs)
             {
-                return Parsing.WhereClause.Create(sc);
+                var nsc = GenerateWherePredicatesSpecificToTable(tr);
+
+                // No predicate which means we need the entire table
+                if (nsc == null)
+                {
+                    return null;
+                }
+
+                if (sc != null)
+                {
+                    //
+
+                    nsc.Stack.AddLast(Parsing.Whitespace.Create());
+                    nsc.Stack.AddLast(Parsing.LogicalOperator.CreateOr());
+                    nsc.Stack.AddLast(Parsing.Whitespace.Create());
+                    nsc.Stack.AddLast(sc);
+                }
+
+                sc = nsc;
             }
-            else
-            {
-                return null;
-            }
+
+            return sc;
         }
 
-        public Parsing.BooleanExpression GenerateWherePredicateSpecificToTable(TableReference tr, DatabaseObject dbobj)
+        public Parsing.BooleanExpression GenerateWherePredicatesSpecificToTable(TableReference tr)
         {
             Parsing.BooleanExpression sc = null;
 
@@ -107,7 +113,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             // Chain up search conditions with AND operator
             foreach (var condition in conditions)
             {
-                foreach (var ex in EnumerateCnfTermsSpecificToTable(condition, tr, dbobj))
+                foreach (var ex in EnumerateCnfTermsSpecificToTable(condition, tr, null))
                 {
                     var nsc = ex.GetParsingTree();
 
@@ -121,6 +127,11 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 
                     sc = nsc;
                 }
+            }
+
+            if (sc != null)
+            {
+                sc = Parsing.BooleanExpression.Create(false, Parsing.BooleanExpressionBrackets.Create(sc));
             }
 
             return sc;
@@ -179,6 +190,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
                     // A term is only specific to a table if it contains predicates
                     // only specific to the particular table
                     specifictotable = true;
+
                     foreach (var exp in EnumerateCnfTermPredicates(term))
                     {
                         var predicate = GetCnfLiteralPredicate(exp);

@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             foreach (var tr in NodeExtensions.EnumerateTableReferences(this))
             {
-                if (tr != null && !tr.Compare(table))
+                if (tr != null && tr != table)
                 {
                     return false;
                 }
@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             foreach (var tr in NodeExtensions.EnumerateTableReferences(this))
             {
-                if (tr != null && tr.DatabaseObject != null && tr.DatabaseObject != table)
+                if (tr != null && (tr.DatabaseObject == null || tr.DatabaseObject != table))
                 {
                     return false;
                 }

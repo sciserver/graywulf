@@ -428,7 +428,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         [TestMethod]
         public void SelectStarMultipleSubqueryTest()
         {
-            var sql = 
+            var sql =
 @"SELECT a.Name, b.Name
 FROM (SELECT * FROM Author) a
 CROSS JOIN (SELECT * FROM Author) b";
@@ -530,7 +530,7 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
             Assert.AreEqual("SELECT [a].[ID] AS [q], [b].[ID] AS [b_ID], [b].[Name] AS [b_Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Author] [b]", res);
         }
 
-#region Function tests
+        #region Function tests
 
         [TestMethod]
         public void SystemFunctionTest()
@@ -584,6 +584,6 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
         }
 
         #endregion
-        
+
     }
 }

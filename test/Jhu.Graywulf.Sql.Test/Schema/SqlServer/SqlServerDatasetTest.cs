@@ -505,7 +505,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
             var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithAllTypes"];
-            var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(ds);
+            var codegen = CodeGeneratorFactory.CreateCodeGenerator(ds);
             var sql = codegen.GenerateSelectStarQuery(t, 100);
 
             using (var cn = t.Dataset.OpenConnection())

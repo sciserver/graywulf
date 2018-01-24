@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.CodeGeneration.PostgreSql
 {
-    public class PostgreSqlColumnListGenerator : SqlColumnListGeneratorBase
+    public class PostgreSqlColumnListGenerator : ColumnListGeneratorBase
     {
         public PostgreSqlColumnListGenerator()
         {

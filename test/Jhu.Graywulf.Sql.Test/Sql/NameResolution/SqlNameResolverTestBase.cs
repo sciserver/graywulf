@@ -95,7 +95,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
         protected string GenerateCode(Jhu.Graywulf.Parsing.Node node)
         {
             var cg = new SqlServerCodeGenerator();
-            cg.ResolveNames = true;
+
+            cg.TableNameRendering = CodeGeneration.NameRendering.FullyQualified;
+            cg.ColumnNameRendering = CodeGeneration.NameRendering.FullyQualified;
+            cg.ColumnAliasRendering = CodeGeneration.AliasRendering.Always;
+            cg.FunctionNameRendering = CodeGeneration.NameRendering.FullyQualified;
 
             var sw = new StringWriter();
             cg.Execute(sw, node);

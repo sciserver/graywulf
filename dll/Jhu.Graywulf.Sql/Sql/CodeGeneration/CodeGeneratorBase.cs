@@ -11,44 +11,161 @@ using Jhu.Graywulf.Sql.LogicalExpressions;
 
 namespace Jhu.Graywulf.Sql.CodeGeneration
 {
-    public abstract class SqlCodeGeneratorBase : CodeGenerator
+    public abstract class CodeGeneratorBase : CodeGenerator
     {
         #region Private members
 
-        private bool resolveNames;
-        private bool quoteIdentifiers;
+        private IdentifierQuoting identifierQuoting;
+
+        private NameRendering tableNameRendering;
+        private AliasRendering tableAliasRendering;
+        private NameRendering columnNameRendering;
+        private AliasRendering columnAliasRendering;
+        private NameRendering functionNameRendering;
+
+        private Dictionary<TableReference, TableReference> tableReferenceMap;
+        private Dictionary<ColumnReference, ColumnReference> columnReferenceMap;
+        private Dictionary<DataTypeReference, DataTypeReference> dataTypeReferenceMap;
+        private Dictionary<FunctionReference, FunctionReference> functionReferenceMap;
+        private Dictionary<VariableReference, VariableReference> variableReferenceMap;
 
         #endregion
         #region Properties
 
+        public IdentifierQuoting IdentifierQuoting
+        {
+            get { return identifierQuoting; }
+            set { identifierQuoting = value; }
+        }
+
         /// <summary>
         /// Gets or sets whether to use resolved names in the generated code
         /// </summary>
-        public bool ResolveNames
+        public NameRendering TableNameRendering
         {
-            get { return resolveNames; }
-            set { resolveNames = value; }
+            get { return tableNameRendering; }
+            set { tableNameRendering = value; }
+        }
+
+        public AliasRendering TableAliasRendering
+        {
+            get { return tableAliasRendering; }
+            set { tableAliasRendering = value; }
+        }
+
+        public NameRendering ColumnNameRendering
+        {
+            get { return columnNameRendering; }
+            set { columnNameRendering = value; }
+        }
+
+        public AliasRendering ColumnAliasRendering
+        {
+            get { return columnAliasRendering; }
+            set { columnAliasRendering = value; }
+        }
+
+        public NameRendering FunctionNameRendering
+        {
+            get { return functionNameRendering; }
+            set { functionNameRendering = value; }
+        }
+
+        public Dictionary<TableReference, TableReference> TableReferenceMap
+        {
+            get
+            {
+                if (tableReferenceMap == null)
+                {
+                    tableReferenceMap = new Dictionary<TableReference, TableReference>();
+                }
+
+                return tableReferenceMap;
+            }
+        }
+
+        public Dictionary<ColumnReference, ColumnReference> ColumnReferenceMap
+        {
+            get
+            {
+                if (columnReferenceMap == null)
+                {
+                    columnReferenceMap = new Dictionary<ColumnReference, ColumnReference>();
+                }
+
+                return columnReferenceMap;
+            }
+        }
+
+        public Dictionary<DataTypeReference, DataTypeReference> DataTypeReferenceMap
+        {
+            get
+            {
+                if (dataTypeReferenceMap == null)
+                {
+                    dataTypeReferenceMap = new Dictionary<DataTypeReference, DataTypeReference>();
+                }
+
+                return dataTypeReferenceMap;
+            }
+        }
+
+        public Dictionary<FunctionReference, FunctionReference> FunctionReferenceMap
+        {
+            get
+            {
+                if (functionReferenceMap == null)
+                {
+                    functionReferenceMap = new Dictionary<FunctionReference, FunctionReference>();
+                }
+
+                return functionReferenceMap;
+            }
+        }
+
+        public Dictionary<VariableReference, VariableReference> VariableReferenceMap
+        {
+            get
+            {
+                if (variableReferenceMap == null)
+                {
+                    variableReferenceMap = new Dictionary<VariableReference, VariableReference>();
+                }
+
+                return variableReferenceMap;
+            }
         }
 
         #endregion
         #region Constructors and initializers
 
-        protected SqlCodeGeneratorBase()
+        protected CodeGeneratorBase()
         {
             InitializeMembers();
         }
 
         private void InitializeMembers()
         {
-            this.resolveNames = false;
-            this.quoteIdentifiers = false;
+            this.identifierQuoting = IdentifierQuoting.AlwaysQuote;
+
+            this.tableNameRendering = NameRendering.Default;
+            this.tableAliasRendering = AliasRendering.Default;
+            this.columnNameRendering = NameRendering.Default;
+            this.columnAliasRendering = AliasRendering.Default;
+            this.functionNameRendering = NameRendering.Default;
+
+            this.tableReferenceMap = null;
+            this.columnReferenceMap = null;
+            this.dataTypeReferenceMap = null;
+            this.functionReferenceMap = null;
+            this.variableReferenceMap = null;
         }
 
         #endregion
 
-        public abstract SqlColumnListGeneratorBase CreateColumnListGenerator();
+        public abstract ColumnListGeneratorBase CreateColumnListGenerator();
 
-        public SqlColumnListGeneratorBase CreateColumnListGenerator(TableReference table, ColumnContext columnContext, ColumnListType listType)
+        public ColumnListGeneratorBase CreateColumnListGenerator(TableReference table, ColumnContext columnContext, ColumnListType listType)
         {
             var cg = CreateColumnListGenerator();
             cg.ListType = listType;
@@ -95,8 +212,22 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             return identifier.Replace(".", "_");
         }
 
+        private TableReference MapTableReference(TableReference table)
+        {
+            if (tableReferenceMap != null && tableReferenceMap.ContainsKey(table))
+            {
+                return tableReferenceMap[table];
+            }
+            else
+            {
+                return table;
+            }
+        }
+
         public string GenerateEscapedUniqueName(TableReference table)
         {
+            table = MapTableReference(table);
+
             if (table.Type == TableReferenceType.Subquery ||
                 table.Type == TableReferenceType.CommonTable ||
                 table.IsComputed)
@@ -144,6 +275,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public string GetResolvedTableName(TableReference table)
         {
+            table = MapTableReference(table);
+
             if (table.Type == TableReferenceType.Subquery ||
                 table.Type == TableReferenceType.CommonTable ||
                 table.IsComputed)
@@ -167,6 +300,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public string GetResolvedTableNameWithAlias(TableReference table)
         {
+            table = MapTableReference(table);
+
             if (table.Type == TableReferenceType.Subquery ||
                 table.Type == TableReferenceType.CommonTable ||
                 table.IsComputed)
@@ -201,6 +336,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public string GetUniqueName(TableReference table)
         {
+            table = MapTableReference(table);
+
             if (table.Type == TableReferenceType.Subquery ||
                 table.Type == TableReferenceType.CommonTable ||
                 table.IsComputed ||
@@ -248,6 +385,18 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             }
         }
 
+        private ColumnReference MapColumnReference(ColumnReference column)
+        {
+            if (columnReferenceMap != null && columnReferenceMap.ContainsKey(column))
+            {
+                return columnReferenceMap[column];
+            }
+            else
+            {
+                return column;
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -259,19 +408,22 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         /// </remarks>
         public string GetResolvedColumnName(ColumnReference column)
         {
+            column = MapColumnReference(column);
+            var table = MapTableReference(column.TableReference);
+
             string tablename;
 
-            if (column.TableReference == null)
+            if (table == null)
             {
                 tablename = null;
             }
-            else if (!String.IsNullOrEmpty(column.TableReference.Alias))
+            else if (!String.IsNullOrEmpty(table.Alias))
             {
-                tablename = GetQuotedIdentifier(column.TableReference.Alias);
+                tablename = GetQuotedIdentifier(table.Alias);
             }
             else
             {
-                tablename = GetResolvedTableName(column.TableReference);
+                tablename = GetResolvedTableName(table);
             }
 
             string columnname;
@@ -298,8 +450,22 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             return res;
         }
 
+        private FunctionReference MapFunctionReference(FunctionReference function)
+        {
+            if (functionReferenceMap != null && functionReferenceMap.ContainsKey(function))
+            {
+                return functionReferenceMap[function];
+            }
+            else
+            {
+                return function;
+            }
+        }
+
         private string GetResolvedFunctionName(FunctionReference function)
         {
+            function = MapFunctionReference(function);
+
             if (function.IsSystem)
             {
                 // This is a built-in function
@@ -332,35 +498,50 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         /// </remarks>
         protected override void WriteNode(Token token)
         {
-            if (token is TableAlias)
+            switch (token)
             {
-                WriteTableAlias((TableAlias)token);
-            }
-            else if (token is TableOrViewName)
-            {
-                WriteTableOrViewName((TableOrViewName)token);
-            }
-            else if (token is ColumnIdentifier)
-            {
-                WriteColumnIdentifier((ColumnIdentifier)token);
-            }
-            else if (token is ColumnExpression)
-            {
-                WriteColumnExpression((ColumnExpression)token);
-            }
-            else if (token is FunctionIdentifier)
-            {
-                WriteFunctionIdentifier((FunctionIdentifier)token);
-            }
-            else
-            {
-                base.WriteNode(token);
+                case TableAlias ta:
+                    WriteTableAlias(ta);
+                    break;
+                case TableOrViewName t:
+                    WriteTableOrViewName(t);
+                    break;
+                case ColumnIdentifier ci:
+                    WriteColumnIdentifier(ci);
+                    break;
+                case FunctionIdentifier fi:
+                    WriteFunctionIdentifier(fi);
+                    break;
+                /* TODO: implement these
+                case UserVariable v:
+                    WriteUserVariable(v);
+                    break;
+                case Parsing.DataType dt:
+                    WriteDataType(dt);
+                    break;
+                */
+                case ColumnExpression ce:
+                    WriteColumnExpression(ce);
+                    break;
+                default:
+                    base.WriteNode(token);
+                    break;
             }
         }
 
         public void WriteTableAlias(TableAlias node)
         {
-            Writer.Write(GetQuotedIdentifier(node.Value));
+            switch (tableAliasRendering)
+            {
+                case AliasRendering.Default:
+                case AliasRendering.Always:
+                    Writer.Write(GetQuotedIdentifier(node.Value));
+                    break;
+                case AliasRendering.Never:
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         /// <summary>
@@ -375,14 +556,17 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         /// </remarks>
         public void WriteTableOrViewName(TableOrViewName node)
         {
-            if (resolveNames)
+            switch (tableNameRendering)
             {
-                Writer.Write(GetResolvedTableName(node.TableReference));
-            }
-            else
-            {
-                // Fall back to original behavior
-                base.WriteNode(node);
+                case NameRendering.FullyQualified:
+                    Writer.Write(GetResolvedTableName(node.TableReference));
+                    break;
+                case NameRendering.IdentifierOnly:
+                    Writer.Write(GetQuotedIdentifier(node.TableReference.DatabaseObjectName));
+                    break;
+                default:
+                    base.WriteNode(node);
+                    break;
             }
         }
 
@@ -394,14 +578,17 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         /// <returns></returns>
         public void WriteColumnIdentifier(ColumnIdentifier node)
         {
-            if (ResolveNames)
+            switch (columnNameRendering)
             {
-                Writer.Write(GetResolvedColumnName(node.ColumnReference));
-            }
-            else
-            {
-                // Fall back to original behavior
-                base.WriteNode(node);
+                case NameRendering.FullyQualified:
+                    Writer.Write(GetResolvedColumnName(node.ColumnReference));
+                    break;
+                case NameRendering.IdentifierOnly:
+                    Writer.Write(GetQuotedIdentifier(node.ColumnReference.ColumnName));
+                    break;
+                default:
+                    base.WriteNode(node);
+                    break;
             }
         }
 
@@ -416,7 +603,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             // optionally followed by a column alias in the form of
             // 'AS alias'
 
-            if (resolveNames)
+            if (columnAliasRendering == AliasRendering.Always)
             {
                 // Write the expression first as it is
                 var exp = node.FindDescendant<Parsing.Expression>();
@@ -430,7 +617,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                         GetQuotedIdentifier(node.ColumnReference.ColumnAlias));
                 }
             }
-            else
+            else if (columnAliasRendering == AliasRendering.Default)
             {
                 // Fall back to original behavior
                 base.WriteNode(node);
@@ -439,19 +626,23 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public virtual void WriteFunctionIdentifier(FunctionIdentifier node)
         {
-            if (resolveNames)
+            switch (functionNameRendering)
             {
-                Writer.Write(GetResolvedFunctionName(node.FunctionReference));
-            }
-            else
-            {
-                // Fall back to original behavior
-                base.WriteNode(node);
+                case NameRendering.FullyQualified:
+                    Writer.Write(GetResolvedFunctionName(node.FunctionReference));
+                    break;
+                case NameRendering.IdentifierOnly:
+                    // No point doing this because it would break the query
+                    throw new InvalidOperationException();
+                default:
+                    base.WriteNode(node);
+                    break;
             }
         }
 
         #endregion
         #region Complete query generators
+
         // These functions don't use the parsing tree, they generate certain
         // types of queries.
 
@@ -470,79 +661,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         public abstract string GenerateSelectStarQuery(TableOrView tableOrView, int top);
 
         protected abstract string GenerateTopExpression(int top);
-
-        public string GenerateMostRestrictiveTableQuery(SearchConditionNormalizer cnr, TableReference table, ColumnContext columnContext, int top)
-        {
-            // Run the normalizer to convert where clause to a normal form
-            // var cnr = new SearchConditionNormalizer();
-            //var qs = ((TableSource)table.Node).QuerySpecification;
-            // cnr.CollectConditions(qs);
-
-            // Generate where clause
-            var where = cnr.GenerateWhereClauseSpecificToTable(table);
-
-            // Generate the column list to be retrieved
-            var columnlist = CreateColumnListGenerator();
-            columnlist.ListType = ColumnListType.SelectWithOriginalNameNoAlias;
-            columnlist.TableAlias = null;
-            columnlist.Columns.AddRange(table.FilterColumnReferences(columnContext));
-
-            return OnGenerateMostRestrictiveTableQuery(GetResolvedTableName(table), table.Alias, columnlist.Execute(), Execute(where), top);
-        }
-
-        public string GenerateMostRestrictiveTableQuery(SearchConditionNormalizer cnr, List<TableReference> tables, ColumnContext columnContext, int top)
-        {
-            // Run the normalizer to convert where clause to a normal form
-            //var cnr = new SearchConditionNormalizer();
-            DatabaseObject t = null;
-
-            foreach (var tr in tables)
-            {
-                if (tr.Type != TableReferenceType.TableOrView)
-                {
-                    throw new InvalidOperationException();
-                }
-
-                if (t == null)
-                {
-                    t = tr.DatabaseObject;
-                }
-                else
-                {
-                    if (t != tr.DatabaseObject)
-                    {
-                        throw new InvalidOperationException();
-                    }
-                }
-
-                // TODO: conditions from different queries should be OR'ed
-                var qs = ((TableSource)tr.Node).QuerySpecification;
-                cnr.CollectConditions(qs);
-            }
-
-            // Generate where clause
-            var table = tables[0];
-            var where = cnr.GenerateWhereClauseSpecificToTable(table);
-
-            // Generate the column list to be retrieved
-            var columnlist = CreateColumnListGenerator();
-            columnlist.ListType = ColumnListType.SelectWithOriginalNameNoAlias;
-            columnlist.TableAlias = null;
-
-            foreach (var tr in tables)
-            {
-                columnlist.Columns.AddRange(table.FilterColumnReferences(columnContext));
-            }
-
-            return OnGenerateMostRestrictiveTableQuery(
-                GetResolvedTableName(table),
-                table.Alias,
-                columnlist.Execute(),
-                Execute(where),
-                top);
-        }
-
-        protected abstract string OnGenerateMostRestrictiveTableQuery(string tableName, string tableAlias, string columnList, string where, int top);
+        
+        public abstract string GenerateMostRestrictiveTableQuery(string tableName, string tableAlias, string columnList, string where, int top);
 
         public virtual string GenerateCountStarQuery(string subquery)
         {

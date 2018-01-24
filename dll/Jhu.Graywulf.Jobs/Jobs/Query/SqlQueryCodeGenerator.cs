@@ -63,8 +63,6 @@ namespace Jhu.Graywulf.Jobs.Query
             this.queryObject = queryObject;
             this.codeDataset = queryObject.CodeDataset;
             this.tempDataset = queryObject.TemporaryDataset;
-
-            this.ResolveNames = true;
         }
 
         #endregion
@@ -527,7 +525,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             var cnr = new Sql.LogicalExpressions.SearchConditionNormalizer();
             cnr.CollectConditions(((TableSource)tr.Node).QuerySpecification);
-            var where = cnr.GenerateWhereClauseSpecificToTable(tr);
+            var where = cnr.GenerateWherePredicatesSpecificToTable(tr);
 
             return where;
         }

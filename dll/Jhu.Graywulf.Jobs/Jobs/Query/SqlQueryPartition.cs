@@ -198,7 +198,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             // Generate most restrictive query
-            var cg = SqlCodeGeneratorFactory.CreateCodeGenerator(ds);
+            var cg = CodeGeneratorFactory.CreateCodeGenerator(ds);
             var sql = cg.GenerateMostRestrictiveTableQuery(remoteTables[tableKey], ColumnContext.All, 0);
             
             query = new SourceTableQuery()

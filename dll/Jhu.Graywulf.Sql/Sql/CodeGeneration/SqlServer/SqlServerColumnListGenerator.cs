@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 {
-    public class SqlServerColumnListGenerator : SqlColumnListGeneratorBase
+    public class SqlServerColumnListGenerator : ColumnListGeneratorBase
     {
         public SqlServerColumnListGenerator()
         {

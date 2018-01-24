@@ -54,12 +54,15 @@ namespace Jhu.Graywulf.Sql.Parsing
                 // TODO use qs.SourceTableReferences ???
                 foreach (var tr in qs.EnumerateSourceTableReferences(true))
                 {
-                    WhereClause where = cn.GenerateWhereClauseSpecificToTable(tr);
+                    var where = cn.GenerateWherePredicatesSpecificToTable(tr);
 
                     if (where != null)
                     {
                         var cg = new SqlServerCodeGenerator();
-                        cg.ResolveNames = true;
+
+                        cg.TableNameRendering = CodeGeneration.NameRendering.FullyQualified;
+                        cg.ColumnNameRendering = CodeGeneration.NameRendering.IdentifierOnly;
+                        cg.FunctionNameRendering = CodeGeneration.NameRendering.FullyQualified;
 
                         var sw = new StringWriter();
                         cg.Execute(sw, where);

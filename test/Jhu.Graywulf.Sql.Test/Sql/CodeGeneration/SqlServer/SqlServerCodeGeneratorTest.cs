@@ -20,29 +20,12 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
             var w = new StringWriter();
 
             var cg = new SqlServerCodeGenerator();
-            cg.ResolveNames = resolveNames;
+            cg.TableNameRendering = NameRendering.FullyQualified;
+            cg.ColumnNameRendering = NameRendering.FullyQualified;
+            cg.FunctionNameRendering = NameRendering.FullyQualified;
             cg.Execute(w, ss);
 
             return w.ToString();
-        }
-
-        private string[] GenerateMostRestrictiveTableQueryTestHelper(string sql, ColumnContext columnContext, int top)
-        {
-            var details = Parse(sql);
-            var res = new List<string>();
-            var cg = new SqlServerCodeGenerator();
-            cg.ResolveNames = true;
-
-            var scn = new SearchConditionNormalizer();
-            scn.CollectConditions(details.ParsingTree);
-
-            // TODO: use qs.SourceTableReferences
-            foreach (var key in details.SourceTables.Keys)
-            {
-                res.Add(cg.GenerateMostRestrictiveTableQuery(scn, details.SourceTables[key], columnContext, top));
-            }
-
-            return res.ToArray();
         }
 
         [TestMethod]
@@ -94,6 +77,17 @@ WHERE [b1].[ID] = 1 AND [b2].[ID] = 2", res);
 
         }
 
+        #region Most restrictive remote query generation
+
+        private string[] GenerateMostRestrictiveTableQueryTestHelper(string sql, ColumnContext columnContext, int top)
+        {
+            var query = Parse(sql);
+            var cg = new RemoteQueryGenerator();
+            var res = cg.Execute(query, columnContext, top);
+
+            return res.Values.ToArray();
+        }
+
         [TestMethod]
         public void GenerateMostRestrictiveTableQuery_SimpleTest()
         {
@@ -104,9 +98,9 @@ WHERE b.ID = 1";
 
             var gt =
 @"SELECT 
-[b].[ID], [b].[Title]
-FROM [Graywulf_Schema_Test].[dbo].[Book] AS [b] 
-WHERE [b].[ID] = 1
+[ID], [Title]
+FROM [Graywulf_Schema_Test].[dbo].[Book] 
+WHERE ([b].[ID] = 1)
 ";
 
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, ColumnContext.Default, 0);
@@ -125,9 +119,9 @@ WHERE b.ID = 1 AND a.ID IN (3, 4)";
 
             var gt =
 @"SELECT 
-[a].[ID], [a].[Title]
-FROM [Graywulf_Schema_Test].[dbo].[Book] AS [a] 
-WHERE [a].[ID] IN (3, 4)
+[ID], [Title]
+FROM [Graywulf_Schema_Test].[dbo].[Book] 
+WHERE ([ID] = 1) OR ([ID] IN (3, 4))
 ";
 
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, ColumnContext.Default, 0);
@@ -146,25 +140,17 @@ WHERE a.ID IN (3, 4)
 SELECT b.Year FROM Book b
 WHERE b.Title = 'Test'";
 
-            var gta =
+            var gt =
 @"SELECT 
-[a].[ID], [a].[Title]
-FROM [Graywulf_Schema_Test].[dbo].[Book] AS [a] 
-WHERE [a].[ID] IN (3, 4)
-";
-
-            var gtb =
-@"SELECT 
-[b].[ID]
-FROM [Graywulf_Schema_Test].[dbo].[Book] AS [b] 
-WHERE [b].[ID] = 1
+[ID], [Title], [Year]
+FROM [Graywulf_Schema_Test].[dbo].[Book] 
+WHERE ([Title] = 'Test') OR ([ID] IN (3, 4))
 ";
 
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, ColumnContext.Default, 0);
 
-            Assert.AreEqual(2, res.Length);
-            Assert.AreEqual(gta, res[0]);
-            Assert.AreEqual(gtb, res[1]);
+            Assert.AreEqual(1, res.Length);
+            Assert.AreEqual(gt, res[0]);
         }
 
         [TestMethod]
@@ -199,6 +185,8 @@ WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 1
             Assert.AreEqual(gta, res[0]);
             Assert.AreEqual(gtb, res[1]);
         }
+
+        #endregion
 
         /* TODO: rewrite this
         [TestMethod]

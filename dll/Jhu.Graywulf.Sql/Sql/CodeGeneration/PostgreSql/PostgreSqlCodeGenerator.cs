@@ -11,13 +11,13 @@ using Jhu.Graywulf.Sql.LogicalExpressions;
 
 namespace Jhu.Graywulf.Sql.CodeGeneration.PostgreSql
 {
-    public class PostgreSqlCodeGenerator : SqlCodeGeneratorBase
+    public class PostgreSqlCodeGenerator : CodeGeneratorBase
     {
         public PostgreSqlCodeGenerator()
         {
         }
 
-        public override SqlColumnListGeneratorBase CreateColumnListGenerator()
+        public override ColumnListGeneratorBase CreateColumnListGenerator()
         {
             return new PostgreSqlColumnListGenerator();
         }
@@ -109,7 +109,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.PostgreSql
             return topstr;
         }
 
-        protected override string OnGenerateMostRestrictiveTableQuery(string tableName, string tableAlias, string columnList, string where, int top)
+        public override string GenerateMostRestrictiveTableQuery(string tableName, string tableAlias, string columnList, string where, int top)
         {
             var sql = new StringBuilder();
 
@@ -122,8 +122,12 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.PostgreSql
                 sql.AppendFormat("AS {0} ", tableAlias);
             }
 
-            sql.AppendLine();
-            sql.AppendLine(where);
+            if (!String.IsNullOrWhiteSpace(where))
+            {
+                sql.AppendLine();
+                sql.Append("WHERE ");
+                sql.AppendLine(where);
+            }
 
             if (top > 0)
             {

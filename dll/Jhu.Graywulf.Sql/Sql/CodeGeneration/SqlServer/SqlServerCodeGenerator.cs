@@ -12,14 +12,18 @@ using Jhu.Graywulf.Sql.LogicalExpressions;
 
 namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 {
-    public class SqlServerCodeGenerator : SqlCodeGeneratorBase
+    public class SqlServerCodeGenerator : CodeGeneratorBase
     {
         public static string GetCode(Node node, bool resolvedNames)
         {
             var sw = new StringWriter();
             var cg = new SqlServerCodeGenerator();
-            cg.ResolveNames = resolvedNames;
+
+            cg.TableNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
+            cg.ColumnNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
+            cg.FunctionNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.Execute(sw, node);
+
             return sw.ToString();
         }
 
@@ -118,7 +122,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
         #endregion
         #region Most restrictive query generation
 
-        protected override string OnGenerateMostRestrictiveTableQuery(string tableName, string tableAlias, string columnList, string where, int top)
+        public override string GenerateMostRestrictiveTableQuery(string tableName, string tableAlias, string columnList, string where, int top)
         {
             var sql = new StringBuilder();
 
@@ -138,15 +142,19 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
                 sql.AppendFormat("AS {0} ", GetQuotedIdentifier(tableAlias));
             }
 
-            sql.AppendLine();
-            sql.AppendLine(where);
+            if (!String.IsNullOrWhiteSpace(where))
+            {
+                sql.AppendLine();
+                sql.Append("WHERE ");
+                sql.AppendLine(where);
+            }
 
             return sql.ToString();
         }
 
         #endregion
 
-        public override SqlColumnListGeneratorBase CreateColumnListGenerator()
+        public override ColumnListGeneratorBase CreateColumnListGenerator()
         {
             return new SqlServerColumnListGenerator();
         }

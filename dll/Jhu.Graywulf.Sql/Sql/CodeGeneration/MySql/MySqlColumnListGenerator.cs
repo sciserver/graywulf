@@ -7,7 +7,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
 {
-    public class MySqlColumnListGenerator : SqlColumnListGeneratorBase
+    public class MySqlColumnListGenerator : ColumnListGeneratorBase
     {
         public MySqlColumnListGenerator()
         {
