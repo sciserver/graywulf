@@ -185,7 +185,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
                 if (selectedObjectType == DatabaseObjectType.Unknown && SelectedDatabaseObject != null)
                 {
-                    selectedObjectType = Jhu.Graywulf.Schema.Constants.SimpleDatabaseObjectTypes[SelectedDatabaseObject.ObjectType];
+                    selectedObjectType = Jhu.Graywulf.Sql.Schema.Constants.SimpleDatabaseObjectTypes[SelectedDatabaseObject.ObjectType];
                 }
 
                 return selectedObjectType;
@@ -681,7 +681,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
             SelectedView = view;
             SelectedDataset = dbobj.Dataset;
-            SelectedObjectType = Jhu.Graywulf.Schema.Constants.SimpleDatabaseObjectTypes[dbobj.ObjectType];
+            SelectedObjectType = Jhu.Graywulf.Sql.Schema.Constants.SimpleDatabaseObjectTypes[dbobj.ObjectType];
             SelectedDatabaseObject = dbobj;
         }
     }

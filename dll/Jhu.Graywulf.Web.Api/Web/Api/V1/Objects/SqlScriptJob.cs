@@ -9,7 +9,7 @@ using System.ComponentModel;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Format;
-using Jhu.Graywulf.Jobs.ExportTables;
+using Jhu.Graywulf.IO.Jobs.ExportTables;
 using Jhu.Graywulf.Web.UI;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;

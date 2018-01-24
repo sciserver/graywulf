@@ -104,10 +104,6 @@
       <Project>{6797ED88-1D8C-491B-A036-4C42C4BF2EAF}</Project>
       <Name>Jhu.Graywulf.IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Jobs\Jhu.Graywulf.Jobs.csproj">
-      <Project>{2bd2d467-d003-468d-9b97-83ddc6f2ed78}</Project>
-      <Name>Jhu.Graywulf.Jobs</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
       <Project>{fd98fb58-a3e5-4d32-b6d6-3e20609c4d09}</Project>
       <Name>Jhu.Graywulf.Logging</Name>
@@ -151,6 +147,10 @@
     <ProjectReference Include="..\Jhu.Graywulf.Logging.Test\Jhu.Graywulf.Logging.Test.csproj">
       <Project>{d152dc9a-004c-4851-b0e7-b81a4325c9b7}</Project>
       <Name>Jhu.Graywulf.Logging.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Scheduler.Jobs.Test\Jhu.Graywulf.Scheduler.Jobs.Test.csproj">
+      <Project>{9fc85afc-859e-420e-961c-f7671e444f83}</Project>
+      <Name>Jhu.Graywulf.Scheduler.Jobs.Test</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using System.ComponentModel;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Sql.Schema;
-using Jhu.Graywulf.Jobs.CopyTables;
+using Jhu.Graywulf.IO.Jobs.CopyTables;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
@@ -82,10 +82,10 @@ namespace Jhu.Graywulf.Web.Api.V1
             // Because job parameter type might come from an unknown 
             // assembly, instead of deserializing, read xml directly here
 
-            if (jobInstance.Parameters.ContainsKey(Jhu.Graywulf.Jobs.Constants.JobParameterCopyTables))
+            if (jobInstance.Parameters.ContainsKey(Jhu.Graywulf.Registry.Constants.JobParameterParameters))
             {
                 var xml = new XmlDocument();
-                xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Jobs.Constants.JobParameterCopyTables].XmlValue);
+                xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Registry.Constants.JobParameterParameters].XmlValue);
 
                 var xr = new Util.XmlReader(xml);
 

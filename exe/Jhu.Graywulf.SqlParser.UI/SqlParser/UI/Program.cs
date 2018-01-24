@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using Jhu.Graywulf.Jobs.Query;
+using Jhu.Graywulf.Sql.Jobs.Query;
 
 namespace Jhu.Graywulf.Parser.Test
 {

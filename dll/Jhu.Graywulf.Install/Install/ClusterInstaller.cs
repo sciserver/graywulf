@@ -201,12 +201,12 @@ namespace Jhu.Graywulf.Install
             qi.Save();
 
             //      -- database mirror job
-            JobInstallerBase jdi = new Jhu.Graywulf.Jobs.MirrorDatabase.MirrorDatabaseJobInstaller(federation);
+            JobInstallerBase jdi = new Jhu.Graywulf.Registry.Jobs.MirrorDatabase.MirrorDatabaseJobInstaller(federation);
             var jd = jdi.Install();
 
             //      -- test job
-            jdi = new Jhu.Graywulf.Jobs.Test.TestJobInstaller(federation);
-            jd = jdi.Install();
+            //jdi = new Jhu.Graywulf.Jobs.Test.TestJobInstaller(federation);
+            //jd = jdi.Install();
 
             return cluster;
         }

@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Jhu.Graywulf.Schema
+namespace Jhu.Graywulf.Sql.Schema
 {
     [TestClass]
     public class UnitTest : Jhu.Graywulf.Test.TestClassBase

@@ -9,7 +9,7 @@ using System.ServiceModel.Web;
 using System.ServiceModel.Security;
 using System.Security.Permissions;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Jobs.Query;
+using Jhu.Graywulf.Sql.Jobs.Query;
 using Jhu.Graywulf.Web.Services;
 
 namespace Jhu.Graywulf.Web.Api.V1

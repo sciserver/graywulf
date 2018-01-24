@@ -118,10 +118,6 @@
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Jobs\Jhu.Graywulf.Jobs.csproj">
-      <Project>{2BD2D467-D003-468D-9B97-83DDC6F2ED78}</Project>
-      <Name>Jhu.Graywulf.Jobs</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
       <Project>{FD98FB58-A3E5-4D32-B6D6-3E20609C4D09}</Project>
       <Name>Jhu.Graywulf.Logging</Name>
@@ -129,6 +125,10 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry.Enum\Jhu.Graywulf.Registry.Enum.csproj">
       <Project>{71599792-21CC-4E63-AFB5-2AFBDB3DF418}</Project>
       <Name>Jhu.Graywulf.Registry.Enum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry.Jobs\Jhu.Graywulf.Registry.Jobs.csproj">
+      <Project>{a214abec-d469-4787-b937-914a823eccfb}</Project>
+      <Name>Jhu.Graywulf.Registry.Jobs</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry\Jhu.Graywulf.Registry.csproj">
       <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
@@ -141,6 +141,14 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Scheduler\Jhu.Graywulf.Scheduler.csproj">
       <Project>{94ab6a2e-6877-4fed-87e2-1f9f17622f43}</Project>
       <Name>Jhu.Graywulf.Scheduler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Sql.Jobs\Jhu.Graywulf.Sql.Jobs.csproj">
+      <Project>{08789ba4-645a-4980-9fdb-15aae7be7754}</Project>
+      <Name>Jhu.Graywulf.Sql.Jobs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\test\Jhu.Graywulf.Scheduler.Jobs.Test\Jhu.Graywulf.Scheduler.Jobs.Test.csproj">
+      <Project>{9fc85afc-859e-420e-961c-f7671e444f83}</Project>
+      <Name>Jhu.Graywulf.Scheduler.Jobs.Test</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

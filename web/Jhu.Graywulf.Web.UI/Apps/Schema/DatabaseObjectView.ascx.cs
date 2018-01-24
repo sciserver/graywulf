@@ -9,7 +9,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         {
             if (Item != null)
             {
-                objectTypeLabel.Text = Jhu.Graywulf.Schema.Constants.DatabaseObjectsName_Singular[Item.ObjectType];
+                objectTypeLabel.Text = Jhu.Graywulf.Sql.Schema.Constants.DatabaseObjectsName_Singular[Item.ObjectType];
 
                 datasetNameLabel.Text = Item.DatasetName;
                 schemaNameLabel.Text = Item.SchemaName;

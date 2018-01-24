@@ -10,7 +10,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
-using Jhu.Graywulf.Jobs.Query;
+using Jhu.Graywulf.Sql.Jobs.Query;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Query
 {

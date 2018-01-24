@@ -55,7 +55,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             set { tableList.SelectedValue = value; }
         }
 
-        public Jhu.Graywulf.Schema.Table Table
+        public Jhu.Graywulf.Sql.Schema.Table Table
         {
             get { return Dataset.Tables[tableList.SelectedValue]; }
             set { tableList.SelectedValue = value.UniqueKey; }

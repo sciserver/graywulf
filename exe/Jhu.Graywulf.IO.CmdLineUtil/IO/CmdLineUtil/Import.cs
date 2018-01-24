@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using Jhu.Graywulf.CommandLineParser;
 using Jhu.Graywulf.Sql.Schema;
-using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.Format;
@@ -98,7 +98,7 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
             var destination = new DestinationTable()
             {
                 Dataset = dataset,
-                SchemaName = Schema.SqlServer.Constants.DefaultSchemaName,
+                SchemaName = Sql.Schema.SqlServer.Constants.DefaultSchemaName,
                 TableNamePattern = table,
                 Options = TableInitializationOptions.Clear,      
             };

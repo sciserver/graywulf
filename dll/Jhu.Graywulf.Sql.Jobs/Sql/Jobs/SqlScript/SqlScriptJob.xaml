@@ -1,0 +1,129 @@
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="Jhu.Graywulf.Sql.Jobs.SqlScript.SqlScriptJob"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:jga="clr-namespace:Jhu.Graywulf.Activities;assembly=Jhu.Graywulf.Activities"
+ xmlns:jgs="clr-namespace:Jhu.Graywulf.Sql.Schema;assembly=Jhu.Graywulf.Sql"
+ xmlns:local="clr-namespace:Jhu.Graywulf.Sql.Jobs.SqlScript"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mca="clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="JobInfo" Type="InArgument(jga:JobInfo)" />
+    <x:Property Name="Parameters" Type="InArgument(local:SqlScriptParameters)" />
+  </x:Members>
+  <sap2010:ExpressionActivityEditor.ExpressionActivityEditor>C#</sap2010:ExpressionActivityEditor.ExpressionActivityEditor>
+  <sap2010:WorkflowViewState.IdRef>Jhu.Graywulf.Sql.Jobs.SqlScript.SqlScriptJob_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Text</x:String>
+      <x:String>Jhu.Graywulf.Sql.Jobs.SqlScript</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>System.Activities.Presentation</AssemblyReference>
+      <AssemblyReference>System.Configuration</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Drawing</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization</AssemblyReference>
+      <AssemblyReference>System.ServiceModel</AssemblyReference>
+      <AssemblyReference>System.Web</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System.Xml.Linq</AssemblyReference>
+      <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
+      <AssemblyReference>Microsoft.CSharp</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.Activities</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.Components</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.IO</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.Logging</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.ParserLib</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.Registry.Enum</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.Registry</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.RemoteService</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.Schema</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.Sql</AssemblyReference>
+      <AssemblyReference>System.ServiceModel.Activities</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.Sql.Jobs</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <ParallelForEach x:TypeArguments="jgs:DatasetBase" DisplayName="ParallelForEach&lt;DatasetBase&gt;" sap2010:WorkflowViewState.IdRef="ParallelForEach`1_1">
+    <ParallelForEach.Values>
+      <InArgument x:TypeArguments="scg:IEnumerable(jgs:DatasetBase)">
+        <mca:CSharpValue x:TypeArguments="scg:IEnumerable(jgs:DatasetBase)">Parameters.Datasets</mca:CSharpValue>
+      </InArgument>
+    </ParallelForEach.Values>
+    <ActivityAction x:TypeArguments="jgs:DatasetBase">
+      <ActivityAction.Argument>
+        <DelegateInArgument x:TypeArguments="jgs:DatasetBase" Name="item" />
+      </ActivityAction.Argument>
+      <ForEach x:TypeArguments="x:String" DisplayName="ForEach&lt;String&gt;" sap2010:WorkflowViewState.IdRef="ForEach`1_1">
+        <ForEach.Values>
+          <InArgument x:TypeArguments="scg:IEnumerable(x:String)">
+            <mca:CSharpValue x:TypeArguments="scg:IEnumerable(x:String)">Parameters.GetScriptParts()</mca:CSharpValue>
+          </InArgument>
+        </ForEach.Values>
+        <ActivityAction x:TypeArguments="x:String">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="x:String" Name="scriptPart" />
+          </ActivityAction.Argument>
+          <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_1" MaxRetries="3">
+            <jga:Retry.JobInfo>
+              <InArgument x:TypeArguments="jga:JobInfo">
+                <mca:CSharpValue x:TypeArguments="jga:JobInfo">JobInfo</mca:CSharpValue>
+              </InArgument>
+            </jga:Retry.JobInfo>
+            <local:ExecuteScript sap2010:WorkflowViewState.IdRef="ExecuteScript_3">
+              <local:ExecuteScript.Dataset>
+                <InArgument x:TypeArguments="jgs:DatasetBase">
+                  <mca:CSharpValue x:TypeArguments="jgs:DatasetBase">item</mca:CSharpValue>
+                </InArgument>
+              </local:ExecuteScript.Dataset>
+              <local:ExecuteScript.JobInfo>
+                <InArgument x:TypeArguments="jga:JobInfo">
+                  <mca:CSharpValue x:TypeArguments="jga:JobInfo">JobInfo</mca:CSharpValue>
+                </InArgument>
+              </local:ExecuteScript.JobInfo>
+              <local:ExecuteScript.Parameters>
+                <InArgument x:TypeArguments="local:SqlScriptParameters">
+                  <mca:CSharpValue x:TypeArguments="local:SqlScriptParameters">Parameters</mca:CSharpValue>
+                </InArgument>
+              </local:ExecuteScript.Parameters>
+              <local:ExecuteScript.Script>
+                <InArgument x:TypeArguments="x:String">
+                  <mca:CSharpValue x:TypeArguments="x:String">scriptPart</mca:CSharpValue>
+                </InArgument>
+              </local:ExecuteScript.Script>
+            </local:ExecuteScript>
+          </jga:Retry>
+        </ActivityAction>
+      </ForEach>
+    </ActivityAction>
+    <sads:DebugSymbol.Symbol>d2dDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjJcZ3JheXd1bGZcZGxsXEpodS5HcmF5d3VsZi5Kb2JzXEpvYnNcU3FsU2NyaXB0XFNxbFNjcmlwdEpvYi54YW1sDkMDggEVAgEBRglGcgIBNU0HfxECAQJQDVB3AgEwVwt9FwIBA1deV2ECARBfEV9VAgEKWhFaVAIBBGINfCMCARFvE29sAgEqdBN0WwIBJGUTZVwCAR55E3lXAgEYahNqVgIBEg==</sads:DebugSymbol.Symbol>
+  </ParallelForEach>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="ExecuteScript_3" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Retry_1" sap:VirtualizedContainerService.HintSize="214,128" />
+      <sap2010:ViewStateData Id="ForEach`1_1" sap:VirtualizedContainerService.HintSize="287,278" />
+      <sap2010:ViewStateData Id="ParallelForEach`1_1" sap:VirtualizedContainerService.HintSize="317,428" />
+      <sap2010:ViewStateData Id="Jhu.Graywulf.Sql.Jobs.SqlScript.SqlScriptJob_1" sap:VirtualizedContainerService.HintSize="357,508" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

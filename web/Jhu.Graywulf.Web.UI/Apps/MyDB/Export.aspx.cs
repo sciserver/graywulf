@@ -4,7 +4,7 @@ using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Collections.Generic;
-using Jhu.Graywulf.Jobs.ExportTables;
+using Jhu.Graywulf.IO.Jobs.ExportTables;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Format;

@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(SolutionDir)\build\Jhu.Graywulf.Build.tasks" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -31,20 +32,140 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Activities" />
+    <Reference Include="System.Activities.Presentation" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IO\Jobs\CopyTables\CopyTable.cs" />
+    <Compile Include="IO\Jobs\CopyTables\CopyTablesItem.cs" />
+    <Compile Include="IO\Jobs\CopyTables\CopyTablesJob.cs" />
+    <Compile Include="IO\Jobs\CopyTables\CopyTablesJobFactory.cs" />
+    <Compile Include="IO\Jobs\CopyTables\CopyTablesJobInstaller.cs" />
+    <Compile Include="IO\Jobs\CopyTables\CopyTablesParameters.cs" />
+    <Compile Include="IO\Jobs\CopyTables\DropTable.cs" />
+    <Compile Include="IO\Jobs\CopyTables\ICopyTablesJob.cs" />
+    <Compile Include="IO\Jobs\ExportTables\ExportMaintenanceJob.cs" />
+    <Compile Include="IO\Jobs\ExportTables\ExportMaintenanceJobInstaller.cs" />
+    <Compile Include="IO\Jobs\ExportTables\ExportTablesJob.cs" />
+    <Compile Include="IO\Jobs\ExportTables\ExportTablesJobFactory.cs" />
+    <Compile Include="IO\Jobs\ExportTables\ExportTablesJobInstaller.cs" />
+    <Compile Include="IO\Jobs\ExportTables\ExportTablesJobSettings.cs" />
+    <Compile Include="IO\Jobs\ExportTables\ExportTablesMethod.cs" />
+    <Compile Include="IO\Jobs\ExportTables\ExportTablesParameters.cs" />
+    <Compile Include="IO\Jobs\ExportTables\ExportTablesToUriForm.ascx.cs">
+      <DependentUpon>ExportTablesToUriForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="IO\Jobs\ExportTables\ExportTablesToUriForm.ascx.designer.cs">
+      <DependentUpon>ExportTablesToUriForm.ascx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IO\Jobs\ExportTables\ExportTablesToUriMethod.cs" />
+    <Compile Include="IO\Jobs\ExportTables\IExportTablesForm.cs" />
+    <Compile Include="IO\Jobs\ExportTables\IExportTablesJob.cs" />
+    <Compile Include="IO\Jobs\ImportTables\IImportTablesForm.cs" />
+    <Compile Include="IO\Jobs\ImportTables\IImportTablesJob.cs" />
+    <Compile Include="IO\Jobs\ImportTables\ImportTablesFromUriForm.ascx.cs">
+      <DependentUpon>ImportTablesFromUriForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="IO\Jobs\ImportTables\ImportTablesFromUriForm.ascx.designer.cs">
+      <DependentUpon>ImportTablesFromUriForm.ascx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IO\Jobs\ImportTables\ImportTablesFromUriMethod.cs" />
+    <Compile Include="IO\Jobs\ImportTables\ImportTablesJob.cs" />
+    <Compile Include="IO\Jobs\ImportTables\ImportTablesJobFactory.cs" />
+    <Compile Include="IO\Jobs\ImportTables\ImportTablesJobInstaller.cs" />
+    <Compile Include="IO\Jobs\ImportTables\ImportTablesJobSettings.cs" />
+    <Compile Include="IO\Jobs\ImportTables\ImportTablesMethod.cs" />
+    <Compile Include="IO\Jobs\ImportTables\ImportTablesParameters.cs" />
+    <Compile Include="IO\Jobs\JobNames.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>JobNames.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="IO\Jobs\" />
+    <EmbeddedResource Include="IO\Jobs\JobNames.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>JobNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="post-build.ps1" />
+    <None Include="pre-build.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <XamlAppDef Include="IO\Jobs\CopyTables\CopyTablesJob.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </XamlAppDef>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
+      <Project>{57392da3-e280-48ee-80c8-64e09fd8afb5}</Project>
+      <Name>Jhu.Graywulf.Activities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
+      <Project>{abb4c403-720a-47e1-9485-cfaadd696656}</Project>
+      <Name>Jhu.Graywulf.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.IO\Jhu.Graywulf.IO.csproj">
+      <Project>{6797ed88-1d8c-491b-a036-4c42c4bf2eaf}</Project>
+      <Name>Jhu.Graywulf.IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
+      <Project>{fd98fb58-a3e5-4d32-b6d6-3e20609c4d09}</Project>
+      <Name>Jhu.Graywulf.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Parsing\Jhu.Graywulf.Parsing.csproj">
+      <Project>{6215a919-1626-4f32-8c16-5764243b2748}</Project>
+      <Name>Jhu.Graywulf.Parsing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Registry.Enum\Jhu.Graywulf.Registry.Enum.csproj">
+      <Project>{f163a859-0fe2-4099-bd85-f61c9c05426a}</Project>
+      <Name>Jhu.Graywulf.Registry.Enum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Registry\Jhu.Graywulf.Registry.csproj">
+      <Project>{59bfb28b-3f97-4714-b8d7-a1b40f668831}</Project>
+      <Name>Jhu.Graywulf.Registry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
+      <Project>{5460db30-cfd9-4edb-a1e8-161a7cc505c5}</Project>
+      <Name>Jhu.Graywulf.RemoteService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Scheduler\Jhu.Graywulf.Scheduler.csproj">
+      <Project>{94ab6a2e-6877-4fed-87e2-1f9f17622f43}</Project>
+      <Name>Jhu.Graywulf.Scheduler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.ServiceModel\Jhu.Graywulf.ServiceModel.csproj">
+      <Project>{aa744162-dfa0-46bc-be03-20d50dd77806}</Project>
+      <Name>Jhu.Graywulf.ServiceModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Sql\Jhu.Graywulf.Sql.csproj">
+      <Project>{aada04ee-f578-4628-8ae0-d423bb94c738}</Project>
+      <Name>Jhu.Graywulf.Sql</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="IO\Jobs\ExportTables\ExportTablesToUriForm.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="IO\Jobs\ImportTables\ImportTablesFromUriForm.ascx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\build\Jhu.Graywulf.Build.targets" />
 </Project>

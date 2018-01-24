@@ -90,7 +90,7 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             ServiceTesterToken token = null;
             string path, tableNamePattern;
-            Schema.Table table;
+            Sql.Schema.Table table;
             int[] columnCount;
 
             DropTestTables();

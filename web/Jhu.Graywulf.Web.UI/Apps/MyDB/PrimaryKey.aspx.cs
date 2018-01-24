@@ -3,7 +3,7 @@ using System.Web.UI.WebControls;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
-using Jhu.Graywulf.Jobs.SqlScript;
+using Jhu.Graywulf.Sql.Jobs.SqlScript;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
@@ -14,12 +14,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             return String.Format("~/Apps/MyDb/PrimaryKey.aspx?objid={0}", objid);
         }
 
-        protected Jhu.Graywulf.Schema.Table table;
+        protected Jhu.Graywulf.Sql.Schema.Table table;
 
         protected void Page_Load(object sender, EventArgs e)
         {
             string objid = Request.QueryString["objid"];
-            table = (Jhu.Graywulf.Schema.Table)FederationContext.SchemaManager.GetDatabaseObjectByKey(objid);
+            table = (Jhu.Graywulf.Sql.Schema.Table)FederationContext.SchemaManager.GetDatabaseObjectByKey(objid);
 
             if (!table.Dataset.IsMutable)
             {

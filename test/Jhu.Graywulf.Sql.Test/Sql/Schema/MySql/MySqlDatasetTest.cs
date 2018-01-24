@@ -5,17 +5,17 @@ using System.Linq;
 using System.Data;
 using MySql.Data.MySqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.Schema.MySql;
+using Jhu.Graywulf.Sql.Schema;
+using Jhu.Graywulf.Sql.Schema.MySql;
 
-namespace Jhu.Graywulf.Schema.MySql.Test
+namespace Jhu.Graywulf.Sql.Schema.MySql
 {
     [TestClass]
     public class MySqlDatasetTest
     {
         private MySqlDataset CreateTestDataset()
         {
-            var csb = new MySqlConnectionStringBuilder(Jhu.Graywulf.Schema.Test.AppSettings.MySqlConnectionString);
+            var csb = new MySqlConnectionStringBuilder(Jhu.Graywulf.Sql.Schema.AppSettings.MySqlConnectionString);
 
             var ds = new MySqlDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, csb.ConnectionString)
             {
@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Schema.MySql.Test
         {
             var ds = CreateTestDataset();
 
-            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.MySql.Constants.DefaultSchemaName, "Author"];
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.MySql.Constants.DefaultSchemaName, "Author"];
 
             Assert.IsTrue(ds.Tables.Count == 1);
         }
@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Schema.MySql.Test
         {
             var ds = CreateTestDataset();
 
-            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.MySql.Constants.DefaultSchemaName, "Author"];
+            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.MySql.Constants.DefaultSchemaName, "Author"];
             var t2 = ds.Tables[ds.DatabaseName, "", "Author"];
 
             Assert.IsTrue(ds.Tables.Count == 1);
@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.Schema.MySql.Test
         {
             var ds = CreateTestDataset();
 
-            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.MySql.Constants.DefaultSchemaName, "Author"];
+            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.MySql.Constants.DefaultSchemaName, "Author"];
             var t2 = ds.Tables[ds.DatabaseName, "", "Author"];
             Table t3 = ds.Tables[ds.DatabaseName, "", "Book"];
 
@@ -209,7 +209,7 @@ namespace Jhu.Graywulf.Schema.MySql.Test
 
             try
             {
-                var t = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.MySql.Constants.DefaultSchemaName, "NonExistentView"];
+                var t = ds.Views[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.MySql.Constants.DefaultSchemaName, "NonExistentView"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)
@@ -284,7 +284,7 @@ namespace Jhu.Graywulf.Schema.MySql.Test
 
             try
             {
-                var t = ds.StoredProcedures[ds.DatabaseName, Jhu.Graywulf.Schema.MySql.Constants.DefaultSchemaName, "NonExistentSp"];
+                var t = ds.StoredProcedures[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.MySql.Constants.DefaultSchemaName, "NonExistentSp"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)

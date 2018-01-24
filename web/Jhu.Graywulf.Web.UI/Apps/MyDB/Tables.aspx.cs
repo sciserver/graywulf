@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             if (e.Item.ItemType == ListViewItemType.DataItem &&
                 e.Item.DataItem != null)
             {
-                var table = (Jhu.Graywulf.Schema.Table)e.Item.DataItem;
+                var table = (Jhu.Graywulf.Sql.Schema.Table)e.Item.DataItem;
                 var objid = table.UniqueKey;
 
                 var schema = (HyperLink)e.Item.FindControl("schema");

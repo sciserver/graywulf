@@ -10,11 +10,11 @@ namespace Jhu.Graywulf.Web.Api.V1
     {
         public static readonly Dictionary<JobType, Type> WellKnownJobInterfaces = new Dictionary<JobType, Type>()
         {
-            { JobType.Query, typeof(Jhu.Graywulf.Jobs.Query.IQueryJob) },
-            { JobType.Export, typeof(Jhu.Graywulf.Jobs.ExportTables.IExportTablesJob) },
-            { JobType.Import, typeof(Jhu.Graywulf.Jobs.ImportTables.IImportTablesJob) },
-            { JobType.Copy, typeof(Jhu.Graywulf.Jobs.CopyTables.ICopyTablesJob) },
-            { JobType.SqlScript, typeof(Jhu.Graywulf.Jobs.SqlScript.ISqlScriptJob) },
+            { JobType.Query, typeof(Jhu.Graywulf.Sql.Jobs.Query.IQueryJob) },
+            { JobType.Export, typeof(Jhu.Graywulf.IO.Jobs.ExportTables.IExportTablesJob) },
+            { JobType.Import, typeof(Jhu.Graywulf.IO.Jobs.ImportTables.IImportTablesJob) },
+            { JobType.Copy, typeof(Jhu.Graywulf.IO.Jobs.CopyTables.ICopyTablesJob) },
+            { JobType.SqlScript, typeof(Jhu.Graywulf.Sql.Jobs.SqlScript.ISqlScriptJob) },
         };
 
         public static readonly Dictionary<JobType, Type> WellKnownJobTypes = new Dictionary<JobType, Type>()

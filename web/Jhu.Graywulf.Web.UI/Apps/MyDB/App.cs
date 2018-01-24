@@ -16,14 +16,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
             using (var context = application.CreateRegistryContext())
             {
-                var itf = Jhu.Graywulf.Jobs.ImportTables.ImportTablesJobFactory.Create(context.Federation);
+                var itf = Jhu.Graywulf.IO.Jobs.ImportTables.ImportTablesJobFactory.Create(context.Federation);
 
                 foreach (var m in itf.EnumerateMethods())
                 {
                     m.RegisterVirtualPaths(vpp);
                 }
 
-                var etf = Jhu.Graywulf.Jobs.ExportTables.ExportTablesJobFactory.Create(context.Federation);
+                var etf = Jhu.Graywulf.IO.Jobs.ExportTables.ExportTablesJobFactory.Create(context.Federation);
 
                 foreach (var m in etf.EnumerateMethods())
                 {

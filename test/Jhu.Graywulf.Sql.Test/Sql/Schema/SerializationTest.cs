@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Jhu.Graywulf.Schema
+namespace Jhu.Graywulf.Sql.Schema
 {
     [TestClass]
     public class SerializationTest

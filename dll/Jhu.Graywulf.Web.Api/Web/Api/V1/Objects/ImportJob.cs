@@ -11,7 +11,7 @@ using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
-using Jhu.Graywulf.Jobs.ImportTables;
+using Jhu.Graywulf.IO.Jobs.ImportTables;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
@@ -106,10 +106,10 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             base.LoadFromRegistryObject(jobInstance);
 
-            if (jobInstance.Parameters.ContainsKey(Jhu.Graywulf.Jobs.Constants.JobParameterImport))
+            if (jobInstance.Parameters.ContainsKey(Jhu.Graywulf.Registry.Constants.JobParameterParameters))
             {
                 var xml = new XmlDocument();
-                xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Jobs.Constants.JobParameterImport].XmlValue);
+                xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Registry.Constants.JobParameterParameters].XmlValue);
 
                 var xr = new Util.XmlReader(xml);
 

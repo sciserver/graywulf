@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             return url;
         }
 
-        protected Jhu.Graywulf.Schema.DatabaseObject obj;
+        protected Jhu.Graywulf.Sql.Schema.DatabaseObject obj;
 
         protected void Page_Load(object sender, EventArgs e)
         {

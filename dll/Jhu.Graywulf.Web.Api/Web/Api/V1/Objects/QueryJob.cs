@@ -7,7 +7,7 @@ using System.Xml;
 using System.ServiceModel;
 using System.ComponentModel;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Jobs.Query;
+using Jhu.Graywulf.Sql.Jobs.Query;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Web.UI;
@@ -83,10 +83,10 @@ namespace Jhu.Graywulf.Web.Api.V1
             // Because job parameter type might come from an unknown 
             // assembly, instead of deserializing, read xml directly here
 
-            if (jobInstance.Parameters.ContainsKey(Jhu.Graywulf.Jobs.Constants.JobParameterQuery))
+            if (jobInstance.Parameters.ContainsKey(Jhu.Graywulf.Registry.Constants.JobParameterQuery))
             {
                 var xml = new XmlDocument();
-                xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Jobs.Constants.JobParameterQuery].XmlValue);
+                xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Registry.Constants.JobParameterQuery].XmlValue);
 
                 var xr = new Util.XmlReader(xml);
 
@@ -171,11 +171,11 @@ namespace Jhu.Graywulf.Web.Api.V1
                 default:
                 case JobQueue.Quick:
                     q.Destination.Options = TableInitializationOptions.Drop | TableInitializationOptions.Create;
-                    q.Destination.TableNamePattern = Jhu.Graywulf.Jobs.Constants.DefaultQuickResultsTableNamePattern;
+                    q.Destination.TableNamePattern = Jhu.Graywulf.Sql.Jobs.Constants.DefaultQuickResultsTableNamePattern;
                     break;
                 case JobQueue.Long:
                     q.Destination.Options = TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName;
-                    q.Destination.TableNamePattern = Jhu.Graywulf.Jobs.Constants.DefaultLongResultsTableNamePattern;
+                    q.Destination.TableNamePattern = Jhu.Graywulf.Sql.Jobs.Constants.DefaultLongResultsTableNamePattern;
                     break;
             }
 

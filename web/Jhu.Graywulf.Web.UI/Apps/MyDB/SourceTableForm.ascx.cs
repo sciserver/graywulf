@@ -22,12 +22,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             get { return datasetList.Dataset; }
         }
 
-        public Jhu.Graywulf.Schema.Table Table
+        public Jhu.Graywulf.Sql.Schema.Table Table
         {
             get { return tableList.Table; }
         }
 
-        public Jhu.Graywulf.Schema.Table LastTable
+        public Jhu.Graywulf.Sql.Schema.Table LastTable
         {
             get
             {
@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
                 if (key != null)
                 {
-                    return (Jhu.Graywulf.Schema.Table)FederationContext.SchemaManager.GetDatabaseObjectByKey(key);
+                    return (Jhu.Graywulf.Sql.Schema.Table)FederationContext.SchemaManager.GetDatabaseObjectByKey(key);
                 }
                 else
                 {

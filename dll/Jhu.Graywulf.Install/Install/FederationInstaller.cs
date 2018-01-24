@@ -180,11 +180,11 @@ namespace Jhu.Graywulf.Install
         {
             federation.SchemaManager = GetUnversionedTypeName(typeof(Jhu.Graywulf.Sql.Schema.GraywulfSchemaManager));
             federation.UserDatabaseFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Sql.Schema.UserDatabaseFactory));
-            federation.QueryFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Jobs.Query.SqlQueryFactory));
+            federation.QueryFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Sql.Jobs.Query.SqlQueryFactory));
             federation.FileFormatFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Format.FileFormatFactory));
             federation.StreamFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.IO.StreamFactory));
-            federation.ImportTablesJobFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Jobs.ImportTables.ImportTablesJobFactory));
-            federation.ExportTablesJobFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Jobs.ExportTables.ExportTablesJobFactory));
+            federation.ImportTablesJobFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.IO.Jobs.ImportTables.ImportTablesJobFactory));
+            federation.ExportTablesJobFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.IO.Jobs.ExportTables.ExportTablesJobFactory));
 
             federation.ShortTitle = "";
             federation.LongTitle = "";
@@ -207,25 +207,25 @@ namespace Jhu.Graywulf.Install
 
         protected virtual void GenerateDefaultJobs()
         {
-            var sji = new Jobs.SqlScript.SqlScriptJobInstaller(federation);
+            var sji = new Sql.Jobs.SqlScript.SqlScriptJobInstaller(federation);
             sji.Install();
 
-            var eji = new Jobs.ExportTables.ExportTablesJobInstaller(federation);
+            var eji = new IO.Jobs.ExportTables.ExportTablesJobInstaller(federation);
             eji.Install();
 
-            var emji = new Jobs.ExportTables.ExportMaintenanceJobInstaller(federation);
+            var emji = new IO.Jobs.ExportTables.ExportMaintenanceJobInstaller(federation);
             emji.Install();
 
-            var iji = new Jobs.ImportTables.ImportTablesJobInstaller(federation);
+            var iji = new IO.Jobs.ImportTables.ImportTablesJobInstaller(federation);
             iji.Install();
 
-            var cji = new Jobs.CopyTables.CopyTablesJobInstaller(federation);
+            var cji = new IO.Jobs.CopyTables.CopyTablesJobInstaller(federation);
             cji.Install();
         }
 
         protected virtual void GenerateQueryJobs()
         {
-            var jdi = new Jobs.Query.SqlQueryJobInstaller(federation);
+            var jdi = new Sql.Jobs.Query.SqlQueryJobInstaller(federation);
             jdi.Install();
         }
 

@@ -5,8 +5,8 @@ using System.Linq;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.Sql.Schema;
+using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 
@@ -48,7 +48,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
             var w = new StringWriter();
 
             var cg = new MySql.MySqlCodeGenerator();
-            cg.ResolveNames = resolved;
+            // TODO
+            // cg.ResolveNames = resolved;
             cg.Execute(w, ss);
 
             return w.ToString();
@@ -112,7 +113,8 @@ FROM `Graywulf_Schema_Test`.`Book` `b1`, `Graywulf_Schema_Test`.`Book` `b2`", re
         private string[] GenerateMostRestrictiveTableQueryTestHelper(string sql, ColumnContext columnContext, int top)
         {
             var cg = new MySql.MySqlCodeGenerator();
-            cg.ResolveNames = true;
+            // TODO
+            // cg.ResolveNames = true;
 
             var ss = CreateSelect(sql);
 
@@ -123,7 +125,8 @@ FROM `Graywulf_Schema_Test`.`Book` `b1`, `Graywulf_Schema_Test`.`Book` `b2`", re
                 // TODO: use qs.SourceTableReferences
                 foreach (var tr in qs.EnumerateSourceTableReferences(true))
                 {
-                    res.Add(cg.GenerateMostRestrictiveTableQuery(qs, tr, columnContext, top));
+                    // TODO
+                    // res.Add(cg.GenerateMostRestrictiveTableQuery(qs, tr, columnContext, top));
                 }
             }
 

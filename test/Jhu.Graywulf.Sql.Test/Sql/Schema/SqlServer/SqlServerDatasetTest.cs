@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Data;
 using Jhu.Graywulf.Sql.CodeGeneration;
 
-namespace Jhu.Graywulf.Schema.SqlServer.Test
+namespace Jhu.Graywulf.Sql.Schema.SqlServer
 {
     [TestClass]
     public class SqlServerDatasetTest : SqlServerTestBase
@@ -32,11 +32,11 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithPrimaryKey"), typeof(Table));
-            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"), typeof(View));
-            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "InlineTableValuedFunction"), typeof(TableValuedFunction));
-            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ScalarFunction"), typeof(ScalarFunction));
-            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "StoredProcedure"), typeof(StoredProcedure));
+            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithPrimaryKey"), typeof(Table));
+            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"), typeof(View));
+            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "InlineTableValuedFunction"), typeof(TableValuedFunction));
+            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "ScalarFunction"), typeof(ScalarFunction));
+            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "StoredProcedure"), typeof(StoredProcedure));
         }
 
         [TestMethod]
@@ -56,7 +56,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void GetSimpleUdtTest()
         {
             var ds = CreateTestDataset();
-            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "SimpleUDT"];
+            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "SimpleUDT"];
 
             Assert.IsTrue(ds.UserDefinedTypes.Count == 1);
             Assert.IsTrue(t.IsUserDefined);
@@ -86,7 +86,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void GetClrUdtTest()
         {
             var ds = CreateTestDataset();
-            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ClrUDT"];
+            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "ClrUDT"];
 
             Assert.IsTrue(ds.UserDefinedTypes.Count == 1);
             Assert.IsTrue(t.IsUserDefined);
@@ -116,7 +116,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void GetTableTypeTest()
         {
             var ds = CreateTestDataset();
-            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableUDT"];
+            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "TableUDT"];
 
             Assert.IsTrue(ds.UserDefinedTypes.Count == 1);
             Assert.IsTrue(t.IsUserDefined);
@@ -148,7 +148,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void GetTableUDTWithUDTTest()
         {
             var ds = CreateTestDataset();
-            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableUDTWithUDT"];
+            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "TableUDTWithUDT"];
 
             Assert.AreEqual("dbo", t.Columns["Data"].DataType.SchemaName);
             Assert.AreEqual("SimpleUDT", t.Columns["Data"].DataType.TypeName);
@@ -158,7 +158,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void GetTableUDTWithCLRUDTTest()
         {
             var ds = CreateTestDataset();
-            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableUDTWithCLRUDT"];
+            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "TableUDTWithCLRUDT"];
 
             Assert.AreEqual("dbo", t.Columns["Data"].DataType.SchemaName);
             Assert.AreEqual("ClrUDT", t.Columns["Data"].DataType.TypeName);
@@ -168,7 +168,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void GetTableUDTWithIndexTest()
         {
             var ds = CreateTestDataset();
-            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableUDTWithIndex"];
+            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "TableUDTWithIndex"];
 
             Assert.AreEqual(null, t.Columns["Data"].DataType.SchemaName);
             Assert.AreEqual("nvarchar", t.Columns["Data"].DataType.TypeName);
@@ -181,7 +181,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void GetNonexistentTypeTest()
         {
             var ds = CreateTestDataset();
-            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentType"];
+            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentType"];
         }
 
         [TestMethod]
@@ -202,7 +202,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
 
             Assert.IsTrue(ds.Tables.Count == 1);
         }
@@ -212,7 +212,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
+            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
             var t2 = ds.Tables[ds.DatabaseName, "", "Author"];
 
             Assert.IsTrue(ds.Tables.Count == 1);
@@ -226,13 +226,13 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
+            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
             var t2 = ds.Tables[ds.DatabaseName, "", "Author"];
             Table t3 = ds.Tables[ds.DatabaseName, "", "Book"];
 
             Assert.IsTrue(ds.Tables.Count == 2);
             Assert.AreNotEqual(t1, t3);
-            Assert.AreEqual(t3.SchemaName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName);
+            Assert.AreEqual(t3.SchemaName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName);
 
             // Try to load object that's not a table
 
@@ -244,7 +244,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void GetNonexistentTableTest()
         {
             var ds = CreateTestDataset();
-            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentTable"];
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentTable"];
         }
 
         [TestMethod]
@@ -263,7 +263,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             // Get a single table
-            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
+            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
 
             Assert.IsTrue(t1.Columns.Count == 2);
             Assert.IsTrue(t1.Columns["ID"].DataType.TypeName == "bigint");
@@ -272,8 +272,8 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             Assert.IsFalse(t1.Columns["Name"].IsKey);
 
             // Test cache
-            Assert.AreEqual(t1.Columns, ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Columns);
-            Assert.AreEqual(t1.Columns["ID"], ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Columns["ID"]);
+            Assert.AreEqual(t1.Columns, ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Columns);
+            Assert.AreEqual(t1.Columns["ID"], ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Columns["ID"]);
         }
 
         [TestMethod]
@@ -282,14 +282,14 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             // Get a single table
-            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
+            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
 
             Assert.IsTrue(t1.Indexes.Count == 1);
             Assert.IsTrue(t1.Indexes["PK_Author"].IsPrimaryKey);
 
             // Test cache
-            Assert.AreEqual(t1.Indexes, ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Indexes);
-            Assert.AreEqual(t1.Indexes["PK_Author"], ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Indexes["PK_Author"]);
+            Assert.AreEqual(t1.Indexes, ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Indexes);
+            Assert.AreEqual(t1.Indexes["PK_Author"], ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Indexes["PK_Author"]);
         }
 
         [TestMethod]
@@ -298,11 +298,11 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             // Get a single table
-            var ic = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Indexes["PK_Author"].Columns["ID"];
+            var ic = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Indexes["PK_Author"].Columns["ID"];
             Assert.IsTrue(ic.Ordering == IndexColumnOrdering.Ascending);
 
             // Test cache
-            Assert.AreEqual(ic, ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Indexes["PK_Author"].Columns["ID"]);
+            Assert.AreEqual(ic, ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Indexes["PK_Author"].Columns["ID"]);
         }
 
         [TestMethod]
@@ -310,7 +310,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
             Assert.IsTrue(t.Statistics.RowCount == 0);
         }
 
@@ -463,7 +463,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithAllTypes"];
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithAllTypes"];
 
             Assert.IsTrue(t.Columns.Count == 31);
 
@@ -504,7 +504,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void ColumnTypesTest2()
         {
             var ds = CreateTestDataset();
-            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithAllTypes"];
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithAllTypes"];
             var codegen = CodeGeneratorFactory.CreateCodeGenerator(ds);
             var sql = codegen.GenerateSelectStarQuery(t, 100);
 
@@ -565,7 +565,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var v = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"];
+            var v = ds.Views[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"];
 
             Assert.AreEqual(1, ds.Views.Count);
 
@@ -590,7 +590,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             try
             {
-                var t = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentView"];
+                var t = ds.Views[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentView"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)
@@ -602,14 +602,14 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void GetViewUnderlyingPrimaryKeyTest()
         {
             var ds = CreateTestDataset();
-            var v = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"];
+            var v = ds.Views[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"];
             
             Assert.AreEqual(1, v.Indexes.Count);
             Assert.IsTrue(v.Indexes.FirstOrDefault().Value.IsUnique);
             Assert.IsTrue(v.Columns["ID"].IsKey);
             Assert.IsFalse(v.Columns["Data1"].IsKey);
 
-            v = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar2"];
+            v = ds.Views[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar2"];
 
             Assert.AreEqual(1, v.Indexes.Count);
             Assert.IsTrue(v.Indexes.FirstOrDefault().Value.IsUnique);
@@ -623,7 +623,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             // Get a single table
-            var t1 = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"];
+            var t1 = ds.Views[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"];
 
             Assert.IsTrue(t1.Indexes.Count == 1);
             Assert.IsTrue(t1.Indexes["PK_TableWithPrimaryKey"].IsPrimaryKey);
@@ -636,7 +636,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             // Get a single table
-            var ic = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"].Indexes["PK_TableWithPrimaryKey"].Columns["ID"];
+            var ic = ds.Views[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"].Indexes["PK_TableWithPrimaryKey"].Columns["ID"];
             Assert.IsTrue(ic.Ordering == IndexColumnOrdering.Ascending);
 
         }
@@ -649,7 +649,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var tvf = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "InlineTableValuedFunction"];
+            var tvf = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "InlineTableValuedFunction"];
 
             Assert.AreEqual(2, tvf.Parameters.Count);
             Assert.AreEqual(2, tvf.Columns.Count);
@@ -660,7 +660,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var tvf = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "MultiStatementTableValuedFunction"];
+            var tvf = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "MultiStatementTableValuedFunction"];
 
             Assert.AreEqual(2, tvf.Parameters.Count);
             Assert.AreEqual(2, tvf.Columns.Count);
@@ -670,7 +670,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void GetClrTableValuedFunctionTest()
         {
             var ds = CreateTestDataset();
-            var tvf = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ClrTableValuedFunction"];
+            var tvf = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "ClrTableValuedFunction"];
 
             Assert.AreEqual(1, tvf.Parameters.Count);
             Assert.AreEqual(1, tvf.Columns.Count);
@@ -692,7 +692,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             try
             {
-                var t = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentFunction"];
+                var t = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentFunction"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)
@@ -707,7 +707,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             try
             {
-                var t = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ScalarFunction"];
+                var t = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "ScalarFunction"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)
@@ -722,7 +722,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void GetScalarFunctionTest()
         {
             var ds = CreateTestDataset();
-            var f = ds.ScalarFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ScalarFunction"];
+            var f = ds.ScalarFunctions[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "ScalarFunction"];
 
             Assert.AreEqual(3, f.Parameters.Count);
         }
@@ -731,7 +731,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void GetClrScalarFunctionTest()
         {
             var ds = CreateTestDataset();
-            var f = ds.ScalarFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ClrFunction"];
+            var f = ds.ScalarFunctions[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "ClrFunction"];
 
             Assert.AreEqual(2, f.Parameters.Count);
         }
@@ -752,7 +752,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             try
             {
-                var t = ds.ScalarFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentFunction"];
+                var t = ds.ScalarFunctions[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentFunction"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)
@@ -767,7 +767,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             try
             {
-                var t = ds.ScalarFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "InlineTableValuedFunction"];
+                var t = ds.ScalarFunctions[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "InlineTableValuedFunction"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)
@@ -783,7 +783,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var sp = ds.StoredProcedures[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "StoredProcedure"];
+            var sp = ds.StoredProcedures[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "StoredProcedure"];
 
             Assert.IsTrue(sp.Parameters.Count == 2);
             Assert.IsTrue(sp.Parameters["@param1"].DataType.TypeName == "int");
@@ -794,7 +794,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var sp = ds.StoredProcedures[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ClrStoredProc"];
+            var sp = ds.StoredProcedures[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "ClrStoredProc"];
 
             Assert.IsTrue(sp.Parameters.Count == 1);
             Assert.IsTrue(sp.Parameters["@parameter"].DataType.TypeName == "int");
@@ -816,7 +816,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             try
             {
-                var t = ds.StoredProcedures[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentSp"];
+                var t = ds.StoredProcedures[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentSp"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)

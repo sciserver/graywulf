@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Jhu.Graywulf.Sql.Schema;
-using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 {
-    public abstract class SqlServerCodeGeneratorTestBase : Jhu.Graywulf.Schema.SqlServer.SqlServerTestBase
+    public abstract class SqlServerCodeGeneratorTestBase : Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerTestBase
     {
         protected SchemaManager CreateSchemaManager()
         {

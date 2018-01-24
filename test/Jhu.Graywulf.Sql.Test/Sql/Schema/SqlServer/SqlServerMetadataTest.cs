@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Sql.Schema;
-using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.Sql.Schema.SqlServer;
 
-namespace Jhu.Graywulf.Schema.SqlServer.Test
+namespace Jhu.Graywulf.Sql.Schema.SqlServer
 {
     [TestClass]
     public class SqlServerMetadataTest : SqlServerTestBase
@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = IOTestDataset;
 
-            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "CatalogA"];
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "CatalogA"];
 
             // TODO: check metadata
 

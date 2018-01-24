@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using Jhu.Graywulf.CommandLineParser;
 using Jhu.Graywulf.Sql.Schema;
-using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.Format;

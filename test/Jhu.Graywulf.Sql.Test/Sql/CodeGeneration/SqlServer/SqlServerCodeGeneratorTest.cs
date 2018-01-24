@@ -127,7 +127,7 @@ WHERE [b1].[ID] = 1 AND [b2].[ID] = 2", res);
         public void GenerateCreatePrimaryKeyScriptTest()
         {
             var ds = CreateTestDataset();
-            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithPrimaryKey"];
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithPrimaryKey"];
             var cg = new SqlServerCodeGenerator();
 
             var sql = cg.GenerateCreatePrimaryKeyScript(t);
@@ -146,7 +146,7 @@ ADD CONSTRAINT [PK_TableWithPrimaryKey] PRIMARY KEY CLUSTERED (
         public void GenerateDropPrimaryKeyScriptTest()
         {
             var ds = CreateTestDataset();
-            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithPrimaryKey"];
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithPrimaryKey"];
             var cg = new SqlServerCodeGenerator();
 
             var sql = cg.GenerateDropPrimaryKeyScript(t);

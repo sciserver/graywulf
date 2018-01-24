@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
             var par = new Dictionary<string, object>();
             par["DatabaseVersionName"] = databaseVersionName;
 
-            RunWorkflow(typeof(Jhu.Graywulf.Jobs.MirrorDatabase.MirrorDatabaseJob), par);
+            RunWorkflow(typeof(Jhu.Graywulf.Registry.Jobs.MirrorDatabase.MirrorDatabaseJob), par);
         }
 
         /*public override void Run()

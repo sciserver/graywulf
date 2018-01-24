@@ -6,7 +6,7 @@ using System.IO;
 using Jhu.Graywulf.CommandLineParser;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Sql.Schema;
-using Jhu.Graywulf.Jobs.Query;
+using Jhu.Graywulf.Sql.Jobs.Query;
 
 namespace Jhu.Graywulf.Jobs.CmdLineUtil
 {

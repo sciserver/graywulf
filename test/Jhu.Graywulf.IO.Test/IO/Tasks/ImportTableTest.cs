@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.IO.Tasks
             return it;
         }
 
-        protected Jhu.Graywulf.Schema.Table ExecuteImportTableTask(IImportTable it)
+        protected Jhu.Graywulf.Sql.Schema.Table ExecuteImportTableTask(IImportTable it)
         {
             var t = it.Destination.GetTable();
             DropTable(t);

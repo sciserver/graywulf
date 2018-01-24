@@ -79,6 +79,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Activities\IJob.cs" />
     <Compile Include="Activities\IJobActivity.cs" />
     <Compile Include="Activities\JobAsyncCodeActivity.cs" />
     <Compile Include="Activities\JobAsyncCodeActivityState.cs" />

@@ -6,8 +6,8 @@ using System.Xml;
 using System.Reflection;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
-using Jhu.Graywulf.Jobs.Query;
-using Jhu.Graywulf.Jobs.ExportTables;
+using Jhu.Graywulf.Sql.Jobs.Query;
+using Jhu.Graywulf.IO.Jobs.ExportTables;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {

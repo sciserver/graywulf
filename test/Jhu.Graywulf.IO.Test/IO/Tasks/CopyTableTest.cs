@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 q = new ServiceModel.ServiceProxy<ICopyTable>(new CopyTable(cancellationContext));
             }
 
-            var ds = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString)
+            var ds = new Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString)
             {
                 IsMutable = true
             };
@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 Dataset = ds,
                 DatabaseName = ds.DatabaseName,
-                SchemaName = Schema.SqlServer.Constants.DefaultSchemaName,
+                SchemaName = Sql.Schema.SqlServer.Constants.DefaultSchemaName,
                 TableNamePattern = tableName,
                 Options = TableInitializationOptions.Create
             };

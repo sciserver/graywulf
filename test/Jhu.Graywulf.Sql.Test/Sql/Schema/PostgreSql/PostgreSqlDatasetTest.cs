@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Npgsql;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.Schema.PostgreSql;
+using Jhu.Graywulf.Sql.Schema;
+using Jhu.Graywulf.Sql.Schema.PostgreSql;
 
-namespace Jhu.Graywulf.Schema.PostgreSql.Test
+namespace Jhu.Graywulf.Sql.Schema.PostgreSql
 {
 
     [TestClass]
@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql.Test
 
         private PostgreSqlDataset CreateTestDataset()
         {
-            var csb = new NpgsqlConnectionStringBuilder(Jhu.Graywulf.Schema.Test.AppSettings.PostgreSqlConnectionString);
+            var csb = new NpgsqlConnectionStringBuilder(Jhu.Graywulf.Sql.Schema.AppSettings.PostgreSqlConnectionString);
 
             var ds = new PostgreSqlDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, csb.ConnectionString)
             {

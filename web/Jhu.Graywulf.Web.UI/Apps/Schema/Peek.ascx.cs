@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.UI;
 using Jhu.Graywulf.Sql.Schema;
-using schema = Jhu.Graywulf.Schema;
+using schema = Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Sql.CodeGeneration;
 using Jhu.Graywulf.Parsing;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Configuration;
 
-namespace Jhu.Graywulf.Schema.Test
+namespace Jhu.Graywulf.Sql.Schema
 {
     public static class AppSettings
     {

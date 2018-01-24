@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Jhu.Graywulf.Schema
+namespace Jhu.Graywulf.Sql.Schema
 {
     [TestClass]
     public class QuantityTest: Jhu.Graywulf.Test.TestClassBase

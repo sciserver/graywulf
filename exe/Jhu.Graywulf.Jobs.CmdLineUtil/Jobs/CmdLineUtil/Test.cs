@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
 
             par["TestMethod"] = "AtomicDelay";
 
-            RunWorkflow(typeof(Jhu.Graywulf.Jobs.Test.TestJob), par);
+            RunWorkflow(typeof(Jhu.Graywulf.Scheduler.Jobs.Test.TestJob), par);
         }
 
 #if false

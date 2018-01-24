@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Sql.Schema;
-using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Scheduler;
@@ -175,7 +175,7 @@ WHERE DateFinished IS NULL";
                 var queue = GetQueueName(queueType);
                 var ef = new EntityFactory(context);
                 var qi = ef.LoadEntity<QueueInstance>(queue);
-                var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
+                var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Scheduler.Jobs.Test.TestJob).Name);
                 
                 JobInstance job = jd.CreateJobInstance(queue, ScheduleType.Queued, timeout);
 

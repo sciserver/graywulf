@@ -7,7 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Linq;
-using Jhu.Graywulf.Jobs.Query;
+using Jhu.Graywulf.Sql.Jobs.Query;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Registry;
@@ -17,10 +17,10 @@ namespace Jhu.Graywulf.Parser.Test
 {
     public partial class Main : Form
     {
-        private Jhu.Graywulf.Jobs.Query.QueryFactory queryFactory;
+        private Jhu.Graywulf.Sql.Jobs.Query.QueryFactory queryFactory;
         private Node rootNode;
 
-        public Jhu.Graywulf.Jobs.Query.QueryFactory QueryFactory
+        public Jhu.Graywulf.Sql.Jobs.Query.QueryFactory QueryFactory
         {
             get { return queryFactory; }
             set { queryFactory = value; }
@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Parser.Test
             try
             {
                 //queryFactory = new Jhu.SkyQuery.Jobs.Query.XMatchQueryFactory();
-                queryFactory = QueryFactory.Create(typeof(Jhu.Graywulf.Jobs.Query.SqlQueryFactory).AssemblyQualifiedName, null);
+                queryFactory = QueryFactory.Create(typeof(Jhu.Graywulf.Sql.Jobs.Query.SqlQueryFactory).AssemblyQualifiedName, null);
 
                 Jhu.Graywulf.Parsing.Parser parser = queryFactory.CreateParser();
 
@@ -68,15 +68,15 @@ namespace Jhu.Graywulf.Parser.Test
                     //Jhu.Graywulf.Schema.SqlServerSchemaManager sm = new Schema.SqlServerSchemaManager();
 
 
-                    Jhu.Graywulf.Schema.SchemaManager sm =
+                    Jhu.Graywulf.Sql.Schema.SchemaManager sm =
                         GraywulfSchemaManager.Create(new FederationContext(context, null));
 
                     // *** Add test datasets here
-                    sm.Datasets["MYDB"] = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset("MYDB", "Data Source=localhost;Integrated Security=true;Initial Catalog=GraywulfSchemaTest");
+                    sm.Datasets["MYDB"] = new Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerDataset("MYDB", "Data Source=localhost;Integrated Security=true;Initial Catalog=GraywulfSchemaTest");
                     //sm.Datasets.Add(new Jhu.Graywulf.Schema.MySqlDataset("MYSQL", "..."));
 
 
-                    var qf = QueryFactory.Create(typeof(Jhu.Graywulf.Jobs.Query.SqlQueryFactory).AssemblyQualifiedName, null);
+                    var qf = QueryFactory.Create(typeof(Jhu.Graywulf.Sql.Jobs.Query.SqlQueryFactory).AssemblyQualifiedName, null);
                     var nr = qf.CreateNameResolver();
                     nr.SchemaManager = sm;
 
