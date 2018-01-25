@@ -48,10 +48,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
 
         protected void Download_Click(object sender, EventArgs e)
         {
+            throw new NotImplementedException();
+
+            /*
             if (!String.IsNullOrWhiteSpace(fileFormat.SelectedValue))
             {
                 var query = (SqlQuery)jobInstance.Parameters["Query"].Value;
-                var table = query.Output;
+
+                // TODO:
+                // var table = query.Output;
                 var compression = DataFileCompression.None;
                 var file = FederationContext.FileFormatFactory.CreateFileFromMimeType(fileFormat.SelectedValue);
                 var uri = StreamFactory.CombineFileExtensions("", table.ObjectName, file.Description.Extension, DataFileArchival.None, compression);
@@ -69,7 +74,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
 
                 var guid = PushSessionItem(task);
                 Response.Redirect(Apps.MyDB.Download.GetUrl(guid), false);
-            }
+            }*/
         }
 
         protected void RefreshFormatList()
@@ -87,6 +92,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
 
         protected void RenderResults()
         {
+            throw new NotImplementedException();
+
+            /*
             var q = (SqlQuery)jobInstance.Parameters["Query"].Value;
             var codegen = new SqlServerCodeGenerator();
             string sql = codegen.GenerateSelectStarQuery(q.Output, 100);
@@ -104,6 +112,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
                     }
                 }
             }
+            */
         }
 
         private void RenderTable(IDataReader dr)

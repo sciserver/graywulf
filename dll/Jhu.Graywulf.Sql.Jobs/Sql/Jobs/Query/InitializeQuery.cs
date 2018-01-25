@@ -14,15 +14,20 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         public OutArgument<Guid> EntityGuid { get; set; }
 
         [RequiredArgument]
-        public InArgument<SqlQuery> Query { get; set; }
+        public InArgument<SqlQueryParameters> Parameters { get; set; }
+
+        [RequiredArgument]
+        public OutArgument<SqlQuery> Query { get; set; }
 
         protected override void OnExecute(CodeActivityContext activityContext)
         {
-            SqlQuery query = Query.Get(activityContext);
+            SqlQueryParameters parameters = Parameters.Get(activityContext);
+            SqlQuery query = new SqlQuery();
+            query.Parameters = parameters;
 
             // Single server mode will run on one partition by definition,
             // Graywulf mode has to look at the registry for available machines
-            switch (query.ExecutionMode)
+            switch (query.Parameters.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
                     query.InitializeQueryObject(null, null);
@@ -40,6 +45,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 default:
                     throw new NotImplementedException();
             }
+
+            Query.Set(activityContext, query);
         }
     }
 }

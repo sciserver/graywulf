@@ -47,8 +47,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var sc = new SerializableChecker();
             Assert.IsTrue(sc.Execute(t));
         }
-
-#region Simple SQL query tests
+        
+        #region Simple SQL query tests
 
         [TestMethod]
         [TestCategory("Query")]
@@ -402,10 +402,10 @@ CROSS JOIN MyCatalog b
             sql = sql.Replace("[$into]", testname);
 
             var q = CreateQuery(sql);
-            q.Destination.Options = Schema.TableInitializationOptions.Drop;
+            q.Parameters.Destination.Options = Schema.TableInitializationOptions.Drop;
 
             // Should throw an exception because table isn't there
-            q.Destination.CheckTableExistence();
+            q.Parameters.Destination.CheckTableExistence();
         }
 
         [TestMethod]
@@ -421,10 +421,10 @@ CROSS JOIN MyCatalog b
             sql = sql.Replace("[$into]", testname);
 
             var q = CreateQuery(sql);
-            q.Destination.Options = Schema.TableInitializationOptions.Create;
+            q.Parameters.Destination.Options = Schema.TableInitializationOptions.Create;
 
             // Create destination table manually
-            var table = q.Destination.GetTable();
+            var table = q.Parameters.Destination.GetTable();
             table.Initialize(
                 new Schema.Column[] {
                     new Schema.Column("ID", Schema.DataTypes.Int32)
@@ -432,7 +432,7 @@ CROSS JOIN MyCatalog b
                 Schema.TableInitializationOptions.Create);
 
             // Now check if it's there which should throw an exception
-            q.Destination.CheckTableExistence();
+            q.Parameters.Destination.CheckTableExistence();
         }
 
 #endregion

@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             var queryObject = QueryObject.Get(activityContext);
 
-            switch (queryObject.ExecutionMode)
+            switch (queryObject.Parameters.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
                     queryObject.InitializeQueryObject(null, null, null, true);

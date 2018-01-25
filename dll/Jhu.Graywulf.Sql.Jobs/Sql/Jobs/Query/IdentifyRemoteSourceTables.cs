@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             using (RegistryContext registryContext = querypartition.Query.CreateContext())
             {
                 querypartition.InitializeQueryObject(registryContext);
-                querypartition.FindRemoteTableReferences();
+                querypartition.IdentifyRemoteTables();
             }
         }
     }

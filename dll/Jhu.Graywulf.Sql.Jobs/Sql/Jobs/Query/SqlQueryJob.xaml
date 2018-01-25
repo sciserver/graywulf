@@ -13,7 +13,7 @@
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
     <x:Property Name="JobInfo" Type="InArgument(jga:JobInfo)" />
-    <x:Property Name="Query" Type="InOutArgument(local:SqlQuery)" />
+    <x:Property Name="Parameters" Type="InOutArgument(local:SqlQueryParameters)" />
   </x:Members>
   <mva:VisualBasic.Settings>
     <x:Null />
@@ -66,8 +66,11 @@
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
   <CancellationScope sap2010:WorkflowViewState.IdRef="CancellationScope_1">
+    <CancellationScope.Variables>
+      <Variable x:TypeArguments="local:SqlQuery" Name="Query" />
+    </CancellationScope.Variables>
     <Sequence sap2010:WorkflowViewState.IdRef="Sequence_2">
-      <local:InitializeQuery EntityGuid="{x:Null}" sap2010:WorkflowViewState.IdRef="InitializeQuery_1" JobInfo="[JobInfo]" Query="[Query]" />
+      <local:InitializeQuery EntityGuid="{x:Null}" sap2010:WorkflowViewState.IdRef="InitializeQuery_1" JobInfo="[JobInfo]" Parameters="[Parameters]" Query="[Query]" />
       <local:AssignServerInstance EntityGuid="{x:Null}" DisplayName="AssignServerInstance" sap2010:WorkflowViewState.IdRef="AssignServerInstance_1" JobInfo="[JobInfo]" QueryObject="[Query]" />
       <ParallelForEach x:TypeArguments="jgsp:ITableSource" DisplayName="ParallelForEach&lt;ITableSource&gt;" sap2010:WorkflowViewState.IdRef="ParallelForEach`1_1" Values="[Query.TableStatistics.Keys]">
         <ActivityAction x:TypeArguments="jgsp:ITableSource">
@@ -89,7 +92,7 @@
             <Sequence sap2010:WorkflowViewState.IdRef="Sequence_1">
               <local:AssignServerInstance EntityGuid="{x:Null}" sap2010:WorkflowViewState.IdRef="AssignServerInstance_2" JobInfo="[JobInfo]" QueryObject="[queryPartition]" />
               <local:IdentifyRemoteSourceTables sap2010:WorkflowViewState.IdRef="IdentifyRemoteSourceTables_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" />
-              <ParallelForEach x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="ParallelForEach`1_2" Values="[queryPartition.RemoteTables.Keys]">
+              <ParallelForEach x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="ParallelForEach`1_2" Values="[queryPartition.RemoteSourceTables.Keys]">
                 <ActivityAction x:TypeArguments="x:String">
                   <ActivityAction.Argument>
                     <DelegateInArgument x:TypeArguments="x:String" Name="tableKey" />
@@ -124,7 +127,7 @@
         </ActivityAction>
       </ParallelForEach>
     </CancellationScope.CancellationHandler>
-    <sads:DebugSymbol.Symbol>d2pDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjRcbW9kdWxlc1xncmF5d3VsZlxkbGxcSmh1LkdyYXl3dWxmLkpvYnNcSm9ic1xRdWVyeVxTcWxRdWVyeUpvYi54YW1sPkQDgAEXAgEBRQV0EAIBCnYHfRkCAQJGB0aOAQIBWEcHR8EBAgFTSAdRGQIBRlIHUpQBAgFBUwdqGQIBGGsHa5oBAgETbAdzGQIBC3a2AXbKAQIBCXsLe9UBAgEDRnBGewIBW0aCAUaLAQIBWUedAUeoAQIBVke1AUe+AQIBVEirAUjJAQIBUk0LTxcCAUdSdlKBAQIBRFKIAVKRAQIBQlO2AVPKAQIBQFgLaBcCARlrfGuHAQIBFmuOAWuXAQIBFGy2AWzKAQIBEnELcc4BAgEMe6oBe7wBAgEHe8wBe9IBAgEGe48Be5oBAgEETXJNdQIBSk1bTWYCAUhODU6oAQIBS1hyWHUCARxYW1hmAgEaWQ1nGAIBHXGjAXG1AQIBEHHFAXHLAQIBD3GIAXGTAQIBDU5uTnkCAVBOlgFOpQECAU5OgAFOiQECAUxaD1qvAQIBO1sPW6gBAgE2XA9jIQIBLWQPZIwBAgEoZQ9logECASNmD2aOAQIBHlqCAVqNAQIBPlqaAVqsAQIBPFuTAVulAQIBOVt4W4MBAgE3XHhcnAECATVhE2GvAQIBLmR3ZIkBAgErZFxkZwIBKWWNAWWfAQIBJmVyZX0CASRmeWaLAQIBIWZeZmkCAR9hgQFhkwECATNhoAFhrAECATFhZmFxAgEv</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d3JDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjRcbW9kdWxlc1xncmF5d3VsZlxkbGxcSmh1LkdyYXl3dWxmLlNxbC5Kb2JzXFNxbFxKb2JzXFF1ZXJ5XFNxbFF1ZXJ5Sm9iLnhhbWw+RAODARcCAQFIBXcQAgEKeQeAARkCAQJJB0mOAQIBWEoHSsEBAgFTSwdUGQIBRlUHVZQBAgFBVgdtGQIBGG4HbpoBAgETbwd2GQIBC3m2AXnKAQIBCX4LftUBAgEDSXBJewIBW0mCAUmLAQIBWUqdAUqoAQIBVkq1AUq+AQIBVEurAUvJAQIBUlALUhcCAUdVdlWBAQIBRFWIAVWRAQIBQla2AVbKAQIBQFsLaxcCARlufG6HAQIBFm6OAW6XAQIBFG+2AW/KAQIBEnQLdM4BAgEMfqoBfrwBAgEHfswBftIBAgEGfo8BfpoBAgEEUHJQdQIBSlBbUGYCAUhRDVGoAQIBS1tyW3UCARxbW1tmAgEaXA1qGAIBHXSjAXS1AQIBEHTFAXTLAQIBD3SIAXSTAQIBDVFuUXkCAVBRlgFRpQECAU5RgAFRiQECAUxdD12vAQIBO14PXqgBAgE2Xw9mIQIBLWcPZ4wBAgEoaA9oogECASNpD2mOAQIBHl2CAV2NAQIBPl2aAV2sAQIBPF6TAV6lAQIBOV54XoMBAgE3X3hfogECATVkE2SvAQIBLmd3Z4kBAgErZ1xnZwIBKWiNAWifAQIBJmhyaH0CASRpeWmLAQIBIWleaWkCAR9kgQFkkwECATNkoAFkrAECATFkZmRxAgEv</sads:DebugSymbol.Symbol>
   </CancellationScope>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>

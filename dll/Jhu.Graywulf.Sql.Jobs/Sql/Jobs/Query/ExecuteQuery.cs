@@ -31,11 +31,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 querypartition.InitializeQueryObject(cancellationContext, context, activityContext.GetExtension<IScheduler>(), true);
 
                 // Destination table
-                switch (querypartition.Query.ExecutionMode)
+                switch (querypartition.Parameters.ExecutionMode)
                 {
                     case ExecutionMode.SingleServer:
                         // In single-server mode results are directly written into destination table
-                        destination = querypartition.Query.Destination.GetTable();
+                        destination = querypartition.Parameters.Destination.GetTable();
                         break;
                     case ExecutionMode.Graywulf:
                         // In graywulf mode results are written into a temporary table first

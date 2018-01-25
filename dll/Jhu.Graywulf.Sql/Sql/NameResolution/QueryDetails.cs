@@ -5,11 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    [Serializable]
-    [DataContract(Namespace = "")]
     public class QueryDetails
     {
         #region Private member variables
@@ -23,13 +22,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// <summary>
         /// Name of the table used for partitioning
         /// </summary>
-        [NonSerialized]
         private TableReference partitioningTable;
 
         /// <summary>
         /// Name of the column to partition on
         /// </summary>
-        [NonSerialized]
         private ColumnReference partitioningKey;
 
         // TODO: key these with object instead of unique name?

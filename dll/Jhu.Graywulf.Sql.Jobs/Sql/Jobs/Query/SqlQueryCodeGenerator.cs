@@ -83,9 +83,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             RewriteForExecute(selectStatement);
             RemoveNonStandardTokens(selectStatement);
 
-            if (queryObject.ExecutionMode == ExecutionMode.Graywulf)
+            if (queryObject.Parameters.ExecutionMode == ExecutionMode.Graywulf)
             {
-                SubstituteServerSpecificDatabaseNames(selectStatement, queryObject.AssignedServerInstance, Partition.Query.SourceDatabaseVersionName);
+                SubstituteServerSpecificDatabaseNames(selectStatement, queryObject.AssignedServerInstance, Partition.Parameters.SourceDatabaseVersionName);
                 SubstituteRemoteTableNames(selectStatement);
             }
 
@@ -241,7 +241,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             if (queryObject != null && queryObject.AssignedServerInstance != null && queryObject.CodeDataset != null)
             {
-                SubstituteServerSpecificDatabaseNames(ss, queryObject.AssignedServerInstance, queryObject.SourceDatabaseVersionName);
+                SubstituteServerSpecificDatabaseNames(ss, queryObject.AssignedServerInstance, queryObject.Parameters.SourceDatabaseVersionName);
             }
         }
 
@@ -258,7 +258,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <remarks>This function call must be synchronized!</remarks>
         private void SubstituteServerSpecificDatabaseNames(SelectStatement ss, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
         {
-            switch (queryObject.ExecutionMode)
+            switch (queryObject.Parameters.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
                     throw new InvalidOperationException();
@@ -363,7 +363,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             if (queryObject != null)
             {
-                switch (queryObject.ExecutionMode)
+                switch (queryObject.Parameters.ExecutionMode)
                 {
                     case ExecutionMode.SingleServer:
                         // Nothing to do here

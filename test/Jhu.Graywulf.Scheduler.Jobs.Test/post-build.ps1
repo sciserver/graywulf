@@ -1,4 +1,2 @@
-﻿$source = "$SolutionDir\plugins\$ConfigurationName\*"
-$target = "$ProjectDir$OutDir"
-
-cp $source $target
+﻿cp $ProjectDir$OutDir$TargetName.dll $SolutionDir$OutDir
+cp $ProjectDir$OutDir$TargetName.pdb $SolutionDir$OutDir

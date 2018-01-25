@@ -238,7 +238,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         protected string GetStatisticsQuery(string sql)
         {
             var q = CreateQuery(sql);
-            q.ExecutionMode = ExecutionMode.SingleServer;
+            q.Parameters.ExecutionMode = ExecutionMode.SingleServer;
 
             var cg = new SqlQueryCodeGenerator(q);
             var ts = q.QueryDetails.ParsingTree.FindDescendantRecursive<SelectStatement>().QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();

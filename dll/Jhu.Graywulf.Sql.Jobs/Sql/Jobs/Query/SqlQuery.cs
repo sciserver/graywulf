@@ -26,13 +26,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         #region Property storage member variables
 
         /// <summary>
-        /// Destination tables including target table naming patterns.
-        /// Output table names are either automatically generated or
-        /// taken from the INTO clauses.
-        /// </summary>
-        private DestinationTable destination;
-
-        /// <summary>
         /// Holds the individual partitions. Usually many, but for simple queries
         /// only one.
         /// </summary>
@@ -40,16 +33,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         #endregion
         #region Properties
-
-        /// <summary>
-        /// Gets or sets the destination table naming pattern of the query
-        /// </summary>
-        [DataMember]
-        public DestinationTable Destination
-        {
-            get { return destination; }
-            set { destination = value; }
-        }
         
         [IgnoreDataMember]
         public List<SqlQueryPartition> Partitions
@@ -86,13 +69,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.destination = null;
             this.partitions = new List<SqlQueryPartition>();
         }
 
         private void CopyMembers(SqlQuery old)
         {
-            this.destination = old.destination;
             this.partitions = new List<SqlQueryPartition>(old.partitions.Select(p => (SqlQueryPartition)p.Clone()));
         }
 
@@ -123,7 +104,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             validator.Execute(QueryDetails.ParsingTree);
 
             // TODO: add additional validation here
-            Destination.CheckTableExistence();
+            Parameters.Destination.CheckTableExistence();
         }
 
 
@@ -163,7 +144,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         public Jhu.Graywulf.Sql.Schema.DatasetBase GetStatisticsDataset(ITableSource tableSource)
         {
-            if (!String.IsNullOrEmpty(StatDatabaseVersionName))
+            if (!String.IsNullOrEmpty(Parameters.StatDatabaseVersionName))
             {
                 var nts = (ITableSource)tableSource.Clone();
                 var sm = GetSchemaManager();
@@ -172,7 +153,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 if (ds is GraywulfDataset)
                 {
                     var dd = ((GraywulfDataset)ds).DatabaseDefinitionReference.Value;
-                    var sis = GetAvailableDatabaseInstances(AssignedServerInstance, dd, StatDatabaseVersionName, SourceDatabaseVersionName);
+                    var sis = GetAvailableDatabaseInstances(AssignedServerInstance, dd, Parameters.StatDatabaseVersionName, Parameters.SourceDatabaseVersionName);
 
                     if (sis.Length > 0)
                     {
@@ -229,7 +210,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             int partitionCount = 1;
 
-            switch (ExecutionMode)
+            switch (Parameters.ExecutionMode)
             {
                 case Query.ExecutionMode.SingleServer:
                     break;
@@ -250,12 +231,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                         {
                             // *** TODO: find optimal number of partitions
                             // TODO: replace "4" with a value from settings
-                            var sis = GetAvailableServerInstances(mirroredDatasets, SourceDatabaseVersionName, null, specificDatasets);
+                            var sis = GetAvailableServerInstances(mirroredDatasets, Parameters.SourceDatabaseVersionName, null, specificDatasets);
                             partitionCount = 4 * sis.Length;
 
-                            if (MaxPartitions > 0)
+                            if (Parameters.MaxPartitions > 0)
                             {
-                                partitionCount = Math.Max(partitionCount, MaxPartitions);
+                                partitionCount = Math.Max(partitionCount, Parameters.MaxPartitions);
                             }
                         }
                     }
@@ -274,7 +255,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             int partitionCount = DeterminePartitionCount();
 
-            switch (ExecutionMode)
+            switch (Parameters.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
                     {
@@ -289,9 +270,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     else
                     {
                         // See if maxmimum number of partitions is limited
-                        if (MaxPartitions != 0)
+                        if (Parameters.MaxPartitions != 0)
                         {
-                            partitionCount = Math.Min(partitionCount, MaxPartitions);
+                            partitionCount = Math.Min(partitionCount, Parameters.MaxPartitions);
                         }
 
                         // Determine partition limits based on the first table's statistics
@@ -372,7 +353,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             string tempname;
 
-            switch (ExecutionMode)
+            switch (Parameters.ExecutionMode)
             {
                 case Jobs.Query.ExecutionMode.SingleServer:
                     tempname = String.Format("temp_{0}", tableName);

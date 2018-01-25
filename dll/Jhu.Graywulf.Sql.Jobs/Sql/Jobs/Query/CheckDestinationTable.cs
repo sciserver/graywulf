@@ -21,7 +21,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             using (RegistryContext registryContext = query.CreateContext())
             {
                 query.InitializeQueryObject(registryContext);
-                query.Destination.CheckTableExistence();
+
+                // TODO
+                query.Parameters.Destination.CheckTableExistence();
             }
         }
     }

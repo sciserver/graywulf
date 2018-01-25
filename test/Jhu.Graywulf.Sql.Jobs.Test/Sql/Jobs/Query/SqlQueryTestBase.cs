@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var q = qf.CreateQuery(query);
             qf.AppendUserDatabase(q, mydb, mysi);
 
-            q.Destination = new Jhu.Graywulf.IO.Tasks.DestinationTable()
+            q.Parameters.Destination = new Jhu.Graywulf.IO.Tasks.DestinationTable()
             {
                 Dataset = mydb,
                 DatabaseName = mydb.DatabaseName,
@@ -78,8 +78,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 var qf = CreateQueryFactory(context);
                 var q = CreateQuery(qf, query);
 
-                q.MaxPartitions = maxPartitions;
-                q.DumpSql = dumpsql;
+                q.Parameters.MaxPartitions = maxPartitions;
+                q.Parameters.DumpSql = dumpsql;
 
                 var ji = qf.ScheduleAsJob(null, q, queue, TimeSpan.Zero, "testjob");
 

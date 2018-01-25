@@ -75,12 +75,15 @@
     <Compile Include="Sql\Jobs\Query\PrepareDestinationTable.cs" />
     <Compile Include="Sql\Jobs\Query\QueryFactory.cs" />
     <Compile Include="Sql\Jobs\Query\QueryObject.cs" />
+    <Compile Include="Sql\Jobs\Query\RemoteOutputTable.cs" />
+    <Compile Include="Sql\Jobs\Query\RemoteSourceTable.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQuery.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryCodeGenerator.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryFactory.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryJob.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryJobInstaller.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryJobSettings.cs" />
+    <Compile Include="Sql\Jobs\Query\SqlQueryParameters.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryPartition.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryScripts.Designer.cs">
       <AutoGen>True</AutoGen>

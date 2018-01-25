@@ -91,7 +91,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var root = parser.Execute(queryString);
 
             SqlQuery q = CreateQueryBase((Node)root);
-            q.QueryFactoryTypeName = Util.TypeNameFormatter.ToUnversionedAssemblyQualifiedName(this.GetType());
+            q.Parameters.QueryFactoryTypeName = Util.TypeNameFormatter.ToUnversionedAssemblyQualifiedName(this.GetType());
             InitializeQuery(q, queryString);
 
             return q;
@@ -112,9 +112,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             // TODO: modify this to change default output database
 
             userDatabase.IsMutable = true;
-            query.CustomDatasets.Add(userDatabase);
-            query.DefaultSourceDataset = userDatabase;
-            query.DefaultOutputDataset = userDatabase;
+            query.Parameters.CustomDatasets.Add(userDatabase);
+            query.Parameters.DefaultSourceDataset = userDatabase;
+            query.Parameters.DefaultOutputDataset = userDatabase;
         }
 
         #region Job scheduling functions

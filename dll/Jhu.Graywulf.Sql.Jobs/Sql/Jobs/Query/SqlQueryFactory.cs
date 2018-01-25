@@ -110,14 +110,14 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             var settings = new SqlQueryJobSettings(jd.Settings);
 
-            query.ExecutionMode = ExecutionMode.Graywulf;
-            query.FederationReference.Name = Registry.ContextManager.Configuration.FederationName;
-            query.QueryString = queryString;
+            query.Parameters.ExecutionMode = ExecutionMode.Graywulf;
+            query.Parameters.FederationName = Registry.ContextManager.Configuration.FederationName;
+            query.Parameters.QueryString = queryString;
 
-            query.SourceDatabaseVersionName = settings.HotDatabaseVersionName;
-            query.StatDatabaseVersionName = settings.StatDatabaseVersionName;
+            query.Parameters.SourceDatabaseVersionName = settings.HotDatabaseVersionName;
+            query.Parameters.StatDatabaseVersionName = settings.StatDatabaseVersionName;
 
-            query.QueryTimeout = settings.QueryTimeout;
+            query.Parameters.QueryTimeout = settings.QueryTimeout;
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 timeout,
                 comments);
 
-            job.Parameters[Registry.Constants.JobParameterQuery].Value = query;
+            job.Parameters[Registry.Constants.JobParameterParameters].Value = query.Parameters;
 
             return job;
         }

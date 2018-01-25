@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var queryPartition = query.Partitions[0];
             Table destinationTable;
 
-            switch (query.ExecutionMode)
+            switch (query.Parameters.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
                     throw new NotImplementedException();

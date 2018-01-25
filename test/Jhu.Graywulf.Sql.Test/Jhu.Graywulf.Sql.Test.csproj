@@ -90,7 +90,6 @@
     <Compile Include="Data\SmartCommandTest.cs" />
     <Compile Include="Data\SmartDataReaderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sql\CodeGeneration\MySql\MySqlCodeGeneratorTest.cs" />
     <Compile Include="Sql\CodeGeneration\SqlServer\RemoteQueryGeneratorTest.cs" />
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerCodeGeneratorTest.cs" />
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerCodeGeneratorTestBase.cs" />
@@ -149,10 +148,6 @@
     <Compile Include="Sql\Parsing\UpdateStatementTest.cs" />
     <Compile Include="Sql\Parsing\WhileStatementTest.cs" />
     <Compile Include="Sql\Schema\AppSettings.cs" />
-    <Compile Include="Sql\Schema\MySql\MySqlDatasetTest.cs" />
-    <Compile Include="Sql\Schema\MySql\MySqlMetadataTest.cs" />
-    <Compile Include="Sql\Schema\PostgreSql\PostgreSqlDatasetTest.cs" />
-    <Compile Include="Sql\Schema\PostgreSql\PostgreSqlMetadataTest.cs" />
     <Compile Include="Sql\Schema\QuantityIndexTest.cs" />
     <Compile Include="Sql\Schema\QuantityTest.cs" />
     <Compile Include="Sql\Schema\SerializationTest.cs" />
@@ -191,7 +186,11 @@
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Sql\CodeGeneration\MySql\" />
+    <Folder Include="Sql\Schema\MySql\" />
+    <Folder Include="Sql\Schema\PostgreSql\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\build\Jhu.Graywulf.Build.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

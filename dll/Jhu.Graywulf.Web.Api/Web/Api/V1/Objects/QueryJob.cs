@@ -152,14 +152,14 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             // TODO: Target table settings will need to be modified
             // once multi-select queries are implemented
-            q.BatchName = null;
-            q.QueryName = this.Name;
+            q.Parameters.BatchName = null;
+            q.Parameters.QueryName = this.Name;
 
             // Set up default destination which might be overriden
             // by an INTO clause
             var userdb = (SqlServerDataset)context.SchemaManager.Datasets[Registry.Constants.UserDbName];
 
-            q.Destination = new IO.Tasks.DestinationTable()
+            q.Parameters.Destination = new IO.Tasks.DestinationTable()
             {
                 Dataset = userdb,
                 DatabaseName = userdb.DatabaseName,
@@ -170,12 +170,12 @@ namespace Jhu.Graywulf.Web.Api.V1
             {
                 default:
                 case JobQueue.Quick:
-                    q.Destination.Options = TableInitializationOptions.Drop | TableInitializationOptions.Create;
-                    q.Destination.TableNamePattern = Jhu.Graywulf.Sql.Jobs.Constants.DefaultQuickResultsTableNamePattern;
+                    q.Parameters.Destination.Options = TableInitializationOptions.Drop | TableInitializationOptions.Create;
+                    q.Parameters.Destination.TableNamePattern = Jhu.Graywulf.Sql.Jobs.Constants.DefaultQuickResultsTableNamePattern;
                     break;
                 case JobQueue.Long:
-                    q.Destination.Options = TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName;
-                    q.Destination.TableNamePattern = Jhu.Graywulf.Sql.Jobs.Constants.DefaultLongResultsTableNamePattern;
+                    q.Parameters.Destination.Options = TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName;
+                    q.Parameters.Destination.TableNamePattern = Jhu.Graywulf.Sql.Jobs.Constants.DefaultLongResultsTableNamePattern;
                     break;
             }
 

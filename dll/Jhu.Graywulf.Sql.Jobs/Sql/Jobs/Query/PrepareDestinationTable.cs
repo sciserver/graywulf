@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             SqlQueryPartition queryPartition = QueryPartition.Get(activityContext);
             SqlQuery query = queryPartition.Query;
 
-            switch (query.ExecutionMode)
+            switch (query.Parameters.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
                     // Output is already written to the target table

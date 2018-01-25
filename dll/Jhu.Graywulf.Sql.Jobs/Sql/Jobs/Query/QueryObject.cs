@@ -47,9 +47,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         internal object syncRoot;
 
         /// <summary>
-        /// Type name of the query factory class
+        /// Query parameters that are input and output of the job
         /// </summary>
-        private string queryFactoryTypeName;
+        private SqlQueryParameters parameters;
 
         /// <summary>
         /// Holds a reference to the query factory class
@@ -58,47 +58,10 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         private Lazy<QueryFactory> queryFactory;
 
         /// <summary>
-        /// The original query to be executed
-        /// </summary>
-        private string queryString;
-
-        /// <summary>
         /// Query details after parsing and name resolution
         /// </summary>
+        [NonSerialized]
         private QueryDetails queryDetails;
-
-        /// <summary>
-        /// Batch name for automatic output table naming
-        /// </summary>
-        private string batchName;
-
-        /// <summary>
-        /// Query name for automatic output table naming
-        /// </summary>
-        private string queryName;
-
-        /// <summary>
-        /// Database version to be used to execute the queries (PROD)
-        /// </summary>
-        private string sourceDatabaseVersionName;
-
-        /// <summary>
-        /// Database version to be used to calculate statistics (STAT)
-        /// </summary>
-        private string statDatabaseVersionName;
-
-        /// <summary>
-        /// Individual query time-out, overall job timeout is enforced by
-        /// the scheduler in a different way.
-        /// </summary>
-        private int queryTimeout;
-
-        private int maxPartitions;
-
-        /// <summary>
-        /// Determines if queries are dumped into files during execution
-        /// </summary>
-        private bool dumpSql;
 
         /// <summary>
         /// Cache for registry context
@@ -111,39 +74,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// </summary>
         [NonSerialized]
         private IScheduler scheduler;
-
-        /// <summary>
-        /// The dataset to be assumed when no DATASET: part in
-        /// table names appear.
-        /// </summary>
-        private SqlServerDataset defaultSourceDataset;
-
-        /// <summary>
-        /// The dataset to be assumes when no DATASET: part in
-        /// SELECT INTO and CREATE TABLE statements appear
-        /// </summary>
-        private SqlServerDataset defaultOutputDataset;
-
-        /// <summary>
-        /// Dataset to store temporary tables during query execution.
-        /// </summary>
-        private SqlServerDataset temporaryDataset;
-
-        /// <summary>
-        /// Dataset to be used to find functions by default.
-        /// </summary>
-        private SqlServerDataset codeDataset;
-
-        /// <summary>
-        /// A list of custom datasets, i.e. those that are not
-        /// configured centrally, for example MyDB
-        /// </summary>
-        private List<DatasetBase> customDatasets;
-
-        /// <summary>
-        /// Query execution mode, either single server or Graywulf cluster
-        /// </summary>
-        private ExecutionMode executionMode;
 
         /// <summary>
         /// Holds table statistics gathered for all the tables in the query
@@ -168,6 +98,16 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         private EntityReference<Federation> federationReference;
 
         /// <summary>
+        /// Dataset to store temporary tables during query execution.
+        /// </summary>
+        private SqlServerDataset temporaryDataset;
+
+        /// <summary>
+        /// Dataset to be used to find functions by default.
+        /// </summary>
+        private SqlServerDataset codeDataset;
+
+        /// <summary>
         /// Hold a reference to the server instance that was assigned
         /// by the scheduler to a given partition of the query.
         /// </summary>
@@ -186,14 +126,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         #endregion
         #region Properties
 
-        /// <summary>
-        /// Gets or sets the type name string of the query factory class
-        /// </summary>
         [DataMember]
-        public string QueryFactoryTypeName
+        public SqlQueryParameters Parameters
         {
-            get { return queryFactoryTypeName; }
-            set { queryFactoryTypeName = value; }
+            get { return parameters; }
+            set { parameters = value; }
         }
 
         /// <summary>
@@ -206,85 +143,14 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         }
 
         /// <summary>
-        /// Gets or sets the query string of the query job.
-        /// </summary>
-        [DataMember]
-        public string QueryString
-        {
-            get { return queryString; }
-            set { queryString = value; }
-        }
-
-        /// <summary>
         /// Gets or sets the query details, including the query parsing tree and
         /// name resolution results.
         /// </summary>
-        [DataMember]
+        [IgnoreDataMember]
         public QueryDetails QueryDetails
         {
             get { return queryDetails; }
             protected set { queryDetails = value; }
-        }
-
-        [DataMember]
-        public string BatchName
-        {
-            get { return batchName; }
-            set { batchName = value; }
-        }
-
-        [DataMember]
-        public string QueryName
-        {
-            get { return queryName; }
-            set { queryName = value; }
-        }
-
-        [DataMember]
-        public string SourceDatabaseVersionName
-        {
-            get { return sourceDatabaseVersionName; }
-            set { sourceDatabaseVersionName = value; }
-        }
-
-        [DataMember]
-        public string StatDatabaseVersionName
-        {
-            get { return statDatabaseVersionName; }
-            set { statDatabaseVersionName = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the timeout of individual queries
-        /// </summary>
-        /// <remarks>
-        /// The overall timeout period is enforced by the scheduler.
-        /// </remarks>
-        [DataMember]
-        public int QueryTimeout
-        {
-            get { return queryTimeout; }
-            set { queryTimeout = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the maximum number of partitions
-        /// </summary>
-        [DataMember]
-        public int MaxPartitions
-        {
-            get { return maxPartitions; }
-            set { maxPartitions = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets whether SQL scripts are dumped to files during query execution.
-        /// </summary>
-        [DataMember]
-        public bool DumpSql
-        {
-            get { return dumpSql; }
-            set { dumpSql = value; }
         }
 
         /// <summary>
@@ -308,27 +174,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         }
 
         /// <summary>
-        /// Gets or sets the default dataset, i.e. the one that's assumed
-        /// when no dataset part is specified in table names.
-        /// </summary>
-        [DataMember]
-        public SqlServerDataset DefaultSourceDataset
-        {
-            get { return defaultSourceDataset; }
-            set { defaultSourceDataset = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the default dataset for table output
-        /// </summary>
-        [DataMember]
-        public SqlServerDataset DefaultOutputDataset
-        {
-            get { return defaultOutputDataset; }
-            set { defaultOutputDataset = value; }
-        }
-
-        /// <summary>
         /// Gets or sets the temporary dataset to be used to store temporary.
         /// tables.
         /// </summary>
@@ -339,11 +184,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             {
                 SqlServerDataset tempds;
 
-                if (executionMode == Query.ExecutionMode.SingleServer || temporaryDatabaseInstanceReference.IsEmpty)
+                if (parameters.ExecutionMode == Query.ExecutionMode.SingleServer || temporaryDatabaseInstanceReference.IsEmpty)
                 {
                     tempds = temporaryDataset;
                 }
-                else if (executionMode == ExecutionMode.Graywulf)
+                else if (parameters.ExecutionMode == ExecutionMode.Graywulf)
                 {
                     tempds = temporaryDatabaseInstanceReference.Value.GetDataset();
                 }
@@ -369,11 +214,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             {
                 SqlServerDataset codeds;
 
-                if (executionMode == Query.ExecutionMode.SingleServer || codeDatabaseInstanceReference.IsEmpty)
+                if (parameters.ExecutionMode == Query.ExecutionMode.SingleServer || codeDatabaseInstanceReference.IsEmpty)
                 {
                     codeds = codeDataset;
                 }
-                else if (executionMode == ExecutionMode.Graywulf)
+                else if (parameters.ExecutionMode == ExecutionMode.Graywulf)
                 {
                     codeds = codeDatabaseInstanceReference.Value.GetDataset();
                 }
@@ -385,42 +230,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 return codeds;
             }
             set { codeDataset = value; }
-        }
-
-        /// <summary>
-        /// Gets a list of custom datasets.
-        /// </summary>
-        /// <remarks>
-        /// In case of Graywulf execution mode, this stores
-        /// the datasets not in the default list (remote datasets,
-        /// for instance)
-        /// </remarks>
-        [IgnoreDataMember]
-        public List<DatasetBase> CustomDatasets
-        {
-            get { return customDatasets; }
-            private set { customDatasets = value; }
-        }
-
-        [DataMember(Name = "CustomDatasets")]
-        [XmlArray]
-        public DatasetBase[] CustomDatasets_ForXml
-        {
-            get { return customDatasets.ToArray(); }
-            set { customDatasets = new List<DatasetBase>(value); }
-        }
-
-        /// <summary>
-        /// Gets or sets query execution mode.
-        /// </summary>
-        /// <remarks>
-        /// Graywulf or single server
-        /// </remarks>
-        [DataMember]
-        public ExecutionMode ExecutionMode
-        {
-            get { return executionMode; }
-            set { executionMode = value; }
         }
 
         /// <summary>
@@ -503,32 +312,14 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             this.syncRoot = new object();
 
-            this.queryFactoryTypeName = null;
-            this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(queryFactoryTypeName)), false);
+            this.parameters = null;
 
-            this.queryString = null;
+            this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(parameters.QueryFactoryTypeName)), false);
             this.queryDetails = new QueryDetails();
-
-            this.batchName = null;
-            this.queryName = null;
-
-            this.sourceDatabaseVersionName = String.Empty;
-            this.statDatabaseVersionName = String.Empty;
-
-            this.queryTimeout = 60;
-            this.maxPartitions = 0;
-            this.dumpSql = false;
-
             this.registryContext = null;
             this.scheduler = null;
-
-            this.defaultSourceDataset = null;
-            this.defaultOutputDataset = null;
             this.temporaryDataset = null;
             this.codeDataset = null;
-            this.customDatasets = new List<DatasetBase>();
-
-            this.executionMode = ExecutionMode.SingleServer;
 
             this.federationReference = new EntityReference<Federation>(this);
             this.assignedServerInstanceReference = new EntityReference<ServerInstance>(this);
@@ -553,32 +344,16 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             this.syncRoot = new object();
 
-            this.queryFactoryTypeName = old.queryFactoryTypeName;
-            this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(queryFactoryTypeName)), false);
+            this.parameters = old.parameters;
 
-            this.queryString = old.queryString;
+            this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(parameters.QueryFactoryTypeName)), false);
             this.queryDetails = new QueryDetails(old.queryDetails);
-
-            this.batchName = old.batchName;
-            this.queryName = old.queryName;
-
-            this.sourceDatabaseVersionName = old.sourceDatabaseVersionName;
-            this.statDatabaseVersionName = old.statDatabaseVersionName;
-
-            this.queryTimeout = old.queryTimeout;
-            this.maxPartitions = old.maxPartitions;
-            this.dumpSql = old.dumpSql;
 
             this.registryContext = old.registryContext;
             this.scheduler = old.scheduler;
 
-            this.defaultSourceDataset = old.defaultSourceDataset;
-            this.defaultOutputDataset = old.defaultOutputDataset;
             this.temporaryDataset = old.temporaryDataset;
             this.codeDataset = old.codeDataset;
-            this.customDatasets = new List<DatasetBase>(old.customDatasets);
-
-            this.executionMode = old.executionMode;
 
             this.federationReference = new EntityReference<Registry.Federation>(this, old.federationReference);
             this.assignedServerInstanceReference = new EntityReference<ServerInstance>(this, old.assignedServerInstanceReference);
@@ -643,7 +418,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 {
                     UpdateContext(registryContext);
 
-                    switch (executionMode)
+                    switch (parameters.ExecutionMode)
                     {
                         case ExecutionMode.SingleServer:
                             break;
@@ -679,7 +454,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             if (queryDetails.ParsingTree == null || forceReinitialize)
             {
                 var parser = queryFactory.Value.CreateParser();
-                queryDetails.ParsingTree = parser.Execute<StatementBlock>(queryString);
+                queryDetails = new QueryDetails();
+                queryDetails.ParsingTree = parser.Execute<StatementBlock>(parameters.QueryString);
             }
         }
 
@@ -720,8 +496,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var nr = QueryFactory.CreateNameResolver();
             nr.SchemaManager = GetSchemaManager();
 
-            nr.DefaultTableDatasetName = DefaultSourceDataset.Name;
-            nr.DefaultOutputDatasetName = DefaultOutputDataset.Name;
+            nr.DefaultTableDatasetName = parameters.DefaultSourceDataset.Name;
+            nr.DefaultOutputDatasetName = parameters.DefaultOutputDataset.Name;
             nr.DefaultFunctionDatasetName = CodeDataset.Name;
 
             return nr;
@@ -742,15 +518,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var sc = GetSchemaManager();
             var dss = new Dictionary<string, GraywulfDataset>(SchemaManager.Comparer);
 
-            // TODO: add support for multiple statements
-            // TODO: move this to name resolver and add support for in-query data sets
-
-            foreach (var tr in queryDetails.ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateSourceTableReferences(true))
+            foreach (var trs in QueryDetails.SourceTables.Values)
             {
-                if (tr.Type != TableReferenceType.UserDefinedFunction &&
-                    tr.Type != TableReferenceType.Subquery &&
-                    tr.Type != TableReferenceType.CommonTable &&
-                    !tr.IsComputed)
+                foreach (var tr in trs)
                 {
                     if (!dss.ContainsKey(tr.DatasetName))
                     {
@@ -820,7 +590,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             else
             {
                 // Assign new server instance based on database availability
-                serverInstance = GetNextServerInstance(mirroredDatasets, sourceDatabaseVersionName, null, specificDatasets);
+                serverInstance = GetNextServerInstance(mirroredDatasets, parameters.SourceDatabaseVersionName, null, specificDatasets);
             }
 
             assignedServerInstanceReference.Value = serverInstance;
@@ -842,7 +612,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <returns></returns>
         public Jhu.Graywulf.Registry.RegistryContext CreateContext()
         {
-            switch (executionMode)
+            switch (parameters.ExecutionMode)
             {
                 case Query.ExecutionMode.SingleServer:
                     return null;
@@ -868,7 +638,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         protected void LoadDatasets(bool forceReinitialize)
         {
-            switch (ExecutionMode)
+            switch (parameters.ExecutionMode)
             {
                 case Query.ExecutionMode.Graywulf:
 
@@ -1232,7 +1002,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// </remarks>
         private SchemaManager CreateSchemaManager()
         {
-            switch (ExecutionMode)
+            switch (parameters.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
                     return new Schema.SqlServer.SqlServerSchemaManager();
@@ -1257,7 +1027,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             sc.Datasets[Jhu.Graywulf.Registry.Constants.TempDbName] = TemporaryDataset;
 
             // Add custom dataset defined by code
-            foreach (var ds in customDatasets)
+            foreach (var ds in parameters.CustomDatasets)
             {
                 // *** TODO: check this
                 // is this where mydb is added?
@@ -1325,7 +1095,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             await cn.OpenAsync(CancellationContext.Token);
 
             cmd.Connection = cn;
-            cmd.CommandTimeout = queryTimeout;
+            cmd.CommandTimeout = parameters.QueryTimeout;
 
             return cn;
         }
@@ -1386,7 +1156,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         protected void DumpSqlCommand(string sql, CommandTarget target)
         {
-            if (dumpSql)
+            if (parameters.DumpSql)
             {
                 string filename = GetDumpFileName(target);
                 var sw = new StringWriter();
@@ -1406,7 +1176,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         private void DumpSqlCommand(SqlCommand cmd)
         {
-            if (dumpSql)
+            if (parameters.DumpSql)
             {
                 var filename = GetDumpFileName(CommandTarget.Temp);
                 var sw = new StringWriter();
