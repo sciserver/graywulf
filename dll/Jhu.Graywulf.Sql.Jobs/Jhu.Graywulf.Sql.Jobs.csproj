@@ -69,6 +69,7 @@
     <Compile Include="Sql\Jobs\Query\Enum.cs" />
     <Compile Include="Sql\Jobs\Query\ExecuteQuery.cs" />
     <Compile Include="Sql\Jobs\Query\GeneratePartitions.cs" />
+    <Compile Include="Sql\Jobs\Query\IdentifyRemoteOutputTables.cs" />
     <Compile Include="Sql\Jobs\Query\IdentifyRemoteSourceTables.cs" />
     <Compile Include="Sql\Jobs\Query\InitializeQuery.cs" />
     <Compile Include="Sql\Jobs\Query\IQueryJob.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Sql\Jobs\Query\QueryObject.cs" />
     <Compile Include="Sql\Jobs\Query\RemoteOutputTable.cs" />
     <Compile Include="Sql\Jobs\Query\RemoteSourceTable.cs" />
+    <Compile Include="Sql\Jobs\Query\RemoteTable.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQuery.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryCodeGenerator.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryFactory.cs" />

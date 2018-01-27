@@ -17,6 +17,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
 
+        [RequiredArgument]
+        public InArgument<string> RemoteTable { get; set; }
+
         /// <summary>
         /// Creates or truncates destination table in the output database (usually MYDB)
         /// </summary>

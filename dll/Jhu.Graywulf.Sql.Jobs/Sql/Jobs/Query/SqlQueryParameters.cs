@@ -89,11 +89,15 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// </summary>
         private List<DatasetBase> customDatasets;
 
+        private List<TableOrView> sourceTables;
+
+        private List<TableOrView> outputTables;
+
         /// <summary>
         /// Query execution mode, either single server or Graywulf cluster
         /// </summary>
         private ExecutionMode executionMode;
-
+               
         #endregion
         #region Properties
 
@@ -240,6 +244,22 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             set { customDatasets = new List<DatasetBase>(value); }
         }
 
+        [DataMember]
+        [XmlArray]
+        public List<TableOrView> SourceTables
+        {
+            get { return sourceTables; }
+            set { sourceTables = value; }
+        }
+
+        [DataMember]
+        [XmlArray]
+        public List<TableOrView> OutputTables
+        {
+            get { return outputTables; }
+            set { outputTables = value; }
+        }
+
         /// <summary>
         /// Gets or sets query execution mode.
         /// </summary>
@@ -287,6 +307,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             this.defaultSourceDataset = null;
             this.defaultOutputDataset = null;
             this.customDatasets = new List<DatasetBase>();
+            this.sourceTables = null;
+            this.outputTables = null;
 
             this.executionMode = ExecutionMode.SingleServer;
         }
@@ -310,7 +332,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             this.defaultSourceDataset = old.defaultSourceDataset;
             this.defaultOutputDataset = old.defaultOutputDataset;
-            this.customDatasets = new List<DatasetBase>(old.customDatasets);
+            this.customDatasets = old.customDatasets == null ? null : new List<DatasetBase>(old.customDatasets);
+            this.sourceTables = old.sourceTables == null ? null : new List<TableOrView>(old.sourceTables);
+            this.outputTables = old.outputTables == null ? null : new List<TableOrView>(old.outputTables);
 
             this.executionMode = old.executionMode;
         }

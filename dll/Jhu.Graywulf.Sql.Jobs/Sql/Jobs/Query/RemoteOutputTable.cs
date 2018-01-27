@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
-    public class RemoteOutputTable
+    public class RemoteOutputTable : RemoteTable
     {
     }
 }

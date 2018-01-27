@@ -448,7 +448,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                     if (n is IFunctionReference)
                     {
-                        ResolveFunctionReference((IFunctionReference)n);
+                        ResolveFunctionReference(details, (IFunctionReference)n);
                     }
                     else if (n is IVariableReference)
                     {
@@ -467,7 +467,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return SystemFunctionNames.Contains(name);
         }
 
-        private void ResolveFunctionReference(IFunctionReference node)
+        private void ResolveFunctionReference(QueryDetails details, IFunctionReference node)
         {
             // TODO: extend this to CLR static function calls
 
@@ -501,6 +501,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
 
                 node.FunctionReference.DatabaseObject = dbo;
+
+                var uniqueKey = node.FunctionReference.DatabaseObject.UniqueKey;
+
+                if (!details.FunctionReferences.ContainsKey(uniqueKey))
+                {
+                    details.FunctionReferences.Add(uniqueKey, new List<FunctionReference>());
+                }
+                
+                details.FunctionReferences[uniqueKey].Add(node.FunctionReference);
             }
         }
 

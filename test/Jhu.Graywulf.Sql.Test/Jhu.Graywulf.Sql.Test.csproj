@@ -98,6 +98,7 @@
     <Compile Include="Sql\NameResolution\CommonTableExpressionTest.cs" />
     <Compile Include="Sql\NameResolution\SourceTableReferenceTest.cs" />
     <Compile Include="Sql\NameResolution\StatementBlockTest.cs" />
+    <Compile Include="Sql\NameResolution\FunctionTest.cs" />
     <Compile Include="Sql\NameResolution\SystemVariableTest.cs" />
     <Compile Include="Sql\NameResolution\ScalarVariableTest.cs" />
     <Compile Include="Sql\NameResolution\SelectStatementTest.cs" />

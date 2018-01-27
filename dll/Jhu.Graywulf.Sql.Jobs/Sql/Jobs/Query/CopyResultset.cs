@@ -14,6 +14,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
 
+        [RequiredArgument]
+        public InArgument<string> RemoteTable { get; set; }
+
         protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;

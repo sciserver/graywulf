@@ -215,12 +215,21 @@ namespace Jhu.Graywulf.Activities
 
             foreach (var a in assemblies)
             {
-                foreach (var t in a.GetTypes())
+                try
                 {
-                    if (!res.Contains(t) && t.IsSubclassOf(type))
+                    var types = a.GetTypes();
+
+                    foreach (var t in a.GetTypes())
                     {
-                        res.Add(t);
+                        if (!res.Contains(t) && t.IsSubclassOf(type))
+                        {
+                            res.Add(t);
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    throw;
                 }
             }
 

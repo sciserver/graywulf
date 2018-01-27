@@ -47,7 +47,16 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var sc = new SerializableChecker();
             Assert.IsTrue(sc.Execute(t));
         }
-        
+
+        [TestMethod]
+        public void SqlQueryParametersSerializableTest()
+        {
+            var t = typeof(SqlQueryParameters);
+
+            var sc = new SerializableChecker();
+            Assert.IsTrue(sc.Execute(t));
+        }
+
         #region Simple SQL query tests
 
         [TestMethod]

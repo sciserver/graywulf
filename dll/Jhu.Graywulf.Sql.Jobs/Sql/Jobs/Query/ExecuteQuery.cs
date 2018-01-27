@@ -24,35 +24,14 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var activityInstanceId = activityContext.ActivityInstanceId;
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
             SourceTableQuery source;
-            Table destination;
 
             using (RegistryContext context = querypartition.Query.CreateContext())
             {
                 querypartition.InitializeQueryObject(cancellationContext, context, activityContext.GetExtension<IScheduler>(), true);
-
-                // Destination table
-                switch (querypartition.Parameters.ExecutionMode)
-                {
-                    case ExecutionMode.SingleServer:
-                        // In single-server mode results are directly written into destination table
-                        destination = querypartition.Parameters.Destination.GetTable();
-                        break;
-                    case ExecutionMode.Graywulf:
-                        // In graywulf mode results are written into a temporary table first
-                        destination = querypartition.GetOutputTable();
-                        querypartition.TemporaryTables.TryAdd(destination.TableName, destination);
-
-                        // Drop destination table, in case it already exists for some reason
-                        destination.Drop();
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-
                 source = querypartition.GetExecuteSourceQuery();
             }
 
-            await querypartition.ExecuteQueryAsync(source, destination);
+            await querypartition.ExecuteQueryAsync(source);
         }
     }
 }

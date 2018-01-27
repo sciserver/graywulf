@@ -8,9 +8,11 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
-    public class RemoteSourceTable : RemoteTable
+    public class RemoteTable
     {
-        public string RemoteQuery { get; set; }
-        
+        public string UniqueKey { get; set; }
+        public TableOrView Table { get; set; }
+        public List<TableReference> TableReferences { get; set; }
+        public Table TempTable { get; set; }
     }
 }

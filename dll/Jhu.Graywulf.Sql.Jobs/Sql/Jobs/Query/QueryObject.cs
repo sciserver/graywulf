@@ -312,7 +312,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             this.syncRoot = new object();
 
-            this.parameters = null;
+            this.parameters = new SqlQueryParameters();
 
             this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(parameters.QueryFactoryTypeName)), false);
             this.queryDetails = new QueryDetails();
@@ -423,6 +423,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                         case ExecutionMode.SingleServer:
                             break;
                         case ExecutionMode.Graywulf:
+                            LoadFederation(forceReinitialize);
                             LoadAssignedServerInstance(forceReinitialize);
                             LoadDatasets(forceReinitialize);
                             LoadSystemDatabaseInstance(temporaryDatabaseInstanceReference, (GraywulfDataset)temporaryDataset, forceReinitialize);
@@ -482,6 +483,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         protected virtual void OnNamesResolved(bool forceReinitialize)
         {
+
         }
 
         /// <summary>
@@ -626,6 +628,15 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         protected virtual void UpdateContext(RegistryContext context)
         {
             this.registryContext = context;
+        }
+
+        protected void LoadFederation(bool forceReinitialize)
+        {
+            if (federationReference.IsEmpty || forceReinitialize)
+            {
+                federationReference.Name = Parameters.FederationName;
+                federationReference.Resolve();
+            }
         }
 
         protected void LoadAssignedServerInstance(bool forceReinitialize)

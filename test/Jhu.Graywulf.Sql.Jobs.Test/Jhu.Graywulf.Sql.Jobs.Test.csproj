@@ -77,6 +77,10 @@
       <Project>{abb4c403-720a-47e1-9485-cfaadd696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.IO.Jobs\Jhu.Graywulf.IO.Jobs.csproj">
+      <Project>{0e3fda36-70cf-477c-8ea6-1ac2c4d73dcc}</Project>
+      <Name>Jhu.Graywulf.IO.Jobs</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.IO\Jhu.Graywulf.IO.csproj">
       <Project>{6797ed88-1d8c-491b-a036-4c42c4bf2eaf}</Project>
       <Name>Jhu.Graywulf.IO</Name>

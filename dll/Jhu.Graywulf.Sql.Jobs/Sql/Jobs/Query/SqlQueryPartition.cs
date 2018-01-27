@@ -145,7 +145,14 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         protected virtual SqlServerCodeGenerator CreateCodeGenerator()
         {
-            return new SqlQueryCodeGenerator(this);
+            return new SqlQueryCodeGenerator(this)
+            {
+                TableNameRendering = NameRendering.FullyQualified,
+                TableAliasRendering = AliasRendering.Default,
+                ColumnNameRendering = NameRendering.FullyQualified,
+                ColumnAliasRendering = AliasRendering.Default,
+                FunctionNameRendering = NameRendering.FullyQualified
+            };
         }
 
         protected override void OnNamesResolved(bool forceReinitialize)
@@ -154,13 +161,80 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         #region Remote table caching functions
 
+        public void IdentifyRemoteOutputTables()
+        {
+            var cg = CreateCodeGenerator();
+
+            // TODO: now it's SELECT INTO
+            // extend this logic to support CREATE TABLE, INSERT, UPDATE etc.
+
+            if (Parameters.ExecutionMode == ExecutionMode.Graywulf)
+            {
+                // Collect remote tables
+                foreach (var key in QueryDetails.OutputTables.Keys)
+                {
+                    RemoteOutputTable rot = null;
+
+                    foreach (var tr in QueryDetails.OutputTables[key])
+                    {
+                        // TODO: Add support for insert and create table
+
+                        if (tr.Type == TableReferenceType.SelectInto &&
+                            IsRemoteDataset(tr.DatabaseObject.Dataset))
+                        {
+                            if (rot == null)
+                            {
+                                var table = (TableOrView)tr.DatabaseObject;
+                                var tablekey = table.UniqueKey;
+
+                                // Add entry for temp table
+                                var tempname = cg.GenerateEscapedUniqueName(table, null);
+                                var temptable = GetTemporaryTable(tempname);
+
+                                rot = new RemoteOutputTable()
+                                {
+                                    Table = table,
+                                    UniqueKey = tablekey,
+                                    TableReferences = new List<TableReference>(),
+                                    TempTable = temptable
+                                };
+
+                                TemporaryTables.TryAdd(tablekey, temptable);
+                                RemoteOutputTables.Add(tablekey, rot);
+                            }
+
+                            rot.TableReferences.Add(tr);
+                        }
+                    }
+                }
+
+                // Generate most restrictive queries
+                var rqg = new RemoteQueryGenerator();
+                var queries = rqg.Execute(QueryDetails, ColumnContext.AllReferenced, 0);
+
+                foreach (var key in queries.Keys)
+                {
+                    if (remoteSourceTables.ContainsKey(key))
+                    {
+                        remoteSourceTables[key].RemoteQuery = queries[key];
+                    }
+                }
+            }
+            else
+            {
+                // nothing to do here
+            }
+        }
+
         /// <summary>
         /// Finds those tables that are required to execute the query but had to be
         /// copied from a remote source
         /// </summary>
         /// <returns></returns>
-        public void IdentifyRemoteTables()
+        public void IdentifyRemoteSourceTables()
         {
+            var cg = CreateCodeGenerator();
+
             if (Parameters.ExecutionMode == ExecutionMode.Graywulf)
             {
                 // Collect remote tables
@@ -174,13 +248,21 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                         {
                             if (rst == null)
                             {
+                                var table = (TableOrView)tr.DatabaseObject;
+
+                                // Add entry for temp table
+                                var tempname = cg.GenerateEscapedUniqueName(table, null);
+                                var temptable = GetTemporaryTable(tempname);
+
                                 rst = new RemoteSourceTable()
                                 {
-                                    Table = (TableOrView)tr.DatabaseObject,
+                                    Table = table,
                                     UniqueKey = tr.DatabaseObject.UniqueKey,
                                     TableReferences = new List<TableReference>(),
+                                    TempTable = temptable
                                 };
 
+                                TemporaryTables.TryAdd(table.UniqueKey, temptable);
                                 RemoteSourceTables.Add(rst.UniqueKey, rst);
                             }
 
@@ -214,12 +296,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <returns></returns>
         public void PrepareCopyRemoteTable(string tableKey, out SourceTableQuery query)
         {
-            throw new NotImplementedException();
+            // TODO: add option to do by table or tr
 
-            /*
-            var tr = remoteTables[tableKey][0];
+            var table = remoteSourceTables[tableKey];
             var sm = GetSchemaManager();
-            var ds = sm.Datasets[tr.DatasetName];
+            var ds = sm.Datasets[table.Table.DatasetName];
 
             // Graywulf dataset has to be converted to prevent registry access
             if (ds is GraywulfDataset)
@@ -229,14 +310,15 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             // Generate most restrictive query
             var cg = CodeGeneratorFactory.CreateCodeGenerator(ds);
-            var sql = cg.GenerateMostRestrictiveTableQuery(remoteTables[tableKey], ColumnContext.All, 0);
-            
+
+            var rcg = new RemoteQueryGenerator();
+            var sql = rcg.Execute(QueryDetails, ColumnContext.All, 0);
+
             query = new SourceTableQuery()
             {
                 Dataset = ds,
-                Query = sql
+                Query = remoteSourceTables[tableKey].RemoteQuery
             };
-            */
         }
 
         /// <summary>
@@ -247,14 +329,10 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <param name="source"></param>
         public async Task CopyRemoteTableAsync(string tableKey, SourceTableQuery source)
         {
-            /* TODO
-            var tr = remoteSourceTables[tableKey][0];
+            // TODO: add option to do by table or tr
 
-            // Create a target table name
-            var cg = new SqlServerCodeGenerator();
-            var temptable = GetTemporaryTable(cg.GenerateEscapedUniqueName(tr));
-
-            TemporaryTables.TryAdd(tr.TableOrView.UniqueKey, temptable);
+            var table = remoteSourceTables[tableKey].Table;
+            var temptable = TemporaryTables[table.UniqueKey];
 
             var dest = new DestinationTable(
                 temptable,
@@ -264,9 +342,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             {
                 await tc.Value.ExecuteAsync();
             }
-            */
-
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -277,7 +352,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <returns></returns>
         public string SubstituteRemoteTableName(TableReference tr)
         {
-            /* TODO
+            /* TODO: delete
             if (RemoteTables.ContainsKey(tr.TableOrView.UniqueKey))
             {
                 return CodeGenerator.GetResolvedTableName(TemporaryTables[tr.TableOrView.UniqueKey]);
@@ -300,7 +375,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <returns></returns>
         public string SubstituteRemoteTableNameWithAlias(TableReference tr)
         {
-            /* TODO
+            /* TODO: delete
             if (RemoteTables.ContainsKey(tr.TableOrView.UniqueKey))
             {
                 return CodeGenerator.GetResolvedTableNameWithAlias(TemporaryTables[tr.TableOrView.UniqueKey], tr.Alias);
@@ -326,13 +401,22 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             // Source query will be run on the code database to have
             // access to UDTs
-            var source = CodeGenerator.GetExecuteQuery(QueryDetails.ParsingTree);
+
+            var source = CodeGenerator.GetExecuteQuery(QueryDetails);
             source.Dataset = CodeDataset;
             return source;
         }
 
-        public async Task ExecuteQueryAsync(SourceTableQuery source, Table destination)
+        public async Task ExecuteQueryAsync(SourceTableQuery source)
         {
+            // TODO
+            // rewrite this to execute query and bulk-insert data reader
+            // into output table
+            // figure out how to do in parallel, directly into MYDB
+
+            throw new NotImplementedException();
+
+            /*
             var dt = new DestinationTable(destination, TableInitializationOptions.Create);
 
             var insert = new InsertIntoTable(CancellationContext)
@@ -342,11 +426,13 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             };
 
             await insert.ExecuteAsync();
+            */
         }
 
         #endregion
         #region Destination table and copy resultset functions
 
+        /* TODO: delete
         /// <summary>
         /// Generates the query that can be used to copy the results to the final
         /// destination table (usually in mydb)
@@ -373,6 +459,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 Query = GetOutputQueryText()
             };
         }
+        */
 
         public Task PrepareDestinationTableAsync()
         {

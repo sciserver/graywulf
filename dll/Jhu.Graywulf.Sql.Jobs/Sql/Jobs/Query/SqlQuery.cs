@@ -109,7 +109,28 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
 
         #endregion
-        #region Table statistics
+        #region Source tables and table statistics
+
+        /// <summary>
+        /// Save list of source tables to show in job output
+        /// </summary>
+        public virtual void UpdateSourceTableList()
+        {
+            if (Parameters.SourceTables == null)
+            {
+                Parameters.SourceTables = new List<TableOrView>();
+
+                foreach (var key in QueryDetails.SourceTables.Keys)
+                {
+                    Parameters.SourceTables.Add((TableOrView)QueryDetails.SourceTables[key][0].DatabaseObject);
+                }
+            }
+        }
+
+        public virtual void UpdateOutputTableList()
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Collects tables for which statistics should be computed before

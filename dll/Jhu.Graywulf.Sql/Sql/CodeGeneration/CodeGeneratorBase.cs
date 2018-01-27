@@ -240,38 +240,42 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             }
             else
             {
-                string res = String.Empty;
-
-                if (!String.IsNullOrWhiteSpace(table.DatasetName))
-                {
-                    res += String.Format("{0}_", EscapeIdentifier(table.DatasetName));
-                }
-
-                if (!String.IsNullOrWhiteSpace(table.DatabaseName))
-                {
-                    res += String.Format("{0}_", EscapeIdentifier(table.DatabaseName));
-                }
-
-                if (!String.IsNullOrWhiteSpace(table.SchemaName))
-                {
-                    res += String.Format("{0}_", EscapeIdentifier(table.SchemaName));
-                }
-
-                if (!String.IsNullOrWhiteSpace(table.DatabaseObjectName))
-                {
-                    res += String.Format("{0}", EscapeIdentifier(table.DatabaseObjectName));
-                }
-
-                // If a table is referenced more than once we need an alias to distinguish them
-                if (!String.IsNullOrWhiteSpace(table.Alias))
-                {
-                    res += String.Format("_{0}", EscapeIdentifier(table.Alias));
-                }
-
-                return res;
+                return GenerateEscapedUniqueName(table.DatabaseObject, table.Alias);
             }
         }
 
+        public string GenerateEscapedUniqueName(DatabaseObject dbobj, string alias)
+        {
+            string res = String.Empty;
+
+            if (!String.IsNullOrWhiteSpace(dbobj.DatasetName))
+            {
+                res += String.Format("{0}_", EscapeIdentifier(dbobj.DatasetName));
+            }
+
+            if (!String.IsNullOrWhiteSpace(dbobj.DatabaseName))
+            {
+                res += String.Format("{0}_", EscapeIdentifier(dbobj.DatabaseName));
+            }
+
+            if (!String.IsNullOrWhiteSpace(dbobj.SchemaName))
+            {
+                res += String.Format("{0}_", EscapeIdentifier(dbobj.SchemaName));
+            }
+
+            if (!String.IsNullOrWhiteSpace(dbobj.ObjectName))
+            {
+                res += String.Format("{0}", EscapeIdentifier(dbobj.ObjectName));
+            }
+
+            // If a table is referenced more than once we need an alias to distinguish them
+            if (!String.IsNullOrWhiteSpace(alias))
+            {
+                res += String.Format("_{0}", EscapeIdentifier(alias));
+            }
+
+            return res;
+        }
 
         public string GetResolvedTableName(TableReference table)
         {

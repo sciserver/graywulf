@@ -35,6 +35,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private Dictionary<string, VariableReference> variableReferences;
         private Dictionary<string, List<TableReference>> sourceTableReferences;
         private Dictionary<string, List<TableReference>> outputTableReferences;
+        private Dictionary<string, List<FunctionReference>> functionReferences;
 
         #endregion
         #region Properties
@@ -72,6 +73,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             get { return outputTableReferences; }
         }
 
+        public Dictionary<string, List<FunctionReference>> FunctionReferences
+        {
+            get { return functionReferences; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -95,6 +101,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.variableReferences = new Dictionary<string, VariableReference>(Schema.SchemaManager.Comparer);
             this.sourceTableReferences = new Dictionary<string, List<TableReference>>(Schema.SchemaManager.Comparer);
             this.outputTableReferences = new Dictionary<string, List<TableReference>>(Schema.SchemaManager.Comparer);
+            this.functionReferences = new Dictionary<string, List<FunctionReference>>(Schema.SchemaManager.Comparer);
         }
 
         private void CopyMembers(QueryDetails old)
@@ -107,6 +114,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.variableReferences = new Dictionary<string, VariableReference>(old.variableReferences);
             this.sourceTableReferences = new Dictionary<string, List<TableReference>>(old.sourceTableReferences);
             this.outputTableReferences = new Dictionary<string, List<TableReference>>(old.outputTableReferences);
+            this.functionReferences = new Dictionary<string, List<FunctionReference>>(old.functionReferences);
         }
 
         #endregion
