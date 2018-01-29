@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DestinationNull" xml:space="preserve">
+    <value>The destination of the operation cannot be null.</value>
+  </data>
   <data name="DestinationTableExists" xml:space="preserve">
     <value>Destination table already exists.</value>
   </data>
@@ -131,5 +134,14 @@
   </data>
   <data name="FileCopyFailed" xml:space="preserve">
     <value>File copy failed, exit code: {0}.</value>
+  </data>
+  <data name="FileNotArchine" xml:space="preserve">
+    <value>The file is not an archive.</value>
+  </data>
+  <data name="SourceNull" xml:space="preserve">
+    <value>The source of the operation cannot be null.</value>
+  </data>
+  <data name="StreamNull" xml:space="preserve">
+    <value>The stream is null.</value>
   </data>
 </root>

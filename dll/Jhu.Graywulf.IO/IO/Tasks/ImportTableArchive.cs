@@ -46,6 +46,8 @@ namespace Jhu.Graywulf.IO.Tasks
         private DestinationTable destination;
         private ImportTableOptions options;
 
+        private string currentFilename;
+
         #endregion
         #region Properties
 
@@ -111,6 +113,14 @@ namespace Jhu.Graywulf.IO.Tasks
             return OpenAsync(DataFileMode.Read, DataFileArchival.Automatic);
         }
 
+        protected override TableCopyResult CreateResult()
+        {
+            return new TableCopyResult()
+            {
+                SourceFileName = currentFilename,
+            };
+        }
+
         /// <summary>
         /// Executes the import operation
         /// </summary>
@@ -119,76 +129,81 @@ namespace Jhu.Graywulf.IO.Tasks
             // Make sure stream is open
             if (BaseStream == null)
             {
-                throw new InvalidOperationException();
+                throw Error.StreamNull();
             }
 
             // Make sure it's an archive stream
             if (!(BaseStream is IArchiveInputStream))
             {
-                throw new InvalidOperationException();
+                throw Error.FileNotArchine();
             }
 
-            // Create the file format factory. This will be used to open
-            // the individual files within the archive.
-            var ff = GetFileFormatFactory();
-
-            // Read the archive file by file and import tables
-            var ais = (IArchiveInputStream)BaseStream;
-            IArchiveEntry entry;
-
-            // Iterate through the files in the archive. Not need to traverse
-            // the internal directory tree as files are listed with full paths.
-            while ((entry = ais.ReadNextFileEntry()) != null)
+            try
             {
-                // Skip directory entries, we read files only
-                if (!entry.IsDirectory)
+                // Create the file format factory. This will be used to open
+                // the individual files within the archive.
+                var ff = GetFileFormatFactory();
+
+                // Read the archive file by file and import tables
+                var ais = (IArchiveInputStream)BaseStream;
+                IArchiveEntry entry;
+
+                // Iterate through the files in the archive. Not need to traverse
+                // the internal directory tree as files are listed with full paths.
+                while ((entry = ais.ReadNextFileEntry()) != null)
                 {
-                    // Prepare results
-                    var result = new TableCopyResult()
+                    // Skip directory entries, we read files only
+                    if (!entry.IsDirectory)
                     {
-                        FileName = entry.Filename,
-                    };
+                        currentFilename = entry.Filename;
 
-                    Results.Add(result);
+                        // Use the file format factory to open the file
+                        string filename, extension;
+                        DataFileCompression compression;
+                        DataFileBase file = null;
 
-                    // Use the file format factory to open the file
-                    string filename, extension;
-                    DataFileCompression compression;
-                    DataFileBase file = null;
-
-                    // We simply skip unrecognized files
-                    if (ff.TryCreateFile(Util.UriConverter.FromFilePath(entry.Filename), out filename, out extension, out compression, out file))
-                    {
-                        if (options != null)
+                        // We simply skip unrecognized files
+                        if (ff.TryCreateFile(Util.UriConverter.FromFilePath(entry.Filename), out filename, out extension, out compression, out file))
                         {
-                            file.GenerateIdentityColumn = options.GenerateIdentityColumn;
-                        }
+                            if (options != null)
+                            {
+                                file.GenerateIdentityColumn = options.GenerateIdentityColumn;
+                            }
 
-                        try
-                        {
                             // Open the file. It's read directly from the archive stream.
-                            file.Open(BaseStream, DataFileMode.Read);
+                            try
+                            {
+                                file.Open(BaseStream, DataFileMode.Read);
 
-                            await CopyFromFileAsync(file, destination, result);
-                        }
-                        catch (Exception ex)
-                        {
-                            HandleException(ex, result);
-                        }
-                        finally
-                        {
-                            if (file != null)
+                                using (var cmd = new FileCommand(file))
+                                {
+                                    await CopyToTableAsync(cmd, destination);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                var result = CreateResult();
+                                HandleException(ex, result);
+                                Results.Add(result);
+                                continue;
+                            }
+                            finally
                             {
                                 file.Dispose();
                             }
                         }
-                    }
-                    else
-                    {
-                        // Mark file as skipped
-                        result.Status = TableCopyStatus.Skipped;
+                        else
+                        {
+                            var result = CreateResult();
+                            result.Status = TableCopyStatus.Skipped;
+                            Results.Add(result);
+                        }
                     }
                 }
+            }
+            finally
+            {
+                Close();
             }
         }
     }

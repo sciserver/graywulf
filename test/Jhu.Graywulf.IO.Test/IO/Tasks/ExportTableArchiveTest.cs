@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private ServiceModel.ServiceProxy<IExportTableArchive> GetTableExportTask(CancellationContext cancellationContext, Uri uri, string path, bool remote)
         {
-            var source = new SourceTableQuery()
+            var source = new SourceQuery()
             {
                 Dataset = new Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString),
                 Query = "SELECT * FROM SampleData"

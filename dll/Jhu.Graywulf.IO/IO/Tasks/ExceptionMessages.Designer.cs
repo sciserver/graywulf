@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.IO.Tasks {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class ExceptionMessages {
@@ -57,6 +57,15 @@ namespace Jhu.Graywulf.IO.Tasks {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The destination of the operation cannot be null..
+        /// </summary>
+        internal static string DestinationNull {
+            get {
+                return ResourceManager.GetString("DestinationNull", resourceCulture);
             }
         }
         
@@ -102,6 +111,33 @@ namespace Jhu.Graywulf.IO.Tasks {
         internal static string FileCopyFailed {
             get {
                 return ResourceManager.GetString("FileCopyFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file is not an archive..
+        /// </summary>
+        internal static string FileNotArchine {
+            get {
+                return ResourceManager.GetString("FileNotArchine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The source of the operation cannot be null..
+        /// </summary>
+        internal static string SourceNull {
+            get {
+                return ResourceManager.GetString("SourceNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream is null..
+        /// </summary>
+        internal static string StreamNull {
+            get {
+                return ResourceManager.GetString("StreamNull", resourceCulture);
             }
         }
     }

@@ -104,19 +104,6 @@ namespace Jhu.Graywulf.IO.Tasks
         [NonSerialized]
         private TableCopyResults results;
 
-        /// <summary>
-        /// When set to true, informs the class that the executing bulk copy operation
-        /// is to be cancelled.
-        /// </summary>
-        [NonSerialized]
-        protected bool isBulkCopyCancelRequested;
-
-        /// <summary>
-        /// Synchronizes the class to the end of the bulk copy operation.
-        /// </summary>
-        [NonSerialized]
-        protected EventWaitHandle bulkCopyFinishedEvent;
-
         #endregion
         #region Properties
 
@@ -223,7 +210,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.bypassExceptions = old.bypassExceptions;
             this.fileFormatFactoryType = old.fileFormatFactoryType;
             this.streamFactoryType = old.streamFactoryType;
-            this.results = new TableCopyResults();
+            this.results = new TableCopyResults(old.results);
         }
 
         public abstract object Clone();
@@ -248,17 +235,52 @@ namespace Jhu.Graywulf.IO.Tasks
             return StreamFactory.Create(streamFactoryType);
         }
 
-        /// <summary>
-        /// Copies recordsets from a file into destination tables.
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="destination"></param>
-        protected async Task CopyFromFileAsync(DataFileBase source, DestinationTable destination, TableCopyResult result)
+        protected abstract TableCopyResult CreateResult();
+
+        #region Import functions
+
+        protected async Task CopyToTableAsync(SourceQuery source, DestinationTable destination)
         {
-            // Import the file by wrapping it into a dummy command
-            using (var cmd = new FileCommand(source))
+            // Create command that reads the table
+            using (var cn = await source.OpenConnectionAsync(CancellationContext.Token))
             {
-                await CopyFromCommandAsync(cmd, destination, result);
+                using (var tn = cn.BeginTransaction(IsolationLevel.ReadUncommitted))
+                {
+                    using (var cmd = source.CreateCommand())
+                    {
+                        cmd.Connection = cn;
+                        cmd.Transaction = tn;
+                        cmd.CommandTimeout = Timeout;
+
+                        await CopyToTableAsync(cmd, destination);
+
+                        tn.Commit();
+                    }
+                }
+            }
+        }
+
+        protected async Task CopyToTableAsync(ISmartCommand cmd, DestinationTable destination)
+        {
+            using (var sdr = await cmd.ExecuteReaderAsync(CommandBehavior.KeyInfo, CancellationContext.Token))
+            {
+                int q = 0;
+
+                do
+                {
+                    var result = CreateResult();
+
+                    // Take name from smart data reader or generate automatically
+                    if (String.IsNullOrWhiteSpace(sdr.Name) && q != 0)
+                    {
+                        sdr.Name = q.ToString();
+                    }
+
+                    await CopyToTableAsync(sdr, destination, result);
+                    Results.Add(result);
+                    q++;
+                }
+                while (await sdr.NextResultAsync(CancellationContext.Token));
             }
         }
 
@@ -268,17 +290,14 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         /// <param name="cmd"></param>
         /// <param name="destination"></param>
-        protected async Task CopyFromCommandAsync(ISmartCommand cmd, DestinationTable destination, TableCopyResult result)
+        private async Task CopyToTableAsync(ISmartDataReader sdr, DestinationTable destination, TableCopyResult result)
         {
-            // TODO: implement multi-table copy, might require converting results to a collection
-
-            using (var dr = await cmd.ExecuteReaderAsync(CommandBehavior.KeyInfo, CancellationContext.Token))
+            try
             {
-                var sdr = (ISmartDataReader)dr;
-
                 // DestinationTable has the property TableNameTemplate which needs to
                 // be evaluated now
-                var table = destination.GetTable(batchName, cmd.Name, sdr.Name, sdr.Metadata);
+                var table = destination.GetTable(batchName, sdr.Name, null, sdr.Metadata);
+                result.TargetTable = table;
 
                 // Certain data readers cannot determine the columns from the data file,
                 // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
@@ -293,19 +312,24 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 // TODO: make schema operation async
                 table.Initialize(sdr.Columns, destination.Options);
-                result.SchemaName = table.SchemaName;
-                result.TableName = table.ObjectName;
 
-                await ExecuteBulkCopyAsync(dr, table, result);
+                await ExecuteBulkCopyAsync(sdr, table, result);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, result);
             }
         }
+
+        #endregion
+        #region Export functions
 
         /// <summary>
         /// Copies the results of a query into a file.
         /// </summary>
         /// <param name="source"></param>
         /// <param name="destination"></param>
-        protected async Task CopyToFileAsync(SourceTableQuery source, DataFileBase destination, TableCopyResult result)
+        protected async Task CopyToFileAsync(SourceQuery source, DataFileBase destination)
         {
             // Create command that reads the table
             using (var cmd = source.CreateCommand())
@@ -318,11 +342,36 @@ namespace Jhu.Graywulf.IO.Tasks
                         cmd.Transaction = tn;
                         cmd.CommandTimeout = Timeout;
 
-                        await CopyToFileAsync(cmd, destination, result);
+                        await CopyToFileAsync(cmd, destination);
 
                         tn.Commit();
                     }
                 }
+            }
+        }
+
+        private async Task CopyToFileAsync(ISmartCommand cmd, DataFileBase destination)
+        {
+            using (var sdr = await cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationContext.Token))
+            {
+                int q = 0;
+
+                do
+                {
+                    var result = CreateResult();
+
+                    // Take name from smart data reader or generate automatically
+                    if (String.IsNullOrWhiteSpace(sdr.Name) && q != 0)
+                    {
+                        sdr.Name = q.ToString();
+                    }
+
+                    await CopyToFileAsync(sdr, destination, result);
+                    Results.Add(result);
+
+                    q++;
+                }
+                while (await sdr.NextResultAsync(CancellationContext.Token));
             }
         }
 
@@ -331,20 +380,28 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         /// <param name="cmd"></param>
         /// <param name="destination"></param>
-        private async Task CopyToFileAsync(ISmartCommand cmd, DataFileBase destination, TableCopyResult result)
+        private async Task CopyToFileAsync(ISmartDataReader sdr, DataFileBase destination, TableCopyResult result)
         {
-            using (var dr = await cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationContext.Token))
+            // TODO multiple resultsets?
+
+            try
             {
-                await destination.WriteFromDataReaderAsync((SmartDataReader)dr);
-                result.RecordsAffected = dr.RecordsAffected;
+                await destination.WriteFromDataReaderAsync(sdr);
+                result.RecordsAffected = sdr.RecordsAffected;
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, result);
             }
         }
+
+        #endregion
 
         /// <summary>
         /// Executest bulk copy to ingest data from the DataReader
         /// </summary>
         /// <param name="dr"></param>
-        protected virtual async Task ExecuteBulkCopyAsync(ISmartDataReader sdr, Table destination, TableCopyResult result)
+        private async Task ExecuteBulkCopyAsync(ISmartDataReader sdr, Table destination, TableCopyResult result)
         {
             // Bulk insert is a tricky animal. To get best performance, batch size
             // has to be set to zero and table locking has to be set on. This prevents
@@ -354,8 +411,6 @@ namespace Jhu.Graywulf.IO.Tasks
             // TODO: it can only import the first resultset from dr
             var cg = new SqlServerCodeGenerator();
             var dr = (DbDataReader)sdr;
-
-            bulkCopyFinishedEvent = new AutoResetEvent(false);
 
             // Turn on TABLOCK
             var sbo = System.Data.SqlClient.SqlBulkCopyOptions.TableLock;
@@ -367,7 +422,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 BulkCopyTimeout = timeout,
                 NotifyAfter = Math.Max(batchSize, 1000),
                 BatchSize = batchSize,       // Must be set to 0, otherwise SQL Server will write log
-                // EnableStreaming = true    // TODO: add, new in .net 4.5
+                EnableStreaming = true    // TODO: add, new in .net 4.5
             };
 
             // Initialize events
@@ -383,12 +438,10 @@ namespace Jhu.Graywulf.IO.Tasks
             }
             catch (OperationAbortedException)
             {
+                // TODO: test this because tasks throw aggregateexception too
+
                 // This is normal behavior, happens when bulk-copy is
                 // forcibly canceled.
-            }
-            finally
-            {
-                bulkCopyFinishedEvent.Set();
             }
         }
 

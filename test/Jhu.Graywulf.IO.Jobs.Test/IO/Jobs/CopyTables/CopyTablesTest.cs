@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.IO.Jobs.CopyTables
                     TableName = sourceTableName
                 };
 
-                var source = SourceTableQuery.Create(sourcetable);
+                var source = SourceTable.Create(sourcetable);
 
                 var destinationtable = new Table()
                 {

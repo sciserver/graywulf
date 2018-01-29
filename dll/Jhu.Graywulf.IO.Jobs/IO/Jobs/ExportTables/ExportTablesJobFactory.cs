@@ -70,7 +70,7 @@ namespace Jhu.Graywulf.IO.Jobs.ExportTables
             return EnumerateMethods().First(i => i.ID == id);
         }
 
-        public virtual ExportTablesParameters CreateParameters(Federation federation, Uri uri, Credentials credentials, SourceTableQuery source, string mimeType)
+        public virtual ExportTablesParameters CreateParameters(Federation federation, Uri uri, Credentials credentials, SourceTable source, string mimeType)
         {
             var sf = StreamFactory.Create(federation.StreamFactory);
             var ff = FileFormatFactory.Create(federation.FileFormatFactory);
@@ -92,7 +92,7 @@ namespace Jhu.Graywulf.IO.Jobs.ExportTables
             else
             {
                 destination.Compression = DataFileCompression.None;
-                destination.Uri = new Uri(source.ObjectName + destination.Description.Extension, UriKind.RelativeOrAbsolute);
+                destination.Uri = new Uri(source.Table.ObjectName + destination.Description.Extension, UriKind.RelativeOrAbsolute);
             }
 
             var export = new ExportTablesParameters()

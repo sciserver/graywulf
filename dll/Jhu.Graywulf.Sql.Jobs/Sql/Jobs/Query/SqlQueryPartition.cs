@@ -294,7 +294,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// </summary>
         /// <param name="tableKey"></param>
         /// <returns></returns>
-        public void PrepareCopyRemoteTable(string tableKey, out SourceTableQuery query)
+        public void PrepareCopyRemoteTable(string tableKey, out SourceQuery query)
         {
             // TODO: add option to do by table or tr
 
@@ -314,7 +314,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var rcg = new RemoteQueryGenerator();
             var sql = rcg.Execute(QueryDetails, ColumnContext.All, 0);
 
-            query = new SourceTableQuery()
+            query = new SourceQuery()
             {
                 Dataset = ds,
                 Query = remoteSourceTables[tableKey].RemoteQuery
@@ -327,7 +327,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// </summary>
         /// <param name="table"></param>
         /// <param name="source"></param>
-        public async Task CopyRemoteTableAsync(string tableKey, SourceTableQuery source)
+        public async Task CopyRemoteTableAsync(string tableKey, SourceQuery source)
         {
             // TODO: add option to do by table or tr
 
@@ -397,7 +397,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// the destination table.
         /// </summary>
         /// <returns></returns>
-        public SourceTableQuery GetExecuteSourceQuery()
+        public SourceQuery GetExecuteSourceQuery()
         {
             // Source query will be run on the code database to have
             // access to UDTs
@@ -407,7 +407,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             return source;
         }
 
-        public async Task ExecuteQueryAsync(SourceTableQuery source)
+        public async Task ExecuteQueryAsync(SourceQuery source)
         {
             // TODO
             // rewrite this to execute query and bulk-insert data reader

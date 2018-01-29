@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             set { table = value; }
         }
 
-        public IO.Tasks.SourceTableQuery GetSourceTableQuery(FederationContext context)
+        public IO.Tasks.SourceTable GetSourceTableQuery(FederationContext context)
         {
             TableOrView sourcetable;
 
@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 throw new InvalidOperationException("Cannot read data from the specified dataset.");  // TODO ***
             }
 
-            var sourcequery = IO.Tasks.SourceTableQuery.Create(sourcetable);
+            var sourcequery = IO.Tasks.SourceTable.Create(sourcetable);
 
             return sourcequery;
         }

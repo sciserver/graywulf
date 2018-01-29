@@ -15,12 +15,16 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
+    // TODO: this will soon become obsolate, though this is a shortcut to
+    // write the results of simple selects into a target table
+    // Won't work with scripts
+
     [ServiceContract(SessionMode = SessionMode.Required)]
     [RemoteService(typeof(CopyTable))]
     [NetDataContract]
     public interface IInsertIntoTable : ICopyTableBase
     {
-        SourceTableQuery Source
+        SourceQuery Source
         {
             [OperationContract]
             get;
@@ -43,10 +47,10 @@ namespace Jhu.Graywulf.IO.Tasks
         IncludeExceptionDetailInFaults = true)]
     public class InsertIntoTable : CopyTableBase, IInsertIntoTable, ICloneable
     {
-        private SourceTableQuery source;
+        private SourceQuery source;
         private DestinationTable destination;
 
-        public SourceTableQuery Source
+        public SourceQuery Source
         {
             get { return source; }
             set { source = value; }
@@ -92,16 +96,21 @@ namespace Jhu.Graywulf.IO.Tasks
             return new InsertIntoTable(this);
         }
 
+        protected override TableCopyResult CreateResult()
+        {
+            return source.CreateResult();
+        }
+
         protected override async Task OnExecuteAsync()
         {
             if (source == null)
             {
-                throw new InvalidOperationException();  // *** TODO
+                throw Error.SourceNull();
             }
 
             if (destination == null)
             {
-                throw new InvalidOperationException();  // *** TODO
+                throw Error.DestinationNull();
             }
 
             var table = destination.GetTable();
@@ -118,35 +127,37 @@ namespace Jhu.Graywulf.IO.Tasks
 
             var sql = new StringBuilder();
 
-            if (source.Header != null)
+            switch (source)
             {
-                sql.AppendLine(source.Header);
+                case SourceQuery query:
+                    if (query.Header != null)
+                    {
+                        sql.AppendLine(((SourceQuery)source).Header);
+                    }
+                    break;
             }
 
-            if (source.Query != null)
-            {
+            sql.AppendFormat(
+                "INSERT INTO [{0}].[{1}].[{2}] WITH (TABLOCKX) {3}",
+                table.DatabaseName,
+                table.SchemaName,
+                table.TableName,
+                source.Query);
+            sql.AppendLine();
 
-                sql.AppendFormat(
-                    "INSERT INTO [{0}].[{1}].[{2}] WITH (TABLOCKX) {3}",
-                    table.DatabaseName,
-                    table.SchemaName,
-                    table.TableName,
-                    source.Query);
-                sql.AppendLine();
-            }
-
-            if (source.Footer != null)
+            switch (source)
             {
-                sql.AppendLine(source.Footer);
+                case SourceQuery query:
+                    if (query.Footer != null)
+                    {
+                        sql.AppendLine(query.Footer);
+                    }
+                    break;
             }
 
             // Prepare results
-            var result = new TableCopyResult()
-            {
-                SchemaName = source.SchemaName,
-                TableName = source.ObjectName,
-            };
-
+            var result = source.CreateResult();
+            result.TargetTable = table;
             Results.Add(result);
 
             // No exception bypass logic here,

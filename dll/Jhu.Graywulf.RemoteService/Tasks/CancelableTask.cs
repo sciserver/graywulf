@@ -185,7 +185,7 @@ namespace Jhu.Graywulf.Tasks
                 }
                 else
                 {
-                    throw helper.DispatchException();
+                    System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(helper.DispatchException()).Throw();
                 }
             }
         }

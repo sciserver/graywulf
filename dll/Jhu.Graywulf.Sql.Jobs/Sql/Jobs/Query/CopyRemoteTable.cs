@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var activityInstanceId = activityContext.ActivityInstanceId;
             SqlQueryPartition querypartition = (SqlQueryPartition)QueryPartition.Get(activityContext);
             string remoteTable = RemoteTable.Get(activityContext);
-            SourceTableQuery source;
+            SourceQuery source;
 
             using (RegistryContext context = querypartition.Query.CreateContext())
             {

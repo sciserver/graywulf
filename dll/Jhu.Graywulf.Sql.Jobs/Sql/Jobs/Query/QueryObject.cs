@@ -1269,7 +1269,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <param name="destination"></param>
         /// <param name="local"></param>
         /// <returns></returns>
-        protected ServiceModel.ServiceProxy<ICopyTable> CreateTableCopyTask(SourceTableQuery source, DestinationTable destination, bool local)
+        protected ServiceModel.ServiceProxy<ICopyTable> CreateTableCopyTask(SourceQuery source, DestinationTable destination, bool local)
         {
             var desthost = GetHostnameFromSqlConnectionString(destination.Dataset.ConnectionString);
 

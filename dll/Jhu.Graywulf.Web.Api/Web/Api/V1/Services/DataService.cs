@@ -88,7 +88,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             // Create source
 
             // -- Build a query to export everything
-            var source = SourceTableQuery.Create(table, toplimit);
+            var source = SourceTable.Create(table, toplimit);
 
             // Pick a random server, if necessary
             if (table.Dataset is GraywulfDataset)

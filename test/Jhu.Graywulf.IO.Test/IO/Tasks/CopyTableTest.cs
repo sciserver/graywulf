@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 IsMutable = true
             };
 
-            var source = new SourceTableQuery()
+            var source = new SourceQuery()
             {
                 Dataset = ds,
                 Query = "SELECT * FROM SampleData_PrimaryKey"

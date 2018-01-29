@@ -90,12 +90,22 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.PostgreSql
                 GetResolvedTableName(tableReference.DatabaseName, tableReference.SchemaName, tableReference.DatabaseObjectName));
         }
 
+        public override string GenerateSelectStarQuery(TableReference tableReference, string orderBy, long from, long max)
+        {
+            throw new NotImplementedException();
+        }
+
         public override string GenerateSelectStarQuery(TableOrView tableOrView, int top)
         {
             return String.Format(
                 "SELECT t.* FROM {1} AS t {0}",
                 GenerateTopExpression(top),
                 GetResolvedTableName(tableOrView.DatabaseName, tableOrView.SchemaName, tableOrView.ObjectName));
+        }
+
+        public override string GenerateSelectStarQuery(TableOrView tableOrView, string orderBy, long from, long max)
+        {
+            throw new NotImplementedException();
         }
 
         protected override string GenerateTopExpression(int top)
@@ -107,6 +117,11 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.PostgreSql
             }
 
             return topstr;
+        }
+
+        protected override string GenerateOffsetExpression(long from, long max)
+        {
+            throw new NotImplementedException();
         }
 
         public override string GenerateMostRestrictiveTableQuery(string tableName, string tableAlias, string columnList, string where, int top)

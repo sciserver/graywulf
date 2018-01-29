@@ -67,6 +67,7 @@ namespace Jhu.Graywulf.Format
         public string Name
         {
             get { return file.CurrentBlock.Name; }
+            set {  }
         }
 
         public long RecordCount

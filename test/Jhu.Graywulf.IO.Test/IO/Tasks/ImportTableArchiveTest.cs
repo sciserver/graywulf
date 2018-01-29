@@ -131,7 +131,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 for (int i = 0; i < it.Value.Results.Count(); i++)
                 {
-                    table = IOTestDataset.Tables[null, it.Value.Results[i].SchemaName, it.Value.Results[i].TableName];
+                    table = IOTestDataset.Tables[null, it.Value.Results[i].TargetTable.SchemaName, it.Value.Results[i].TargetTable.TableName];
                     Assert.AreEqual(columnCount[i], table.Columns.Count);
                 }
             }

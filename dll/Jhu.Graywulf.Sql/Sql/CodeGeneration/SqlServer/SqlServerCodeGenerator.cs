@@ -100,12 +100,34 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
                 GetResolvedTableName(tableReference.DatabaseName, tableReference.SchemaName, tableReference.DatabaseObjectName));
         }
 
+        public override string GenerateSelectStarQuery(TableReference tableReference, string orderBy, long from, long max)
+        {
+            var offset = String.IsNullOrWhiteSpace(orderBy) ? null : GenerateOffsetExpression(from, max);
+
+            return String.Format(
+                "SELECT * FROM {0} {1} {2}",
+                GetResolvedTableName(tableReference.DatabaseName, tableReference.SchemaName, tableReference.DatabaseObjectName),
+                orderBy,
+                offset);
+        }
+
         public override string GenerateSelectStarQuery(TableOrView tableOrView, int top)
         {
             return String.Format(
                 "SELECT {0} * FROM {1}",
                 GenerateTopExpression(top),
                 GetResolvedTableName(tableOrView.DatabaseName, tableOrView.SchemaName, tableOrView.ObjectName));
+        }
+
+        public override string GenerateSelectStarQuery(TableOrView tableOrView, string orderBy, long from, long max)
+        {
+            var offset = String.IsNullOrWhiteSpace(orderBy) ? null : GenerateOffsetExpression(from, max);
+
+            return String.Format(
+                "SELECT * FROM {0} {1} {2}",
+                GetResolvedTableName(tableOrView.DatabaseName, tableOrView.SchemaName, tableOrView.ObjectName),
+                orderBy,
+                offset);
         }
 
         protected override string GenerateTopExpression(int top)
@@ -118,6 +140,24 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 
             return topstr;
         }
+
+        protected override string GenerateOffsetExpression(long from, long max)
+        {
+            string sql = "";
+
+            if (from > 0)
+            {
+                sql += "OFFSET " + from + " ROWS";
+
+                if (max > 0)
+                {
+                    sql += " FETCH NEXT " + max + " ROWS ONLY";
+                }
+            }
+
+            return sql;
+        }
+
 
         #endregion
         #region Most restrictive query generation

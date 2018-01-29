@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         protected ServiceModel.ServiceProxy<IExportTable> CreateTableExportTask(CancellationContext cancellationContext, string path, string query, bool remote)
         {
-            var source = new SourceTableQuery()
+            var source = new SourceQuery()
             {
                 Dataset = new Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString),
                 Query = query

@@ -657,6 +657,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public abstract string GenerateSelectStarQuery(TableReference tableReference, int top);
 
+        public abstract string GenerateSelectStarQuery(TableReference tableReference, string orderBy, long from, long max);
+
         /// <summary>
         /// 
         /// </summary>
@@ -669,7 +671,11 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         /// <remarks>This is used by the web interface's 'peek' function</remarks>
         public abstract string GenerateSelectStarQuery(TableOrView tableOrView, int top);
 
+        public abstract string GenerateSelectStarQuery(TableOrView tableOrView, string orderBy, long from, long max);
+
         protected abstract string GenerateTopExpression(int top);
+
+        protected abstract string GenerateOffsetExpression(long from, long max);
         
         public abstract string GenerateMostRestrictiveTableQuery(string tableName, string tableAlias, string columnList, string where, int top);
 

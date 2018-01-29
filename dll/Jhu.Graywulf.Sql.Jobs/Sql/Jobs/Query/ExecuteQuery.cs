@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
-            SourceTableQuery source;
+            SourceQuery source;
 
             using (RegistryContext context = querypartition.Query.CreateContext())
             {

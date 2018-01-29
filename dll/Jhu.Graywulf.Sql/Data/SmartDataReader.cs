@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.Data
 
                 return name;
             }
-            internal set { name = value; }
+            set { name = value; }
         }
 
         public long RecordCount

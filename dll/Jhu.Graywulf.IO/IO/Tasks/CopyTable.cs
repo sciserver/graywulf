@@ -7,6 +7,7 @@ using Jhu.Graywulf.Components;
 using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
+using Jhu.Graywulf.Data;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
@@ -15,7 +16,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [NetDataContract]
     public interface ICopyTable : ICopyTableBase
     {
-        SourceTableQuery Source
+        SourceQuery Source
         {
             [OperationContract]
             get;
@@ -34,25 +35,37 @@ namespace Jhu.Graywulf.IO.Tasks
 
     /// <summary>
     /// Implements functions to copy the results of a query into a table,
-    /// possibly on another server.
+    /// or a table into another table, possibly on another server.
     /// </summary>
+    /// <remarks>
+    /// If specified in the destination table class, the output tables will
+    /// be automatically created based on the schema of the resultset.
+    /// Queries might return multiple results, in this case multiple output
+    /// tables will be generated.
+    /// </remarks>
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
     public class CopyTable : CopyTableBase, ICopyTable, ICloneable
     {
-        private SourceTableQuery source;
+        private SourceQuery source;
         private DestinationTable destination;
 
-        public SourceTableQuery Source
+        public SourceQuery Source
         {
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return source; }
+
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { source = value; }
         }
 
         public DestinationTable Destination
         {
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return destination; }
+
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { destination = value; }
         }
 
@@ -90,47 +103,26 @@ namespace Jhu.Graywulf.IO.Tasks
             return new CopyTable(this);
         }
 
+        protected override TableCopyResult CreateResult()
+        {
+            return source.CreateResult();
+        }
+
         protected override async Task OnExecuteAsync()
         {
             if (source == null)
             {
-                throw new InvalidOperationException();  // *** TODO
+                throw Error.SourceNull();
             }
 
             if (destination == null)
             {
-                throw new InvalidOperationException();  // *** TODO
+                throw Error.DestinationNull();
             }
-
-            // Prepare results
-            var result = new TableCopyResult()
-            {
-                SchemaName = source.SchemaName,
-                TableName = source.ObjectName,
-            };
-
-            Results.Add(result);
 
             // No exception bypass logic here,
-            // server to server copies should always throw an exception
-
-            // Create command that reads the table
-            using (var cn = await source.OpenConnectionAsync(CancellationContext.Token))
-            {
-                using (var tn = cn.BeginTransaction(IsolationLevel.ReadUncommitted))
-                {
-                    using (var cmd = source.CreateCommand())
-                    {
-                        cmd.Connection = cn;
-                        cmd.Transaction = tn;
-                        cmd.CommandTimeout = Timeout;
-
-                        await CopyFromCommandAsync(cmd, destination, result);
-
-                        tn.Commit();
-                    }
-                }
-            }
+            // server to server table copies should always throw an exception
+            await CopyToTableAsync(source, destination);
         }
     }
 }

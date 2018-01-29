@@ -6,6 +6,7 @@ using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Format;
+using Jhu.Graywulf.Data;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
@@ -62,7 +63,10 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         public DataFileBase Source
         {
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return source; }
+
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { source = value; }
         }
 
@@ -71,13 +75,19 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         public DestinationTable Destination
         {
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return destination; }
+
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { destination = value; }
         }
 
         public ImportTableOptions Options
         {
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return options; }
+
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { options = value; }
         }
 
@@ -138,6 +148,14 @@ namespace Jhu.Graywulf.IO.Tasks
             source.Close();
         }
 
+        protected override TableCopyResult CreateResult()
+        {
+            return new TableCopyResult()
+            {
+                SourceFileName = source.Uri == null ? null : Util.UriConverter.GetFilename(source.Uri),
+            };
+        }
+
         /// <summary>
         /// Executes the copy operation.
         /// </summary>
@@ -145,21 +163,13 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             if (source == null)
             {
-                throw new InvalidOperationException();  // *** TODO
+                throw Error.SourceNull();
             }
 
             if (destination == null)
             {
-                throw new InvalidOperationException();  // *** TODO
+                throw Error.DestinationNull();
             }
-
-            // Prepare results
-            var result = new TableCopyResult()
-            {
-                FileName = source.Uri == null ? null : Util.UriConverter.GetFilename(source.Uri),
-            };
-
-            Results.Add(result);
 
             if (options != null)
             {
@@ -175,11 +185,11 @@ namespace Jhu.Graywulf.IO.Tasks
                     await OpenAsync();
                 }
 
-                await CopyFromFileAsync(source, destination, result);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, result);
+                // Import the file by wrapping it into a dummy command
+                using (var cmd = new FileCommand(source))
+                {
+                    await CopyToTableAsync(cmd, destination);
+                }
             }
             finally
             {

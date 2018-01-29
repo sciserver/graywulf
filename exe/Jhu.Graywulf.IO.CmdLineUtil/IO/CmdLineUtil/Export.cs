@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
                 this.query = System.IO.File.ReadAllText(this.query);
             }
 
-            var source = new SourceTableQuery()
+            var source = new SourceQuery()
             {
                 Dataset = dataset,
                 Query = this.query,

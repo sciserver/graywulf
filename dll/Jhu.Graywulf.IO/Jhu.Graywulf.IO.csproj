@@ -138,8 +138,11 @@
     <Compile Include="IO\Tasks\CopyTable.cs" />
     <Compile Include="IO\Tasks\CopyTableBase.cs" />
     <Compile Include="IO\Tasks\Enum.cs" />
+    <Compile Include="IO\Tasks\Error.cs" />
     <Compile Include="IO\Tasks\ImportTableOptions.cs" />
     <Compile Include="IO\Tasks\InsertIntoTable.cs" />
+    <Compile Include="IO\Tasks\SourceQuery.cs" />
+    <Compile Include="IO\Tasks\SourceTable.cs" />
     <Compile Include="IO\Tasks\TableCopyException.cs" />
     <Compile Include="IO\Tasks\TableCopyResult.cs" />
     <Compile Include="IO\Tasks\TableCopyResults.cs" />
@@ -151,7 +154,6 @@
     <Compile Include="IO\Tasks\ICopyDataStream.cs" />
     <Compile Include="IO\Tasks\ImportTable.cs" />
     <Compile Include="IO\Tasks\ImportTableArchive.cs" />
-    <Compile Include="IO\Tasks\SourceTableQuery.cs" />
     <Compile Include="IO\Tasks\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

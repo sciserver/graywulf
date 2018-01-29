@@ -16,6 +16,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
     public enum TableCopyStatus
     {
+        Unknown,
         Success,
         Skipped,
         Failed,

@@ -10,5 +10,13 @@ namespace Jhu.Graywulf.IO.Tasks
     [CollectionDataContract]
     public class TableCopyResults : List<TableCopyResult>
     {
+        public TableCopyResults()
+        {
+        }
+
+        public TableCopyResults(TableCopyResults old)
+            :base(old)
+        {
+        }
     }
 }

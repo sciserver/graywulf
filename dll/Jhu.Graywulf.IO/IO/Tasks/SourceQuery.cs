@@ -18,13 +18,11 @@ namespace Jhu.Graywulf.IO.Tasks
     /// </summary>
     [Serializable]
     [DataContract]
-    public class SourceTableQuery : ICloneable
+    public class SourceQuery : ICloneable
     {
         #region Private member variables
 
         private DatasetBase dataset;
-        private string schemaName;
-        private string objectName;
         private string header;
         private string query;
         private string footer;
@@ -37,31 +35,10 @@ namespace Jhu.Graywulf.IO.Tasks
         /// Gets or sets the dataset on which this query can be executed.
         /// </summary>
         [DataMember]
-        public DatasetBase Dataset
+        public virtual DatasetBase Dataset
         {
             get { return dataset; }
             set { dataset = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the schema name of the table or view from
-        /// which data is to be returned.
-        /// </summary>
-        [DataMember]
-        public string SchemaName
-        {
-            get { return schemaName; }
-            set { schemaName = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the name table from which data is returned.
-        /// </summary>
-        [DataMember]
-        public string ObjectName
-        {
-            get { return objectName; }
-            set { objectName = value; }
         }
 
         /// <summary>
@@ -78,7 +55,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// Gets or sets the text of the query.
         /// </summary>
         [DataMember]
-        public string Query
+        public virtual string Query
         {
             get { return query; }
             set { query = value; }
@@ -104,59 +81,37 @@ namespace Jhu.Graywulf.IO.Tasks
         #endregion
         #region Constructors and initializers
 
-        public SourceTableQuery()
+        public SourceQuery()
         {
             InitializeMembers();
         }
 
-        public SourceTableQuery(SourceTableQuery old)
+        public SourceQuery(SourceQuery old)
         {
             CopyMembers(old);
-        }
-
-        public static SourceTableQuery Create(TableOrView table)
-        {
-            return Create(table, Int32.MaxValue);
-        }
-
-        public static SourceTableQuery Create(TableOrView table, int top)
-        {
-            var cg = Sql.CodeGeneration.CodeGeneratorFactory.CreateCodeGenerator(table.Dataset.ProviderName);
-
-            return new SourceTableQuery()
-            {
-                Dataset = table.Dataset,
-                SchemaName = table.SchemaName,
-                ObjectName = table.ObjectName,
-                Query = cg.GenerateSelectStarQuery(table, top)
-            };
         }
 
         private void InitializeMembers()
         {
             this.dataset = null;
-            this.schemaName = null;
-            this.objectName = null;
             this.header = null;
             this.query = null;
             this.footer = null;
             this.parameters = new Dictionary<string, object>();
         }
 
-        private void CopyMembers(SourceTableQuery old)
+        private void CopyMembers(SourceQuery old)
         {
             this.dataset = Util.DeepCloner.CloneObject(old.dataset);
-            this.schemaName = old.schemaName;
-            this.objectName = old.objectName;
             this.header = old.header;
             this.query = old.query;
             this.footer = old.footer;
             this.parameters = new Dictionary<string, object>(old.parameters);
         }
 
-        public object Clone()
+        public virtual object Clone()
         {
-            return new SourceTableQuery(this);
+            return new SourceQuery(this);
         }
 
         #endregion
@@ -167,30 +122,49 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <returns></returns>
         internal Task<DbConnection> OpenConnectionAsync(CancellationToken cancellationToken)
         {
-            return dataset.OpenConnectionAsync(cancellationToken);
+            return Dataset.OpenConnectionAsync(cancellationToken);
         }
 
+        public async Task<IList<Column>> GetColumnsAsync(CancellationToken cancellationToken)
+        {
+            using (var cn = await OpenConnectionAsync(cancellationToken))
+            {
+                using (var cmd = CreateCommand())
+                {
+                    cmd.Connection = cn;
+
+                    using (var dr = await cmd.ExecuteReaderAsync(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo, cancellationToken))
+                    {
+                        return dr.Columns;
+                    }
+                }
+            }
+        }
+        
         /// <summary>
         /// Creates a database command that can be used to execute the query.
         /// </summary>
         /// <returns></returns>
-        internal ISmartCommand CreateCommand()
+        internal virtual ISmartCommand CreateCommand()
         {
             var dbf = DbProviderFactories.GetFactory(dataset.ProviderName);
             var cmd = new SmartCommand(dataset, dbf.CreateCommand());
 
             var sql = new StringBuilder();
 
+            var header = Header;
             if (header != null)
             {
                 sql.Append(header);
             }
 
+            var query = Query;
             if (query != null)
             {
                 sql.Append(query);
             }
 
+            var footer = Footer;
             if (footer != null)
             {
                 sql.Append(footer);
@@ -213,20 +187,9 @@ namespace Jhu.Graywulf.IO.Tasks
             return cmd;
         }
 
-        public async Task<IList<Column>> GetColumnsAsync(CancellationToken cancellationToken)
+        public virtual TableCopyResult CreateResult()
         {
-            using (var cn = await OpenConnectionAsync(cancellationToken))
-            {
-                using (var cmd = CreateCommand())
-                {
-                    cmd.Connection = cn;
-
-                    using (var dr = await cmd.ExecuteReaderAsync(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo, cancellationToken))
-                    {
-                        return dr.Columns;
-                    }
-                }
-            }
+            return new TableCopyResult();
         }
     }
 }

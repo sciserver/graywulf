@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [NetDataContract]
     public interface IExportTable : ICopyTableBase, ICopyDataStream
     {
-        SourceTableQuery Source
+        SourceQuery Source
         {
             [OperationContract]
             get;
@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.IO.Tasks
     {
         #region Private member variables
 
-        private SourceTableQuery source;
+        private SourceQuery source;
         private DataFileBase destination;
 
         #endregion
@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// Gets or sets the source query of the export operation.
         /// </summary>
-        public SourceTableQuery Source
+        public SourceQuery Source
         {
             get { return source; }
             set { source = value; }
@@ -121,6 +121,14 @@ namespace Jhu.Graywulf.IO.Tasks
             destination.Close();
         }
 
+        protected override TableCopyResult CreateResult()
+        {
+            return new TableCopyResult()
+            {
+                TargetFileName = destination.Uri == null ? null : Util.UriConverter.GetFilename(destination.Uri),
+            };
+        }
+
         /// <summary>
         /// Executes the table export operation
         /// </summary>
@@ -128,22 +136,13 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             if (source == null)
             {
-                throw new InvalidOperationException();  // *** TODO
+                throw Error.SourceNull();
             }
 
             if (destination == null)
             {
-                throw new InvalidOperationException();  // *** TODO
+                throw Error.DestinationNull();
             }
-
-            // Prepare results
-            var result = new TableCopyResult()
-            {
-                SchemaName = source.SchemaName,
-                TableName = source.ObjectName,
-            };
-
-            Results.Add(result);
 
             try
             {
@@ -152,11 +151,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     await OpenAsync();
                 }
 
-                await CopyToFileAsync(source, destination, result);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, result);
+                await CopyToFileAsync(source, destination);
             }
             finally
             {

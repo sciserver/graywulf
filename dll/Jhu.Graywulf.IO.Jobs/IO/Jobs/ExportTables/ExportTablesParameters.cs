@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.IO.Jobs.ExportTables
     {
         #region Private member variables
 
-        private SourceTableQuery[] sources;
+        private SourceQuery[] sources;
         private DataFileBase[] destinations;
         private Uri uri;
         private Credentials credentials;
@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.IO.Jobs.ExportTables
         /// Gets or sets an array of tables that will be exported.
         /// </summary>
         [DataMember]
-        public SourceTableQuery[] Sources
+        public SourceQuery[] Sources
         {
             get { return sources; }
             set { sources = value; }

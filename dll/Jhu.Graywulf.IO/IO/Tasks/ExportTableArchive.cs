@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [NetDataContract]
     public interface IExportTableArchive : ICopyTableArchiveBase
     {
-        SourceTableQuery[] Sources
+        SourceQuery[] Sources
         {
             [OperationContract]
             get;
@@ -42,8 +42,10 @@ namespace Jhu.Graywulf.IO.Tasks
     {
         #region Private member variables
 
-        private SourceTableQuery[] sources;
+        private SourceQuery[] sources;
         private DataFileBase[] destinations;
+
+        private int current;
 
         #endregion
         #region Properties
@@ -51,7 +53,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// Gets or sets the sources of the export operation.
         /// </summary>
-        public SourceTableQuery[] Sources
+        public SourceQuery[] Sources
         {
             get { return sources; }
             set { sources = value; }
@@ -105,6 +107,11 @@ namespace Jhu.Graywulf.IO.Tasks
 
         #endregion
 
+        protected override TableCopyResult CreateResult()
+        {
+            return sources[current].CreateResult();
+        }
+
         /// <summary>
         /// Opens the archive file for writing.
         /// </summary>
@@ -112,7 +119,7 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             await OpenAsync(DataFileMode.Write, DataFileArchival.Automatic);
         }
-
+        
         /// <summary>
         /// Executes the table export operation
         /// </summary>
@@ -157,15 +164,8 @@ namespace Jhu.Graywulf.IO.Tasks
             // Iterate through all source queries
             for (int i = 0; i < sources.Length; i++)
             {
-                // Prepare results
-                var result = new TableCopyResult()
-                {
-                    SchemaName = sources[i].SchemaName,
-                    TableName = sources[i].ObjectName,
-                };
-
-                Results.Add(result);
-
+                current = i;
+                
                 try
                 {
                     // Open the destination file that will be written into the archive
@@ -175,15 +175,18 @@ namespace Jhu.Graywulf.IO.Tasks
                     // or new files need to be created for every single resultset
 
                     destinations[i].Open(BaseStream, DataFileMode.Write);
-                    await CopyToFileAsync(sources[i], destinations[i], result);
+                    await CopyToFileAsync(sources[i], destinations[i]);
                 }
                 catch (Exception ex)
                 {
+                    var result = CreateResult();
                     HandleException(ex, result);
+                    Results.Add(result);
+                    continue;
                 }
                 finally
                 {
-                    destinations[i].Close();
+                    destinations[i].Dispose();
                 }
             }
 

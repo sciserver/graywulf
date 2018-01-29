@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.IO.Jobs.CopyTables
     {
         #region Private member variables
 
-        private SourceTableQuery source;
+        private SourceTable source;
         private DestinationTable destination;
         private bool dropSourceTable;
 
@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.IO.Jobs.CopyTables
         #region Properties
 
         [DataMember]
-        public SourceTableQuery Source
+        public SourceTable Source
         {
             get { return source; }
             set { source = value; }

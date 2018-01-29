@@ -68,14 +68,14 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         #endregion
         #region Basic query rewrite functions
 
-        public SourceTableQuery GetExecuteQuery(QueryDetails query)
+        public SourceQuery GetExecuteQuery(QueryDetails query)
         {
             // Make a clone so that the parsing tree can be modified
             query = new QueryDetails(query);
             return OnGetExecuteQuery(query);
         }
 
-        protected virtual SourceTableQuery OnGetExecuteQuery(QueryDetails query)
+        protected virtual SourceQuery OnGetExecuteQuery(QueryDetails query)
         {
             var sql = new StringBuilder();
 
@@ -91,7 +91,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             sql.AppendLine(Execute(query.ParsingTree));
 
-            var source = new SourceTableQuery()
+            var source = new SourceQuery()
             {
                 Query = sql.ToString(),
             };
@@ -777,7 +777,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
         }
 
-        public void AppendPartitioningConditionParameters(SourceTableQuery q)
+        public void AppendPartitioningConditionParameters(SourceQuery q)
         {
             if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyMin))
             {

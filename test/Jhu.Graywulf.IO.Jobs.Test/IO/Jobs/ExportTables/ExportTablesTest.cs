@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.IO.Jobs.ExportTables
                     TableName = tableName
                 };
 
-                var source = SourceTableQuery.Create(table);
+                var source = SourceTable.Create(table);
 
                 // Set the file name (within the archive)
                 var destination = new Jhu.Graywulf.Format.DelimitedTextDataFile();
@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.IO.Jobs.ExportTables
 
                 var parameters = new ExportTablesParameters()
                 {
-                    Sources = new SourceTableQuery[] { source },
+                    Sources = new SourceQuery[] { source },
                     Destinations = new DataFileBase[] { destination },
                     Uri = Util.UriConverter.FromFilePath(path),
                     Archival = IO.DataFileArchival.Automatic,
