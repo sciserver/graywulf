@@ -588,7 +588,7 @@ namespace Jhu.Graywulf.Format
 
         #endregion
         #region Block-based read and write functions
-
+        
         /// <summary>
         /// When overloaded in a derived class, reads the file header.
         /// </summary>
@@ -719,6 +719,11 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         protected internal abstract Task OnReadFooterAsync();
 
+        public Task WriteHeaderAsync()
+        {
+            return OnWriteHeaderAsync();
+        }
+
         /// <summary>
         /// When overloaded in a derived class, writers the file header.
         /// </summary>
@@ -760,6 +765,11 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        public Task WriteFooterAsync()
+        {
+            return OnWriteFooterAsync();
+        }
+
         /// <summary>
         /// When overriden in a derived class, writes the file footer.
         /// </summary>
@@ -776,24 +786,6 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region DataReader and Writer functions
 
-        public async Task WriteFromDataCommandAsync(ISmartCommand cmd)
-        {
-            using (var dr = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess, CancellationToken.None))
-            {
-                await WriteFromDataReaderAsync((ISmartDataReader)dr, true);
-            }
-        }
-
-        public void WriteFromDataCommand(ISmartCommand cmd)
-        {
-            Util.TaskHelper.Wait(WriteFromDataCommandAsync(cmd));
-        }
-
-        public Task WriteFromDataReaderAsync(ISmartDataReader dr)
-        {
-            return WriteFromDataReaderAsync(dr, false);
-        }
-
         public void WriteFromDataReader(ISmartDataReader dr)
         {
             Util.TaskHelper.Wait(WriteFromDataReaderAsync(dr));
@@ -803,22 +795,9 @@ namespace Jhu.Graywulf.Format
         /// Writes the resultsets from a data reader into a file.
         /// </summary>
         /// <param name="dr"></param>
-        private async Task WriteFromDataReaderAsync(ISmartDataReader dr, bool multiple)
+        public async Task WriteFromDataReaderAsync(ISmartDataReader dr)
         {
-            if (multiple && !this.Description.CanHoldMultipleDatasets)
-            {
-                throw new InvalidOperationException("File can hold a single table only.");    // TODO
-            }
-
-            await OnWriteHeaderAsync();
-
-            do
-            {
-                await WriteNextBlockAsync(dr);
-            }
-            while (multiple && dr.NextResult());
-
-            await OnWriteFooterAsync();
+            await WriteNextBlockAsync(dr);
         }
 
         #endregion

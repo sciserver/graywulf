@@ -138,6 +138,9 @@
   <data name="FileNotArchine" xml:space="preserve">
     <value>The file is not an archive.</value>
   </data>
+  <data name="MultipleDatasetsUnsupported" xml:space="preserve">
+    <value>The file format does not support multiple datasets.</value>
+  </data>
   <data name="SourceNull" xml:space="preserve">
     <value>The source of the operation cannot be null.</value>
   </data>

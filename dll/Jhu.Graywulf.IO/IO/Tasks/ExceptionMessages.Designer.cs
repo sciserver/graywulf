@@ -124,6 +124,15 @@ namespace Jhu.Graywulf.IO.Tasks {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file format does not support multiple datasets..
+        /// </summary>
+        internal static string MultipleDatasetsUnsupported {
+            get {
+                return ResourceManager.GetString("MultipleDatasetsUnsupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The source of the operation cannot be null..
         /// </summary>
         internal static string SourceNull {

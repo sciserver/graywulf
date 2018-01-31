@@ -345,12 +345,19 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private async Task CopyToFileAsync(ISmartCommand cmd, DataFileBase destination)
         {
+            await destination.WriteHeaderAsync();
+
             using (var sdr = await cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationContext.Token))
             {
                 int q = 0;
-
+                
                 do
                 {
+                    if (q > 0 && !destination.Description.CanHoldMultipleDatasets)
+                    {
+                        throw Error.MultipleDatasetsUnsupported();
+                    }
+
                     var result = CreateResult();
 
                     // Take name from smart data reader or generate automatically
@@ -366,6 +373,8 @@ namespace Jhu.Graywulf.IO.Tasks
                 }
                 while (await sdr.NextResultAsync(CancellationContext.Token));
             }
+
+            await destination.WriteFooterAsync();
         }
 
         /// <summary>
@@ -375,8 +384,6 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <param name="destination"></param>
         private async Task CopyToFileAsync(ISmartDataReader sdr, DataFileBase destination, TableCopyResult result)
         {
-            // TODO multiple resultsets?
-
             try
             {
                 await destination.WriteFromDataReaderAsync(sdr);

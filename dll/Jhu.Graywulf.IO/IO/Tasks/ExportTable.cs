@@ -154,6 +154,10 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 await CopyToFileAsync(source, destination);
             }
+            catch (Exception)
+            {
+                throw;
+            }
             finally
             {
                 Close();

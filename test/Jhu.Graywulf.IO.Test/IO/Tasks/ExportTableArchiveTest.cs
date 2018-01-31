@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             using (var cancellationContext = new CancellationContext())
             {
-                var zippath = "TableExportArchiveTest_ExportZipTest.zip";
+                var zippath = GetTestUniqueName() + ".zip";
                 var path = "test.csv";
 
                 using (var task = GetTableExportTask(cancellationContext, Util.UriConverter.FromFilePath(zippath), path, false))
@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 }
             }
         }
-
+        
         [TestMethod]
         public void RemoteExportZipTest()
         {
@@ -91,5 +91,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 }
             }
         }
+
+        // TODO: add multi-source and multi-resultset tests
     }
 }

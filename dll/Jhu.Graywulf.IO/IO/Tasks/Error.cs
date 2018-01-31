@@ -27,5 +27,10 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             return new TableCopyException(ExceptionMessages.FileNotArchine);
         }
+
+        public static TableCopyException MultipleDatasetsUnsupported()
+        {
+            return new TableCopyException(ExceptionMessages.MultipleDatasetsUnsupported);
+        }
     }
 }

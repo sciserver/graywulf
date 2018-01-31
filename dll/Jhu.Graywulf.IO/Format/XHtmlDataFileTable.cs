@@ -85,7 +85,7 @@ namespace Jhu.Graywulf.Format
             
             await File.XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordTR, null);
 
-            // Write columns
+            // Write columns (name)
             for (int i = 0; i < Columns.Count; i++)
             {
                 await File.XmlWriter.WriteElementStringAsync(null, Constants.HtmlKeywordTH, null, Columns[i].Name);
@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.Format
             await File.XmlWriter.WriteEndElementAsync();   // tr
             await File.XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordTR, null);
 
-            // Write columns
+            // Write columns (data type)
             for (int i = 0; i < Columns.Count; i++)
             {
                 await File.XmlWriter.WriteElementStringAsync(null, Constants.HtmlKeywordTH, null, Columns[i].DataType.TypeNameWithLength);

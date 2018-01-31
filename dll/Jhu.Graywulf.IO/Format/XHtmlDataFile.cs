@@ -177,12 +177,12 @@ namespace Jhu.Graywulf.Format
         protected override async Task OnWriteHeaderAsync()
         {
             await XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordHtml, null);
-            await XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordBody, null);
+            
             await XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordHead, null);
-
             await XmlWriter.WriteElementStringAsync(null, Constants.HtmlKeywordStyle, null, XHtmlDataFileResources.XHtmlDataFileStyle);
-
             await XmlWriter.WriteEndElementAsync();    // head
+
+            await XmlWriter.WriteStartElementAsync(null, Constants.HtmlKeywordBody, null);
         }
 
         /// <summary>

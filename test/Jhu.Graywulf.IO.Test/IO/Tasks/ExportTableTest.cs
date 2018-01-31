@@ -25,11 +25,10 @@ namespace Jhu.Graywulf.IO.Tasks
                 Dataset = new Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString),
                 Query = query
             };
-            
-            var destination = new DelimitedTextDataFile()
-            {
-                Uri = Util.UriConverter.FromFilePath(path)
-            };
+
+            var uri = Util.UriConverter.FromFilePath(path);
+            var ff = FileFormatFactory.Create(null);
+            var destination = ff.CreateFile(uri, out string filename, out string extensions, out DataFileCompression compression);
 
             ServiceModel.ServiceProxy<IExportTable> te = null;
             if (remote)
@@ -71,6 +70,26 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 var path = GetTestUniqueName() + ".csv";
                 var query = "SELECT * FROM EmptyTable";
+
+                using (var dfe = CreateTableExportTask(cancellationContext, path, query, false))
+                {
+                    dfe.Value.ExecuteAsync().Wait();
+
+                    Assert.IsTrue(File.Exists(path));
+                    File.Delete(path);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ExportMultipleTablesTest()
+        {
+            using (var cancellationContext = new CancellationContext())
+            {
+                var path = GetTestUniqueName() + ".html";
+                var query =
+@"SELECT * FROM SampleData
+SELECT * FROM SampleData";
 
                 using (var dfe = CreateTableExportTask(cancellationContext, path, query, false))
                 {
