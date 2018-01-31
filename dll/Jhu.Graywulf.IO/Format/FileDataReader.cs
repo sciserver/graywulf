@@ -24,6 +24,9 @@ namespace Jhu.Graywulf.Format
         private int blockCounter;
         private long rowCounter;
 
+        private string queryName;
+        private string resultsetName;
+
         #endregion
         #region IDataReader properties
 
@@ -64,10 +67,16 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Properties
 
-        public string Name
+        public string QueryName
         {
-            get { return file.CurrentBlock.Name; }
-            set {  }
+            get { return queryName ?? file.Name; }
+            set { queryName = value; }
+        }
+
+        public string ResultsetName
+        {
+            get { return resultsetName ?? file.CurrentBlock.Name; }
+            set { resultsetName = value; }
         }
 
         public long RecordCount
@@ -120,6 +129,9 @@ namespace Jhu.Graywulf.Format
 
             this.blockCounter = -1;
             this.rowCounter = -1;
+
+            this.queryName = null;
+            this.resultsetName = null;
         }
 
         public new void Dispose()
@@ -143,6 +155,7 @@ namespace Jhu.Graywulf.Format
             if (await file.ReadNextBlockAsync() != null)
             {
                 blockCounter++;
+                resultsetName = null;
                 return true;
             }
             else

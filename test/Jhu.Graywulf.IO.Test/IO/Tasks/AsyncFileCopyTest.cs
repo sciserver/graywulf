@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.Threading.Tasks;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Test;
@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         [TestMethod]
-        public void DefaultTest()
+        public async Task DefaultTest()
         {
             var name = GetTestUniqueName();
 
@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 CreateTestFile(afc.Source);
                 DeleteTestFile(afc.Destination);
 
-                afc.ExecuteAsync();
+                await afc.ExecuteAsync();
             }
         }
     }

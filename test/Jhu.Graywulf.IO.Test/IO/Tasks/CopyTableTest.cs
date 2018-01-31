@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Sql.Schema;
@@ -93,11 +93,13 @@ namespace Jhu.Graywulf.IO.Tasks
                     var table = GetTestUniqueName();
                     using (var q = GetTableCopy(cancellationContext, table, true))
                     {
-                        DropTable(q.Value.Destination.GetTable());
+                        var destination = q.Value.Destination;
+                        DropTable(destination.GetTable());
 
                         q.Value.ExecuteAsync().Wait();
 
-                        DropTable(q.Value.Destination.GetTable());
+                        destination = q.Value.Destination;
+                        DropTable(destination.GetTable());
                     }
                 }
             }

@@ -35,6 +35,7 @@ namespace Jhu.Graywulf.IO.Tasks
     /// <summary>
     /// Implements functions to export tables into data files.
     /// </summary>
+    [Serializable]
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
@@ -125,7 +126,7 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             return new TableCopyResult()
             {
-                TargetFileName = destination.Uri == null ? null : Util.UriConverter.GetFilename(destination.Uri),
+                DestinationFileName = destination.Uri == null ? null : Util.UriConverter.GetFilename(destination.Uri),
             };
         }
 

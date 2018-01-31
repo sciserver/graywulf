@@ -67,6 +67,27 @@ namespace Jhu.Graywulf.RemoteService
         }
 
         [TestMethod]
+        public void MultipleRemoteExecuteTest()
+        {
+            using (RemoteServiceTester.Instance.GetToken())
+            {
+                RemoteServiceTester.Instance.EnsureRunning();
+
+                using (var cancellationContext = new CancellationContext())
+                {
+                    using (var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
+                    {
+                        c.Value.ExecuteAsync().Wait();
+                        c.Value.ExecuteAsync().Wait();
+                        c.Value.ExecuteAsync().Wait();
+
+                        Assert.IsFalse(c.Value.IsCancellationRequested);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
         public void CancelRemoteExecuteTest()
         {
             using (RemoteServiceTester.Instance.GetToken())

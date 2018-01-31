@@ -157,7 +157,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
             // Prepare results
             var result = source.CreateResult();
-            result.TargetTable = table;
+            result.DestinationTable = table.UniqueKey;
             Results.Add(result);
 
             // No exception bypass logic here,

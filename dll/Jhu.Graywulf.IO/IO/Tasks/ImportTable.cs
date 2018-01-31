@@ -44,6 +44,7 @@ namespace Jhu.Graywulf.IO.Tasks
     /// Extends basic table copy functionality to import the tables from a file
     /// into database tables.
     /// </summary>
+    [Serializable]
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]

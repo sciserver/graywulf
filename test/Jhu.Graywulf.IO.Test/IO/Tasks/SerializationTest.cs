@@ -63,5 +63,14 @@ namespace Jhu.Graywulf.IO.Tasks
             var sc = new Jhu.Graywulf.Activities.SerializableChecker();
             Assert.IsTrue(sc.Execute(t));
         }
+
+        [TestMethod]
+        public void TableCopyResultSerializableTest()
+        {
+            var t = typeof(Jhu.Graywulf.IO.Tasks.TableCopyResult);
+
+            var sc = new Jhu.Graywulf.Activities.SerializableChecker();
+            Assert.IsTrue(sc.Execute(t));
+        }
     }
 }

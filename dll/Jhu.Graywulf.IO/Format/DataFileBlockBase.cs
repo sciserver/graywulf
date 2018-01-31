@@ -137,7 +137,7 @@ namespace Jhu.Graywulf.Format
 
         internal void SetProperties(ISmartDataReader dr)
         {
-            this.name = dr.Name;
+            this.name = dr.ResultsetName;
             this.recordCount = dr.RecordCount;
             this.metadata = Util.DeepCloner.CloneObject(dr.Metadata);
 

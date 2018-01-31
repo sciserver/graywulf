@@ -46,6 +46,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
+    [Serializable]
     public class CopyTable : CopyTableBase, ICopyTable, ICloneable
     {
         private SourceQuery source;

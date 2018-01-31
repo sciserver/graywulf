@@ -11,6 +11,7 @@ namespace Jhu.Graywulf.RemoteService
     /// <summary>
     /// Implements methods to execute and cancel delegated long-running tasks.
     /// </summary>
+    [Serializable]
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]

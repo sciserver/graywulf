@@ -108,6 +108,8 @@ namespace Jhu.Graywulf.Format
         [NonSerialized]
         private int blockCounter;
 
+        private bool isProcessingEntry;
+
         #endregion
         #region Properties
 
@@ -531,7 +533,7 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         public virtual void Close()
         {
-            if (FileMode == DataFileMode.Write && IsArchive)
+            if (FileMode == DataFileMode.Write && IsArchive && isProcessingEntry)
             {
                 CloseArchiveEntry();
             }
@@ -573,6 +575,7 @@ namespace Jhu.Graywulf.Format
             var arch = (IArchiveOutputStream)BaseStream;
             var entry = arch.CreateFileEntry(filename, length);
             arch.WriteNextEntry(entry);
+            isProcessingEntry = true;
             return entry;
         }
 
@@ -580,6 +583,7 @@ namespace Jhu.Graywulf.Format
         {
             var arch = (IArchiveOutputStream)BaseStream;
             arch.CloseEntry();
+            isProcessingEntry = false;
         }
 
         #endregion

@@ -8,6 +8,9 @@ using Jhu.Graywulf.Sql.Schema.SqlServer;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
+    // TODO: consider movind naming pattern logic into a
+    // derived class and keep this for well-known tables only
+
     /// <summary>
     /// Represents the destination of a table copy operation.
     /// </summary>

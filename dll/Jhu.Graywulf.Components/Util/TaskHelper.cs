@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Util
             {
                 if (ex.InnerExceptions.Count == 1)
                 {
-                    throw ex.InnerException;
+                    System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
                 }
                 else
                 {

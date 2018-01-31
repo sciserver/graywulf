@@ -79,6 +79,10 @@ namespace Jhu.Graywulf.IO.Tasks
     /// <summary>
     /// Implements core functions to copy tables to/from files and databases.
     /// </summary>
+    [Serializable]
+    [ServiceBehavior(
+        InstanceContextMode = InstanceContextMode.PerSession,
+        IncludeExceptionDetailInFaults = true)]
     public abstract class CopyTableBase : RemoteServiceBase, ICopyTableBase, ICloneable, IDisposable
     {
         #region Private member variables
@@ -269,58 +273,47 @@ namespace Jhu.Graywulf.IO.Tasks
                 do
                 {
                     var result = CreateResult();
-
-                    // Take name from smart data reader or generate automatically
-                    if (String.IsNullOrWhiteSpace(sdr.Name) && q != 0)
+                    
+                    try
                     {
-                        sdr.Name = q.ToString();
+                        // DestinationTable has the property TableNameTemplate which needs to
+                        // be evaluated now
+
+                        // TODO: how to deal with multiple tables in files inside archives?
+                        var queryName = sdr.QueryName;
+                        var resultsetName = sdr.ResultsetName ?? q.ToString();
+
+                        var table = destination.GetTable(batchName, queryName, resultsetName, sdr.Metadata);
+                        result.DestinationTable = table.UniqueKey;
+
+                        // Certain data readers cannot determine the columns from the data file,
+                        // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
+                        // from the destination table instead
+                        if ((destination.Options & TableInitializationOptions.Create) == 0 &&
+                            sdr is FileDataReader &&
+                            (sdr.Columns == null || sdr.Columns.Count == 0))
+                        {
+                            var fdr = (FileDataReader)sdr;
+                            fdr.CreateColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
+                        }
+
+                        // TODO: make schema operation async
+                        table.Initialize(sdr.Columns, destination.Options);
+
+                        await ExecuteBulkCopyAsync(sdr, table, result);
+                    }
+                    catch (Exception ex)
+                    {
+                        HandleException(ex, result);
                     }
 
-                    await CopyToTableAsync(sdr, destination, result);
                     Results.Add(result);
                     q++;
                 }
                 while (await sdr.NextResultAsync(CancellationContext.Token));
             }
         }
-
-        /// <summary>
-        /// Copies recordsets by executing a command and stores results
-        /// in destination tables.
-        /// </summary>
-        /// <param name="cmd"></param>
-        /// <param name="destination"></param>
-        private async Task CopyToTableAsync(ISmartDataReader sdr, DestinationTable destination, TableCopyResult result)
-        {
-            try
-            {
-                // DestinationTable has the property TableNameTemplate which needs to
-                // be evaluated now
-                var table = destination.GetTable(batchName, sdr.Name, null, sdr.Metadata);
-                result.TargetTable = table;
-
-                // Certain data readers cannot determine the columns from the data file,
-                // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
-                // from the destination table instead
-                if ((destination.Options & TableInitializationOptions.Create) == 0 &&
-                    sdr is FileDataReader &&
-                    (sdr.Columns == null || sdr.Columns.Count == 0))
-                {
-                    var fdr = (FileDataReader)sdr;
-                    fdr.CreateColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
-                }
-
-                // TODO: make schema operation async
-                table.Initialize(sdr.Columns, destination.Options);
-
-                await ExecuteBulkCopyAsync(sdr, table, result);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, result);
-            }
-        }
-
+        
         #endregion
         #region Export functions
 
@@ -361,9 +354,9 @@ namespace Jhu.Graywulf.IO.Tasks
                     var result = CreateResult();
 
                     // Take name from smart data reader or generate automatically
-                    if (String.IsNullOrWhiteSpace(sdr.Name) && q != 0)
+                    if (String.IsNullOrWhiteSpace(sdr.ResultsetName) && q != 0)
                     {
-                        sdr.Name = q.ToString();
+                        sdr.ResultsetName = q.ToString();
                     }
 
                     await CopyToFileAsync(sdr, destination, result);

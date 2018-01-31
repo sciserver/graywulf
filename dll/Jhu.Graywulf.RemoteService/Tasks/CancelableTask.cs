@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Xml.Serialization;
 using System.ServiceModel;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.ServiceModel;
 
@@ -132,8 +133,8 @@ namespace Jhu.Graywulf.Tasks
 
             if (cancellationContext == null)
             {
-                cancellationContext = new Tasks.CancellationContext();
-                ownsCancellationContext = true;
+                this.cancellationContext = new Tasks.CancellationContext();
+                this.ownsCancellationContext = true;
             }
             else
             {

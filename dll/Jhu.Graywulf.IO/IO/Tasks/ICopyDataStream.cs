@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [NetDataContract]
     public interface ICopyDataStream : IRemoteService
     {
-        [OperationContract]
+        [OperationContract(AsyncPattern = true)]
         Task OpenAsync();
 
         [OperationContract]

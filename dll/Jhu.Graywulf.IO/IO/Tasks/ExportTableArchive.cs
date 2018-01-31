@@ -35,6 +35,7 @@ namespace Jhu.Graywulf.IO.Tasks
     /// Implements functions to export a set of tables into a set of files, all wrapped
     /// into a single archive.
     /// </summary>
+    [Serializable]
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]

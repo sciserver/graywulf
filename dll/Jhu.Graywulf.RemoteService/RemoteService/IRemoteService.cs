@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.RemoteService
     [NetDataContract]
     public interface IRemoteService : Jhu.Graywulf.Tasks.ICancelableTask
     {
-        [OperationContract]
+        [OperationContract(AsyncPattern = true)]
         Task ExecuteAsync();
     }
 }

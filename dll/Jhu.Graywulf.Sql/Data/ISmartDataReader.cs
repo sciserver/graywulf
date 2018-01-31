@@ -9,7 +9,8 @@ namespace Jhu.Graywulf.Data
 {
     public interface ISmartDataReader : IDataReader
     {
-        string Name { get; set; }
+        string QueryName { get; set; }
+        string ResultsetName { get; set; }
         long RecordCount { get; }
         DatabaseObjectMetadata Metadata { get; }
 

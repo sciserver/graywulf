@@ -129,9 +129,11 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 ExecuteImportTableArchiveTest(it.Value);
 
+                var results = it.Value.Results;
+
                 for (int i = 0; i < it.Value.Results.Count(); i++)
                 {
-                    table = IOTestDataset.Tables[null, it.Value.Results[i].TargetTable.SchemaName, it.Value.Results[i].TargetTable.TableName];
+                    table = IOTestDataset.Tables[it.Value.Results[i].DestinationTable];
                     Assert.AreEqual(columnCount[i], table.Columns.Count);
                 }
             }

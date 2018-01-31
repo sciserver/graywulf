@@ -33,6 +33,7 @@ namespace Jhu.Graywulf.IO.Tasks
     /// Extends core table copy functionality with function to read and write tables
     /// from/to archive files containing multiple files.
     /// </summary>
+    [Serializable]
     public abstract class CopyTableArchiveBase : CopyTableBase, ICopyTableArchiveBase, ICloneable, IDisposable
     {
         #region Private member variables

@@ -14,10 +14,10 @@ namespace Jhu.Graywulf.IO.Tasks
     {
         #region Private member variables
 
-        private TableOrView sourceTable;
+        private string sourceTable;
         private string sourceFileName;
-        private Table targetTable;
-        private string targetFileName;
+        private string destinationTable;
+        private string destinationFileName;
         private long recordsAffected;
         private TableCopyStatus status;
         private string error;
@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         [DataMember]
         [DefaultValue(null)]
-        public TableOrView SourceTable
+        public string SourceTable
         {
             get { return sourceTable; }
             set { sourceTable = value; }
@@ -43,18 +43,18 @@ namespace Jhu.Graywulf.IO.Tasks
 
         [DataMember]
         [DefaultValue(null)]
-        public Table TargetTable
+        public string DestinationTable
         {
-            get { return targetTable; }
-            set { targetTable = value; }
+            get { return destinationTable; }
+            set { destinationTable = value; }
         }
 
         [DataMember]
         [DefaultValue(null)]
-        public string TargetFileName
+        public string DestinationFileName
         {
-            get { return targetFileName; }
-            set { targetFileName = value; }
+            get { return destinationFileName; }
+            set { destinationFileName = value; }
         }
 
         [DataMember]
@@ -96,8 +96,8 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             this.sourceTable = null;
             this.sourceFileName = null;
-            this.targetTable = null;
-            this.targetFileName = null;
+            this.destinationTable = null;
+            this.destinationFileName = null;
             this.recordsAffected = -1;
             this.status = TableCopyStatus.Unknown;
             this.error = null;
@@ -107,8 +107,8 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             this.sourceTable = old.sourceTable;
             this.sourceFileName = old.sourceFileName;
-            this.targetTable = old.targetTable;
-            this.targetFileName = old.targetFileName;
+            this.destinationTable = old.destinationTable;
+            this.destinationFileName = old.destinationFileName;
             this.recordsAffected = -1;
             this.status = TableCopyStatus.Unknown;
             this.error = null;

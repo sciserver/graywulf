@@ -27,8 +27,6 @@ namespace Jhu.Graywulf.Sql.Schema
     [DataContract(Namespace = "")]
     public abstract partial class DatasetBase : ICloneable, IDatasetSafe, IMetadata
     {
-        private object syncRoot = new object();
-
         #region Property storage member variables
 
         [NonSerialized]
@@ -1240,14 +1238,12 @@ namespace Jhu.Graywulf.Sql.Schema
 
             LogError(ex);
 
-            lock (syncRoot)
-            {
-                this.lastException = ex;
+            this.lastException = ex;
 
-                if (failOnError)
-                {
-                    this.IsInError = true;
-                }
+            if (failOnError)
+            {
+                this.IsInError = true;
+            }
 
 #if BREAKDEBUG
             if (System.Diagnostics.Debugger.IsAttached)
@@ -1255,8 +1251,6 @@ namespace Jhu.Graywulf.Sql.Schema
                 System.Diagnostics.Debugger.Break();
             }
 #endif
-
-            }
         }
 
         protected Logging.Event LogError(Exception ex)

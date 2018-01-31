@@ -17,7 +17,8 @@ namespace Jhu.Graywulf.Data
         private DbDataReader dataReader;
         private int resultsetCounter;
         private List<long> recordCounts;
-        private string name;
+        private string queryName;
+        private string resultsetName;
         private DatabaseObjectMetadata metadata;
         private List<Column> columns;
         private List<TypeMapping> typeMappings;
@@ -68,18 +69,32 @@ namespace Jhu.Graywulf.Data
             get { return dataset; }
         }
 
-        public string Name
+        public string QueryName
         {
             get
             {
-                if (name == null)
+                if (queryName == null)
                 {
                     LoadMetadata();
                 }
 
-                return name;
+                return queryName;
             }
-            set { name = value; }
+            set { queryName = value; }
+        }
+
+        public string ResultsetName
+        {
+            get
+            {
+                if (resultsetName == null)
+                {
+                    LoadMetadata();
+                }
+
+                return resultsetName;
+            }
+            set { resultsetName = value; }
         }
 
         public long RecordCount
@@ -156,7 +171,8 @@ namespace Jhu.Graywulf.Data
             this.dataReader = null;
             this.resultsetCounter = 0;
             this.recordCounts = null;
-            this.name = null;
+            this.queryName = null;
+            this.resultsetName = null;
             this.metadata = null;
             this.columns = null;
             this.typeMappings = null;
@@ -178,7 +194,8 @@ namespace Jhu.Graywulf.Data
 
         public override bool NextResult()
         {
-            name = null;
+            queryName = null;
+            resultsetName = null;
             metadata = null;
             columns = null;
 

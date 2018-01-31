@@ -132,7 +132,6 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
-        [TestMethod]
         public void ImportFromHttpTestHelper(string url)
         {
             using (var cancellationContext = new CancellationContext())

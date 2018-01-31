@@ -88,7 +88,8 @@ namespace Jhu.Graywulf.Web.Api.V1
             // Create source
 
             // -- Build a query to export everything
-            var source = SourceTable.Create(table, toplimit);
+            // TODO: review this and add top, from, max and order by to web service
+            var source = Jhu.Graywulf.IO.Tasks.SourceTable.Create(table, null, 0, toplimit);
 
             // Pick a random server, if necessary
             if (table.Dataset is GraywulfDataset)
