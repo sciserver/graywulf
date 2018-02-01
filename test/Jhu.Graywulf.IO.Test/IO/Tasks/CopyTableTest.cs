@@ -25,6 +25,11 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private ServiceModel.ServiceProxy<ICopyTable> GetTableCopy(CancellationContext cancellationContext, string tableName, bool remote)
         {
+            return GetTableCopy(cancellationContext, null, tableName, remote);
+        }
+
+        private ServiceModel.ServiceProxy<ICopyTable> GetTableCopy(CancellationContext cancellationContext, string sql, string tableName, bool remote)
+        {
             ServiceModel.ServiceProxy<ICopyTable> q = null;
             if (remote)
             {
@@ -43,12 +48,11 @@ namespace Jhu.Graywulf.IO.Tasks
             var source = new SourceQuery()
             {
                 Dataset = ds,
-                Query = "SELECT * FROM SampleData_PrimaryKey"
+                Query = sql ?? "SELECT * FROM SampleData_PrimaryKey"
             };
 
             q.Value.Source = source;
 
-          
             var destination = new DestinationTable()
             {
                 Dataset = ds,
@@ -64,7 +68,7 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         [TestMethod]
-        public void ImportTableTest()
+        public void SimpleTableCopyTest()
         {
             using (var cancellationContext = new CancellationContext())
             {
@@ -82,7 +86,31 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         [TestMethod]
-        public void RemoteTableTest()
+        public void MultipleTableCopyTest()
+        {
+            var sql =
+@"SELECT * FROM SampleData_PrimaryKey
+SELECT * FROM SampleData_PrimaryKey";
+
+            using (var cancellationContext = new CancellationContext())
+            {
+                var table = GetTestUniqueName() + "_" + Constants.ResultsetNameToken;
+
+                using (var q = GetTableCopy(cancellationContext, sql, table, false))
+                {
+                    DropTable(q.Value.Destination.GetTable(null, null, "0", null));
+                    DropTable(q.Value.Destination.GetTable(null, null, "1", null));
+
+                    q.Value.ExecuteAsync().Wait();
+
+                    DropTable(q.Value.Destination.GetTable(null, null, "0", null));
+                    DropTable(q.Value.Destination.GetTable(null, null, "1", null));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void RemoteSimpleTableCopyTest()
         {
             using (RemoteServiceTester.Instance.GetToken())
             {
@@ -100,6 +128,55 @@ namespace Jhu.Graywulf.IO.Tasks
 
                         destination = q.Value.Destination;
                         DropTable(destination.GetTable());
+
+                        var r = q.Value.Results;
+
+                        Assert.AreEqual(TableCopyStatus.Success, r[0].Status);
+                        Assert.AreEqual(2, r[0].RecordsAffected);
+                        Assert.AreEqual("Table|TEST|Graywulf_IO_Test|dbo|CopyTableTest_RemoteSimpleTableCopyTest", r[0].DestinationTable);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void RemoteMultipleTableCopyTest()
+        {
+            var sql =
+@"SELECT * FROM SampleData_PrimaryKey
+SELECT * FROM SampleData_PrimaryKey";
+
+            using (RemoteServiceTester.Instance.GetToken())
+            {
+                RemoteServiceTester.Instance.EnsureRunning();
+
+                using (var cancellationContext = new CancellationContext())
+                {
+                    var table = GetTestUniqueName() + "_" + Constants.ResultsetNameToken;
+
+                    using (var q = GetTableCopy(cancellationContext, sql, table, true))
+                    {
+                        var destination = q.Value.Destination;
+
+                        DropTable(destination.GetTable(null, null, "0", null));
+                        DropTable(destination.GetTable(null, null, "1", null));
+
+                        q.Value.ExecuteAsync().Wait();
+
+                        destination = q.Value.Destination;
+
+                        DropTable(destination.GetTable(null, null, "0", null));
+                        DropTable(destination.GetTable(null, null, "1", null));
+
+                        var r = q.Value.Results;
+
+                        Assert.AreEqual(TableCopyStatus.Success, r[0].Status);
+                        Assert.AreEqual(2, r[0].RecordsAffected);
+                        Assert.AreEqual("Table|TEST|Graywulf_IO_Test|dbo|CopyTableTest_RemoteMultipleTableCopyTest_0", r[0].DestinationTable);
+
+                        Assert.AreEqual(TableCopyStatus.Success, r[1].Status);
+                        Assert.AreEqual(2, r[1].RecordsAffected);
+                        Assert.AreEqual("Table|TEST|Graywulf_IO_Test|dbo|CopyTableTest_RemoteMultipleTableCopyTest_1", r[1].DestinationTable);
                     }
                 }
             }

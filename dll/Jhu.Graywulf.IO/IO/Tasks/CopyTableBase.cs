@@ -367,6 +367,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     }
 
                     await CopyToFileAsync(sdr, destination, result);
+
                     Results.Add(result);
 
                     q++;
@@ -388,6 +389,7 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 await destination.WriteFromDataReaderAsync(sdr);
                 result.RecordsAffected = sdr.RecordsAffected;
+                result.Status = TableCopyStatus.Success;
             }
             catch (Exception ex)
             {
@@ -406,9 +408,8 @@ namespace Jhu.Graywulf.IO.Tasks
             // Bulk insert is a tricky animal. To get best performance, batch size
             // has to be set to zero and table locking has to be set on. This prevents
             // writing the data into the transaction log prior to copying it to
-            // the table. The database recovery model needs to be set to simple.            
+            // the table. The database recovery model needs to be set to simple.
 
-            // TODO: it can only import the first resultset from dr
             var cg = new SqlServerCodeGenerator();
             var dr = (DbDataReader)sdr;
 
@@ -435,6 +436,8 @@ namespace Jhu.Graywulf.IO.Tasks
             try
             {
                 await sbc.WriteToServerAsync(dr, CancellationContext.Token);
+                result.RecordsAffected = sbc.RecordsAffected();
+                result.Status = TableCopyStatus.Success;
             }
             catch (OperationAbortedException)
             {

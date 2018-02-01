@@ -143,6 +143,7 @@
     <Compile Include="IO\Tasks\InsertIntoTable.cs" />
     <Compile Include="IO\Tasks\SourceQuery.cs" />
     <Compile Include="IO\Tasks\SourceTable.cs" />
+    <Compile Include="IO\Tasks\SqlBulkCopyExtensions.cs" />
     <Compile Include="IO\Tasks\TableCopyException.cs" />
     <Compile Include="IO\Tasks\TableCopyResult.cs" />
     <Compile Include="IO\Tasks\TableCopyResults.cs" />
