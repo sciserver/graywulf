@@ -104,6 +104,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Base.config" />
     <None Include="build.config" />
     <None Include="packages.config" />

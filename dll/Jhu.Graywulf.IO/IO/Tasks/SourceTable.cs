@@ -28,7 +28,9 @@ namespace Jhu.Graywulf.IO.Tasks
         public override DatasetBase Dataset
         {
             get { return table.Dataset; }
-            set { throw new InvalidOperationException(); }
+            set
+            { // Do nothing, it would break deserialization 
+            }
         }
 
         public override string Query
@@ -42,7 +44,9 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 return sql;
             }
-            set { throw new InvalidOperationException(); }
+            set
+            { // Do nothing, it would break deserialization
+            }
         }
 
         /// <summary>
@@ -127,7 +131,7 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         #endregion
-        
+
         /// <summary>
         /// Creates a database command that can be used to execute the query.
         /// </summary>
@@ -141,7 +145,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
             cmd.CommandText = sql;
             cmd.CommandType = CommandType.Text;
-                        
+
             return cmd;
         }
 
@@ -150,7 +154,7 @@ namespace Jhu.Graywulf.IO.Tasks
             return new TableCopyResult()
             {
                 SourceTable = table.UniqueKey,
-                
+
             };
         }
     }

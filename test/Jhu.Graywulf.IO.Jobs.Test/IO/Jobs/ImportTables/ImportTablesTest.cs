@@ -24,6 +24,7 @@ namespace Jhu.Graywulf.IO.Jobs.ExportTables
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
+            StartLogger();
             InitializeJobTests();
         }
 
@@ -31,6 +32,7 @@ namespace Jhu.Graywulf.IO.Jobs.ExportTables
         public static void CleanUp()
         {
             CleanupJobTests();
+            StopLogger();
         }
 
         protected Guid ScheduleImportTableJob(string path, string tableName, QueueType queueType)
