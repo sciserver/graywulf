@@ -48,7 +48,25 @@ namespace Jhu.Graywulf.RemoteService
         }
 
         [TestMethod]
-        public void RemoteExecuteTest()
+        public async Task RemoteExecuteTest()
+        {
+            using (RemoteServiceTester.Instance.GetToken())
+            {
+                RemoteServiceTester.Instance.EnsureRunning();
+
+                using (var cancellationContext = new CancellationContext())
+                {
+                    using (var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
+                    {
+                        await c.Value.ExecuteAsync();
+                        Assert.IsFalse(await c.Value.IsCancellationRequestedAsync());
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public async Task MultipleRemoteExecuteTest()
         {
             using (RemoteServiceTester.Instance.GetToken())
             {
@@ -59,36 +77,17 @@ namespace Jhu.Graywulf.RemoteService
                     using (var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
                     {
                         c.Value.ExecuteAsync().Wait();
+                        c.Value.ExecuteAsync().Wait();
+                        c.Value.ExecuteAsync().Wait();
 
-                        Assert.IsFalse(c.Value.IsCancellationRequested);
+                        Assert.IsFalse(await c.Value.IsCancellationRequestedAsync());
                     }
                 }
             }
         }
 
         [TestMethod]
-        public void MultipleRemoteExecuteTest()
-        {
-            using (RemoteServiceTester.Instance.GetToken())
-            {
-                RemoteServiceTester.Instance.EnsureRunning();
-
-                using (var cancellationContext = new CancellationContext())
-                {
-                    using (var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
-                    {
-                        c.Value.ExecuteAsync().Wait();
-                        c.Value.ExecuteAsync().Wait();
-                        c.Value.ExecuteAsync().Wait();
-
-                        Assert.IsFalse(c.Value.IsCancellationRequested);
-                    }
-                }
-            }
-        }
-
-        [TestMethod]
-        public void CancelRemoteExecuteTest()
+        public async Task CancelRemoteExecuteTest()
         {
             using (RemoteServiceTester.Instance.GetToken())
             {
@@ -97,25 +96,28 @@ namespace Jhu.Graywulf.RemoteService
                 using (var cancellationContext = new CancellationContext())
                 using (var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
                 {
-                    c.Value.Period = 10000;
-
                     var start = DateTime.Now;
-                    var task = c.Value.ExecuteAsync();
 
-                    System.Threading.Thread.Sleep(1000);
-                    c.Value.Cancel();
+                    new Task(() =>
+                    {
+                        System.Threading.Thread.Sleep(1000);
+                        c.Value.CancelAsync();
+                    }).Start();
+                    
+                    await c.Value.ExecuteAsync(10000, false);
 
-                    task.Wait();
                     Assert.IsTrue((DateTime.Now - start).TotalMilliseconds < 5000);
-                    Assert.IsTrue(c.Value.IsCancelled);
+                    Assert.IsTrue(await c.Value.IsCancelledAsync());
                 }
             }
         }
 
         [TestMethod]
         [ExpectedException(typeof(System.ServiceModel.FaultException<System.ServiceModel.ExceptionDetail>))]
-        public void CancelFailingRemoteExecuteTest()
+        public async Task CancelFailingRemoteExecuteTest()
         {
+            // TODO: If it is cancelled, it won't throw the exception
+
             using (RemoteServiceTester.Instance.GetToken())
             {
                 RemoteServiceTester.Instance.EnsureRunning();
@@ -124,26 +126,26 @@ namespace Jhu.Graywulf.RemoteService
                 {
                     using (var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
                     {
-                        c.Value.Period = 10000;
-
                         var start = DateTime.Now;
-                        var task = c.Value.ExecuteAsync();
 
-                        Thread.Sleep(1000);
-                        c.Value.Cancel();
+                        new Task(() =>
+                        {
+                            System.Threading.Thread.Sleep(1000);
+                            c.Value.CancelAsync();
+                        }).Start();
 
-                        Util.TaskHelper.Wait(task);
-
+                        await c.Value.ExecuteAsync(10000, true);
+                        
                         Assert.IsTrue((DateTime.Now - start).TotalMilliseconds < 5000);
-                        Assert.IsTrue(c.Value.IsCancellationRequested);
-                        Assert.IsTrue(c.Value.IsCancelled);
+                        Assert.IsTrue(await c.Value.IsCancellationRequestedAsync());
+                        Assert.IsTrue(await c.Value.IsCancelledAsync());
                     }
                 }
             }
         }
 
         [TestMethod]
-        public void CancelProcessInterleavedTest()
+        public async Task CancelProcessInterleavedTest()
         {
             // Here we test that the two remote calls are directed
             // to separate service instances
@@ -155,75 +157,26 @@ namespace Jhu.Graywulf.RemoteService
                 {
                     using (var c1 = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
                     {
-                        c1.Value.Period = 10000;
-                        var task1 = c1.Value.ExecuteAsync();
+                        new Task(() =>
+                        {
+                            System.Threading.Thread.Sleep(1000);
+                            c1.Value.CancelAsync();
+                        }).Start();
 
-                        Thread.Sleep(1000);
+                        await c1.Value.ExecuteAsync(10000, false);
 
                         using (var c2 = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
                         {
-                            c2.Value.Period = 10000;
-                            var task2 = c2.Value.ExecuteAsync();
+                            new Task(() =>
+                            {
+                                System.Threading.Thread.Sleep(1000);
+                                c2.Value.CancelAsync();
+                            }).Start();
 
-                            c1.Value.Cancel();
-
-                            Thread.Sleep(1000);
-
-                            c2.Value.Cancel();
-
-                            Util.TaskHelper.Wait(task1);
-                            Util.TaskHelper.Wait(task2);
-
-                            Assert.IsTrue(c1.Value.IsCancelled);
-                            Assert.IsTrue(c2.Value.IsCancelled);
-                        }
-                    }
-                }
-            }
-        }
-
-        [TestMethod]
-        public void CancelFailedRemoteExecuteTest()
-        {
-            using (RemoteServiceTester.Instance.GetToken())
-            {
-                RemoteServiceTester.Instance.EnsureRunning();
-
-                using (var cancellationContext = new CancellationContext())
-                {
-                    using (var c1 = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
-                    {
-                        using (var c2 = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
-                        {
-                            c2.Value.Period = 2;
-                            c1.Value.Period = 1;
-
-                            Assert.AreEqual(1, c1.Value.Period);
-                            Assert.AreEqual(2, c2.Value.Period);
-                        }
-                    }
-                }
-            }
-        }
-
-        [TestMethod]
-        public void SessionTest()
-        {
-            using (RemoteServiceTester.Instance.GetToken())
-            {
-                RemoteServiceTester.Instance.EnsureRunning();
-
-                using (var cancellationContext = new CancellationContext())
-                {
-                    using (var c1 = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
-                    {
-                        using (var c2 = RemoteServiceHelper.CreateObject<ICancelableDelay>(cancellationContext, Jhu.Graywulf.Test.Constants.Localhost, allowInProc))
-                        {
-                            c2.Value.Period = 2;
-                            c1.Value.Period = 1;
-
-                            Assert.AreEqual(1, c1.Value.Period);
-                            Assert.AreEqual(2, c2.Value.Period);
+                            await c2.Value.ExecuteAsync(10000, false);
+                            
+                            Assert.IsTrue(await c1.Value.IsCancelledAsync());
+                            Assert.IsTrue(await c2.Value.IsCancelledAsync());
                         }
                     }
                 }

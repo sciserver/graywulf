@@ -96,7 +96,14 @@ namespace Jhu.Graywulf.Format
 
         public override bool HasRows
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                // Individual file readers might now from the
+                // header whether there are rows in the file or not
+                // but returning true here is safe if there are at
+                // least columns.
+                return file.CurrentBlock.Columns.Count > 0;
+            }
         }
 
         public List<TypeMapping> TypeMappings

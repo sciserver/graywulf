@@ -1286,7 +1286,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             qi.Value.Source = source;
             qi.Value.Destination = destination;
-
+            qi.Value.BatchName = Parameters.BatchName;
+            qi.Value.Timeout = Parameters.QueryTimeout;
+            
             return qi;
         }
 

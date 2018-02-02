@@ -15,23 +15,8 @@ namespace Jhu.Graywulf.Tasks
     [RemoteService(typeof(CancelableDelay))]
     public interface ICancelableDelay : IRemoteService
     {
-        int Period
-        {
-            [OperationContract]
-            get;
-
-            [OperationContract]
-            set;
-        }
-
-        bool ThrowException
-        {
-            [OperationContract]
-            get;
-
-            [OperationContract]
-            set;
-        }
+        [OperationContract(Name = "ExecuteAsyncEx")]
+        Task ExecuteAsync(int period, bool throwException);
     }
 
     /// <summary>
@@ -49,10 +34,7 @@ namespace Jhu.Graywulf.Tasks
 
         public int Period
         {
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return period; }
-
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { period = value; }
         }
 
@@ -90,6 +72,14 @@ namespace Jhu.Graywulf.Tasks
             this.throwException = false;
         }
 
+        public Task ExecuteAsync(int period, bool throwException)
+        {
+            this.period = period;
+            this.throwException = throwException;
+
+            return base.ExecuteAsync();
+        }
+
         protected override async Task OnExecuteAsync()
         {
             var start = DateTime.Now;
@@ -106,9 +96,11 @@ namespace Jhu.Graywulf.Tasks
             Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Test, String.Format("Finished."));
         }
 
-        protected override void OnCancel()
+        protected override void OnCancelling()
         {
             Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Test, String.Format("Cancelled."));
+
+            base.OnCancelling();
         }
     }
 }

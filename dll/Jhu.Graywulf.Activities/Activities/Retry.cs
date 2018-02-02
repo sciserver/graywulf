@@ -139,6 +139,13 @@ namespace Jhu.Graywulf.Activities
 
         private void OnTryFaulted(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
         {
+#if DEBUG
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                System.Diagnostics.Debugger.Break();
+            }
+#endif
+
             var state = this.state.Get(faultContext);
             state.Exception = propagatedException;
 

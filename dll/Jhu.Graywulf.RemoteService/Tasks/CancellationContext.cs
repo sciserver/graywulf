@@ -133,6 +133,11 @@ namespace Jhu.Graywulf.Tasks
 
         public void Cancel()
         {
+            Util.TaskHelper.Wait(CancelAsync());
+        }
+
+        public async Task CancelAsync()
+        {
             // The cancellation context can be disposed by ExecuteAsync while
             // this is running here if the task completes too quickly
 
@@ -146,9 +151,9 @@ namespace Jhu.Graywulf.Tasks
                 {
                     foreach (var task in cancellableTasks)
                     {
-                        if (!task.IsCancellationRequested)
+                        if (!await task.IsCancellationRequestedAsync())
                         {
-                            task.Cancel();
+                            await task.CancelAsync();
                         }
                     }
                 }

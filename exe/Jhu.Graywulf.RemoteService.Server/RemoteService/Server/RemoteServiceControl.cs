@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ServiceModel;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Security;
 using System.Security.Principal;
 using Jhu.Graywulf.RemoteService;
@@ -21,40 +21,48 @@ namespace Jhu.Graywulf.RemoteService.Server
         IncludeExceptionDetailInFaults = true)]
     class RemoteServiceControl : IRemoteServiceControl
     {
-        public string Hello()
+        public Task<string> HelloAsync()
         {
             var res = GetType().Assembly.FullName;
             RemoteService.LogDebug("Hello called on {0}", res);
-            return res;
+            return Task.FromResult(res);
         }
 
         [OperationBehavior(Impersonation = ImpersonationOption.Required)]
-        public void WhoAmI(out string name, out bool isAuthenticated, out string authenticationType)
+        public Task<AuthenticationDetails> WhoAmIAsync()
         {
             // Switch to windows principal
             var id = WindowsIdentity.GetCurrent();
+            var details = new AuthenticationDetails()
+            {
+                Name = id.Name,
+                IsAuthenticated = id.IsAuthenticated,
+                AuthenticationType = id.AuthenticationType,
+            };
 
-            name = id.Name;
-            isAuthenticated = id.IsAuthenticated;
-            authenticationType = id.AuthenticationType;
+            RemoteService.LogDebug("Client is {0} and {1}authenticated", details.Name, details.IsAuthenticated ? "" : "not ");
 
-            RemoteService.LogDebug("Client is {0} and {1}authenticated", name, isAuthenticated ? "" : "not ");
+            return Task.FromResult(details);
         }
 
         [OperationBehavior(Impersonation = ImpersonationOption.NotAllowed)]
-        public void WhoAreYou(out string name, out bool isAuthenticated, out string authenticationType)
+        public Task<AuthenticationDetails> WhoAreYouAsync()
         {
             var id = WindowsIdentity.GetCurrent();
+            var details = new AuthenticationDetails()
+            {
+                Name = id.Name,
+                IsAuthenticated = id.IsAuthenticated,
+                AuthenticationType = id.AuthenticationType,
+            };
 
-            name = id.Name;
-            isAuthenticated = id.IsAuthenticated;
-            authenticationType = id.AuthenticationType;
+            RemoteService.LogDebug("Server is {0} and {1}authenticated", details.Name, details.IsAuthenticated ? "" : "not ");
 
-            RemoteService.LogDebug("Server is {0} and {1}authenticated", name, isAuthenticated ? "" : "not ");
+            return Task.FromResult(details);
         }
 
         [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-        public Uri GetServiceEndpointUri(string contractType)
+        public Task<Uri> GetServiceEndpointUriAsync(string contractType)
         {
             var contract = Type.GetType(contractType);
 
@@ -63,22 +71,22 @@ namespace Jhu.Graywulf.RemoteService.Server
             {
                 if (RemoteService.RegisteredEndpoints.ContainsKey(contract.FullName))
                 {
-                    return RemoteService.RegisteredEndpoints[contract.FullName].Address.Uri;
+                    return Task.FromResult(RemoteService.RegisteredEndpoints[contract.FullName].Address.Uri);
                 }
                 else
                 {
-                    return RemoteService.RegisterService(contract);
+                    return Task.FromResult(RemoteService.RegisterService(contract));
                 }
             }
         }
 
         [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-        public string[] QueryRegisteredServices()
+        public Task<string[]> QueryRegisteredServicesAsync()
         {
             // TODO: remove synchronization if possible
             lock (RemoteService.SyncRoot)
             {
-                return RemoteService.RegisteredServiceHosts.Keys.ToArray();
+                return Task.FromResult(RemoteService.RegisteredServiceHosts.Keys.ToArray());
             }
         }
     }

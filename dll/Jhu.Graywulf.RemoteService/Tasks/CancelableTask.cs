@@ -17,31 +17,22 @@ namespace Jhu.Graywulf.Tasks
     [NetDataContract]
     public interface ICancelableTask
     {
-        CancellationContext CancellationContext
-        {
-            get; set;
-        }
-
-        CancelableTaskProgress Progress
-        {
-            [OperationContract]
-            get;
-        }
-
-        bool IsCancellationRequested
-        {
-            [OperationContract]
-            get;
-        }
-
-        bool IsCancelled
-        {
-            [OperationContract]
-            get;
-        }
+        CancellationContext CancellationContext { get; set; }
 
         [OperationContract]
-        void Cancel();
+        Task<CancelableTaskProgress> GetProgressAsync();
+
+        [OperationContract]
+        Task<bool> IsCancellationRequestedAsync();
+
+        [OperationContract]
+        Task<bool> IsCancelledAsync();
+
+        [OperationContract]
+        Task CancelAsync();
+
+        [OperationContract]
+        Task ExecuteAsync();
     }
 
     /// <summary>
@@ -93,36 +84,26 @@ namespace Jhu.Graywulf.Tasks
             }
         }
 
-        /// <summary>
-        /// Gets whether the task is cancelled, either by calling the Cancel method
-        /// directly, or requesting a cancellation from the outside via a cancellation token.
-        /// </summary>
+        public CancelableTaskProgress Progress
+        {
+            get { return progress; }
+        }
+
         public bool IsCancellationRequested
         {
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return isCancellationRequested; }
         }
 
         public bool IsCancelled
         {
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return isCancelled; }
-        }
-
-        /// <summary>
-        /// Gets the status of the long running task.
-        /// </summary>
-        public CancelableTaskProgress Progress
-        {
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-            get { return progress; }
         }
 
         #endregion
         #region Constructors and initializers
 
         public CancelableTask()
-            :this(null)
+            : this(null)
         {
             // Overload
         }
@@ -164,9 +145,42 @@ namespace Jhu.Graywulf.Tasks
         #region Task logic implementation
 
         /// <summary>
+        /// Gets whether the task is cancelled, either by calling the Cancel method
+        /// directly, or requesting a cancellation from the outside via a cancellation token.
+        /// </summary>
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation(Constants.DefaultRole)]
+        public Task<bool> IsCancellationRequestedAsync()
+        {
+            return Task.FromResult(isCancellationRequested);
+        }
+
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation(Constants.DefaultRole)]
+        public Task<bool> IsCancelledAsync()
+        {
+            return Task.FromResult(isCancelled);
+        }
+
+        /// <summary>
+        /// Gets the status of the long running task.
+        /// </summary>
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation(Constants.DefaultRole)]
+        public Task<CancelableTaskProgress> GetProgressAsync()
+        {
+            return Task.FromResult(progress);
+        }
+
+        /// <summary>
         /// When overriden in derived classes, executes the task logic.
         /// </summary>
         protected abstract Task OnExecuteAsync();
+
+        public void Execute()
+        {
+            Util.TaskHelper.Wait(ExecuteAsync());
+        }
 
         [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
         [LimitedAccessOperation(Constants.DefaultRole)]
@@ -191,18 +205,22 @@ namespace Jhu.Graywulf.Tasks
             }
         }
 
+        public void Cancel()
+        {
+            Util.TaskHelper.Wait(CancelAsync());
+        }
+
         [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
         [LimitedAccessOperation(Constants.DefaultRole)]
-        public void Cancel()
+        public async Task CancelAsync()
         {
             this.isCancellationRequested = true;
 
-            OnCancel();
-
-            CancellationContext.Cancel();
+            OnCancelling();
+            await CancellationContext.CancelAsync();
         }
 
-        protected virtual void OnCancel()
+        protected virtual void OnCancelling()
         {
         }
 

@@ -39,18 +39,17 @@ namespace Jhu.Graywulf.RemoteService
 
         protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
-            string name;
-            bool isAuthenticated;
-            string authenticationType;
-
             yield return ReportInfo("Testing remoting server on {0}...", host);
+
             using (var sc = RemoteServiceHelper.GetControlObject(host, TimeSpan.FromSeconds(1)))
             {
-                sc.Value.WhoAmI(out name, out isAuthenticated, out authenticationType);
-                yield return ReportInfo("Client user: {0} ({1})", name, authenticationType);
+                AuthenticationDetails details;
 
-                sc.Value.WhoAreYou(out name, out isAuthenticated, out authenticationType);
-                yield return ReportInfo("Service user: {0} ({1})", name, authenticationType);
+                details = Util.TaskHelper.Wait(sc.Value.WhoAmIAsync());
+                yield return ReportInfo("Client user: {0} ({1})", details.Name, details.AuthenticationType);
+
+                details = Util.TaskHelper.Wait(sc.Value.WhoAreYouAsync());
+                yield return ReportInfo("Service user: {0} ({1})", details.Name, details.AuthenticationType);
             }
 
             yield return ReportSuccess("OK");

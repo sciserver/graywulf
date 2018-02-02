@@ -45,6 +45,8 @@ namespace Jhu.Graywulf.IO.Tasks
     /// </remarks>
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
+        ConcurrencyMode = ConcurrencyMode.Multiple,
+        UseSynchronizationContext = true,
         IncludeExceptionDetailInFaults = true)]
     [Serializable]
     public class CopyTable : CopyTableBase, ICopyTable, ICloneable

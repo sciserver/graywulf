@@ -110,8 +110,14 @@ namespace Jhu.Graywulf.ServiceModel
         /// <returns></returns>
         public void CreateService()
         {
+#if DEBUG
+            var timeout = TimeSpan.FromMinutes(5);
+#else
+            var timeout = TimeSpan.FromSeconds(5);
+#endif
+
             var ep = CreateEndpointUri(hostName, configuration.TcpPort, serviceName);
-            var tcp = CreateNetTcpBinding(TimeSpan.FromSeconds(5));
+            var tcp = CreateNetTcpBinding(timeout);
 
             host = new ServiceHost(serviceType, ep);
             endpoint = host.AddServiceEndpoint(contractType, tcp, ep);

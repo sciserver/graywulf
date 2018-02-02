@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Tasks
         }
 
         [TestMethod]
-        public void CancelProcessTest()
+        public async Task CancelProcessTest()
         {
             using (var cc = new CancellationContext())
             {
@@ -57,7 +57,7 @@ namespace Jhu.Graywulf.Tasks
 
                 Thread.Sleep(5000);
 
-                cc.Cancel();
+                await cc.CancelAsync();
 
                 Util.TaskHelper.Wait(task);
 

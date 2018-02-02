@@ -165,6 +165,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             var cg = CreateCodeGenerator();
 
+            RemoteOutputTables.Clear();
+
             // TODO: now it's SELECT INTO
             // extend this logic to support CREATE TABLE, INSERT, UPDATE etc.
 
@@ -205,18 +207,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                             rot.TableReferences.Add(tr);
                         }
-                    }
-                }
-
-                // Generate most restrictive queries
-                var rqg = new RemoteQueryGenerator();
-                var queries = rqg.Execute(QueryDetails, ColumnContext.AllReferenced, 0);
-
-                foreach (var key in queries.Keys)
-                {
-                    if (remoteSourceTables.ContainsKey(key))
-                    {
-                        remoteSourceTables[key].RemoteQuery = queries[key];
                     }
                 }
             }
@@ -409,24 +399,36 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         public async Task ExecuteQueryAsync(SourceQuery source)
         {
-            // TODO
-            // rewrite this to execute query and bulk-insert data reader
-            // into output table
-            // figure out how to do in parallel, directly into MYDB
+            //var hostname = AssignedServerInstance.Machine.HostName.ResolvedValue;
 
-            throw new NotImplementedException();
+            var hostname = "localhost";
 
-            /*
-            var dt = new DestinationTable(destination, TableInitializationOptions.Create);
-
-            var insert = new InsertIntoTable(CancellationContext)
+            using (var task = RemoteService.RemoteServiceHelper.CreateObject<ICopyTable>(CancellationContext, hostname, false))
             {
-                Source = source,
-                Destination = dt,
-            };
+                task.Value.Source = source;
+                task.Value.Destination = Parameters.Destination;
+                task.Value.BatchName = Parameters.BatchName;
+                task.Value.BypassExceptions = false;
+                task.Value.Timeout = Parameters.QueryTimeout;
 
-            await insert.ExecuteAsync();
-            */
+                await task.Value.ExecuteAsync();
+
+                await Task.Delay(1);
+
+                // Process output
+                foreach (var result in task.Value.Results)
+                {
+                    if (result.Status == TableCopyStatus.Success)
+                    {
+                        var rot = new RemoteOutputTable()
+                        {
+                            TempTable = TemporaryTables[result.DestinationTable]
+                        };
+
+                        remoteOutputTables.Add(result.DestinationTable, rot);
+                    }
+                }
+            }
         }
 
         #endregion
@@ -461,11 +463,46 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         }
         */
 
-        public Task PrepareDestinationTableAsync()
+        public Task PrepareDestinationTableAsync(string remoteTable)
         {
+            var rt = RemoteOutputTables[remoteTable];
+
+            // Create output table based on temp table colums
+            var tempTable = rt.TempTable;
+            var outputTable = (Table)rt.Table;
+            var columns = new List<Column>();
+
+            foreach (var name in tempTable.Columns.Keys)
+            {
+                columns.Add(new Column(tempTable.Columns[name]));
+            }
+
+            // TODO: it works now with SELECT INTO and unnamed resultsets but options will need
+            // to be changes for INSERT, UPDATE etc.
+
+            // Test table create here to support retry logic
+
+            if (!outputTable.IsExisting)
+            {
+                // TODO: make table initialization async
+                outputTable.Initialize(columns, TableInitializationOptions.Create);
+            }
+
+            // TODO: how to lock in case of multiple partitions and multiple
+            // output tables?
+
+            lock (Parameters)
+            {
+                Parameters.OutputTables.Add(outputTable);
+            }
+
+            //rt.TempTable.Columns;
+
+            // Copy columns
+
             return Task.CompletedTask;
 
-            /*
+            /* TODO: delete
             // Only initialize target table if it's still uninitialized
             if (Interlocked.Exchange(ref query.IsDestinationTableCreated, 1) == 0)
             {
@@ -481,8 +518,40 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 // At this point the name of the destination is determined
                 // mark it as the output
                 query.Output = table;
+            }*/
+        }
+
+        /// <summary>
+        /// Copies resultset from the output temporary table to the destination database (MYDB)
+        /// </summary>
+        public async Task CopyResultsetAsync(string remoteTable)
+        {
+            switch (Query.Parameters.ExecutionMode)
+            {
+                case ExecutionMode.SingleServer:
+                    // Do nothing as execute writes results directly into destination table
+                    break;
+                case ExecutionMode.Graywulf:
+                    {
+                        var rt = RemoteOutputTables[remoteTable];
+
+                        var tempTable = rt.TempTable;
+                        var outputTable = (Table)rt.Table;
+                        var columns = new List<Column>();
+
+                        var source = SourceTable.Create(rt.TempTable);
+                        var destination = DestinationTable.Create((Table)rt.Table, TableInitializationOptions.Append);
+                        
+                        // Create bulk copy task and execute it
+                        using (var tc = CreateTableCopyTask(source, destination, false))
+                        {
+                            await tc.Value.ExecuteAsync();
+                        }
+                    }
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
-            */
         }
 
         public async Task<Table> PrepareCreateDestinationTablePrimaryKeyAsync()
@@ -541,40 +610,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Copies resultset from the output temporary table to the destination database (MYDB)
-        /// </summary>
-        public async Task CopyResultsetAsync()
-        {
-            throw new NotImplementedException();
-
-            /*
-            switch (Query.ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    // Do nothing as execute writes results directly into destination table
-                    break;
-                case ExecutionMode.Graywulf:
-                    {
-                        var source = GetOutputSourceQuery();
-
-                        var destination = new DestinationTable(Query.Output, TableInitializationOptions.Append);
-
-                        DumpSqlCommand(source.Query, CommandTarget.Temp);
-
-                        // Create bulk copy task and execute it
-                        using (var tc = CreateTableCopyTask(source, destination, false))
-                        {
-                            await tc.Value.ExecuteAsync();
-                        }
-                    }
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-            */
         }
 
         #endregion

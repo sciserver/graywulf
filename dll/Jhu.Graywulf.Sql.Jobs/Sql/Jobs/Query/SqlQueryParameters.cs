@@ -307,8 +307,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             this.defaultSourceDataset = null;
             this.defaultOutputDataset = null;
             this.customDatasets = new List<DatasetBase>();
-            this.sourceTables = null;
-            this.outputTables = null;
+            this.sourceTables = new List<TableOrView>();
+            this.outputTables = new List<TableOrView>();
 
             this.executionMode = ExecutionMode.SingleServer;
         }

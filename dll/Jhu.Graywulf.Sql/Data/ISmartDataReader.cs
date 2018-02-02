@@ -11,6 +11,7 @@ namespace Jhu.Graywulf.Data
     {
         string QueryName { get; set; }
         string ResultsetName { get; set; }
+        bool HasRows { get; }
         long RecordCount { get; }
         DatabaseObjectMetadata Metadata { get; }
 

@@ -273,38 +273,45 @@ namespace Jhu.Graywulf.IO.Tasks
                 do
                 {
                     var result = CreateResult();
-                    
-                    try
+
+                    if (!sdr.HasRows)
                     {
-                        // DestinationTable has the property TableNameTemplate which needs to
-                        // be evaluated now
-
-                        // TODO: how to deal with multiple tables in files inside archives?
-                        var queryName = sdr.QueryName;
-                        var resultsetName = sdr.ResultsetName ?? q.ToString();
-
-                        var table = destination.GetTable(batchName, queryName, resultsetName, sdr.Metadata);
-                        result.DestinationTable = table.UniqueKey;
-
-                        // Certain data readers cannot determine the columns from the data file,
-                        // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
-                        // from the destination table instead
-                        if ((destination.Options & TableInitializationOptions.Create) == 0 &&
-                            sdr is FileDataReader &&
-                            (sdr.Columns == null || sdr.Columns.Count == 0))
-                        {
-                            var fdr = (FileDataReader)sdr;
-                            fdr.CreateColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
-                        }
-
-                        // TODO: make schema operation async
-                        table.Initialize(sdr.Columns, destination.Options);
-
-                        await ExecuteBulkCopyAsync(sdr, table, result);
+                        result.Status = TableCopyStatus.NoOutput;
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        HandleException(ex, result);
+                        try
+                        {
+                            // DestinationTable has the property TableNameTemplate which needs to
+                            // be evaluated now
+
+                            // TODO: how to deal with multiple tables in files inside archives?
+                            var queryName = sdr.QueryName;
+                            var resultsetName = sdr.ResultsetName ?? q.ToString();
+
+                            var table = destination.GetTable(batchName, queryName, resultsetName, sdr.Metadata);
+                            result.DestinationTable = table.UniqueKey;
+
+                            // Certain data readers cannot determine the columns from the data file,
+                            // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
+                            // from the destination table instead
+                            if ((destination.Options & TableInitializationOptions.Create) == 0 &&
+                                sdr is FileDataReader &&
+                                (sdr.Columns == null || sdr.Columns.Count == 0))
+                            {
+                                var fdr = (FileDataReader)sdr;
+                                fdr.CreateColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
+                            }
+
+                            // TODO: make schema operation async
+                            table.Initialize(sdr.Columns, destination.Options);
+
+                            await ExecuteBulkCopyAsync(sdr, table, result);
+                        }
+                        catch (Exception ex)
+                        {
+                            HandleException(ex, result);
+                        }
                     }
 
                     Results.Add(result);
@@ -313,7 +320,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 while (await sdr.NextResultAsync(CancellationContext.Token));
             }
         }
-        
+
         #endregion
         #region Export functions
 
@@ -350,7 +357,7 @@ namespace Jhu.Graywulf.IO.Tasks
             using (var sdr = await cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationContext.Token))
             {
                 int q = 0;
-                
+
                 do
                 {
                     if (q > 0 && !destination.Description.CanHoldMultipleDatasets)
@@ -433,6 +440,8 @@ namespace Jhu.Graywulf.IO.Tasks
                 result.RecordsAffected = e.RowsCopied;
             };
 
+            result.DestinationTable = destination.UniqueKey;
+
             try
             {
                 await sbc.WriteToServerAsync(dr, CancellationContext.Token);
@@ -445,6 +454,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 // This is normal behavior, happens when bulk-copy is
                 // forcibly canceled.
+                result.Status = TableCopyStatus.Cancelled;
             }
         }
 

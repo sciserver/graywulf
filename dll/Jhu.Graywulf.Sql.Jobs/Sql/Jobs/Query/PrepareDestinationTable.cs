@@ -37,6 +37,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             SqlQueryPartition queryPartition = QueryPartition.Get(activityContext);
             SqlQuery query = queryPartition.Query;
+            string remoteTable = RemoteTable.Get(activityContext);
 
             switch (query.Parameters.ExecutionMode)
             {
@@ -47,7 +48,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     using (RegistryContext registryContext = queryPartition.CreateContext())
                     {
                         queryPartition.InitializeQueryObject(cancellationContext, registryContext, activityContext.GetExtension<IScheduler>(), true);
-                        await queryPartition.PrepareDestinationTableAsync();
+                        await queryPartition.PrepareDestinationTableAsync(remoteTable);
                     }
                     break;
                 default:

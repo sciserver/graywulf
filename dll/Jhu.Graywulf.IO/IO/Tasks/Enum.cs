@@ -18,7 +18,9 @@ namespace Jhu.Graywulf.IO.Tasks
     {
         Unknown,
         Success,
+        NoOutput,
         Skipped,
+        Cancelled,
         Failed,
     }
 }

@@ -100,12 +100,14 @@ namespace Jhu.Graywulf.Tasks
         /// <summary>
         /// Cancels the operation by killing the process
         /// </summary>
-        protected override void OnCancel()
+        protected override void OnCancelling()
         {
             if (process != null)
             {
                 process.Kill();
             }
+
+            base.OnCancelling();
         }
     }
 }

@@ -133,6 +133,18 @@ namespace Jhu.Graywulf.IO.Tasks
             CopyMembers(old);
         }
 
+        public static DestinationTable Create(Table table, TableInitializationOptions options)
+        {
+            return new DestinationTable()
+            {
+                dataset = (SqlServerDataset)table.Dataset,
+                databaseName = table.DatabaseName,
+                schemaName = table.SchemaName,
+                tableNamePattern = table.TableName,
+                options = options
+            };
+        }
+
         private void InitializeMembers()
         {
             this.dataset = null;

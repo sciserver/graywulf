@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;
             var activityInstanceId = activityContext.ActivityInstanceId;
+            var remoteTable = RemoteTable.Get(activityContext);
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
 
             using (var registryContext = querypartition.Query.CreateContext())
@@ -28,7 +29,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 querypartition.InitializeQueryObject(cancellationContext, registryContext);
             }
             
-            await querypartition.CopyResultsetAsync();
+            await querypartition.CopyResultsetAsync(remoteTable);
         }
     }
 }

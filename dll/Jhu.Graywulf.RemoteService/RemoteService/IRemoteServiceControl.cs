@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.ServiceModel;
 using Jhu.Graywulf.ServiceModel;
 
@@ -18,7 +19,7 @@ namespace Jhu.Graywulf.RemoteService
         /// <returns></returns>
         [OperationContract]
         [LimitedAccessOperation(Constants.DefaultRole)]
-        string Hello();
+        Task<string> HelloAsync();
 
         /// <summary>
         /// Returns info about the user under which the server operations run.
@@ -28,10 +29,10 @@ namespace Jhu.Graywulf.RemoteService
         /// <param name="authenticationType"></param>
         [OperationContract]
         [LimitedAccessOperation(Constants.DefaultRole)]
-        void WhoAmI(out string name, out bool isAuthenticated, out string authenticationType);
+        Task<AuthenticationDetails> WhoAmIAsync();
 
         [OperationContract]
-        void WhoAreYou(out string name, out bool isAuthenticated, out string authenticationType);
+        Task<AuthenticationDetails> WhoAreYouAsync();
 
         /// <summary>
         /// Returns the URI to a service of type contractType
@@ -41,7 +42,7 @@ namespace Jhu.Graywulf.RemoteService
         /// <returns></returns>
         [OperationContract]
         [LimitedAccessOperation(Constants.DefaultRole)]
-        Uri GetServiceEndpointUri(string contractType);
+        Task<Uri> GetServiceEndpointUriAsync(string contractType);
 
         /// <summary>
         /// Returns a list of the registered service types.
@@ -49,6 +50,6 @@ namespace Jhu.Graywulf.RemoteService
         /// <returns></returns>
         [OperationContract]
         [LimitedAccessOperation(Constants.DefaultRole)]
-        string[] QueryRegisteredServices();
+        Task<string[]> QueryRegisteredServicesAsync();
     }
 }

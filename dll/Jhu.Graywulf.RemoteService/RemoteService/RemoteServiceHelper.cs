@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.Tasks;
 
@@ -30,7 +31,13 @@ namespace Jhu.Graywulf.RemoteService
         public static ServiceProxy<T> CreateObject<T>(CancellationContext cancellationContext, string host, bool allowInProcess)
             where T : IRemoteService
         {
-            return CreateObject<T>(cancellationContext, host, allowInProcess, TimeSpan.FromSeconds(Constants.DefaultChannelTimeout));
+#if DEBUG
+            var timeout = TimeSpan.FromMinutes(5);
+#else
+            var timeout = TimeSpan.FromSeconds(Constants.DefaultChannelTimeout)
+#endif
+
+            return CreateObject<T>(cancellationContext, host, allowInProcess, timeout);
         }
 
         /// <summary>
@@ -62,7 +69,7 @@ namespace Jhu.Graywulf.RemoteService
             {
                 // Get the uri to the requested service from the remote server
                 var sc = GetControlObject(fdqn, timeout);
-                var uri = sc.Value.GetServiceEndpointUri(typeof(T).AssemblyQualifiedName);
+                var uri = Util.TaskHelper.Wait(sc.Value.GetServiceEndpointUriAsync(typeof(T).AssemblyQualifiedName));
                 var ep = CreateEndpointAddress(uri, RemoteServiceBase.Configuration.Endpoint.ServicePrincipalName);
                 res = CreateChannel<T>(ep, timeout);
                 cancellationContext.Register(res.Value);
@@ -71,7 +78,7 @@ namespace Jhu.Graywulf.RemoteService
             return res;
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Returns the type implementing a service contract. The contract

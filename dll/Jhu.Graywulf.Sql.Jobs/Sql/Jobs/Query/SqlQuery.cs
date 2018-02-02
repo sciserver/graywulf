@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         #endregion
         #region Properties
-        
+
         [IgnoreDataMember]
         public List<SqlQueryPartition> Partitions
         {
@@ -116,14 +116,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// </summary>
         public virtual void UpdateSourceTableList()
         {
-            if (Parameters.SourceTables == null)
+            foreach (var key in QueryDetails.SourceTables.Keys)
             {
-                Parameters.SourceTables = new List<TableOrView>();
-
-                foreach (var key in QueryDetails.SourceTables.Keys)
-                {
-                    Parameters.SourceTables.Add((TableOrView)QueryDetails.SourceTables[key][0].DatabaseObject);
-                }
+                Parameters.SourceTables.Add((TableOrView)QueryDetails.SourceTables[key][0].DatabaseObject);
             }
         }
 
