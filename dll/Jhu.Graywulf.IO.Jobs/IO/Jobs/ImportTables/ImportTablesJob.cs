@@ -77,44 +77,31 @@ namespace Jhu.Graywulf.IO.Jobs.ImportTables
 
                 using (var task = RemoteServiceHelper.CreateObject<IImportTable>(cancellationContext, host, true))
                 {
-                    await task.Value.ExecuteAsync(parameters.Sources[0], parameters.Destinations[0], settings);
+                    await task.Value.ExecuteAsyncEx(parameters.Sources[0], parameters.Destinations[0], settings);
                 }
             }
             else
             {
                 // Archive mode
 
-                var settings = new TableArchiveSettings()
+                var settings = new TableCopySettings()
                 {
                     BatchName = Util.UriConverter.GetFileNameWithoutExtension(parameters.Uri),
-                    Uri = parameters.Uri,
-                    Credentials = parameters.Credentials,
                     FileFormatFactoryType = parameters.FileFormatFactoryType,
                     StreamFactoryType = parameters.StreamFactoryType,
-                    GenerateIdentityColumn = parameters.Options.,
-                    Timeout = parameters.timeout,
-            };
+                    Timeout = parameters.Timeout,
+                };
 
-                Destination = parameters.Destinations[0],
-
-                var task = RemoteServiceHelper.CreateObject<IImportTableArchive>(cancellationContext, host, true);
-
-                
-
-                return task;
-            }
-
-            // Create table importer
-            using (var importer = parameters.GetInitializedTableImportTask(cancellationContext))
-            {
-                try
+                var archiveSettings = new TableArchiveSettings()
                 {
-                    await importer.Value.OpenAsync();
-                    await importer.Value.ExecuteAsync();
-                }
-                finally
+
+                    Uri = parameters.Uri,
+                    Credentials = parameters.Credentials,
+                };
+
+                using (var task = RemoteServiceHelper.CreateObject<IImportTableArchive>(cancellationContext, host, true))
                 {
-                    importer.Value.Close();
+                    await task.Value.ExecuteAsyncEx(parameters.Sources, parameters.Destinations, settings, archiveSettings);
                 }
             }
         }

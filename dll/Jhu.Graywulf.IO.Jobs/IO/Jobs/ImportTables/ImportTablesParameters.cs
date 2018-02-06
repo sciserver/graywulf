@@ -33,7 +33,6 @@ namespace Jhu.Graywulf.IO.Jobs.ImportTables
         private string fileFormatFactoryType;
         private string streamFactoryType;
         private DataFileArchival archival;
-        private bool GenerateIdentityColumn;
         private int timeout;
 
         #endregion
@@ -126,17 +125,7 @@ namespace Jhu.Graywulf.IO.Jobs.ImportTables
             get { return archival; }
             set { archival = value; }
         }
-
-        /// <summary>
-        /// Gets or sets the table import options.
-        /// </summary>
-        [DataMember]
-        public ImportTableOptions Options
-        {
-            get { return options; }
-            set { options = value; }
-        }
-
+        
         /// <summary>
         /// Gets or sets the execution time-out.
         /// </summary>
@@ -165,7 +154,6 @@ namespace Jhu.Graywulf.IO.Jobs.ImportTables
             this.fileFormatFactoryType = null;
             this.streamFactoryType = null;
             this.archival = DataFileArchival.Automatic;
-            this.options = null;
             this.timeout = 1200;    // *** TODO: get from settings
         }
 

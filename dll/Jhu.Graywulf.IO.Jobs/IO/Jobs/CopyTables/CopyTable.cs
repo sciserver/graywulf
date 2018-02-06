@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.IO.Jobs.CopyTables
                     Timeout = parameters.Timeout
                 };
 
-                await task.Value.ExecuteAsync(item.Source, item.Destination, settings);
+                await task.Value.ExecuteAsyncEx(item.Source, item.Destination, settings);
             }
         }
     }

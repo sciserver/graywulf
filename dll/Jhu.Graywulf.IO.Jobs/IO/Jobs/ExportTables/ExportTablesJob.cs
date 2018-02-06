@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.IO.Jobs.ExportTables
 
                 using (var task = RemoteServiceHelper.CreateObject<IExportTable>(cancellationContext, host, true))
                 {
-                    await task.Value.ExecuteAsync(parameters.Sources[0], parameters.Destinations[0], settings);
+                    await task.Value.ExecuteAsyncEx(parameters.Sources[0], parameters.Destinations[0], settings);
                 }
             }
             else
@@ -90,16 +90,20 @@ namespace Jhu.Graywulf.IO.Jobs.ExportTables
                 var settings = new TableCopySettings()
                 {
                     BatchName = Util.UriConverter.GetFileNameWithoutExtension(parameters.Uri),
-                    Uri = parameters.Uri,
-                    Credentials = parameters.Credentials,
                     FileFormatFactoryType = parameters.FileFormatFactoryType,
                     StreamFactoryType = parameters.StreamFactoryType,
                     Timeout = parameters.Timeout,
                 };
 
+                var archiveSettings = new TableArchiveSettings()
+                {
+                    Uri = parameters.Uri,
+                    Credentials = parameters.Credentials,
+                };
+
                 using (var task = RemoteServiceHelper.CreateObject<IExportTableArchive>(cancellationContext, host, true))
                 {
-                    await task.Value.ExecuteAsync(parameters.Sources, parameters.Destinations, settings);
+                    await task.Value.ExecuteAsyncEx(parameters.Sources, parameters.Destinations, settings, archiveSettings);
                 }
             }
         }
