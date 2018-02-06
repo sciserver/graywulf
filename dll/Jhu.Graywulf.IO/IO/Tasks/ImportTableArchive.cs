@@ -15,21 +15,20 @@ namespace Jhu.Graywulf.IO.Tasks
     [RemoteService(typeof(ImportTableArchive))]
     public interface IImportTableArchive : ICopyTableArchiveBase
     {
-        DestinationTable Destination
+        DataFileBase[] Sources
         {
-            [OperationContract]
             get;
-            [OperationContract]
             set;
         }
 
-        ImportTableOptions Options
+        DestinationTable[] Destinations
         {
-            [OperationContract]
             get;
-            [OperationContract]
             set;
         }
+
+        [OperationContract]
+        Task<TableCopyResults> ExecuteAsyncEx(DataFileBase[] sources, DestinationTable[] destinations, TableCopySettings settings, TableArchiveSettings archiveSettings);
     }
 
     /// <summary>
@@ -43,27 +42,28 @@ namespace Jhu.Graywulf.IO.Tasks
     {
         #region Private member variables
 
-        private DestinationTable destination;
-        private ImportTableOptions options;
+        private DataFileBase[] sources;
+
+        private DestinationTable[] destinations;
 
         private string currentFilename;
 
         #endregion
         #region Properties
 
+        public DataFileBase[] Sources
+        {
+            get { return sources; }
+            set { sources = value; }
+        }
+
         /// <summary>
         /// Gets or sets the destination of the file import operation.
         /// </summary>
-        public DestinationTable Destination
+        public DestinationTable[] Destinations
         {
-            get { return destination; }
-            set { destination = value; }
-        }
-
-        public ImportTableOptions Options
-        {
-            get { return options; }
-            set { options = value; }
+            get { return destinations; }
+            set { destinations = value; }
         }
 
         #endregion
@@ -88,14 +88,14 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void InitializeMembers()
         {
-            this.destination = null;
-            this.options = null;
+            this.sources = null;
+            this.destinations = null;
         }
 
         private void CopyMembers(ImportTableArchive old)
         {
-            this.destination = old.destination;
-            this.options = old.options;
+            this.sources = old.sources;
+            this.destinations = old.destinations;
         }
 
         public override object Clone()
@@ -121,6 +121,20 @@ namespace Jhu.Graywulf.IO.Tasks
             };
         }
 
+        public async Task<TableCopyResults> ExecuteAsyncEx(DataFileBase[] sources, DestinationTable[] destinations, TableCopySettings settings, TableArchiveSettings archiveSettings)
+        {
+            this.sources = sources;
+            this.destinations = destinations;
+            this.Settings = settings;
+            this.ArchiveSettings = archiveSettings;
+
+            await OpenAsync();
+            await ExecuteAsync();
+            Close();
+
+            return Results;
+        }
+
         /// <summary>
         /// Executes the import operation
         /// </summary>
@@ -137,6 +151,9 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 throw Error.FileNotArchine();
             }
+
+            // TODO: add logic to handle single or multiple destinations and
+            // predefined source tables
 
             try
             {
@@ -165,10 +182,7 @@ namespace Jhu.Graywulf.IO.Tasks
                         // We simply skip unrecognized files
                         if (ff.TryCreateFile(Util.UriConverter.FromFilePath(entry.Filename), out filename, out extension, out compression, out file))
                         {
-                            if (options != null)
-                            {
-                                file.GenerateIdentityColumn = options.GenerateIdentityColumn;
-                            }
+                            file.GenerateIdentityColumn = ArchiveSettings.GenerateIdentityColumn;
 
                             // Open the file. It's read directly from the archive stream.
                             try
@@ -177,7 +191,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
                                 using (var cmd = new FileCommand(file))
                                 {
-                                    await CopyToTableAsync(cmd, destination);
+                                    await CopyToTableAsync(cmd, destinations[0]);
                                 }
                             }
                             catch (Exception ex)

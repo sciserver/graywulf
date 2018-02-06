@@ -17,19 +17,18 @@ namespace Jhu.Graywulf.IO.Tasks
     {
         SourceQuery Source
         {
-            [OperationContract]
             get;
-            [OperationContract]
+            set;
+        }
+        
+        DataFileBase Destination
+        {
+            get;
             set;
         }
 
-        DataFileBase Destination
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
-            set;
-        }
+        [OperationContract]
+        Task<TableCopyResults> ExecuteAsyncEx(SourceQuery source, DataFileBase destination, TableCopySettings settings);
     }
 
     /// <summary>
@@ -116,7 +115,7 @@ namespace Jhu.Graywulf.IO.Tasks
             destination.StreamFactory = GetStreamFactory();
             await destination.OpenAsync();
         }
-        
+
         public void Close()
         {
             destination.Close();
@@ -128,6 +127,19 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 DestinationFileName = destination.Uri == null ? null : Util.UriConverter.GetFilename(destination.Uri),
             };
+        }
+
+        public async Task<TableCopyResults> ExecuteAsyncEx(SourceQuery source, DataFileBase destination, TableCopySettings settings)
+        {
+            this.source = source;
+            this.destination = destination;
+            this.Settings = settings;
+
+            await OpenAsync();
+            await ExecuteAsync();
+            Close();
+
+            return Results;
         }
 
         /// <summary>

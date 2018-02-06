@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.IO.Jobs.ImportTables
         private string fileFormatFactoryType;
         private string streamFactoryType;
         private DataFileArchival archival;
-        private ImportTableOptions options;
+        private bool GenerateIdentityColumn;
         private int timeout;
 
         #endregion
@@ -170,65 +170,5 @@ namespace Jhu.Graywulf.IO.Jobs.ImportTables
         }
 
         #endregion
-
-        /// <summary>
-        /// Returns an initialized table export task based on the job parameters
-        /// </summary>
-        /// <returns></returns>
-        public ServiceModel.IServiceProxy<ICopyDataStream> GetInitializedTableImportTask(CancellationContext cancellationContext)
-        {
-            var sf = StreamFactory.Create(streamFactoryType);
-
-            // Get server name from the very first destination
-            // (requires trimming the sql server instance name)
-            // This will be the database server responsible for executing the import
-            var dataset = (Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerDataset)destinations[0].Dataset;
-            var host = dataset.HostName;
-
-            // Import works in two modes: single file and archive mode.
-            // In archive mode, the file is imported using ImportTableArchive task whereas
-            // in single file mode a simpler ImportTable task is created
-
-            // If arhival mode is set to automatic, figure out mode from extensions
-            if (this.Archival == DataFileArchival.Automatic)
-            {
-                this.Archival = sf.GetArchivalMethod(this.Uri);
-            }
-
-            if (this.Archival == DataFileArchival.None)
-            {
-                // Single file mode
-                // Use only first item from sources and destinations
-                // TODO: this could be extended but that would mean multiple tasks
-
-                var task = RemoteServiceHelper.CreateObject<IImportTable>(cancellationContext, host, true);
-
-                task.Value.Source = this.sources[0];
-                task.Value.Destination = this.destinations[0];
-                task.Value.FileFormatFactoryType = this.fileFormatFactoryType;
-                task.Value.StreamFactoryType = this.streamFactoryType;
-                task.Value.Options = this.options;
-                task.Value.Timeout = this.timeout;
-
-                return task;
-            }
-            else
-            {
-                // Archive mode
-
-                var task = RemoteServiceHelper.CreateObject<IImportTableArchive>(cancellationContext, host, true);
-
-                task.Value.BatchName = Util.UriConverter.GetFileNameWithoutExtension(this.uri);
-                task.Value.Uri = this.uri;
-                task.Value.Credentials = this.credentials;
-                task.Value.Destination = this.destinations[0];
-                task.Value.FileFormatFactoryType = this.fileFormatFactoryType;
-                task.Value.StreamFactoryType = this.streamFactoryType;
-                task.Value.Options = this.options;
-                task.Value.Timeout = this.timeout;
-
-                return task;
-            }
-        }
     }
 }

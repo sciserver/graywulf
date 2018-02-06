@@ -24,21 +24,6 @@ namespace Jhu.Graywulf.IO.Tasks
     [NetDataContract]
     public interface IInsertIntoTable : ICopyTableBase
     {
-        SourceQuery Source
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
-            set;
-        }
-
-        DestinationTable Destination
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
-            set;
-        }
     }
 
 
@@ -50,13 +35,13 @@ namespace Jhu.Graywulf.IO.Tasks
         private SourceQuery source;
         private DestinationTable destination;
 
-        public SourceQuery Source
+        protected SourceQuery Source
         {
             get { return source; }
             set { source = value; }
         }
 
-        public DestinationTable Destination
+        protected DestinationTable Destination
         {
             get { return destination; }
             set { destination = value; }
@@ -99,6 +84,17 @@ namespace Jhu.Graywulf.IO.Tasks
         protected override TableCopyResult CreateResult()
         {
             return source.CreateResult();
+        }
+
+        public async Task<TableCopyResults> ExecuteAsync(SourceQuery source, DestinationTable destination, TableCopySettings settings)
+        {
+            this.source = source;
+            this.destination = destination;
+            this.Settings = settings;
+
+            await ExecuteAsync();
+
+            return Results;
         }
 
         protected override async Task OnExecuteAsync()
@@ -172,7 +168,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     {
                         cmd.Connection = cn;
                         cmd.Transaction = tn;
-                        cmd.CommandTimeout = Timeout;
+                        cmd.CommandTimeout = Settings.Timeout;
                         cmd.CommandText = sql.ToString();
 
                         await cmd.ExecuteNonQueryAsync(CancellationContext.Token);

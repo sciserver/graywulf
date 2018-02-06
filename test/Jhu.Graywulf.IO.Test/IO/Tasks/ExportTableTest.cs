@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.Threading.Tasks;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.IO.Tasks;
@@ -13,14 +13,20 @@ namespace Jhu.Graywulf.IO.Tasks
     [TestClass]
     public class ExportTableTest : TestClassBase
     {
-        protected ServiceModel.ServiceProxy<IExportTable> CreateTableExportTask(CancellationContext cancellationContext, string path, bool remote)
+        protected ServiceModel.ServiceProxy<IExportTable> CreateTableExportTask(
+            CancellationContext cancellationContext, string path, bool remote,
+            out SourceQuery source, out DataFileBase destination, out TableCopySettings settings)
         {
-            return CreateTableExportTask(cancellationContext, path, "SELECT * FROM SampleData", remote);
+            return CreateTableExportTask(
+                cancellationContext, path, "SELECT * FROM SampleData", remote,
+                out source, out destination, out settings);
         }
 
-        protected ServiceModel.ServiceProxy<IExportTable> CreateTableExportTask(CancellationContext cancellationContext, string path, string query, bool remote)
+        protected ServiceModel.ServiceProxy<IExportTable> CreateTableExportTask(
+            CancellationContext cancellationContext, string path, string query, bool remote,
+            out SourceQuery source, out DataFileBase destination, out TableCopySettings settings)
         {
-            var source = new SourceQuery()
+            source = new SourceQuery()
             {
                 Dataset = new Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString),
                 Query = query
@@ -28,7 +34,11 @@ namespace Jhu.Graywulf.IO.Tasks
 
             var uri = Util.UriConverter.FromFilePath(path);
             var ff = FileFormatFactory.Create(null);
-            var destination = ff.CreateFile(uri, out string filename, out string extensions, out DataFileCompression compression);
+            destination = ff.CreateFile(uri, out string filename, out string extensions, out DataFileCompression compression);
+
+            settings = new TableCopySettings()
+            {
+            };
 
             ServiceModel.ServiceProxy<IExportTable> te = null;
             if (remote)
@@ -40,22 +50,21 @@ namespace Jhu.Graywulf.IO.Tasks
                 te = new ServiceModel.ServiceProxy<IExportTable>(new ExportTable(cancellationContext));
             }
 
-            te.Value.Source = source;
-            te.Value.Destination = destination;
-
             return te;
         }
 
         [TestMethod]
-        public void ExportTest()
+        public async Task ExportTest()
         {
             using (var cancellationContext = new CancellationContext())
             {
                 var path = GetTestUniqueName() + ".csv";
 
-                using (var dfe = CreateTableExportTask(cancellationContext, path, false))
+                using (var dfe = CreateTableExportTask(
+                    cancellationContext, path, false,
+                    out var source, out var destination, out var settings))
                 {
-                    dfe.Value.ExecuteAsync().Wait();
+                    await dfe.Value.ExecuteAsyncEx(source, destination, settings);
 
                     Assert.IsTrue(File.Exists(path));
                     File.Delete(path);
@@ -64,16 +73,18 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         [TestMethod]
-        public void ExportEmptyTableTest()
+        public async Task ExportEmptyTableTest()
         {
             using (var cancellationContext = new CancellationContext())
             {
                 var path = GetTestUniqueName() + ".csv";
                 var query = "SELECT * FROM EmptyTable";
 
-                using (var dfe = CreateTableExportTask(cancellationContext, path, query, false))
+                using (var dfe = CreateTableExportTask(
+                    cancellationContext, path, query, false,
+                    out var source, out var destination, out var settings))
                 {
-                    dfe.Value.ExecuteAsync().Wait();
+                    await dfe.Value.ExecuteAsyncEx(source, destination, settings);
 
                     Assert.IsTrue(File.Exists(path));
                     File.Delete(path);
@@ -82,7 +93,7 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         [TestMethod]
-        public void ExportMultipleTablesTest()
+        public async Task ExportMultipleTablesTest()
         {
             using (var cancellationContext = new CancellationContext())
             {
@@ -91,9 +102,11 @@ namespace Jhu.Graywulf.IO.Tasks
 @"SELECT * FROM SampleData
 SELECT * FROM SampleData";
 
-                using (var dfe = CreateTableExportTask(cancellationContext, path, query, false))
+                using (var dfe = CreateTableExportTask(
+                    cancellationContext, path, query, false,
+                    out var source, out var destination, out var settings))
                 {
-                    dfe.Value.ExecuteAsync().Wait();
+                    await dfe.Value.ExecuteAsyncEx(source, destination, settings);
 
                     Assert.IsTrue(File.Exists(path));
                     File.Delete(path);
@@ -102,15 +115,17 @@ SELECT * FROM SampleData";
         }
 
         [TestMethod]
-        public void ExportToUncTest()
+        public async Task ExportToUncTest()
         {
             using (var cancellationContext = new CancellationContext())
             {
                 var path = String.Format(@"\\{0}\{1}\{2}.csv", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, GetTestUniqueName());
 
-                using (var dfe = CreateTableExportTask(cancellationContext, path, false))
+                using (var dfe = CreateTableExportTask(
+                    cancellationContext, path, false,
+                    out var source, out var destination, out var settings))
                 {
-                    dfe.Value.ExecuteAsync().Wait();
+                    await dfe.Value.ExecuteAsyncEx(source, destination, settings);
 
                     Assert.IsTrue(File.Exists(path));
                     File.Delete(path);
@@ -119,7 +134,7 @@ SELECT * FROM SampleData";
         }
 
         [TestMethod]
-        public void RemoteExportTest()
+        public async Task RemoteExportTest()
         {
             using (RemoteServiceTester.Instance.GetToken())
             {
@@ -129,9 +144,11 @@ SELECT * FROM SampleData";
                 {
                     var path = String.Format(@"\\{0}\{1}\{2}.csv", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, "TableExportTest_RemoteExportTest");
 
-                    using (var dfe = CreateTableExportTask(cancellationContext, path, false))
+                    using (var dfe = CreateTableExportTask(
+                        cancellationContext, path, false,
+                        out var source, out var destination, out var settings))
                     {
-                        dfe.Value.ExecuteAsync().Wait();
+                        await dfe.Value.ExecuteAsyncEx(source, destination, settings);
 
                         Assert.IsTrue(File.Exists(path));
                         File.Delete(path);

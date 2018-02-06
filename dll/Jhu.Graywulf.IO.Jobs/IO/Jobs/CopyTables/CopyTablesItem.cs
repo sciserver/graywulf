@@ -58,19 +58,5 @@ namespace Jhu.Graywulf.IO.Jobs.CopyTables
         }
 
         #endregion
-
-        public ServiceModel.ServiceProxy<ICopyTable> GetInitializedCopyTableTask(CancellationContext cancellationContext, CopyTablesParameters parameters)
-        {
-            // Get server name from the data source
-            // This will be the database server responsible for executing the table copy
-            var host = ((Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerDataset)source.Dataset).HostName;
-            var task = RemoteServiceHelper.CreateObject<ICopyTable>(cancellationContext, host, true);
-
-            task.Value.Source = this.source;
-            task.Value.Destination = this.destination;
-            task.Value.Timeout = parameters.Timeout;
-
-            return task;
-        }
     }
 }

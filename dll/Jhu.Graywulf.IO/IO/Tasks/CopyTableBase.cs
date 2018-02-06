@@ -21,57 +21,14 @@ namespace Jhu.Graywulf.IO.Tasks
     [NetDataContract]
     public interface ICopyTableBase : IRemoteService
     {
-        string BatchName
+        TableCopySettings Settings
         {
-            [OperationContract]
             get;
-            [OperationContract]
-            set;
-        }
-
-        int BatchSize
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
-            set;
-        }
-
-        int Timeout
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
-            set;
-        }
-
-        bool BypassExceptions
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
-            set;
-        }
-
-        string FileFormatFactoryType
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
-            set;
-        }
-
-        string StreamFactoryType
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
             set;
         }
 
         TableCopyResults Results
         {
-            [OperationContract]
             get;
         }
     }
@@ -88,22 +45,7 @@ namespace Jhu.Graywulf.IO.Tasks
         #region Private member variables
 
         [NonSerialized]
-        private string batchName;
-
-        [NonSerialized]
-        private int batchSize;
-
-        [NonSerialized]
-        private int timeout;
-
-        [NonSerialized]
-        private bool bypassExceptions;
-
-        [NonSerialized]
-        private string fileFormatFactoryType;
-
-        [NonSerialized]
-        private string streamFactoryType;
+        private TableCopySettings settings;
 
         [NonSerialized]
         private TableCopyResults results;
@@ -111,63 +53,10 @@ namespace Jhu.Graywulf.IO.Tasks
         #endregion
         #region Properties
 
-        /// <summary>
-        /// Gets or sets the name of the batch. Used when
-        /// importing and exporting archives.
-        /// </summary>
-        public string BatchName
+        public TableCopySettings Settings
         {
-            get { return batchName; }
-            set { batchName = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the batch size of bulk insert operations.
-        /// </summary>
-        public int BatchSize
-        {
-            get { return batchSize; }
-            set { batchSize = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the timeout of bulk insert operations.
-        /// </summary>
-        public int Timeout
-        {
-            get { return timeout; }
-            set { timeout = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets if the task ignores problems and proceeds with table
-        /// copy even when an exception is thrown. Exception bypass logic is
-        /// implemented differently in derived classes.
-        /// </summary>
-        public bool BypassExceptions
-        {
-            get { return bypassExceptions; }
-            set { bypassExceptions = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the file format factory to use when creating output files
-        /// or opening input files.
-        /// </summary>
-        public string FileFormatFactoryType
-        {
-            get { return fileFormatFactoryType; }
-            set { fileFormatFactoryType = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the stream factory to use when opening input and output
-        /// streams to read and write files.
-        /// </summary>
-        public string StreamFactoryType
-        {
-            get { return streamFactoryType; }
-            set { streamFactoryType = value; }
+            get { return Settings; }
+            set { settings = value; }
         }
 
         public TableCopyResults Results
@@ -197,24 +86,14 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void InitializeMembers()
         {
-            this.batchName = null;
-            this.batchSize = Constants.DefaultBulkInsertBatchSize;
-            this.timeout = Constants.DefaultBulkInsertTimeout;
-            this.bypassExceptions = false;
-            this.fileFormatFactoryType = null;
-            this.streamFactoryType = null;
+            this.settings = null;
             this.results = new TableCopyResults();
         }
 
         private void CopyMembers(CopyTableBase old)
         {
-            this.batchName = old.batchName;
-            this.batchSize = old.batchSize;
-            this.timeout = old.timeout;
-            this.bypassExceptions = old.bypassExceptions;
-            this.fileFormatFactoryType = old.fileFormatFactoryType;
-            this.streamFactoryType = old.streamFactoryType;
-            this.results = new TableCopyResults(old.results);
+            this.settings = old.settings;
+            this.results = old.results;
         }
 
         public abstract object Clone();
@@ -227,7 +106,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <returns></returns>
         protected FileFormatFactory GetFileFormatFactory()
         {
-            return FileFormatFactory.Create(fileFormatFactoryType);
+            return FileFormatFactory.Create(settings.FileFormatFactoryType);
         }
 
         /// <summary>
@@ -236,7 +115,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <returns></returns>
         protected StreamFactory GetStreamFactory()
         {
-            return StreamFactory.Create(streamFactoryType);
+            return StreamFactory.Create(settings.StreamFactoryType);
         }
 
         protected abstract TableCopyResult CreateResult();
@@ -254,7 +133,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     {
                         cmd.Connection = cn;
                         cmd.Transaction = tn;
-                        cmd.CommandTimeout = Timeout;
+                        cmd.CommandTimeout = settings.Timeout;
 
                         await CopyToTableAsync(cmd, destination);
 
@@ -289,7 +168,7 @@ namespace Jhu.Graywulf.IO.Tasks
                             var queryName = sdr.QueryName;
                             var resultsetName = sdr.ResultsetName ?? q.ToString();
 
-                            var table = destination.GetTable(batchName, queryName, resultsetName, sdr.Metadata);
+                            var table = destination.GetTable(settings.BatchName, queryName, resultsetName, sdr.Metadata);
                             result.DestinationTable = table.UniqueKey;
 
                             // Certain data readers cannot determine the columns from the data file,
@@ -340,7 +219,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     {
                         cmd.Connection = cn;
                         cmd.Transaction = tn;
-                        cmd.CommandTimeout = Timeout;
+                        cmd.CommandTimeout = settings.Timeout;
 
                         await CopyToFileAsync(cmd, destination);
 
@@ -427,9 +306,9 @@ namespace Jhu.Graywulf.IO.Tasks
             var sbc = new System.Data.SqlClient.SqlBulkCopy(destination.Dataset.ConnectionString, sbo)
             {
                 DestinationTableName = cg.GetResolvedTableName(destination),
-                BulkCopyTimeout = timeout,
-                NotifyAfter = Math.Max(batchSize, 1000),
-                BatchSize = batchSize,       // Must be set to 0, otherwise SQL Server will write log
+                BulkCopyTimeout = settings.Timeout,
+                NotifyAfter = Math.Max(settings.BatchSize, 1000),
+                BatchSize = settings.BatchSize,       // Must be set to 0, otherwise SQL Server will write log
                 EnableStreaming = true    // TODO: add, new in .net 4.5
             };
 
@@ -465,7 +344,7 @@ namespace Jhu.Graywulf.IO.Tasks
             result.Status = TableCopyStatus.Failed;
             result.Error = ex.Message;
 
-            if (!BypassExceptions)
+            if (!settings.BypassExceptions)
             {
                 throw new TableCopyException("Table copy failed: " + ex.Message, ex);     // TODO
             }

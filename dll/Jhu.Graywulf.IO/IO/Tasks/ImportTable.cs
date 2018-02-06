@@ -17,27 +17,18 @@ namespace Jhu.Graywulf.IO.Tasks
     {
         DataFileBase Source
         {
-            [OperationContract]
             get;
-            [OperationContract]
             set;
         }
 
         DestinationTable Destination
         {
-            [OperationContract]
             get;
-            [OperationContract]
             set;
         }
 
-        ImportTableOptions Options
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
-            set;
-        }
+        [OperationContract]
+        Task<TableCopyResults> ExecuteAsyncEx(DataFileBase source, DestinationTable destination, TableCopySettings settings);
     }
 
     /// <summary>
@@ -54,7 +45,6 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private DataFileBase source;
         private DestinationTable destination;
-        private ImportTableOptions options;
 
         #endregion
         #region Properties
@@ -64,10 +54,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         public DataFileBase Source
         {
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return source; }
-
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { source = value; }
         }
 
@@ -76,22 +63,10 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         public DestinationTable Destination
         {
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return destination; }
-
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { destination = value; }
         }
-
-        public ImportTableOptions Options
-        {
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-            get { return options; }
-
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-            set { options = value; }
-        }
-
+        
         #endregion
         #region Constructors and initializers
 
@@ -116,14 +91,12 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             this.source = null;
             this.destination = null;
-            this.options = null;
         }
 
         private void CopyMembers(ImportTable old)
         {
             this.source = old.source;
             this.destination = old.destination;
-            this.options = old.options;
         }
 
         public override object Clone()
@@ -157,6 +130,20 @@ namespace Jhu.Graywulf.IO.Tasks
             };
         }
 
+        [OperationBehavior]
+        public async Task<TableCopyResults> ExecuteAsyncEx(DataFileBase source, DestinationTable destination, TableCopySettings settings)
+        {
+            this.source = source;
+            this.destination = destination;
+            this.Settings = settings;
+
+            await OpenAsync();
+            await ExecuteAsync();
+            Close();
+
+            return Results;
+        }
+
         /// <summary>
         /// Executes the copy operation.
         /// </summary>
@@ -170,11 +157,6 @@ namespace Jhu.Graywulf.IO.Tasks
             if (destination == null)
             {
                 throw Error.DestinationNull();
-            }
-
-            if (options != null)
-            {
-                source.GenerateIdentityColumn = options.GenerateIdentityColumn;
             }
 
             try

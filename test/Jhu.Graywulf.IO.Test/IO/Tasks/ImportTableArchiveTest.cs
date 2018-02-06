@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Jhu.Graywulf.Format;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Tasks;
@@ -30,19 +31,37 @@ namespace Jhu.Graywulf.IO.Tasks
             StopLogger();
         }
 
-        private ServiceModel.ServiceProxy<IImportTableArchive> GetImportTableArchiveTask(CancellationContext cancellationContext, string path, string tableNamePattern, bool remote, bool generateIdentityColumn)
+        private ServiceModel.ServiceProxy<IImportTableArchive> GetImportTableArchiveTask(
+            CancellationContext cancellationContext, string path, string tableNamePattern, bool remote, bool generateIdentityColumn,
+            out DataFileBase[] sources, out DestinationTable[] destinations,
+            out TableCopySettings settings, out TableArchiveSettings archiveSettings)
         {
             var ds = IOTestDataset;
             ds.IsMutable = true;
 
-            var destination = new DestinationTable()
+            sources = null;
+            destinations = new DestinationTable[]
             {
-                Dataset = ds,
-                DatabaseName = ds.DatabaseName,
-                SchemaName = ds.DefaultSchemaName,
-                TableNamePattern = tableNamePattern,
+                new DestinationTable()
+                {
+                    Dataset = ds,
+                    DatabaseName = ds.DatabaseName,
+                    SchemaName = ds.DefaultSchemaName,
+                    TableNamePattern = tableNamePattern,
+                }
             };
 
+            settings = new TableCopySettings()
+            {
+                BatchName = Path.GetFileNameWithoutExtension(path)
+            };
+
+            archiveSettings = new TableArchiveSettings()
+            {
+                Uri = Util.UriConverter.FromFilePath(path),
+                GenerateIdentityColumn = generateIdentityColumn
+            };
+            
             ServiceModel.ServiceProxy<IImportTableArchive> it = null;
             if (remote)
             {
@@ -52,22 +71,8 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 it = new ServiceModel.ServiceProxy<IImportTableArchive>(new ImportTableArchive(cancellationContext));
             }
-
-            it.Value.BatchName = Path.GetFileNameWithoutExtension(path);
-            it.Value.Uri = Util.UriConverter.FromFilePath(path);
-            it.Value.Destination = destination;
-            it.Value.Options = new ImportTableOptions()
-            {
-                GenerateIdentityColumn = generateIdentityColumn,
-            };
-
+            
             return it;
-        }
-
-        private void ExecuteImportTableArchiveTest(IImportTableArchive it)
-        {
-            Util.TaskHelper.Wait(it.OpenAsync());
-            Util.TaskHelper.Wait(it.ExecuteAsync());
         }
 
         private void DropTestTables()
@@ -86,7 +91,7 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
-        private void ImportTableArchiveTestHelper(CancellationContext cancellationContext, ArchiveType type, bool remote, bool generateIdentity)
+        private async Task ImportTableArchiveTestHelper(CancellationContext cancellationContext, ArchiveType type, bool remote, bool generateIdentity)
         {
             ServiceTesterToken token = null;
             string path, tableNamePattern;
@@ -125,15 +130,16 @@ namespace Jhu.Graywulf.IO.Tasks
                 }
             }
 
-            using (var it = GetImportTableArchiveTask(cancellationContext, path, tableNamePattern, remote, generateIdentity))
+            using (var it = GetImportTableArchiveTask(
+                cancellationContext, path, tableNamePattern, remote, generateIdentity,
+                out var sources, out var destinations, out var settings, out var archiveSettings))
             {
-                ExecuteImportTableArchiveTest(it.Value);
+                var results = await it.Value.ExecuteAsyncEx(
+                    sources, destinations, settings, archiveSettings);
 
-                var results = it.Value.Results;
-
-                for (int i = 0; i < it.Value.Results.Count(); i++)
+                for (int i = 0; i < results.Count(); i++)
                 {
-                    table = IOTestDataset.Tables[it.Value.Results[i].DestinationTable];
+                    table = IOTestDataset.Tables[results[i].DestinationTable];
                     Assert.AreEqual(columnCount[i], table.Columns.Count);
                 }
             }

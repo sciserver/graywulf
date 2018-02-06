@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.Threading.Tasks;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.IO.Tasks;
@@ -16,7 +16,10 @@ namespace Jhu.Graywulf.IO.Tasks
         // TODO: change this if same-machine remoting works
         private const bool allowInProc = false;
 
-        private ServiceModel.ServiceProxy<IExportTableArchive> GetTableExportTask(CancellationContext cancellationContext, Uri uri, string path, bool remote)
+        private ServiceModel.ServiceProxy<IExportTableArchive> GetTableExportTask(
+            CancellationContext cancellationContext, Uri uri, string path, bool remote,
+            out SourceQuery[] sources, out DataFileBase[] destinations, 
+            out TableCopySettings settings, out TableArchiveSettings archiveSettings)
         {
             var source = new SourceQuery()
             {
@@ -29,45 +32,50 @@ namespace Jhu.Graywulf.IO.Tasks
                 Uri = Util.UriConverter.FromFilePath(path)
             };
 
-            ServiceModel.ServiceProxy<IExportTableArchive> te = null;
+            ServiceModel.ServiceProxy<IExportTableArchive> proxy;
             if (remote)
             {
-                te = RemoteServiceHelper.CreateObject<IExportTableArchive>(cancellationContext, Test.Constants.Localhost, allowInProc);
+                proxy = RemoteServiceHelper.CreateObject<IExportTableArchive>(cancellationContext, Test.Constants.Localhost, allowInProc);
             }
             else
             {
-                te = new ServiceModel.ServiceProxy<IExportTableArchive>(new ExportTableArchive(cancellationContext));
+                proxy = new ServiceModel.ServiceProxy<IExportTableArchive>(new ExportTableArchive(cancellationContext));
             }
 
-            te.Value.Sources = new[] { source };
-            te.Value.Destinations = new[] { destination };
-            te.Value.Uri = uri;
-
-            return te;
+            sources = new[] { source };
+            destinations = new[] { destination };
+            settings = new TableCopySettings();
+            archiveSettings = new TableArchiveSettings()
+            {
+                Uri = uri
+            };
+            return proxy;
         }
 
         [TestMethod]
-        public void ExportZipTest()
+        public async Task ExportZipTest()
         {
             using (var cancellationContext = new CancellationContext())
             {
                 var zippath = GetTestUniqueName() + ".zip";
                 var path = "test.csv";
 
-                using (var task = GetTableExportTask(cancellationContext, Util.UriConverter.FromFilePath(zippath), path, false))
+                using (var task = GetTableExportTask(
+                    cancellationContext, 
+                    Util.UriConverter.FromFilePath(zippath), path, false,
+                    out var sources, out var destinations,
+                    out var settings, out var archiveSettings))
                 {
-                    Util.TaskHelper.Wait(task.Value.OpenAsync());
-                    Util.TaskHelper.Wait(task.Value.ExecuteAsync());
-                    task.Value.Close();
-
-                    Assert.IsTrue(File.Exists(zippath));
-                    File.Delete(zippath);
+                    await task.Value.ExecuteAsyncEx(sources, destinations, settings, archiveSettings);
                 }
+
+                Assert.IsTrue(File.Exists(zippath));
+                File.Delete(zippath);
             }
         }
         
         [TestMethod]
-        public void RemoteExportZipTest()
+        public async Task RemoteExportZipTest()
         {
             using (RemoteServiceTester.Instance.GetToken())
             {
@@ -78,16 +86,17 @@ namespace Jhu.Graywulf.IO.Tasks
                     var zippath = String.Format(@"\\{0}\{1}\files\{2}.zip", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, "TableExportArchiveTest_RemoteExportZipTest");
                     var path = "test.csv";
 
-                    using (var task = GetTableExportTask(cancellationContext, Util.UriConverter.FromFilePath(zippath), path, true))
+                    using (var task = GetTableExportTask(
+                        cancellationContext, 
+                        Util.UriConverter.FromFilePath(zippath), path, true,
+                        out var sources, out var destinations,
+                    out var settings, out var archiveSettings))
                     {
-                        Util.TaskHelper.Wait(task.Value.OpenAsync());
-                        Util.TaskHelper.Wait(task.Value.ExecuteAsync());
-
-                        task.Value.Close();
-
-                        Assert.IsTrue(File.Exists(zippath));
-                        File.Delete(zippath);
+                        await task.Value.ExecuteAsyncEx(sources, destinations, settings, archiveSettings);
                     }
+
+                    Assert.IsTrue(File.Exists(zippath));
+                    File.Delete(zippath);
                 }
             }
         }

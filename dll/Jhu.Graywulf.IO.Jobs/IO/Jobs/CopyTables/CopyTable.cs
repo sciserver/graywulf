@@ -4,6 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Tasks;
+using Jhu.Graywulf.IO.Tasks;
+using Jhu.Graywulf.RemoteService;
 
 namespace Jhu.Graywulf.IO.Jobs.CopyTables
 {
@@ -22,9 +24,18 @@ namespace Jhu.Graywulf.IO.Jobs.CopyTables
             var parameters = Parameters.Get(activityContext);
             var item = Item.Get(activityContext);
 
-            using (var task = item.GetInitializedCopyTableTask(cancellationContext, parameters))
+            // Get server name from the data source
+            // This will be the database server responsible for executing the table copy
+            var host = ((Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerDataset)item.Source.Dataset).HostName;
+
+            using (var task = RemoteServiceHelper.CreateObject<ICopyTable>(cancellationContext, host, true))
             {
-                await task.Value.ExecuteAsync();
+                var settings = new TableCopySettings()
+                {
+                    Timeout = parameters.Timeout
+                };
+
+                await task.Value.ExecuteAsync(item.Source, item.Destination, settings);
             }
         }
     }

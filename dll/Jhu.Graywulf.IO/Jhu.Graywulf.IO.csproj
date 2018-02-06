@@ -137,9 +137,10 @@
     <Compile Include="IO\Tasks\CopyFile.cs" />
     <Compile Include="IO\Tasks\CopyTable.cs" />
     <Compile Include="IO\Tasks\CopyTableBase.cs" />
+    <Compile Include="IO\Tasks\TableArchiveSettings.cs" />
+    <Compile Include="IO\Tasks\TableCopySettings.cs" />
     <Compile Include="IO\Tasks\Enum.cs" />
     <Compile Include="IO\Tasks\Error.cs" />
-    <Compile Include="IO\Tasks\ImportTableOptions.cs" />
     <Compile Include="IO\Tasks\InsertIntoTable.cs" />
     <Compile Include="IO\Tasks\SourceQuery.cs" />
     <Compile Include="IO\Tasks\SourceTable.cs" />

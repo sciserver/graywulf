@@ -89,11 +89,11 @@
     <Compile Include="Format\SqlServerNativeDataFileWriterTest.cs" />
     <Compile Include="IO\StreamFactoryTest.cs" />
     <Compile Include="IO\Tasks\AsyncFileCopyTest.cs" />
-    <Compile Include="IO\Tasks\ImportTableArchiveTest.cs" />
     <Compile Include="IO\Tasks\CopyFileTest.cs" />
     <Compile Include="IO\Tasks\CopyTableTest.cs" />
     <Compile Include="IO\Tasks\ExportTableArchiveTest.cs" />
     <Compile Include="IO\Tasks\ExportTableTest.cs" />
+    <Compile Include="IO\Tasks\ImportTableArchiveTest.cs" />
     <Compile Include="IO\Tasks\ImportTableTest.cs" />
     <Compile Include="IO\Tasks\SerializationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -16,19 +16,18 @@ namespace Jhu.Graywulf.IO.Tasks
     {
         SourceQuery[] Sources
         {
-            [OperationContract]
             get;
-            [OperationContract]
             set;
         }
 
         DataFileBase[] Destinations
         {
-            [OperationContract]
             get;
-            [OperationContract]
             set;
         }
+
+        [OperationContract]
+        Task<TableCopyResults> ExecuteAsyncEx(SourceQuery[] sources, DataFileBase[] destinations, TableCopySettings settings, TableArchiveSettings archiveSettings);
     }
 
     /// <summary>
@@ -68,7 +67,7 @@ namespace Jhu.Graywulf.IO.Tasks
             get { return destinations; }
             set { destinations = value; }
         }
-
+        
         #endregion
         #region Constructors and initializers
 
@@ -119,6 +118,20 @@ namespace Jhu.Graywulf.IO.Tasks
         public override async Task OpenAsync()
         {
             await OpenAsync(DataFileMode.Write, DataFileArchival.Automatic);
+        }
+
+        public async Task<TableCopyResults> ExecuteAsyncEx(SourceQuery[] sources, DataFileBase[] destinations, TableCopySettings settings, TableArchiveSettings archiveSettings)
+        {
+            this.sources = sources;
+            this.destinations = destinations;
+            this.Settings = settings;
+            this.ArchiveSettings = archiveSettings;
+
+            await OpenAsync();
+            await ExecuteAsync();
+            Close();
+
+            return Results;
         }
         
         /// <summary>

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Format;
@@ -29,20 +29,26 @@ namespace Jhu.Graywulf.IO.Tasks
             return FileFormatFactory.Create(null);
         }
 
-        protected ServiceModel.ServiceProxy<IImportTable> GetImportTableTask(CancellationContext cancellationContext, string path, bool remote, bool generateIdentityColumn)
+        protected ServiceModel.ServiceProxy<IImportTable> GetImportTableTask(
+            CancellationContext cancellationContext, string path, bool remote, bool generateIdentityColumn,
+            out DataFileBase source, out DestinationTable destination, out TableCopySettings settings)
         {
             var ds = IOTestDataset;
             ds.IsMutable = true;
 
             var table = GetTestUniqueName();
             var ff = CreateFileFormatFactory();
-            var source = ff.CreateFile(new Uri(path, UriKind.RelativeOrAbsolute));
-            var destination = new DestinationTable()
+            source = ff.CreateFile(new Uri(path, UriKind.RelativeOrAbsolute));
+            source.GenerateIdentityColumn = generateIdentityColumn;
+            destination = new DestinationTable()
             {
                 Dataset = ds,
                 DatabaseName = ds.DatabaseName,
                 SchemaName = ds.DefaultSchemaName,
                 TableNamePattern = table,
+            };
+            settings = new TableCopySettings()
+            {
             };
 
             ServiceModel.ServiceProxy<IImportTable> it = null;
@@ -54,39 +60,34 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 it = new ServiceModel.ServiceProxy<IImportTable>(new ImportTable(cancellationContext));
             }
-
-            it.Value.Source = source;
-            it.Value.Destination = destination;
-            it.Value.Options = new ImportTableOptions()
-            {
-                GenerateIdentityColumn = generateIdentityColumn
-            };
-
+            
             return it;
         }
 
-        protected Jhu.Graywulf.Sql.Schema.Table ExecuteImportTableTask(IImportTable it)
+        protected async Task<Jhu.Graywulf.Sql.Schema.Table> ExecuteImportTableTask(IImportTable it, DataFileBase source, DestinationTable destination, TableCopySettings settings)
         {
-            var t = it.Destination.GetTable();
+            var t = destination.GetTable();
             DropTable(t);
 
-            Util.TaskHelper.Wait(it.ExecuteAsync());
+            await it.ExecuteAsyncEx(source, destination, settings);
 
-            var table = it.Destination.GetTable();
+            var table = destination.GetTable();
 
             return table;
         }
 
         [TestMethod]
-        public void ImportTest()
+        public async Task ImportTest()
         {
             using (var cancellationContext = new CancellationContext())
             {
                 var path = GetTestFilePath(@"modules\graywulf\test\files\csv_numbers.csv");
 
-                using (var it = GetImportTableTask(cancellationContext, path, false, false))
+                using (var it = GetImportTableTask(
+                    cancellationContext, path, false, false,
+                    out var source, out var destination, out var settings))
                 {
-                    var t = ExecuteImportTableTask(it.Value);
+                    var t = await ExecuteImportTableTask(it.Value, source, destination, settings);
                     Assert.AreEqual(5, t.Columns.Count);
                     DropTable(t);
                 }
@@ -94,16 +95,17 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         [TestMethod]
-        public void ImportGenerateIdentityTest()
+        public async Task ImportGenerateIdentityTest()
         {
             using (var cancellationContext = new CancellationContext())
             {
                 var path = GetTestFilePath(@"modules\graywulf\test\files\csv_numbers.csv");
 
-                using (var it = GetImportTableTask(cancellationContext, path, false, false))
+                using (var it = GetImportTableTask(
+                    cancellationContext, path, false, false,
+                    out var source, out var destination, out var settings))
                 {
-                    var t = ExecuteImportTableTask(it.Value);
-
+                    var t = await ExecuteImportTableTask(it.Value, source, destination, settings);
                     Assert.AreEqual(5, t.Columns.Count);
                     DropTable(t);
                 }
@@ -111,7 +113,7 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         [TestMethod]
-        public void RemoteImportTest()
+        public async Task RemoteImportTest()
         {
             using (RemoteServiceTester.Instance.GetToken())
             {
@@ -121,9 +123,11 @@ namespace Jhu.Graywulf.IO.Tasks
                 {
                     var path = GetTestFilePath(@"modules\graywulf\test\files\csv_numbers.csv");
 
-                    using (var it = GetImportTableTask(cancellationContext, path, false, false))
+                    using (var it = GetImportTableTask(
+                        cancellationContext, path, false, false,
+                        out var source, out var destination, out var settings))
                     {
-                        var t = ExecuteImportTableTask(it.Value);
+                        var t = await ExecuteImportTableTask(it.Value, source, destination, settings);
 
                         Assert.AreEqual(5, t.Columns.Count);
                         DropTable(t);
@@ -132,15 +136,17 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
-        public void ImportFromHttpTestHelper(string url)
+        public async Task ImportFromHttpTestHelper(string url)
         {
             using (var cancellationContext = new CancellationContext())
             {
                 var path = url;
 
-                using (var it = GetImportTableTask(cancellationContext, path, false, false))
+                using (var it = GetImportTableTask(
+                    cancellationContext, path, false, false,
+                    out var source, out var destination, out var settings))
                 {
-                    var t = ExecuteImportTableTask(it.Value);
+                    var t = await ExecuteImportTableTask(it.Value, source, destination, settings);
 
                     Assert.AreEqual(5, t.Columns.Count);
                     DropTable(t);
@@ -149,21 +155,21 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         [TestMethod]
-        public void ImportFromHttpTest()
+        public async Task ImportFromHttpTest()
         {
-            ImportFromHttpTestHelper(@"http://localhost/graywulf_io_test/csv_numbers.csv");
+            await ImportFromHttpTestHelper(@"http://localhost/graywulf_io_test/csv_numbers.csv");
         }
 
         [TestMethod]
-        public void ImportFromHttpTest2()
+        public async Task ImportFromHttpTest2()
         {
-            ImportFromHttpTestHelper(@"http://localhost/~graywulf_io_test/csv_numbers.csv");
+            await ImportFromHttpTestHelper(@"http://localhost/~graywulf_io_test/csv_numbers.csv");
         }
 
         [TestMethod]
-        public void ImportFromHttpTest3()
+        public async Task ImportFromHttpTest3()
         {
-            ImportFromHttpTestHelper(@"http://localhost/graywulf-io-test/csv_numbers.csv");
+            await ImportFromHttpTestHelper(@"http://localhost/graywulf-io-test/csv_numbers.csv");
         }
     }
 }

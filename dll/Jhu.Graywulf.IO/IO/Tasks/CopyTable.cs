@@ -18,19 +18,18 @@ namespace Jhu.Graywulf.IO.Tasks
     {
         SourceQuery Source
         {
-            [OperationContract]
             get;
-            [OperationContract]
             set;
         }
 
         DestinationTable Destination
         {
-            [OperationContract]
             get;
-            [OperationContract]
             set;
         }
+
+        [OperationContract]
+        Task<TableCopyResults> ExecuteAsyncEx(SourceQuery source, DestinationTable destination, TableCopySettings settings);
     }
 
     /// <summary>
@@ -56,19 +55,13 @@ namespace Jhu.Graywulf.IO.Tasks
 
         public SourceQuery Source
         {
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return source; }
-
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { source = value; }
         }
 
         public DestinationTable Destination
         {
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return destination; }
-
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { destination = value; }
         }
 
@@ -109,6 +102,17 @@ namespace Jhu.Graywulf.IO.Tasks
         protected override TableCopyResult CreateResult()
         {
             return source.CreateResult();
+        }
+
+        public async Task<TableCopyResults> ExecuteAsyncEx(SourceQuery source, DestinationTable destination, TableCopySettings settings)
+        {
+            this.source = source;
+            this.destination = destination;
+            this.Settings = settings;
+
+            await ExecuteAsync();
+
+            return Results;
         }
 
         protected override async Task OnExecuteAsync()

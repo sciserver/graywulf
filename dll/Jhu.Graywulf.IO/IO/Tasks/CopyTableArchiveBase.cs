@@ -12,18 +12,11 @@ namespace Jhu.Graywulf.IO.Tasks
     [NetDataContract]
     public interface ICopyTableArchiveBase : ICopyTableBase, ICopyDataStream
     {
-        Uri Uri
+        TableArchiveSettings ArchiveSettings
         {
             [OperationContract]
             get;
-            [OperationContract]
-            set;
-        }
 
-        Credentials Credentials
-        {
-            [OperationContract]
-            get;
             [OperationContract]
             set;
         }
@@ -38,8 +31,8 @@ namespace Jhu.Graywulf.IO.Tasks
     {
         #region Private member variables
 
-        private Uri uri;
-        private Credentials credentials;
+        [NonSerialized]
+        private TableArchiveSettings archiveSettings;
 
         [NonSerialized]
         private Stream baseStream;
@@ -54,22 +47,10 @@ namespace Jhu.Graywulf.IO.Tasks
         #endregion
         #region Properties
 
-        /// <summary>
-        /// Gets or sets the URI pointing to the archive, either source or destination
-        /// </summary>
-        public Uri Uri
+        public TableArchiveSettings ArchiveSettings
         {
-            get { return uri; }
-            set { uri = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the credentials to be used to access the source or destination URI
-        /// </summary>
-        public Credentials Credentials
-        {
-            get { return credentials; }
-            set { credentials = value; }
+            get { return archiveSettings; }
+            set { archiveSettings = value; }
         }
 
         /// <summary>
@@ -102,16 +83,14 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void InitializeMembers()
         {
-            this.uri = null;
-            this.credentials = null;
+            this.archiveSettings = new TableArchiveSettings();
             this.baseStream = null;
             this.ownsBaseStream = false;
         }
 
         private void CopyMembers(CopyTableArchiveBase old)
         {
-            this.uri = old.uri;
-            this.credentials = old.credentials;
+            this.archiveSettings = new TableArchiveSettings(old.archiveSettings);
             this.baseStream = null;
             this.ownsBaseStream = false;
         }
@@ -138,7 +117,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// When overriden is derived classes, opens the archive pointed by the URI.
         /// </summary>
         public abstract Task OpenAsync();
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -155,8 +134,8 @@ namespace Jhu.Graywulf.IO.Tasks
                 // file if necessary by opening an IArchiveInputStream
 
                 var sf = GetStreamFactory();
-                sf.Uri = uri;
-                sf.Credentials = credentials;
+                sf.Uri = archiveSettings.Uri;
+                sf.Credentials = archiveSettings.Credentials;
                 sf.Mode = fileMode;
                 sf.Archival = archival;
 
@@ -182,7 +161,6 @@ namespace Jhu.Graywulf.IO.Tasks
 
             this.baseStream = stream;
             this.ownsBaseStream = false;
-            this.uri = null;
 
             await OpenAsync();
         }
@@ -198,9 +176,9 @@ namespace Jhu.Graywulf.IO.Tasks
                 throw new ArgumentNullException("uri"); // TODO
             }
 
+            this.archiveSettings.Uri = uri;
             this.baseStream = null;
             this.ownsBaseStream = false;
-            this.uri = uri;
 
             await OpenAsync();
         }

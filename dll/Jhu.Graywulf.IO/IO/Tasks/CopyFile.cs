@@ -14,41 +14,8 @@ namespace Jhu.Graywulf.IO.Tasks
     [RemoteService(typeof(CopyFile))]
     public interface ICopyFile : IRemoteService
     {
-        string Source
-        {
-            [OperationContract]
-            get;
-
-            [OperationContract]
-            set;
-        }
-
-        string Destination
-        {
-            [OperationContract]
-            get;
-
-            [OperationContract]
-            set;
-        }
-
-        bool Overwrite
-        {
-            [OperationContract]
-            get;
-
-            [OperationContract]
-            set;
-        }
-
-        FileCopyMethod Method
-        {
-            [OperationContract]
-            get;
-
-            [OperationContract]
-            set;
-        }
+        [OperationContract(Name = "ExecuteAsyncEx")]
+        Task ExecuteAsync(string source, string destination, bool overwrite, FileCopyMethod method);
     }
 
     /// <summary>
@@ -74,10 +41,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         public string Source
         {
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return source; }
-
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { source = value; }
         }
 
@@ -86,10 +50,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         public string Destination
         {
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return destination; }
-
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { destination = value; }
         }
 
@@ -98,19 +59,13 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         public bool Overwrite
         {
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return overwrite; }
-
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { overwrite = value; }
         }
 
         public FileCopyMethod Method
         {
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return method; }
-
-            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { method = value; }
         }
 
@@ -137,6 +92,16 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         #endregion
+
+        public Task ExecuteAsync(string source, string destination, bool overwrite, FileCopyMethod method)
+        {
+            this.source = source;
+            this.destination = destination;
+            this.overwrite = overwrite;
+            this.method = method;
+
+            return ExecuteAsync();
+        }
 
         protected override async Task OnExecuteAsync()
         {

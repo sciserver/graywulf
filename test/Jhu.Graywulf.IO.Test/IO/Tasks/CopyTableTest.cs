@@ -23,12 +23,18 @@ namespace Jhu.Graywulf.IO.Tasks
             StopLogger();
         }
 
-        private ServiceModel.ServiceProxy<ICopyTable> GetTableCopy(CancellationContext cancellationContext, string tableName, bool remote)
+        private ServiceModel.ServiceProxy<ICopyTable> GetTableCopy(
+            CancellationContext cancellationContext, string tableName, bool remote,
+            out SourceQuery source, out DestinationTable destination, out TableCopySettings settings)
         {
-            return GetTableCopy(cancellationContext, null, tableName, remote);
+            return GetTableCopy(
+                cancellationContext, null, tableName, remote,
+                out source, out destination, out settings);
         }
 
-        private ServiceModel.ServiceProxy<ICopyTable> GetTableCopy(CancellationContext cancellationContext, string sql, string tableName, bool remote)
+        private ServiceModel.ServiceProxy<ICopyTable> GetTableCopy(
+            CancellationContext cancellationContext, string sql, string tableName, bool remote,
+            out SourceQuery source, out DestinationTable destination, out TableCopySettings settings)
         {
             ServiceModel.ServiceProxy<ICopyTable> q = null;
             if (remote)
@@ -45,15 +51,13 @@ namespace Jhu.Graywulf.IO.Tasks
                 IsMutable = true
             };
 
-            var source = new SourceQuery()
+            source = new SourceQuery()
             {
                 Dataset = ds,
                 Query = sql ?? "SELECT * FROM SampleData_PrimaryKey"
             };
-
-            q.Value.Source = source;
-
-            var destination = new DestinationTable()
+            
+            destination = new DestinationTable()
             {
                 Dataset = ds,
                 DatabaseName = ds.DatabaseName,
@@ -62,31 +66,35 @@ namespace Jhu.Graywulf.IO.Tasks
                 Options = TableInitializationOptions.Create
             };
 
-            q.Value.Destination = destination;
+            settings = new TableCopySettings()
+            {
+            };
 
             return q;
         }
 
         [TestMethod]
-        public void SimpleTableCopyTest()
+        public async Task SimpleTableCopyTest()
         {
             using (var cancellationContext = new CancellationContext())
             {
                 var table = GetTestUniqueName();
 
-                using (var q = GetTableCopy(cancellationContext, table, false))
+                using (var q = GetTableCopy(
+                    cancellationContext, table, false,
+                    out var source, out var destination, out var settings))
                 {
-                    DropTable(q.Value.Destination.GetTable());
+                    DropTable(destination.GetTable());
 
-                    q.Value.ExecuteAsync().Wait();
+                    await q.Value.ExecuteAsyncEx(source, destination, settings);
 
-                    DropTable(q.Value.Destination.GetTable());
+                    DropTable(destination.GetTable());
                 }
             }
         }
 
         [TestMethod]
-        public void MultipleTableCopyTest()
+        public async Task MultipleTableCopyTest()
         {
             var sql =
 @"SELECT * FROM SampleData_PrimaryKey
@@ -96,21 +104,23 @@ SELECT * FROM SampleData_PrimaryKey";
             {
                 var table = GetTestUniqueName() + "_" + Constants.ResultsetNameToken;
 
-                using (var q = GetTableCopy(cancellationContext, sql, table, false))
+                using (var q = GetTableCopy(
+                    cancellationContext, sql, table, false,
+                    out var source, out var destination, out var settings))
                 {
-                    DropTable(q.Value.Destination.GetTable(null, null, "0", null));
-                    DropTable(q.Value.Destination.GetTable(null, null, "1", null));
+                    DropTable(destination.GetTable(null, null, "0", null));
+                    DropTable(destination.GetTable(null, null, "1", null));
 
-                    q.Value.ExecuteAsync().Wait();
+                    await q.Value.ExecuteAsyncEx(source, destination, settings);
 
-                    DropTable(q.Value.Destination.GetTable(null, null, "0", null));
-                    DropTable(q.Value.Destination.GetTable(null, null, "1", null));
+                    DropTable(destination.GetTable(null, null, "0", null));
+                    DropTable(destination.GetTable(null, null, "1", null));
                 }
             }
         }
 
         [TestMethod]
-        public void RemoteSimpleTableCopyTest()
+        public async Task RemoteSimpleTableCopyTest()
         {
             using (RemoteServiceTester.Instance.GetToken())
             {
@@ -119,17 +129,15 @@ SELECT * FROM SampleData_PrimaryKey";
                 using (var cancellationContext = new CancellationContext())
                 {
                     var table = GetTestUniqueName();
-                    using (var q = GetTableCopy(cancellationContext, table, true))
+                    using (var q = GetTableCopy(
+                        cancellationContext, table, true,
+                        out var source, out var destination, out var settings))
                     {
-                        var destination = q.Value.Destination;
                         DropTable(destination.GetTable());
 
-                        q.Value.ExecuteAsync().Wait();
+                        var r = await q.Value.ExecuteAsyncEx(source, destination, settings);
 
-                        destination = q.Value.Destination;
                         DropTable(destination.GetTable());
-
-                        var r = q.Value.Results;
 
                         Assert.AreEqual(TableCopyStatus.Success, r[0].Status);
                         Assert.AreEqual(2, r[0].RecordsAffected);
@@ -140,7 +148,7 @@ SELECT * FROM SampleData_PrimaryKey";
         }
 
         [TestMethod]
-        public void RemoteMultipleTableCopyTest()
+        public async Task RemoteMultipleTableCopyTest()
         {
             var sql =
 @"SELECT * FROM SampleData_PrimaryKey
@@ -154,21 +162,17 @@ SELECT * FROM SampleData_PrimaryKey";
                 {
                     var table = GetTestUniqueName() + "_" + Constants.ResultsetNameToken;
 
-                    using (var q = GetTableCopy(cancellationContext, sql, table, true))
+                    using (var q = GetTableCopy(
+                        cancellationContext, sql, table, true,
+                        out var source, out var destination, out var settings))
                     {
-                        var destination = q.Value.Destination;
-
                         DropTable(destination.GetTable(null, null, "0", null));
                         DropTable(destination.GetTable(null, null, "1", null));
 
-                        q.Value.ExecuteAsync().Wait();
-
-                        destination = q.Value.Destination;
+                        var r = await q.Value.ExecuteAsyncEx(source, destination, settings);
 
                         DropTable(destination.GetTable(null, null, "0", null));
                         DropTable(destination.GetTable(null, null, "1", null));
-
-                        var r = q.Value.Results;
 
                         Assert.AreEqual(TableCopyStatus.Success, r[0].Status);
                         Assert.AreEqual(2, r[0].RecordsAffected);

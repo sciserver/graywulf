@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.Threading.Tasks;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.IO;
@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [DeploymentItem("eseutil.exe")]
     public class CopyFileTest : TestClassBase
     {
-        private ServiceModel.ServiceProxy<ICopyFile> GetFileCopy(CancellationContext cancellationContext, string name, bool remote)
+        private ServiceModel.ServiceProxy<ICopyFile> GetFileCopy(CancellationContext cancellationContext, string name, bool remote, out string source, out string destination)
         {
             ServiceModel.ServiceProxy<ICopyFile> fc;
             if (remote)
@@ -26,8 +26,8 @@ namespace Jhu.Graywulf.IO.Tasks
                 fc = new ServiceModel.ServiceProxy<ICopyFile>(new CopyFile(cancellationContext));
             }
 
-            fc.Value.Source = String.Format(@"\\{0}\{1}\{2}.txt", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, name);
-            fc.Value.Destination = String.Format(@"\\{0}\{1}\{2}_2.txt", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, name);
+            source = String.Format(@"\\{0}\{1}\{2}.txt", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, name);
+            destination = String.Format(@"\\{0}\{1}\{2}_2.txt", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, name);
 
             return fc;
         }
@@ -36,23 +36,20 @@ namespace Jhu.Graywulf.IO.Tasks
         /// Copies a file from one UNC share to another, using the local machine.
         /// </summary>
         [TestMethod]
-        public void ExecuteTest()
+        public async Task ExecuteTest()
         {
             using (var cancellationContext = new CancellationContext())
             {
-                using (var fc = GetFileCopy(cancellationContext, "FileCopyTest_ExecuteTest", false))
+                using (var fc = GetFileCopy(cancellationContext, "FileCopyTest_ExecuteTest", false, out string source, out string destination))
                 {
-                    fc.Value.Overwrite = true;
-                    fc.Value.Method = FileCopyMethod.Win32FileCopy;
+                    File.WriteAllText(source, "test data");
 
-                    File.WriteAllText(fc.Value.Source, "test data");
+                    await fc.Value.ExecuteAsync(source, destination, true, FileCopyMethod.Win32FileCopy);
 
-                    fc.Value.ExecuteAsync().Wait();
+                    Assert.IsTrue(File.Exists(destination));
 
-                    Assert.IsTrue(File.Exists(fc.Value.Destination));
-
-                    File.Delete(fc.Value.Source);
-                    File.Delete(fc.Value.Destination);
+                    File.Delete(source);
+                    File.Delete(destination);
                 }
             }
         }
@@ -61,7 +58,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// Copies a file from one UNC share to another, using a remote machine.
         /// </summary>
         [TestMethod]
-        public void RemoteExecuteTest()
+        public async Task RemoteExecuteTest()
         {
             using (RemoteServiceTester.Instance.GetToken())
             {
@@ -69,19 +66,16 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 using (var cancellationContext = new CancellationContext())
                 {
-                    using (var fc = GetFileCopy(cancellationContext, "FileCopyTest_RemoteExecuteTest", true))
+                    using (var fc = GetFileCopy(cancellationContext, "FileCopyTest_RemoteExecuteTest", true, out string source, out string destination))
                     {
-                        fc.Value.Overwrite = true;
-                        fc.Value.Method = FileCopyMethod.Win32FileCopy;
+                        File.WriteAllText(source, "test data");
 
-                        File.WriteAllText(fc.Value.Source, "test data");
+                        await fc.Value.ExecuteAsync(source, destination, true, FileCopyMethod.Win32FileCopy);
 
-                        fc.Value.ExecuteAsync().Wait();
+                        Assert.IsTrue(File.Exists(destination));
 
-                        Assert.IsTrue(File.Exists(fc.Value.Destination));
-
-                        File.Delete(fc.Value.Source);
-                        File.Delete(fc.Value.Destination);
+                        File.Delete(source);
+                        File.Delete(destination);
                     }
                 }
             }

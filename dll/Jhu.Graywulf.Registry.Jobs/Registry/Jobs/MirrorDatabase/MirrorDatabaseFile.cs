@@ -74,12 +74,7 @@ namespace Jhu.Graywulf.Registry.Jobs.MirrorDatabase
             {
                 using (var fc = RemoteServiceHelper.CreateObject<ICopyFile>(cancellationContext, hostname, true))
                 {
-                    fc.Value.Source = sourcefilename;
-                    fc.Value.Destination = destinationfilename;
-                    fc.Value.Overwrite = true;
-                    fc.Value.Method = FileCopyMethod.AsyncFileCopy;
-
-                    await fc.Value.ExecuteAsync();
+                    await fc.Value.ExecuteAsync(sourcefilename, destinationfilename, true, FileCopyMethod.AsyncFileCopy);
                 }
             }
         }
