@@ -24,9 +24,10 @@ namespace Jhu.Graywulf.IO.Tasks
     [NetDataContract]
     public interface IInsertIntoTable : ICopyTableBase
     {
+        [OperationContract]
+        Task<TableCopyResults> ExecuteAsyncEx(SourceQuery source, DestinationTable destination, TableCopySettings settings);
     }
-
-
+    
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
@@ -86,7 +87,9 @@ namespace Jhu.Graywulf.IO.Tasks
             return source.CreateResult();
         }
 
-        public async Task<TableCopyResults> ExecuteAsync(SourceQuery source, DestinationTable destination, TableCopySettings settings)
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation(RemoteService.Constants.DefaultRole)]
+        public async Task<TableCopyResults> ExecuteAsyncEx(SourceQuery source, DestinationTable destination, TableCopySettings settings)
         {
             this.source = source;
             this.destination = destination;

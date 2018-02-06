@@ -6,8 +6,7 @@ using Jhu.Graywulf.Components;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.Format;
-using Jhu.Graywulf.Sql.Schema;
-using Jhu.Graywulf.Sql.Schema.SqlServer;
+using Jhu.Graywulf.ServiceModel;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
@@ -121,6 +120,8 @@ namespace Jhu.Graywulf.IO.Tasks
             };
         }
 
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation(RemoteService.Constants.DefaultRole)]
         public async Task<TableCopyResults> ExecuteAsyncEx(DataFileBase[] sources, DestinationTable[] destinations, TableCopySettings settings, TableArchiveSettings archiveSettings)
         {
             this.sources = sources;

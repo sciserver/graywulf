@@ -130,7 +130,8 @@ namespace Jhu.Graywulf.IO.Tasks
             };
         }
 
-        [OperationBehavior]
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation(RemoteService.Constants.DefaultRole)]
         public async Task<TableCopyResults> ExecuteAsyncEx(DataFileBase source, DestinationTable destination, TableCopySettings settings)
         {
             this.source = source;

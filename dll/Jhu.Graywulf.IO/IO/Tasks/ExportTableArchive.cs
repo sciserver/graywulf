@@ -120,6 +120,8 @@ namespace Jhu.Graywulf.IO.Tasks
             await OpenAsync(DataFileMode.Write, DataFileArchival.Automatic);
         }
 
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation(RemoteService.Constants.DefaultRole)]
         public async Task<TableCopyResults> ExecuteAsyncEx(SourceQuery[] sources, DataFileBase[] destinations, TableCopySettings settings, TableArchiveSettings archiveSettings)
         {
             this.sources = sources;

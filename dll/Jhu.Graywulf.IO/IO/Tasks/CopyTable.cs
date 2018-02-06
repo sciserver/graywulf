@@ -104,6 +104,8 @@ namespace Jhu.Graywulf.IO.Tasks
             return source.CreateResult();
         }
 
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation(RemoteService.Constants.DefaultRole)]
         public async Task<TableCopyResults> ExecuteAsyncEx(SourceQuery source, DestinationTable destination, TableCopySettings settings)
         {
             this.source = source;
