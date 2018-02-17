@@ -12,7 +12,7 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
-    public class PrepareDestinationTable : JobAsyncCodeActivity, IJobActivity
+    public class InitializeOutputTable : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
@@ -48,7 +48,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     using (RegistryContext registryContext = queryPartition.CreateContext())
                     {
                         queryPartition.InitializeQueryObject(cancellationContext, registryContext, activityContext.GetExtension<IScheduler>(), true);
-                        await queryPartition.PrepareDestinationTableAsync(remoteTable);
+                        await queryPartition.InitializeOutputTableAsync(remoteTable);
                     }
                     break;
                 default:

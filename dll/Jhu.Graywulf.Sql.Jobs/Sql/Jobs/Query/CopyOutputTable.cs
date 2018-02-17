@@ -9,7 +9,7 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
-    public class CopyResultset : JobAsyncCodeActivity, IJobActivity
+    public class CopyOutputTable : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 querypartition.InitializeQueryObject(cancellationContext, registryContext);
             }
             
-            await querypartition.CopyResultsetAsync(remoteTable);
+            await querypartition.CopyOutputTableAsync(remoteTable);
         }
     }
 }

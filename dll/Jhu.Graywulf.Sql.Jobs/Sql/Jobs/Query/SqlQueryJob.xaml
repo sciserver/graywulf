@@ -98,7 +98,7 @@
                   <ActivityAction.Argument>
                     <DelegateInArgument x:TypeArguments="x:String" Name="tableKey" />
                   </ActivityAction.Argument>
-                  <local:CopyRemoteTable sap2010:WorkflowViewState.IdRef="CopyRemoteTable_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" RemoteTable="[tableKey]" />
+                  <local:CopySourceTable sap2010:WorkflowViewState.IdRef="CopyRemoteTable_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" RemoteTable="[tableKey]" />
                 </ActivityAction>
               </ParallelForEach>
               <local:ExecuteQuery sap2010:WorkflowViewState.IdRef="ExecuteQuery_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" />
@@ -108,8 +108,8 @@
                     <DelegateInArgument x:TypeArguments="x:String" Name="tableKey" />
                   </ActivityAction.Argument>
                   <Sequence sap2010:WorkflowViewState.IdRef="Sequence_3">
-                    <local:PrepareDestinationTable sap2010:WorkflowViewState.IdRef="PrepareDestinationTable_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" RemoteTable="[tableKey]" />
-                    <local:CopyResultset sap2010:WorkflowViewState.IdRef="CopyResultset_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" RemoteTable="[tableKey]" />
+                    <local:InitializeOutputTable sap2010:WorkflowViewState.IdRef="PrepareDestinationTable_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" RemoteTable="[tableKey]" />
+                    <local:CopyOutputTable sap2010:WorkflowViewState.IdRef="CopyResultset_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" RemoteTable="[tableKey]" />
                   </Sequence>
                 </ActivityAction>
               </ParallelForEach>

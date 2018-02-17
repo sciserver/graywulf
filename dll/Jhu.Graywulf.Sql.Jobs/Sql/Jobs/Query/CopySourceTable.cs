@@ -14,7 +14,7 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
-    public class CopyRemoteTable : JobAsyncCodeActivity, IJobActivity
+    public class CopySourceTable : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
@@ -32,10 +32,10 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             using (RegistryContext context = querypartition.Query.CreateContext())
             {
-                querypartition.PrepareCopyRemoteTable(remoteTable, out source);
+                querypartition.PrepareCopySourceTable(remoteTable, out source);
             }
 
-            await querypartition.CopyRemoteTableAsync(remoteTable, source);
+            await querypartition.CopySourceTableAsync(remoteTable, source);
         }
     }
 }

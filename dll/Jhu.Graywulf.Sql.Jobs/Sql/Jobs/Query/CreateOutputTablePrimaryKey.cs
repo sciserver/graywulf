@@ -13,7 +13,7 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
-    public class CreateDestinationTablePrimaryKey : JobAsyncCodeActivity, IJobActivity
+    public class CreateOutputTablePrimaryKey : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     throw new NotImplementedException();
             }
 
-            await queryPartition.CreateDestinationTablePrimaryKeyAsync(destinationTable);
+            await queryPartition.CreateOutputTablePrimaryKeyAsync(destinationTable);
         }
     }
 }

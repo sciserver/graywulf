@@ -5,7 +5,8 @@ using System.Text;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
-    class CreateDestinationTableIndexes
+    class CreateOutputTableIndexes
     {
+        // Placeholder
     }
 }

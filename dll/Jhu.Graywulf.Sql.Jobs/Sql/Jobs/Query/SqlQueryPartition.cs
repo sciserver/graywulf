@@ -284,7 +284,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// </summary>
         /// <param name="tableKey"></param>
         /// <returns></returns>
-        public void PrepareCopyRemoteTable(string tableKey, out SourceQuery query)
+        public void PrepareCopySourceTable(string tableKey, out SourceQuery query)
         {
             // TODO: add option to do by table or tr
 
@@ -317,7 +317,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// </summary>
         /// <param name="table"></param>
         /// <param name="source"></param>
-        public async Task CopyRemoteTableAsync(string tableKey, SourceQuery source)
+        public async Task CopySourceTableAsync(string tableKey, SourceQuery source)
         {
             // TODO: add option to do by table or tr
 
@@ -423,7 +423,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         #endregion
         #region Destination table and copy resultset functions
 
-        public Task PrepareDestinationTableAsync(string remoteTable)
+        public Task InitializeOutputTableAsync(string remoteTable)
         {
             var rt = RemoteOutputTables[remoteTable];
 
@@ -468,7 +468,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <summary>
         /// Copies resultset from the output temporary table to the destination database (MYDB)
         /// </summary>
-        public async Task CopyResultsetAsync(string remoteTable)
+        public async Task CopyOutputTableAsync(string remoteTable)
         {
             switch (Query.Parameters.ExecutionMode)
             {
@@ -523,7 +523,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             */
         }
 
-        public async Task CreateDestinationTablePrimaryKeyAsync(Table destination)
+        public async Task CreateOutputTablePrimaryKeyAsync(Table destination)
         {
             if (destination != null && destination.PrimaryKey != null)
             {
