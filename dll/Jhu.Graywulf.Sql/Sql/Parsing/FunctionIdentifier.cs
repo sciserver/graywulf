@@ -40,6 +40,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             base.OnCopyMembers(other);
 
             var old = (FunctionIdentifier)other;
+
+            this.functionReference = old.functionReference; 
         }
 
         public static FunctionIdentifier Create(string functionName)
