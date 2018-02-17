@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.IO.Tasks
     public interface ICopyFile : IRemoteService
     {
         [OperationContract(Name = "ExecuteAsyncEx")]
-        Task ExecuteAsync(string source, string destination, bool overwrite, FileCopyMethod method);
+        Task ExecuteAsyncEx(string source, string destination, bool overwrite, FileCopyMethod method);
     }
 
     /// <summary>
@@ -93,7 +93,9 @@ namespace Jhu.Graywulf.IO.Tasks
 
         #endregion
 
-        public Task ExecuteAsync(string source, string destination, bool overwrite, FileCopyMethod method)
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation(RemoteService.Constants.DefaultRole)]
+        public Task ExecuteAsyncEx(string source, string destination, bool overwrite, FileCopyMethod method)
         {
             this.source = source;
             this.destination = destination;

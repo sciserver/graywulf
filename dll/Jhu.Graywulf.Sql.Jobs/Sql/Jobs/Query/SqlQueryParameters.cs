@@ -91,7 +91,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         private List<TableOrView> sourceTables;
 
-        private List<TableOrView> outputTables;
+        private List<Table> outputTables;
 
         /// <summary>
         /// Query execution mode, either single server or Graywulf cluster
@@ -244,20 +244,34 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             set { customDatasets = new List<DatasetBase>(value); }
         }
 
-        [DataMember]
-        [XmlArray]
+        [IgnoreDataMember]
         public List<TableOrView> SourceTables
         {
             get { return sourceTables; }
             set { sourceTables = value; }
         }
 
-        [DataMember]
+        [DataMember(Name = "SourceTables")]
         [XmlArray]
-        public List<TableOrView> OutputTables
+        public TableOrView[] SourceTables_ForXml
+        {
+            get { return sourceTables.ToArray(); }
+            set { sourceTables = new List<TableOrView>(value); }
+        }
+
+        [IgnoreDataMember]
+        public List<Table> OutputTables
         {
             get { return outputTables; }
             set { outputTables = value; }
+        }
+
+        [DataMember(Name = "OutputTables")]
+        [XmlArray]
+        public Table[] OutputTables_ForXml
+        {
+            get { return outputTables.ToArray(); }
+            set { outputTables = new List<Table>(value); }
         }
 
         /// <summary>
@@ -308,7 +322,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             this.defaultOutputDataset = null;
             this.customDatasets = new List<DatasetBase>();
             this.sourceTables = new List<TableOrView>();
-            this.outputTables = new List<TableOrView>();
+            this.outputTables = new List<Table>();
 
             this.executionMode = ExecutionMode.SingleServer;
         }
@@ -334,7 +348,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             this.defaultOutputDataset = old.defaultOutputDataset;
             this.customDatasets = old.customDatasets == null ? null : new List<DatasetBase>(old.customDatasets);
             this.sourceTables = old.sourceTables == null ? null : new List<TableOrView>(old.sourceTables);
-            this.outputTables = old.outputTables == null ? null : new List<TableOrView>(old.outputTables);
+            this.outputTables = old.outputTables == null ? null : new List<Table>(old.outputTables);
 
             this.executionMode = old.executionMode;
         }

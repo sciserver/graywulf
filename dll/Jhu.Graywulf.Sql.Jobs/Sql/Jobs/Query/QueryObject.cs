@@ -1269,7 +1269,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <param name="destination"></param>
         /// <param name="local"></param>
         /// <returns></returns>
-        protected ServiceModel.ServiceProxy<ICopyTable> CreateTableCopyTask(SourceQuery source, DestinationTable destination, bool local)
+        protected ServiceModel.ServiceProxy<ICopyTable> CreateTableCopyTask(SourceQuery source, DestinationTable destination, bool local, out TableCopySettings settings)
         {
             var desthost = GetHostnameFromSqlConnectionString(destination.Dataset.ConnectionString);
 
@@ -1284,11 +1284,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 qi = RemoteServiceHelper.CreateObject<ICopyTable>(CancellationContext, desthost, true);
             }
 
-            qi.Value.Source = source;
-            qi.Value.Destination = destination;
-            qi.Value.BatchName = Parameters.BatchName;
-            qi.Value.Timeout = Parameters.QueryTimeout;
-            
+            settings = new TableCopySettings()
+            {
+                BatchName = Parameters.BatchName,
+                Timeout = Parameters.QueryTimeout
+            };
+
             return qi;
         }
 

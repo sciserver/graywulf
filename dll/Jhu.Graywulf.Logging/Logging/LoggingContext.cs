@@ -351,13 +351,14 @@ namespace Jhu.Graywulf.Logging
                 }
                 else
                 {
-                    Logger.WriteEvent(e);
+                    WriteEvent(e);
                 }
             }
         }
 
         public void WriteEvent(Event e)
         {
+            TidyUpEvent(e);
             Logger.WriteEvent(e);
         }
 
@@ -383,11 +384,25 @@ namespace Jhu.Graywulf.Logging
                 {
                     foreach (var e in asyncEvents)
                     {
-                        Logger.WriteEvent(e);
+                        WriteEvent(e);
                     }
                 }
 
                 asyncEvents.Clear();
+            }
+        }
+
+        private void TidyUpEvent(Event e)
+        {
+            // ServiceModel.xceptionDetail is non-serializable, this is a bug
+
+            var ex = e.Exception as System.ServiceModel.FaultException<System.ServiceModel.ExceptionDetail>;
+            if (ex != null)
+            {
+                e.Message = ex.Detail.Message;
+                e.ExceptionStackTrace = ex.Detail.StackTrace;
+                e.ExceptionType = ex.Detail.Type;
+                e.Exception = null;
             }
         }
 

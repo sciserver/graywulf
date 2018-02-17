@@ -24,14 +24,16 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var activityInstanceId = activityContext.ActivityInstanceId;
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
             SourceQuery source;
+            DestinationTable destination;
 
             using (RegistryContext context = querypartition.Query.CreateContext())
             {
                 querypartition.InitializeQueryObject(cancellationContext, context, activityContext.GetExtension<IScheduler>(), true);
                 source = querypartition.GetExecuteSourceQuery();
+                destination = querypartition.GetExecuteDestinationTable();
             }
 
-            await querypartition.ExecuteQueryAsync(source);
+            await querypartition.ExecuteQueryAsync(source, destination);
         }
     }
 }

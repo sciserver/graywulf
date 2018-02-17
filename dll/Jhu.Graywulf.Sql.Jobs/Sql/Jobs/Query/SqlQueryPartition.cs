@@ -328,57 +328,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 temptable,
                 TableInitializationOptions.Drop | TableInitializationOptions.Create);
 
-            using (var tc = CreateTableCopyTask(source, dest, false))
+            using (var tc = CreateTableCopyTask(source, dest, false, out var settings))
             {
-                await tc.Value.ExecuteAsync();
+                await tc.Value.ExecuteAsyncEx(source, dest, settings);
             }
         }
-
-        /// <summary>
-        /// Checks if table is a remote table cached locally and if so,
-        /// substitutes corresponding temp table name
-        /// </summary>
-        /// <param name="table"></param>
-        /// <returns></returns>
-        public string SubstituteRemoteTableName(TableReference tr)
-        {
-            /* TODO: delete
-            if (RemoteTables.ContainsKey(tr.TableOrView.UniqueKey))
-            {
-                return CodeGenerator.GetResolvedTableName(TemporaryTables[tr.TableOrView.UniqueKey]);
-            }
-            else
-            {
-                return CodeGenerator.GetResolvedTableName(tr);
-            }
-            */
-
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Checks if table is a remote table cached locally and if so,
-        /// substitutes the corresponding table name and alias for
-        /// FROM clauses
-        /// </summary>
-        /// <param name="tr"></param>
-        /// <returns></returns>
-        public string SubstituteRemoteTableNameWithAlias(TableReference tr)
-        {
-            /* TODO: delete
-            if (RemoteTables.ContainsKey(tr.TableOrView.UniqueKey))
-            {
-                return CodeGenerator.GetResolvedTableNameWithAlias(TemporaryTables[tr.TableOrView.UniqueKey], tr.Alias);
-            }
-            else
-            {
-                return CodeGenerator.GetResolvedTableNameWithAlias(tr);
-            }
-            */
-
-            throw new NotImplementedException();
-        }
-
+        
         #endregion
         #region Final query execution
 
@@ -389,43 +344,77 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <returns></returns>
         public SourceQuery GetExecuteSourceQuery()
         {
-            // Source query will be run on the code database to have
-            // access to UDTs
+            // Source query will be run on the code database to have access to UDTs
+            // At this point, SELECT INTOs and similar table creation statements with
+            // explicit table names should be directed to the temp database
+            // Outputs from simple selects will be dealt with later in ExecuteQueryAsync
 
             var source = CodeGenerator.GetExecuteQuery(QueryDetails);
             source.Dataset = CodeDataset;
             return source;
         }
 
-        public async Task ExecuteQueryAsync(SourceQuery source)
+        public DestinationTable GetExecuteDestinationTable()
         {
-            //var hostname = AssignedServerInstance.Machine.HostName.ResolvedValue;
+            // Destination tables go to the local temp database first and will
+            // be gathered lates
 
-            var hostname = "localhost";
+            // TODO: with single partition queries, we could write the tables
+            // directly to MyDB
+
+            var temp = GetTemporaryTable(Constants.DefaultOutputTableNamePattern);
+
+            return new DestinationTable()
+            {
+                Dataset = TemporaryDataset,
+                SchemaName = TemporaryDataset.DefaultSchemaName,
+                TableNamePattern = temp.TableName,
+                Options = TableInitializationOptions.Create,
+            };
+        }
+
+        public async Task ExecuteQueryAsync(SourceQuery source, DestinationTable destination)
+        {
+            var hostname = AssignedServerInstance.Machine.HostName.ResolvedValue;
 
             using (var task = RemoteService.RemoteServiceHelper.CreateObject<ICopyTable>(CancellationContext, hostname, false))
             {
-                task.Value.Source = source;
-                task.Value.Destination = Parameters.Destination;
-                task.Value.BatchName = Parameters.BatchName;
-                task.Value.BypassExceptions = false;
-                task.Value.Timeout = Parameters.QueryTimeout;
+                var settings = new TableCopySettings()
+                {
+                    BatchName = Parameters.BatchName,
+                    BypassExceptions = false,
+                    Timeout = Parameters.QueryTimeout,
+                };
+                
+                var results = await task.Value.ExecuteAsyncEx(source, destination, settings);
 
-                await task.Value.ExecuteAsync();
+                // The results collection now contains output tables that are either
+                // explicitly names in the query (SELECT INTO etc), or generated as
+                // output table from simple SELECTs. The latter won't show up in the
+                // temporary tables collection so add them now.
 
-                await Task.Delay(1);
-
-                // Process output
-                foreach (var result in task.Value.Results)
+                foreach (var result in results)
                 {
                     if (result.Status == TableCopyStatus.Success)
                     {
+                        Table temp;
+
+                        if (!TemporaryTables.ContainsKey(result.DestinationTable))
+                        {
+                            temp = TemporaryDataset.Tables[result.DestinationTable];
+                            TemporaryTables.TryAdd(temp.UniqueKey, temp);
+                        }
+                        else
+                        {
+                            temp = TemporaryTables[result.DestinationTable];
+                        }
+
                         var rot = new RemoteOutputTable()
                         {
-                            TempTable = TemporaryTables[result.DestinationTable]
+                            TempTable = temp
                         };
 
-                        remoteOutputTables.Add(result.DestinationTable, rot);
+                        remoteOutputTables.Add(temp.UniqueKey, rot);
                     }
                 }
             }
@@ -434,58 +423,35 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         #endregion
         #region Destination table and copy resultset functions
 
-        /* TODO: delete
-        /// <summary>
-        /// Generates the query that can be used to copy the results to the final
-        /// destination table (usually in mydb)
-        /// </summary>
-        /// <returns></returns>
-        protected virtual string GetOutputQueryText()
-        {
-            // TODO move completely to codegen
-            return String.Format(
-                "SELECT __tablealias.* FROM {0} AS __tablealias",
-                CodeGenerator.GetResolvedTableName(GetOutputTable()));
-        }
-
-        /// <summary>
-        /// Gets a query that can be used to figure out the schema of
-        /// the destination table.
-        /// </summary>
-        /// <returns></returns>
-        protected SourceTableQuery GetOutputSourceQuery()
-        {
-            return new SourceTableQuery()
-            {
-                Dataset = TemporaryDataset,
-                Query = GetOutputQueryText()
-            };
-        }
-        */
-
         public Task PrepareDestinationTableAsync(string remoteTable)
         {
             var rt = RemoteOutputTables[remoteTable];
 
             // Create output table based on temp table colums
-            var tempTable = rt.TempTable;
-            var outputTable = (Table)rt.Table;
             var columns = new List<Column>();
 
-            foreach (var name in tempTable.Columns.Keys)
+            foreach (var name in rt.TempTable.Columns.Keys)
             {
-                columns.Add(new Column(tempTable.Columns[name]));
+                columns.Add(new Column(rt.TempTable.Columns[name]));
             }
 
             // TODO: it works now with SELECT INTO and unnamed resultsets but options will need
             // to be changes for INSERT, UPDATE etc.
 
-            // Test table create here to support retry logic
+            // If it's an unnamed resultset then the remote table doesn't exist yet
+            if (rt.Table == null)
+            {
+                rt.Table = new Table(Query.Parameters.DefaultOutputDataset)
+                {
+                    SchemaName = Query.Parameters.DefaultOutputDataset.DefaultSchemaName,
+                    TableName = rt.TempTable.TableName,
+                };
+            }
 
-            if (!outputTable.IsExisting)
+            if (!rt.Table.IsExisting)
             {
                 // TODO: make table initialization async
-                outputTable.Initialize(columns, TableInitializationOptions.Create);
+                ((Table)rt.Table).Initialize(columns, TableInitializationOptions.Create);
             }
 
             // TODO: how to lock in case of multiple partitions and multiple
@@ -493,32 +459,10 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             lock (Parameters)
             {
-                Parameters.OutputTables.Add(outputTable);
+                Parameters.OutputTables.Add((Table)rt.Table);
             }
 
-            //rt.TempTable.Columns;
-
-            // Copy columns
-
             return Task.CompletedTask;
-
-            /* TODO: delete
-            // Only initialize target table if it's still uninitialized
-            if (Interlocked.Exchange(ref query.IsDestinationTableCreated, 1) == 0)
-            {
-                var source = GetOutputSourceQuery();
-
-                // TODO: figure out metadata from query
-                var table = query.Destination.GetQueryOutputTable(BatchName, QueryName, null, null);
-                var columns = await source.GetColumnsAsync(CancellationContext.Token);
-
-                // TODO: make schema operation async
-                table.Initialize(columns, query.Destination.Options);
-
-                // At this point the name of the destination is determined
-                // mark it as the output
-                query.Output = table;
-            }*/
         }
 
         /// <summary>
@@ -541,11 +485,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                         var source = SourceTable.Create(rt.TempTable);
                         var destination = DestinationTable.Create((Table)rt.Table, TableInitializationOptions.Append);
-                        
+
                         // Create bulk copy task and execute it
-                        using (var tc = CreateTableCopyTask(source, destination, false))
+                        using (var tc = CreateTableCopyTask(source, destination, false, out var settings))
                         {
-                            await tc.Value.ExecuteAsync();
+                            await tc.Value.ExecuteAsyncEx(source, destination, settings);
                         }
                     }
                     break;
