@@ -21,13 +21,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
 
-            using (RegistryContext registryContext = querypartition.Query.CreateContext())
-            {
-                querypartition.InitializeQueryObject(registryContext);
-            }
-
             var suppressErrors = SuppressErrors.Get(activityContext);
-
             querypartition.CleanUp(suppressErrors);
         }
     }
