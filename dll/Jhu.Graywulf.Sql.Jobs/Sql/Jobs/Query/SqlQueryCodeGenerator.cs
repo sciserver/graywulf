@@ -724,23 +724,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = stat.BinCount;
             */
         }
-
-        /* TODO: delete
-        protected virtual WhereClause GetTableSpecificWhereClause(ITableSource tableSource)
-        {
-            
-            var tr = tableSource.TableReference;
-
-            var cnr = new Sql.LogicalExpressions.SearchConditionNormalizer();
-            cnr.CollectConditions(((TableSource)tr.Node).QuerySpecification);
-            var where = cnr.GenerateWherePredicatesSpecificToTable(tr);
-
-            return where;
-
-            throw new NotImplementedException();
-        }
-        */
-
+        
         #endregion
         #region Query partitioning
 

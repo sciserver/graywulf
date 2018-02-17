@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         protected virtual SelectStatement Parse(string sql)
         {
-            return (SelectStatement)Parser.Execute(sql);
+            return Parser.Execute<SelectStatement>(sql);
         }
 
         private SqlQueryCodeGenerator CodeGenerator
@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             var ss = Parse(sql);
             CallMethod(CodeGenerator, "RemoveNonStandardTokens", ss);
-            Assert.AreEqual(gt, ss.ToString());
+            Assert.AreEqual(gt, CodeGenerator.Execute(ss));
         }
 
         protected void RewriteQueryHelper(string sql, string gt, bool partitioningKeyMin, bool partitioningKeyMax)
@@ -93,7 +93,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var cg = new SqlQueryCodeGenerator(partition);
             CallMethod(cg, "RewriteForExecute", ss);
             CallMethod(cg, "RemoveNonStandardTokens", ss);
-            Assert.AreEqual(gt, ss.ToString());
+            Assert.AreEqual(gt, CodeGenerator.Execute(ss));
         }
 
         #region Simple code rewrite functions
@@ -102,8 +102,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         [TestCategory("Parsing")]
         public void LeaveIntact()
         {
-            var sql = "SELECT * FROM Table";
-            var gt = "SELECT * FROM Table";
+            var sql = "SELECT * FROM Table1";
+            var gt = "SELECT * FROM Table1";
 
             RemoveExtraTokensHelper(sql, gt);
         }
@@ -112,8 +112,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         [TestCategory("Parsing")]
         public void RemoveOrderByClause()
         {
-            var sql = "SELECT * FROM Table ORDER BY column";
-            var gt = "SELECT * FROM Table ";
+            var sql = "SELECT * FROM Table1 ORDER BY column1";
+            var gt = "SELECT * FROM Table1 ";
 
             RemoveExtraTokensHelper(sql, gt);
         }
@@ -122,22 +122,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         [TestCategory("Parsing")]
         public void RemoveOrderByClauseFromUnion()
         {
-            var sql = "SELECT * FROM Table1 UNION SELECT * FROM Table2 ORDER BY column";
+            var sql = "SELECT * FROM Table1 UNION SELECT * FROM Table2 ORDER BY column1";
             var gt = "SELECT * FROM Table1 UNION SELECT * FROM Table2 ";
 
             RemoveExtraTokensHelper(sql, gt);
         }
-
-        [TestMethod]
-        [TestCategory("Parsing")]
-        public void RemoveIntoClause()
-        {
-            var sql = "SELECT * INTO table1 FROM Table2";
-            var gt = "SELECT *  FROM Table2";
-
-            RemoveExtraTokensHelper(sql, gt);
-        }
-
+        
         [TestMethod]
         [TestCategory("Parsing")]
         public void RemoveTablePartitionClause()
@@ -152,8 +142,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         [TestCategory("Parsing")]
         public void RemoveAllExtraTokens()
         {
-            var sql = "SELECT * FROM Table PARTITION BY id ORDER BY column";
-            var gt = "SELECT * FROM Table  ";
+            var sql = "SELECT * FROM Table1 PARTITION BY id ORDER BY column1";
+            var gt = "SELECT * FROM Table1  ";
 
             RemoveExtraTokensHelper(sql, gt);
         }
@@ -162,8 +152,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         [TestCategory("Parsing")]
         public void AppendPartitioningFrom()
         {
-            var sql = "SELECT * FROM Table PARTITION BY id";
-            var gt = "SELECT * FROM Table  WHERE @keyMin <= id";
+            var sql = "SELECT * FROM Table1 PARTITION BY id";
+            var gt = @"SELECT * FROM Table1 
+WHERE @keyMin <= id";
 
             RewriteQueryHelper(sql, gt, true, false);
         }
@@ -172,8 +163,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         [TestCategory("Parsing")]
         public void AppendPartitioningFromWithWhere()
         {
-            var sql = "SELECT * FROM Table PARTITION BY id WHERE x < 5";
-            var gt = "SELECT * FROM Table  WHERE (@keyMin <= id) AND (x < 5)";
+            var sql = "SELECT * FROM Table1 PARTITION BY id WHERE x < 5";
+            var gt = "SELECT * FROM Table1  WHERE (@keyMin <= id) AND (x < 5)";
 
             RewriteQueryHelper(sql, gt, true, false);
         }
@@ -182,8 +173,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         [TestCategory("Parsing")]
         public void AppendPartitioningTo()
         {
-            var sql = "SELECT * FROM Table PARTITION BY id";
-            var gt = "SELECT * FROM Table  WHERE id < @keyMax";
+            var sql = "SELECT * FROM Table1 PARTITION BY id";
+            var gt = @"SELECT * FROM Table1 
+WHERE id < @keyMax";
 
             RewriteQueryHelper(sql, gt, false, true);
         }
@@ -192,8 +184,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         [TestCategory("Parsing")]
         public void AppendPartitioningBoth()
         {
-            var sql = "SELECT * FROM Table PARTITION BY id";
-            var gt = "SELECT * FROM Table  WHERE @keyMin <= id AND id < @keyMax";
+            var sql = "SELECT * FROM Table1 PARTITION BY id";
+            var gt = @"SELECT * FROM Table1 
+WHERE @keyMin <= id AND id < @keyMax";
 
             RewriteQueryHelper(sql, gt, true, true);
         }
@@ -202,8 +195,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         [TestCategory("Parsing")]
         public void AppendPartitioningBothWithWhere()
         {
-            var sql = "SELECT * FROM Table PARTITION BY id WHERE x < 5";
-            var gt = "SELECT * FROM Table  WHERE (@keyMin <= id AND id < @keyMax) AND (x < 5)";
+            var sql = "SELECT * FROM Table1 PARTITION BY id WHERE x < 5";
+            var gt = @"SELECT * FROM Table1  WHERE (@keyMin <= id AND id < @keyMax) AND (x < 5)";
 
             RewriteQueryHelper(sql, gt, true, true);
         }
@@ -213,7 +206,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         public void AppendPartitioningBothWithJoin()
         {
             var sql = "SELECT * FROM Table1 PARTITION BY id CROSS JOIN Table2";
-            var gt = "SELECT * FROM Table1  CROSS JOIN Table2 WHERE @keyMin <= id AND id < @keyMax";
+            var gt = @"SELECT * FROM Table1  CROSS JOIN Table2
+WHERE @keyMin <= id AND id < @keyMax";
 
             RewriteQueryHelper(sql, gt, true, true);
         }

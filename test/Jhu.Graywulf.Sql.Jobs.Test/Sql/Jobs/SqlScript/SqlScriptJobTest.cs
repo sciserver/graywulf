@@ -19,6 +19,7 @@ namespace Jhu.Graywulf.Sql.Jobs.SqlScript
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
+            StartLogger();
             InitializeJobTests();
         }
 
@@ -26,6 +27,7 @@ namespace Jhu.Graywulf.Sql.Jobs.SqlScript
         public static void CleanUp()
         {
             CleanupJobTests();
+            StopLogger();
         }
 
         private Guid ScheduleSqlScriptJob(DatasetBase[] datasets, string sql, QueueType queueType)

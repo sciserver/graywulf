@@ -150,7 +150,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 TableNameRendering = NameRendering.FullyQualified,
                 TableAliasRendering = AliasRendering.Default,
                 ColumnNameRendering = NameRendering.FullyQualified,
-                ColumnAliasRendering = AliasRendering.Default,
+                ColumnAliasRendering = AliasRendering.Always,
                 FunctionNameRendering = NameRendering.FullyQualified
             };
         }
