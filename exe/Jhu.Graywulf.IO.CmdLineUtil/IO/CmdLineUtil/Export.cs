@@ -76,9 +76,12 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
                 var export = new ExportTable(cancellationContext)
                 {
                     Source = source,
-                    FileFormatFactoryType = "",
-                    StreamFactoryType = "",
                     Destination = destination,
+                    Settings = new TableCopySettings()
+                    {
+                        FileFormatFactoryType = "",
+                        StreamFactoryType = "",
+                    }
                 };
 
                 Console.WriteLine("Exporting table...");

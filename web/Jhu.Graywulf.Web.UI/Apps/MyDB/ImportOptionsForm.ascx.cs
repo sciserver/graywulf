@@ -17,6 +17,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         }
 
+        /* TODO: figure out how to handle options
         public IO.Tasks.ImportTableOptions GetOptions()
         {
             var options = new IO.Tasks.ImportTableOptions()
@@ -26,5 +27,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
             return options;
         }
+        */
     }
 }

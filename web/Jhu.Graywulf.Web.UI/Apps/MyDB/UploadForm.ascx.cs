@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             }
         }
 
-        public async Task<CopyTableBase> OpenTableImporterAsync(DataFileBase file, DestinationTable table, ImportTableOptions options)
+        public async Task<CopyTableBase> OpenTableImporterAsync(DataFileBase file, DestinationTable table)
         {
             var uri = this.Uri;
 
@@ -67,12 +67,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 // Use simple importer
                 var task = new ImportTable()
                 {
-                    BatchName = null,       // no batch name for single files
                     Source = file,
                     Destination = table,
-                    StreamFactoryType = RegistryContext.Federation.StreamFactory,
-                    FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
-                    Options = options,
+                    Settings = new TableCopySettings()
+                    {
+                        BatchName = null,       // no batch name for single files
+                        StreamFactoryType = RegistryContext.Federation.StreamFactory,
+                        FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
+                    }
+                    // TODO: generate identity?
                 };
 
                 await task.OpenAsync();
@@ -84,12 +87,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 // An archive is being uploaded, use archive importer
                 var task = new ImportTableArchive()
                 {
-                    BypassExceptions = true,
-                    BatchName = batchName,
-                    Destination = table,
-                    StreamFactoryType = RegistryContext.Federation.StreamFactory,
-                    FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
-                    Options = options,
+                    Destinations = new DestinationTable[] { table },
+                    Settings = new TableCopySettings()
+                    {
+                        BypassExceptions = true,
+                        BatchName = batchName,
+                        StreamFactoryType = RegistryContext.Federation.StreamFactory,
+                        FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
+                        // TODO: host to pass options? Options = options,
+                    }
                 };
 
                 await task.OpenAsync(FederationContext.StreamFactory.Open(importedFile.PostedFile.InputStream, DataFileMode.Read, compression, archival));

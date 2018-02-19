@@ -24,7 +24,6 @@ namespace Jhu.Graywulf.Web.Api.V1
         private Credentials credentials;
         private FileFormat fileFormat;
         private DestinationTable destination;
-        private ImportOptions options;
 
         #endregion
         #region Properties
@@ -64,6 +63,8 @@ namespace Jhu.Graywulf.Web.Api.V1
             set { destination = value; }
         }
 
+        // TODO: figure out how to pass options
+        /*
         [DataMember(Name = "options", EmitDefaultValue = false)]
         [Description("Optional settings of the table import.")]
         [DefaultValue(null)]
@@ -72,6 +73,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             get { return options; }
             set { options = value; }
         }
+        */
 
         #endregion
         #region Constructors and initializers
@@ -97,7 +99,6 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.fileFormat = null;
             this.credentials = null;
             this.destination = null;
-            this.options = null;
         }
 
         #endregion
@@ -138,10 +139,13 @@ namespace Jhu.Graywulf.Web.Api.V1
                 // Options
                 bool gid;
                 xr.TryGetXmlBoolean("ImportTablesParameters/Options/GenerateIdentityColumn", out gid);
+                // TODO: update source object instead
+                /*
                 this.options = new ImportOptions()
                 {
                     GenerateIdentityColumn = gid
                 };
+                */
             }
         }
         
@@ -149,7 +153,6 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             DataFileBase source = null;
             IO.Credentials credentials = null;
-            IO.Tasks.ImportTableOptions options = null;
 
             // Source
             if (FileFormat != null)
@@ -171,13 +174,8 @@ namespace Jhu.Graywulf.Web.Api.V1
                 credentials = Credentials.GetCredentials(context);
             }
 
-            if (Options != null)
-            {
-                options = Options.GetOptions();
-            }
-
             var ff = ImportTablesJobFactory.Create(context.Federation);
-            var par = ff.CreateParameters(context.Federation, uri, credentials, source, destinationtable, options);
+            var par = ff.CreateParameters(context.Federation, uri, credentials, source, destinationtable);
 
             return par;
         }

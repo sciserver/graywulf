@@ -82,10 +82,10 @@ namespace Jhu.Graywulf.Web.Api.V1
                                 Dataset = dataset,
                                 Table = table,
                             },
-                            Options = new ImportOptions()
+                            /*Options = new ImportOptions()
                             {
                                 GenerateIdentityColumn = generateIdentityColumn
-                            }
+                            }*/
                         };
 
                         var request = new JobRequest()

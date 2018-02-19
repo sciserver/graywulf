@@ -44,7 +44,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 {
                     File.WriteAllText(source, "test data");
 
-                    await fc.Value.ExecuteAsync(source, destination, true, FileCopyMethod.Win32FileCopy);
+                    await fc.Value.ExecuteAsyncEx(source, destination, true, FileCopyMethod.Win32FileCopy);
 
                     Assert.IsTrue(File.Exists(destination));
 
@@ -70,7 +70,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     {
                         File.WriteAllText(source, "test data");
 
-                        await fc.Value.ExecuteAsync(source, destination, true, FileCopyMethod.Win32FileCopy);
+                        await fc.Value.ExecuteAsyncEx(source, destination, true, FileCopyMethod.Win32FileCopy);
 
                         Assert.IsTrue(File.Exists(destination));
 

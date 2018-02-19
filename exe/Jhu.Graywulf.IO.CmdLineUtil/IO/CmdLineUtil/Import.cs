@@ -114,7 +114,10 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
                 {
                     Source = source,
                     Destination = destination,
-                    Timeout = timeout,
+                    Settings = new TableCopySettings()
+                    {
+                        Timeout = timeout,
+                    }
                 };
 
                 Console.WriteLine("Importing table...");

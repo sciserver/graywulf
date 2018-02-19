@@ -148,17 +148,19 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             var uri = uploadForm.Uri;
             var file = fileFormatForm.GetDataFile(uri);
             var table = Web.Api.V1.DestinationTable.GetDestinationTable(FederationContext, destinationTableForm.Dataset.Name, destinationTableForm.TableName);
-            var options = importOptionsForm.GetOptions();
+            
+            // TODO: how to pass options
+            //var options = importOptionsForm.GetOptions();
 
             // TODO: make this whole function async
-            var importer = Util.TaskHelper.Wait(uploadForm.OpenTableImporterAsync(file, table, options));
+            var importer = Util.TaskHelper.Wait(uploadForm.OpenTableImporterAsync(file, table));
             Util.TaskHelper.Wait(importer.ExecuteAsync());
 
             foreach (var r in importer.Results)
             {
                 var li = new ListItem()
                 {
-                    Text = String.Format("{0} > {1}.{2} ({3})", r.FileName, r.SchemaName, r.TableName, r.Status)
+                    Text = String.Format("{0} > {1} ({2})", r.SourceFileName, r.DestinationTable, r.Status)
                 };
 
                 resultTableList.Items.Add(li);
@@ -174,7 +176,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             var file = fileFormatForm.GetFormat();
             var dataset = destinationTableForm.DatasetName;
             var table = destinationTableForm.TableName;
-            var options = importOptionsForm.GetOptions();
+
+            // TODO: how to get options
+            //var options = importOptionsForm.GetOptions();
 
             var job = new ImportJob()
             {
@@ -186,7 +190,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                     Dataset = dataset,
                     Table = table,
                 },
-                Options = new Web.Api.V1.ImportOptions(options),
                 Comments = commentsForm.Comments,
                 Queue = JobQueue.Long,
             };

@@ -238,11 +238,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
             var task = new ExportTable()
             {
-                BatchName = table.ObjectName,
-                Source = SourceTableQuery.Create(table),
+                Source = IO.Tasks.SourceTable.Create(table),
                 Destination = file,
-                StreamFactoryType = FederationContext.Federation.StreamFactory,
-                FileFormatFactoryType = FederationContext.Federation.FileFormatFactory,
+                Settings = new TableCopySettings()
+                {
+                    BatchName = table.ObjectName,
+                    StreamFactoryType = FederationContext.Federation.StreamFactory,
+                    FileFormatFactoryType = FederationContext.Federation.FileFormatFactory,
+                }
             };
 
             var guid = PushSessionItem(task);
@@ -263,7 +266,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             {
                 Uri = uri,
                 Credentials = credentials == null ? null : new Web.Api.V1.Credentials(credentials),
-                Source = new SourceTable()
+                Source = new Web.Api.V1.SourceTable()
                 {
                     Dataset = table.Dataset.Name,
                     Table = table.ObjectNameWithSchema
