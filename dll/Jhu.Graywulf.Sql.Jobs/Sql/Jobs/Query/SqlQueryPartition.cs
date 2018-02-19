@@ -224,6 +224,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         public void IdentifyRemoteSourceTables()
         {
             var cg = CreateCodeGenerator();
+            RemoteSourceTables.Clear();
 
             if (Parameters.ExecutionMode == ExecutionMode.Graywulf)
             {
