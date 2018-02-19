@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.IO.Tasks
             return it;
         }
 
-        protected async Task<Jhu.Graywulf.Sql.Schema.Table> ExecuteImportTableTask(IImportTable it, DataFileBase source, DestinationTable destination, TableCopySettings settings)
+        protected async Task<Jhu.Graywulf.Sql.Schema.Table> ExecuteImportTableTaskAsync(IImportTable it, DataFileBase source, DestinationTable destination, TableCopySettings settings)
         {
             var t = destination.GetTable();
             DropTable(t);
@@ -87,7 +87,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     cancellationContext, path, false, false,
                     out var source, out var destination, out var settings))
                 {
-                    var t = await ExecuteImportTableTask(it.Value, source, destination, settings);
+                    var t = await ExecuteImportTableTaskAsync(it.Value, source, destination, settings);
                     Assert.AreEqual(5, t.Columns.Count);
                     DropTable(t);
                 }
@@ -105,7 +105,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     cancellationContext, path, false, false,
                     out var source, out var destination, out var settings))
                 {
-                    var t = await ExecuteImportTableTask(it.Value, source, destination, settings);
+                    var t = await ExecuteImportTableTaskAsync(it.Value, source, destination, settings);
                     Assert.AreEqual(5, t.Columns.Count);
                     DropTable(t);
                 }
@@ -127,7 +127,7 @@ namespace Jhu.Graywulf.IO.Tasks
                         cancellationContext, path, false, false,
                         out var source, out var destination, out var settings))
                     {
-                        var t = await ExecuteImportTableTask(it.Value, source, destination, settings);
+                        var t = await ExecuteImportTableTaskAsync(it.Value, source, destination, settings);
 
                         Assert.AreEqual(5, t.Columns.Count);
                         DropTable(t);
@@ -146,7 +146,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     cancellationContext, path, false, false,
                     out var source, out var destination, out var settings))
                 {
-                    var t = await ExecuteImportTableTask(it.Value, source, destination, settings);
+                    var t = await ExecuteImportTableTaskAsync(it.Value, source, destination, settings);
 
                     Assert.AreEqual(5, t.Columns.Count);
                     DropTable(t);
