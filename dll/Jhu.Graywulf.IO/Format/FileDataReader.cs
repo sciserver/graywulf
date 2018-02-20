@@ -154,7 +154,7 @@ namespace Jhu.Graywulf.Format
 
         public override bool NextResult()
         {
-            return NextResultAsync(CancellationToken.None).Result;
+            return Util.TaskHelper.Wait(NextResultAsync(CancellationToken.None));
         }
 
         public override async Task<bool> NextResultAsync(CancellationToken cancellationToken)
@@ -178,8 +178,7 @@ namespace Jhu.Graywulf.Format
         /// <returns></returns>
         public override bool Read()
         {
-            // TODO: call Async directly, instead
-            return ReadAsync(CancellationToken.None).Result;
+            return Util.TaskHelper.Wait(ReadAsync(CancellationToken.None));
         }
 
         public override async Task<bool> ReadAsync(CancellationToken cancellationToken)
@@ -308,7 +307,7 @@ namespace Jhu.Graywulf.Format
 
         public override bool IsDBNull(int i)
         {
-            return rowValues[i] == null;
+            return rowValues[i] == null || rowValues[i] == DBNull.Value;
         }
 
         #endregion
