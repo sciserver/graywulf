@@ -48,32 +48,39 @@ namespace Jhu.Graywulf.Sql.Schema
 
         public static Unit Parse(string unitString)
         {
-            var unit = new Unit();
-
-            var mParts = regex.Match(unitString);
-
-            if (!mParts.Success)
+            if (unitString == null)
             {
+                return null;
+            }
+            else
+            {
+                var unit = new Unit();
+
+                var mParts = regex.Match(unitString);
+
+                if (!mParts.Success)
+                {
+                    return unit;
+                }
+
+                double.TryParse(mParts.Groups["factor"].ToString(), out unit.factor);
+
+                while (mParts.Success)
+                {
+                    if (mParts.Groups["unit"].Length != 0)
+                    {
+                        unit.parts.Add(new UnitEntity(mParts.Groups["unit"].ToString()));
+                    }
+
+                    else if (mParts.Groups["func"].Length != 0)
+                    {
+                        unit.parts.Add(new UnitGroup(mParts.Groups["func"].ToString()));
+                    }
+                    mParts = mParts.NextMatch();
+                }
+
                 return unit;
             }
-
-            double.TryParse(mParts.Groups["factor"].ToString(), out unit.factor);
-
-            while (mParts.Success)
-            {
-                if (mParts.Groups["unit"].Length != 0)
-                {
-                    unit.parts.Add(new UnitEntity(mParts.Groups["unit"].ToString()));
-                }
-
-                else if (mParts.Groups["func"].Length != 0)
-                {
-                    unit.parts.Add(new UnitGroup(mParts.Groups["func"].ToString()));
-                }
-                mParts = mParts.NextMatch();
-            }
-            
-            return unit;
         }
 
         override public string ToString()
