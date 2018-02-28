@@ -443,6 +443,17 @@ namespace Jhu.Graywulf.Format
             Open();
         }
 
+        public async Task OpenAsync(Stream stream, DataFileMode fileMode)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");  // TODO
+            }
+
+            OpenExternalStream(stream, fileMode);
+            await OpenAsync();
+        }
+
         /// <summary>
         /// Opens a file by opening a new stream.
         /// </summary>
