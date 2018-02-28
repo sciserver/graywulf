@@ -19,6 +19,10 @@ namespace Jhu.Graywulf.Components
         private Guid contextGuid;
         private bool isValid;
 
+#if DEBUG
+        private string stackTrace;
+#endif
+
         protected AmbientContextBase OuterContext
         {
             get { return outerContext; }
@@ -46,6 +50,10 @@ namespace Jhu.Graywulf.Components
 
         protected AmbientContextBase(AmbientContextStoreLocation supportedLocation)
         {
+#if DEBUG
+            this.stackTrace = Environment.StackTrace;
+#endif
+
             InitializeMembers();
             this.supportedLocation = supportedLocation;
             Push();
@@ -53,6 +61,10 @@ namespace Jhu.Graywulf.Components
 
         protected AmbientContextBase(AmbientContextBase old)
         {
+#if DEBUG
+            this.stackTrace = Environment.StackTrace;
+#endif
+
             CopyMembers(old);
             Push();
         }
@@ -299,6 +311,11 @@ namespace Jhu.Graywulf.Components
             }
         }
 
+        /// <summary>
+        /// Finds and returns the context from any of the available stores
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         protected static T Get<T>()
             where T : AmbientContextBase
         {
@@ -315,6 +332,27 @@ namespace Jhu.Graywulf.Components
             }
 
             return null;
+        }
+
+        protected static void Set<T>(T item)
+            where T: AmbientContextBase
+        {
+            if (item != null)
+            {
+                var type = typeof(T);
+
+                foreach (var store in EnumerateStores(true, item.supportedLocation))
+                {
+                    var key = store.Find(type);
+
+                    if (key != null)
+                    {
+                        store.Remove(key);
+                    }
+
+                    store.Add(type, item);
+                }
+            }
         }
 
         /// <summary>

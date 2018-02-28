@@ -140,6 +140,9 @@ namespace Jhu.Graywulf.Scheduler
             // Add necessary participants
             wfapp.Extensions.Add(trackingParticipant);
 
+            // Use specialized synchronization context
+            wfapp.SynchronizationContext = new JobSynchronizationContext();
+
             // Wire-up workflow runtime events
             wfapp.OnUnhandledException = WorkflowApplication_OnUnhandledException;
             wfapp.Completed = WorkflowApplication_WorkflowCompleted;

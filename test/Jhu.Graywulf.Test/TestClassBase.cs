@@ -67,6 +67,7 @@ namespace Jhu.Graywulf.Test
             QueryDelayRetry,
             QueryTimeoutRetry,
             AsyncTrackingRecord,
+            ParallelQueryDelay
         }
 
         protected virtual SqlServerDataset CreateIOTestDataset()

@@ -116,6 +116,8 @@ namespace Jhu.Graywulf.Activities
                 jobContext.Push();
 
                 await OnExecuteAsync(activityContext, state.CancellationContext);
+
+                jobContext.Pop();
             }
         }
 

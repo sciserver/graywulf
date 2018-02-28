@@ -61,6 +61,7 @@ namespace Jhu.Graywulf.Logging
         public static LoggingContext Current
         {
             get { return Get<LoggingContext>(); }
+            set { Set(value); }
         }
 
         /// <summary>

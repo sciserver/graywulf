@@ -138,5 +138,15 @@ namespace Jhu.Graywulf.Scheduler
             var job = LoadJob(guid);
             Assert.AreEqual(JobExecutionState.Completed, job.JobExecutionStatus);
         }
+
+        [TestMethod]
+        [TestCategory("Scheduler")]
+        public void ParallelQueryDelayTest()
+        {
+            var guid = ScheduleTestJob(JobType.ParallelQueryDelay, QueueType.Long);
+            WaitJobComplete(guid, TimeSpan.FromSeconds(30));
+            var job = LoadJob(guid);
+            Assert.AreEqual(JobExecutionState.Completed, job.JobExecutionStatus);
+        }
     }
 }

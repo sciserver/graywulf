@@ -28,6 +28,12 @@ namespace Jhu.Graywulf.Scheduler.Jobs.Test
             var delay = DelayPeriod.Get(activityContext);
             var queryTimeout = QueryTimeout.Get(activityContext);
 
+            if (delay < 0)
+            {
+                var rnd = new Random();
+                delay = (int)(Math.Abs(delay) * rnd.NextDouble());
+            }
+
             var sql = String.Format("WAITFOR DELAY '{0:mm\\:ss}'", TimeSpan.FromMilliseconds(delay));
 
             using (var cn = new SqlConnection("Data Source=localhost;Integrated Security=true"))
