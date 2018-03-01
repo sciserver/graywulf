@@ -35,6 +35,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         #region Properties
 
         [IgnoreDataMember]
+        public virtual bool IsPartitioned
+        {
+            get { return false; }
+        }
+
+        [IgnoreDataMember]
         public List<SqlQueryPartition> Partitions
         {
             get { return partitions; }

@@ -87,6 +87,7 @@
     <Compile Include="Activities\JobContext.cs" />
     <Compile Include="Activities\JobInfo.cs" />
     <Compile Include="Activities\JobSynchronizationContext.cs" />
+    <Compile Include="Activities\PlaceholderActivity.cs" />
     <Compile Include="Activities\Retry.cs" />
     <Compile Include="Activities\RetryDesigner.xaml.cs">
       <DependentUpon>RetryDesigner.xaml</DependentUpon>
