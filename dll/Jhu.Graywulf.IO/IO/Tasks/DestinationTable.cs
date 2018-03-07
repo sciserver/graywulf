@@ -165,7 +165,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         #endregion
 
-        private string GetTableName(string batchName, string queryName, string resultsetName)
+        private string GetTableName(string batchName, string queryName, string resultsetName, int resultsetCounter)
         {
             // When importing archives:
             // -- Batch name is usually the archive name
@@ -188,6 +188,10 @@ namespace Jhu.Graywulf.IO.Tasks
             if (!String.IsNullOrWhiteSpace(resultsetName))
             {
                 name += "_" + resultsetName;
+            }
+            else if (resultsetCounter != 0)
+            {
+                name += "_" + resultsetCounter.ToString();
             }
 
             if (name.Length > 0)
@@ -243,21 +247,21 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <param name="batchName"></param>
         /// <param name="resultsetName"></param>
         /// <returns></returns>
-        public Table GetTable(string batchName, string queryName, string resultsetName, DatabaseObjectMetadata metadata)
+        public Table GetTable(string batchName, string queryName, string resultsetName, int resultsetCounter, DatabaseObjectMetadata metadata)
         {
             return new Table(dataset)
             {
                 DatabaseName = this.databaseName,
                 SchemaName = this.schemaName,
-                TableName = GetTableName(batchName, queryName, resultsetName),
+                TableName = GetTableName(batchName, queryName, resultsetName, resultsetCounter),
             };
 
             // TODO: attach metadata to table
         }
 
-        public Table GetQueryOutputTable(string batchName, string queryName, string resultsetName, DatabaseObjectMetadata metadata)
+        public Table GetQueryOutputTable(string batchName, string queryName, string resultsetName, int resultsetCounter, DatabaseObjectMetadata metadata)
         {
-            var table = GetTable(batchName, queryName, resultsetName, metadata);
+            var table = GetTable(batchName, queryName, resultsetName, resultsetCounter, metadata);
 
             // Generate unique name, if necessary
             if ((options & TableInitializationOptions.GenerateUniqueName) != 0)

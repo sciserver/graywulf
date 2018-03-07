@@ -179,8 +179,33 @@ namespace Jhu.Graywulf.Format
 
             foreach (var c in dataReaderColumns)
             {
-                this.columns.Add(c);
-                this.columnTypeMappings.Add(null);
+                // TODO: this is a temporary array converter
+                if (c.DataType.IsSqlArray)
+                {
+                    var column = new Column(c);
+                    column.DataType = DataTypes.SqlVarBinary;
+                    column.DataType.Length = c.DataType.ByteSize * c.DataType.ArrayLength;
+                    this.columns.Add(column);
+
+                    var mapping = new TypeMapping()
+                    {
+                        From = c.DataType.Type,
+                        To = typeof(byte[]),
+                        Mapping = delegate (object value)
+                        {
+                            var length = Buffer.ByteLength((Array)value);
+                            var buffer = new byte[length];
+                            Buffer.BlockCopy((Array)value, 0, buffer, 0, length);
+                            return buffer;
+                        }
+                    };
+                    this.columnTypeMappings.Add(mapping);
+                }
+                else
+                {
+                    this.columns.Add(c);
+                    this.columnTypeMappings.Add(null);
+                }
             }
 
             // Renumber columns

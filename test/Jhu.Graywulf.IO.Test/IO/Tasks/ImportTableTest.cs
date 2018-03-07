@@ -46,6 +46,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 DatabaseName = ds.DatabaseName,
                 SchemaName = ds.DefaultSchemaName,
                 TableNamePattern = table,
+                Options = Sql.Schema.TableInitializationOptions.Create | Sql.Schema.TableInitializationOptions.GenerateUniqueName
             };
             settings = new TableCopySettings()
             {

@@ -117,31 +117,8 @@ namespace Jhu.Graywulf.Sql.Schema
                 default:
                     throw new NotImplementedException();
             }
-
-            if (dt.HasLength)
-            {
-                dt.Length = length;
-            }
-
-            if (dt.HasPrecision)
-            {
-                // TODO: this is a little bit fishy but right now it will do it
-                if (precision == 0 && length > 0)
-                {
-                    dt.Precision = (byte)length;
-                }
-                else if (precision != 0)
-                {
-                    dt.precision = precision;
-                }
-            }
-
-            if (dt.HasScale && scale != 0)
-            {
-                dt.Scale = scale;
-            }
-
-            dt.IsNullable = isNullable;
+            
+            dt.SetDetails(length, scale, precision, isNullable);
 
             return dt;
         }
@@ -233,26 +210,11 @@ namespace Jhu.Graywulf.Sql.Schema
                 throw new NotImplementedException();
             }
 
-            if (dt.HasLength)
-            {
-                dt.Length = length;
-            }
-
-            if (dt.HasPrecision)
-            {
-                dt.Precision = precision;
-            }
-
-            if (dt.HasScale)
-            {
-                dt.Scale = scale;
-            }
-
-            dt.IsNullable = isNullable;
+            dt.SetDetails(length, scale, precision, isNullable);
 
             return dt;
         }
-
+        
         #endregion
         #region Private variables for property storage
 
@@ -911,6 +873,42 @@ namespace Jhu.Graywulf.Sql.Schema
 
         #endregion
 
+        private void SetDetails(int length, byte scale, byte precision, bool isNullable)
+        {
+            if (HasPrecision)
+            {
+                // TODO: this is a little bit fishy but right now it will do it
+                if (precision == 0 && length > 0)
+                {
+                    this.precision = (byte)length;
+                }
+                else if (precision != 0)
+                {
+                    this.precision = precision;
+                }
+            }
+
+            if (HasScale && scale != 0)
+            {
+                this.scale = scale;
+            }
+
+            this.isNullable = isNullable;
+
+            if (HasLength)
+            {
+                this.Length = length;
+            }
+            else if (length != 1)
+            {
+                this.type = this.type.MakeArrayType();
+                this.isSqlArray = true;
+                this.isVarArrayLength = false;
+                this.arrayLength = length;
+                this.sqlDbType = null;
+            }
+        }
+        
         public bool Compare(DataType other)
         {
             var res = true;

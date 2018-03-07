@@ -147,7 +147,7 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             using (var sdr = await cmd.ExecuteReaderAsync(CommandBehavior.KeyInfo, CancellationContext.Token))
             {
-                int q = 0;
+                int resultsetCounter = 0;
 
                 do
                 {
@@ -166,9 +166,9 @@ namespace Jhu.Graywulf.IO.Tasks
 
                             // TODO: how to deal with multiple tables in files inside archives?
                             var queryName = sdr.QueryName;
-                            var resultsetName = sdr.ResultsetName ?? q.ToString();
+                            var resultsetName = sdr.ResultsetName ?? resultsetCounter.ToString();
 
-                            var table = destination.GetTable(settings.BatchName, queryName, resultsetName, sdr.Metadata);
+                            var table = destination.GetTable(settings.BatchName, queryName, resultsetName, resultsetCounter, sdr.Metadata);
                             result.DestinationTable = table.UniqueKey;
 
                             // Certain data readers cannot determine the columns from the data file,
@@ -179,7 +179,7 @@ namespace Jhu.Graywulf.IO.Tasks
                                 (sdr.Columns == null || sdr.Columns.Count == 0))
                             {
                                 var fdr = (FileDataReader)sdr;
-                                fdr.CreateColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
+                                fdr.MatchColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
                             }
 
                             // TODO: make schema operation async
@@ -194,7 +194,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     }
 
                     Results.Add(result);
-                    q++;
+                    resultsetCounter++;
                 }
                 while (await sdr.NextResultAsync(CancellationContext.Token));
             }

@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
-            Logging.LoggingContext.Current.StartLogger(Logging.EventSource.Test, false);
+            StartLogger();
 
             using (SchedulerTester.Instance.GetExclusiveToken())
             {
@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 PurgeTestJobs();
             }
 
-            Logging.LoggingContext.Current.StopLogger();
+            StopLogger();
         }
 
         protected virtual void ImportFileHelper(string uri, bool generateIdentityColumn)

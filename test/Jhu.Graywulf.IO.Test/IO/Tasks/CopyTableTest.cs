@@ -108,13 +108,13 @@ SELECT * FROM SampleData_PrimaryKey";
                     cancellationContext, sql, table, false,
                     out var source, out var destination, out var settings))
                 {
-                    DropTable(destination.GetTable(null, null, "0", null));
-                    DropTable(destination.GetTable(null, null, "1", null));
+                    DropTable(destination.GetTable(null, null, "0", 0, null));
+                    DropTable(destination.GetTable(null, null, "1", 1, null));
 
                     await q.Value.ExecuteAsyncEx(source, destination, settings);
 
-                    DropTable(destination.GetTable(null, null, "0", null));
-                    DropTable(destination.GetTable(null, null, "1", null));
+                    DropTable(destination.GetTable(null, null, "0", 0, null));
+                    DropTable(destination.GetTable(null, null, "1", 0, null));
                 }
             }
         }
@@ -166,13 +166,13 @@ SELECT * FROM SampleData_PrimaryKey";
                         cancellationContext, sql, table, true,
                         out var source, out var destination, out var settings))
                     {
-                        DropTable(destination.GetTable(null, null, "0", null));
-                        DropTable(destination.GetTable(null, null, "1", null));
+                        DropTable(destination.GetTable(null, null, "0", 0, null));
+                        DropTable(destination.GetTable(null, null, "1", 1, null));
 
                         var r = await q.Value.ExecuteAsyncEx(source, destination, settings);
 
-                        DropTable(destination.GetTable(null, null, "0", null));
-                        DropTable(destination.GetTable(null, null, "1", null));
+                        DropTable(destination.GetTable(null, null, "0", 0, null));
+                        DropTable(destination.GetTable(null, null, "1", 1, null));
 
                         Assert.AreEqual(TableCopyStatus.Success, r[0].Status);
                         Assert.AreEqual(2, r[0].RecordsAffected);
