@@ -81,65 +81,67 @@ namespace Jhu.Graywulf.Web.Services
         public void ApplyDispatchBehavior(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
         {
             // (3.)
-
-            const string OptionsMethodName = "HandleHttpOptionsRequest";
-
-            var rob = new RestOperationBehavior();
-            var reh = new RestErrorHandler();
-            var ram = new RestAuthenticationModule();
-            var romi = new RestCorsMessageInspector();
-
-            using (var context = ContextManager.Instance.CreateReadOnlyContext())
+            using (new RestLoggingContext())
             {
-                ram.Init(context.Domain);
-            }
+                const string OptionsMethodName = "HandleHttpOptionsRequest";
 
-            // Automatically add custom operation behavior to all operations except the one
-            // that handles the OPTIONS verb
-            foreach (var ep in serviceDescription.Endpoints)
-            {
-                foreach (var op in ep.Contract.Operations)
+                var rob = new RestOperationBehavior();
+                var reh = new RestErrorHandler();
+                var ram = new RestAuthenticationModule();
+                var romi = new RestCorsMessageInspector();
+
+                using (var context = ContextManager.Instance.CreateReadOnlyContext())
                 {
-                    if (StringComparer.InvariantCultureIgnoreCase.Compare(op.Name, OptionsMethodName) != 0)
+                    ram.Init(context.Domain);
+                }
+
+                // Automatically add custom operation behavior to all operations except the one
+                // that handles the OPTIONS verb
+                foreach (var ep in serviceDescription.Endpoints)
+                {
+                    foreach (var op in ep.Contract.Operations)
                     {
-                        op.Behaviors.Add(rob);
+                        if (StringComparer.InvariantCultureIgnoreCase.Compare(op.Name, OptionsMethodName) != 0)
+                        {
+                            op.Behaviors.Add(rob);
+                        }
                     }
                 }
-            }
 
-            // Remove any error handlers and replace
-            // them with own implementation to catch
-            // exceptions and turn them into simple
-            // error messages that aren't wrapped into xml
-            foreach (ChannelDispatcher cd in serviceHostBase.ChannelDispatchers)
-            {
-                cd.IncludeExceptionDetailInFaults = true;
-                if (cd.ErrorHandlers.Count > 0)
+                // Remove any error handlers and replace
+                // them with own implementation to catch
+                // exceptions and turn them into simple
+                // error messages that aren't wrapped into xml
+                foreach (ChannelDispatcher cd in serviceHostBase.ChannelDispatchers)
                 {
-                    // Remove the System.ServiceModel.Web errorHandler
-                    cd.ErrorHandlers.Remove(cd.ErrorHandlers[0]);
-                }
-
-                // Add new custom error handler
-                cd.ErrorHandlers.Add(reh);
-
-                // We use an endpoint behavior to authenticate REST requests.
-                // Normaly an authentication manager would be used but this
-                // approach is more similar to web page authentication and
-                // almost the same code can be reused.
-
-                // At the same time, we add a RestCorsMessageInspector to the
-                // operations which will be responsible for setting the right
-                // http response headers for cross-domain client-side scripting.
-
-                foreach (EndpointDispatcher ep in cd.Endpoints)
-                {
-                    ep.DispatchRuntime.MessageInspectors.Add(ram);
-                    ep.DispatchRuntime.MessageInspectors.Add(romi);
-
-                    foreach (DispatchOperation op in ep.DispatchRuntime.Operations)
+                    cd.IncludeExceptionDetailInFaults = true;
+                    if (cd.ErrorHandlers.Count > 0)
                     {
-                        op.ParameterInspectors.Add(ram);
+                        // Remove the System.ServiceModel.Web errorHandler
+                        cd.ErrorHandlers.Remove(cd.ErrorHandlers[0]);
+                    }
+
+                    // Add new custom error handler
+                    cd.ErrorHandlers.Add(reh);
+
+                    // We use an endpoint behavior to authenticate REST requests.
+                    // Normaly an authentication manager would be used but this
+                    // approach is more similar to web page authentication and
+                    // almost the same code can be reused.
+
+                    // At the same time, we add a RestCorsMessageInspector to the
+                    // operations which will be responsible for setting the right
+                    // http response headers for cross-domain client-side scripting.
+
+                    foreach (EndpointDispatcher ep in cd.Endpoints)
+                    {
+                        ep.DispatchRuntime.MessageInspectors.Add(ram);
+                        ep.DispatchRuntime.MessageInspectors.Add(romi);
+
+                        foreach (DispatchOperation op in ep.DispatchRuntime.Operations)
+                        {
+                            op.ParameterInspectors.Add(ram);
+                        }
                     }
                 }
             }
