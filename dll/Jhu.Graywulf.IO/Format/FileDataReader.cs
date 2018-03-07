@@ -161,7 +161,11 @@ namespace Jhu.Graywulf.Format
         {
             if (await file.ReadNextBlockAsync() != null)
             {
+                columnIndex = null;
+                rowValues = null;
+                isIdentity = null;
                 blockCounter++;
+                rowCounter = -1;
                 resultsetName = null;
                 return true;
             }
@@ -436,7 +440,15 @@ namespace Jhu.Graywulf.Format
 
         #endregion
 
-        internal void CreateColumns(IList<Column> columns)
+        /// <summary>
+        ///  Takes a list of columns and use those as columns of the resultset
+        /// </summary>
+        /// <remarks>
+        /// This function is used with file formats that do not contain schema
+        /// information. In this case columns are taken from the destination table
+        /// </remarks>
+        /// <param name="columns"></param>
+        internal void MatchColumns(IList<Column> columns)
         {
             file.CurrentBlock.CreateColumns(columns);
         }
