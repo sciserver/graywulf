@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     /// operations initiated from the web interface or the REST services.
     /// </summary>
     [TestClass]
-    public class ExportTest : JobsServiceTest
+    public sealed class ExportTest : ApiTestBase
     {
         [ClassInitialize]
         public static void Initialize(TestContext context)
@@ -47,58 +47,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 PurgeTestJobs();
             }
         }
-
-        protected virtual void ExportFileHelper(string dataset, string table, string uri, string mimeType, string comments)
-        {
-            using (SchedulerTester.Instance.GetToken())
-            {
-                PurgeTestJobs();
-
-                SchedulerTester.Instance.EnsureRunning();
-
-                using (RemoteServiceTester.Instance.GetToken())
-                {
-                    RemoteServiceTester.Instance.EnsureRunning();
-
-                    using (var session = new RestClientSession())
-                    {
-                        var client = CreateClient(session);
-
-                        var job = new ExportJob()
-                        {
-                            Source = new SourceTable()
-                            {
-                                Dataset = dataset,
-                                Table = table,
-                            },
-                            Uri = new Uri(uri),
-                            Comments = comments,
-                            FileFormat = new FileFormat()
-                            {
-                                MimeType = mimeType,
-                            }
-                        };
-
-                        var request = new JobRequest()
-                        {
-                            ExportJob = job
-                        };
-
-                        var response = client.SubmitJob(JobQueue.Quick.ToString(), request);
-
-                        // Try to get newly scheduled job
-                        var nj = client.GetJob(response.ExportJob.Guid.ToString());
-                        var guid = nj.ExportJob.Guid;
-
-                        WaitJobComplete(guid, TimeSpan.FromSeconds(10));
-
-                        var ji = LoadJob(guid);
-                        Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
-                    }
-                }
-            }
-        }
-
+        
         [TestMethod]
         public void SimpleExportTest()
         {

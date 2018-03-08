@@ -8,24 +8,26 @@ using Jhu.Graywulf.Web.Services;
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [TestClass]
-    public class JobsServiceTest : ApiTestBase
+    public sealed class JobsServiceTest : ApiTestBase
     {
-
-        protected IJobsService CreateClient(RestClientSession session)
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
         {
-            AuthenticateTestUser(session);
-            var uri = String.Format("http://{0}{1}/api/v1/jobs.svc", Environment.MachineName, Jhu.Graywulf.Test.AppSettings.WebUIPath);
-            var client = session.CreateClient<IJobsService>(new Uri(uri));
-            return client;
+            StartLogger();
         }
 
+        [ClassCleanup]
+        public static void Cleanup()
+        {
+            StopLogger();
+        }
 
         [TestMethod]
         public void ListQueuesTest()
         {
             using (var session = new RestClientSession())
             {
-                var client = CreateClient(session);
+                var client = CreateJobServiceClient(session);
                 var queues = client.ListQueues();
                 Assert.AreEqual(2, queues.Queues.Length);   // Quick and long
             }
@@ -36,7 +38,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             using (var session = new RestClientSession())
             {
-                var client = CreateClient(session);
+                var client = CreateJobServiceClient(session);
                 var queue = client.GetQueue("long");
                 queue = client.GetQueue("quick");
             }
@@ -47,7 +49,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             using (var session = new RestClientSession())
             {
-                var client = CreateClient(session);
+                var client = CreateJobServiceClient(session);
                 var jobs = client.ListJobs("all", "all", null, null);
 
                 jobs = client.ListJobs("quick", "query", "1", "5");
@@ -63,7 +65,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             using (var session = new RestClientSession())
             {
-                var client = CreateClient(session);
+                var client = CreateJobServiceClient(session);
                 // Get some jobs
                 var jobs = client.ListJobs("all", "all", null, null);
 
@@ -77,7 +79,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             using (var session = new RestClientSession())
             {
-                var client = CreateClient(session);
+                var client = CreateJobServiceClient(session);
 
                 var request = new JobRequest()
                 {
@@ -126,7 +128,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             using (var session = new RestClientSession())
             {
-                var client = CreateClient(session);
+                var client = CreateJobServiceClient(session);
 
                 var job = new ExportJob()
                 {
@@ -160,7 +162,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             using (var session = new RestClientSession())
             {
-                var client = CreateClient(session);
+                var client = CreateJobServiceClient(session);
 
                 var job = new ImportJob()
                 {
@@ -190,7 +192,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             using (var session = new RestClientSession())
             {
-                var client = CreateClient(session);
+                var client = CreateJobServiceClient(session);
 
                 // Create a simple job first
 

@@ -4,13 +4,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.RemoteService;
-using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
     [TestClass]
-    public class ImportTableTest : TestClassBase
+    public sealed class ImportTableTest : ImportTableTestBase
     {
         [ClassInitialize]
         public static void Initialize(TestContext context)
@@ -22,59 +21,6 @@ namespace Jhu.Graywulf.IO.Tasks
         public static void Cleanup()
         {
             StopLogger();
-        }
-
-        protected virtual FileFormatFactory CreateFileFormatFactory()
-        {
-            return FileFormatFactory.Create(null);
-        }
-
-        protected ServiceModel.ServiceProxy<IImportTable> GetImportTableTask(
-            CancellationContext cancellationContext, string path, bool remote, bool generateIdentityColumn,
-            out DataFileBase source, out DestinationTable destination, out TableCopySettings settings)
-        {
-            var ds = IOTestDataset;
-            ds.IsMutable = true;
-
-            var table = GetTestUniqueName();
-            var ff = CreateFileFormatFactory();
-            source = ff.CreateFile(new Uri(path, UriKind.RelativeOrAbsolute));
-            source.GenerateIdentityColumn = generateIdentityColumn;
-            destination = new DestinationTable()
-            {
-                Dataset = ds,
-                DatabaseName = ds.DatabaseName,
-                SchemaName = ds.DefaultSchemaName,
-                TableNamePattern = table,
-                Options = Sql.Schema.TableInitializationOptions.Create | Sql.Schema.TableInitializationOptions.GenerateUniqueName
-            };
-            settings = new TableCopySettings()
-            {
-            };
-
-            ServiceModel.ServiceProxy<IImportTable> it = null;
-            if (remote)
-            {
-                it = RemoteServiceHelper.CreateObject<IImportTable>(cancellationContext, Test.Constants.Localhost, false);
-            }
-            else
-            {
-                it = new ServiceModel.ServiceProxy<IImportTable>(new ImportTable(cancellationContext));
-            }
-            
-            return it;
-        }
-
-        protected async Task<Jhu.Graywulf.Sql.Schema.Table> ExecuteImportTableTaskAsync(IImportTable it, DataFileBase source, DestinationTable destination, TableCopySettings settings)
-        {
-            var t = destination.GetTable();
-            DropTable(t);
-
-            await it.ExecuteAsyncEx(source, destination, settings);
-
-            var table = destination.GetTable();
-
-            return table;
         }
 
         [TestMethod]

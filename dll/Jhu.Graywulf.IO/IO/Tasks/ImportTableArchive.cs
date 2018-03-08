@@ -12,6 +12,7 @@ namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
     [RemoteService(typeof(ImportTableArchive))]
+    [NetDataContract]
     public interface IImportTableArchive : ICopyTableArchiveBase
     {
         DataFileBase[] Sources
@@ -27,6 +28,7 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         [OperationContract]
+        [LimitedAccessOperation(RemoteService.Constants.DefaultRole)]
         Task<TableCopyResults> ExecuteAsyncEx(DataFileBase[] sources, DestinationTable[] destinations, TableCopySettings settings, TableArchiveSettings archiveSettings);
     }
 
@@ -34,6 +36,7 @@ namespace Jhu.Graywulf.IO.Tasks
     /// Implements function to import table from a data archive, potentially containing
     /// multiple files and data tables within.
     /// </summary>
+    [Serializable]
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
@@ -121,7 +124,6 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation(RemoteService.Constants.DefaultRole)]
         public async Task<TableCopyResults> ExecuteAsyncEx(DataFileBase[] sources, DestinationTable[] destinations, TableCopySettings settings, TableArchiveSettings archiveSettings)
         {
             this.sources = sources;

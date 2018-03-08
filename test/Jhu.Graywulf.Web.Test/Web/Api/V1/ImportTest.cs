@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     /// operations initiated from the web interface or the REST services.
     /// </summary>
     [TestClass]
-    public class ImportTest : JobsServiceTest
+    public sealed class ImportTest : ApiTestBase
     {
         [ClassInitialize]
         public static void Initialize(TestContext context)
@@ -50,62 +50,6 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
 
             StopLogger();
-        }
-
-        protected virtual void ImportFileHelper(string uri, bool generateIdentityColumn)
-        {
-            ImportFileHelper(uri, Registry.Constants.UserDbName, null, generateIdentityColumn);
-        }
-
-        protected virtual void ImportFileHelper(string uri, string dataset, string table, bool generateIdentityColumn)
-        {
-            using (SchedulerTester.Instance.GetToken())
-            {
-                PurgeTestJobs();
-
-                SchedulerTester.Instance.EnsureRunning();
-
-                using (RemoteServiceTester.Instance.GetToken())
-                {
-                    RemoteServiceTester.Instance.EnsureRunning();
-
-                    using (var session = new RestClientSession())
-                    {
-                        var client = CreateClient(session);
-
-                        var job = new ImportJob()
-                        {
-                            Uri = new Uri(uri),
-                            Comments = GetTestUniqueName(),
-                            Destination = new DestinationTable()
-                            {
-                                Dataset = dataset,
-                                Table = table,
-                            },
-                            /*Options = new ImportOptions()
-                            {
-                                GenerateIdentityColumn = generateIdentityColumn
-                            }*/
-                        };
-
-                        var request = new JobRequest()
-                        {
-                            ImportJob = job
-                        };
-
-                        var response = client.SubmitJob(JobQueue.Quick.ToString(), request);
-                        
-                        // Try to get newly scheduled job
-                        var nj = client.GetJob(response.ImportJob.Guid.ToString());
-                        var guid = nj.ImportJob.Guid;
-
-                        WaitJobComplete(guid, TimeSpan.FromSeconds(10));
-
-                        var ji = LoadJob(guid);
-                        Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
-                    }
-                }
-            }
         }
 
         [TestMethod]

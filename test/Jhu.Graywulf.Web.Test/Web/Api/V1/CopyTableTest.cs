@@ -15,11 +15,13 @@ namespace Jhu.Graywulf.Web.Api.V1
     /// operations initiated from the web interface or the REST services.
     /// </summary>
     [TestClass]
-    public class CopyTableTest : JobsServiceTest
+    public class CopyTableTest : ApiTestBase
     {
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
+            StartLogger();
+
             using (SchedulerTester.Instance.GetExclusiveToken())
             {
                 PurgeTestJobs();
@@ -46,6 +48,8 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                 PurgeTestJobs();
             }
+
+            StopLogger();
         }
 
         protected virtual void CopyTableHelper(string sourceDataset, string sourceTable, string destinationDataset, string destinationTable)
@@ -64,7 +68,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                     using (var session = new RestClientSession())
                     {
-                        var client = CreateClient(session);
+                        var client = CreateJobServiceClient(session);
 
                         var job = new CopyJob()
                         {

@@ -95,6 +95,7 @@
     <Compile Include="IO\Tasks\ExportTableTest.cs" />
     <Compile Include="IO\Tasks\ImportTableArchiveTest.cs" />
     <Compile Include="IO\Tasks\ImportTableTest.cs" />
+    <Compile Include="IO\Tasks\ImportTableTestBase.cs" />
     <Compile Include="IO\Tasks\SerializationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -128,7 +129,7 @@
       <Name>Jhu.Graywulf.RemoteService.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Test\Jhu.Graywulf.Test.csproj">
-      <Project>{EA6164BA-B283-46C2-874B-348D6BAD41AD}</Project>
+      <Project>{ea6164ba-b283-46c2-874b-348d6bad41ad}</Project>
       <Name>Jhu.Graywulf.Test</Name>
     </ProjectReference>
   </ItemGroup>
