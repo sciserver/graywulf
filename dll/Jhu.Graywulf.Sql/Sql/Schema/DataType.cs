@@ -899,7 +899,7 @@ namespace Jhu.Graywulf.Sql.Schema
             {
                 this.Length = length;
             }
-            else if (length != 1)
+            else if (length > 1 || length == -1)
             {
                 this.type = this.type.MakeArrayType();
                 this.isSqlArray = true;
