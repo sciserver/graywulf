@@ -50,20 +50,20 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        protected override SqlQuery CreateQueryBase(Node root)
+        protected override SqlQuery OnCreateQuery(Graywulf.Sql.Parsing.StatementBlock parsingTree)
         {
-            SqlQuery res;
+            SqlQuery q;
 
-            if (root is StatementBlock)
+            if (parsingTree is StatementBlock)
             {
-                res = new SqlQuery(null, RegistryContext);
+                q = new SqlQuery(null, RegistryContext);
             }
             else
             {
                 throw new NotImplementedException();
             }
 
-            return res;
+            return q;
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <remarks>
         /// The initialized object will be the input parameter of a query job.
         /// </remarks>
-        protected override void InitializeQuery(SqlQuery query, string queryString)
+        protected override void OnSetParameters(SqlQuery query)
         {
             var ef = new EntityFactory(RegistryContext);
             var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.FederationName, typeof(SqlQueryJob).Name);
@@ -112,7 +112,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             query.Parameters.ExecutionMode = ExecutionMode.Graywulf;
             query.Parameters.FederationName = Registry.ContextManager.Configuration.FederationName;
-            query.Parameters.QueryString = queryString;
 
             query.Parameters.SourceDatabaseVersionName = settings.HotDatabaseVersionName;
             query.Parameters.StatDatabaseVersionName = settings.StatDatabaseVersionName;

@@ -18,22 +18,17 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         #endregion
         #region Properties
-        
-        /// <summary>
-        /// Gets the reference to the table that represents
-        /// the resultset of the query
-        /// </summary>
-        public TableReference OutputTableReference
-        {
-            get { return outputTableReference; }
-            set { outputTableReference = value; }
-        }
 
         public bool IsResolvable
         {
             get { return true; }
         }
 
+        public StatementType StatementType
+        {
+            get { return StatementType.Query; }
+        }
+        
         public CommonTableExpression CommonTableExpression
         {
             get { return FindDescendant<CommonTableExpression>(); }
@@ -65,6 +60,16 @@ namespace Jhu.Graywulf.Sql.Parsing
 
                 return ((SimpleTableSource)ts).IsPartitioned;
             }
+        }
+
+        /// <summary>
+        /// Gets the reference to the table that represents
+        /// the resultset of the query
+        /// </summary>
+        public TableReference OutputTableReference
+        {
+            get { return outputTableReference; }
+            set { outputTableReference = value; }
         }
 
         #endregion

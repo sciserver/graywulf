@@ -8,12 +8,17 @@ namespace Jhu.Graywulf.Sql.NameResolution
 {
     public class DataTypeReference : DatabaseObjectReference
     {
+        #region Properties
+
         public Schema.DataType DataType
         {
             get { return (Schema.DataType)DatabaseObject; }
             set { DatabaseObject = value; }
         }
-        
+
+        #endregion
+        #region Constructors and initializers
+
         public DataTypeReference()
         {
             InitializeMembers();
@@ -25,7 +30,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         public DataTypeReference(Parsing.DataType dt)
-            :this()
+            : this()
         {
             InterpretDataType(dt);
         }
@@ -37,6 +42,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void CopyMembers(DataTypeReference old)
         {
         }
+
+        public override object Clone()
+        {
+            return new DataTypeReference(this);
+        }
+
+        #endregion
 
         private void InterpretDataType(Parsing.DataType dataType)
         {

@@ -21,8 +21,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         protected override void OnExecute(CodeActivityContext activityContext)
         {
-            SqlQueryParameters parameters = Parameters.Get(activityContext);
-            SqlQuery query = new SqlQuery();
+            var parameters = Parameters.Get(activityContext);
+            var query = (SqlQuery)Activator.CreateInstance(Type.GetType(parameters.QueryTypeName));
             query.Parameters = parameters;
 
             // Single server mode will run on one partition by definition,

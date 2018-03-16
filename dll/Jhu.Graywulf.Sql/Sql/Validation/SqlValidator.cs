@@ -19,18 +19,34 @@ namespace Jhu.Graywulf.Sql.Validation
         {
         }
 
-        public virtual void Execute(StatementBlock parsingTree)
+        public void Execute(StatementBlock parsingTree)
         {
-            // TODO: add support for multiple statements
+            foreach (var s in parsingTree.EnumerateDescendantsRecursive<IStatement>())
+            {
+                OnValidateStatement(s);
+            }
 
+            // TODO: validate entire script, not just the select
+        }
+
+        protected virtual void OnValidateStatement(IStatement statement)
+        {
+            if (statement is SelectStatement)
+            {
+                ValidateSelectStatement((SelectStatement)statement, 0);
+            }
+        }
+
+        protected virtual void ValidateSelectStatement(SelectStatement selectStatement, int depth)
+        {
             // Validate top level query specifications
-            foreach (QuerySpecification qs in parsingTree.FindDescendantRecursive<QueryExpression>().EnumerateQuerySpecifications())
+            foreach (QuerySpecification qs in selectStatement.FindDescendantRecursive<QueryExpression>().EnumerateQuerySpecifications())
             {
                 ValidateQuerySpecification(qs);
             }
 
             // Validate Order By
-            OrderByClause orderby = parsingTree.FindDescendant<OrderByClause>();
+            OrderByClause orderby = selectStatement.FindDescendant<OrderByClause>();
 
             if (orderby != null)
             {

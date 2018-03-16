@@ -17,6 +17,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private bool isUdf;
 
         #endregion
+        #region Properties
 
         public string SystemFunctionName
         {
@@ -54,6 +55,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
             }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         public FunctionReference()
         {
@@ -95,6 +99,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.systemFunctionName = old.systemFunctionName;
             this.isUdf = old.isUdf;
         }
+
+        public override object Clone()
+        {
+            return new FunctionReference(this);
+        }
+
+        #endregion
 
         private void InterpretSystemFunction(string functionName)
         {

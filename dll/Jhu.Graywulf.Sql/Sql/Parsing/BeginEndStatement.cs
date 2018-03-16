@@ -13,6 +13,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return false; }
         }
 
+        public StatementType StatementType
+        {
+            get { return StatementType.Flow; }
+        }
+
         public StatementBlock StatementBlock
         {
             get { return FindDescendant<StatementBlock>(); }

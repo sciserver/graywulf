@@ -145,8 +145,15 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             // TODO: add multi-statement support
             // TODO: move all this to name resolver
 
+            // TODO
+            // Statistics is only gathered for table on known servers. Skip foreign
+            // datasets here because we cannot make sure they support the necessary
+            // CLR functions.
+
             if (QueryDetails.IsPartitioned)
             {
+                throw new NotImplementedException();
+
                 // Partitioning is always done on the table specified right after the FROM keyword
                 // TODO: what if more than one QS?
                 var qs = QueryDetails.ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateQuerySpecifications().FirstOrDefault();

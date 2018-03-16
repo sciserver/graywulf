@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public abstract class DatabaseObjectReference
+    public abstract class DatabaseObjectReference : ICloneable
     {
         #region Property storage variables
 
@@ -164,6 +164,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.schemaName = old.schemaName;
             this.databaseObjectName = old.databaseObjectName;
         }
+
+        public abstract object Clone();
 
         #endregion
 

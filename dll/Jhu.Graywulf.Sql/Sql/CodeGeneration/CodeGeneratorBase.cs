@@ -23,6 +23,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         private AliasRendering columnAliasRendering;
         private NameRendering functionNameRendering;
 
+        private Dictionary<DatasetBase, DatasetBase> datasetMap;
         private Dictionary<TableReference, TableReference> tableReferenceMap;
         private Dictionary<ColumnReference, ColumnReference> columnReferenceMap;
         private Dictionary<DataTypeReference, DataTypeReference> dataTypeReferenceMap;
@@ -69,6 +70,19 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         {
             get { return functionNameRendering; }
             set { functionNameRendering = value; }
+        }
+
+        public Dictionary<DatasetBase, DatasetBase> DatasetMap
+        {
+            get
+            {
+                if (datasetMap == null)
+                {
+                    return new Dictionary<DatasetBase, DatasetBase>();
+                }
+
+                return datasetMap;
+            }
         }
 
         public Dictionary<TableReference, TableReference> TableReferenceMap
@@ -154,6 +168,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             this.columnAliasRendering = AliasRendering.Default;
             this.functionNameRendering = NameRendering.Default;
 
+            this.datasetMap = null;
             this.tableReferenceMap = null;
             this.columnReferenceMap = null;
             this.dataTypeReferenceMap = null;
@@ -212,16 +227,34 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             return identifier.Replace(".", "_");
         }
 
+        private T MapDataset<T>(T databaseObjectReference)
+            where T : DatabaseObjectReference
+        {
+            var ds = databaseObjectReference?.DatabaseObject?.Dataset;
+
+            if (ds != null && datasetMap.ContainsKey(ds))
+            {
+                var ndo = (T)databaseObjectReference.Clone();
+                ndo.DatabaseObject = (DatabaseObject)ndo.DatabaseObject.Clone();
+                ndo.DatabaseObject.Dataset = datasetMap[ds];
+                return ndo;
+            }
+            else
+            {
+                return databaseObjectReference;
+            }
+        }
+
         private TableReference MapTableReference(TableReference table)
         {
             if (tableReferenceMap != null && tableReferenceMap.ContainsKey(table))
             {
-                return tableReferenceMap[table];
+                table = tableReferenceMap[table];
             }
-            else
-            {
-                return table;
-            }
+
+
+
+            return table;
         }
 
         public string GenerateEscapedUniqueName(TableReference table)
@@ -676,7 +709,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         protected abstract string GenerateTopExpression(int top);
 
         protected abstract string GenerateOffsetExpression(long from, long max);
-        
+
         public abstract string GenerateMostRestrictiveTableQuery(string tableName, string tableAlias, string columnList, string where, int top);
 
         public virtual string GenerateCountStarQuery(string subquery)

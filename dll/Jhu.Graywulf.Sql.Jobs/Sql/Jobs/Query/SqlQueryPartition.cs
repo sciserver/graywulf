@@ -75,12 +75,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             get { return remoteOutputTables; }
         }
 
-        [IgnoreDataMember]
-        private SqlQueryCodeGenerator CodeGenerator
-        {
-            get { return (SqlQueryCodeGenerator)CreateCodeGenerator(); }
-        }
-
         #endregion
         #region Constructors and initializers
 
@@ -143,7 +137,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         #endregion
 
-        protected virtual SqlServerCodeGenerator CreateCodeGenerator()
+        protected virtual SqlQueryCodeGenerator CreateCodeGenerator()
         {
             return new SqlQueryCodeGenerator(this)
             {
@@ -350,7 +344,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             // explicit table names should be directed to the temp database
             // Outputs from simple selects will be dealt with later in ExecuteQueryAsync
 
-            var source = CodeGenerator.GetExecuteQuery(QueryDetails);
+            var cg = CreateCodeGenerator();
+            var source = cg.GetExecuteQuery();
             source.Dataset = CodeDataset;
             return source;
         }
@@ -528,7 +523,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             if (destination != null && destination.PrimaryKey != null)
             {
-                var sql = CodeGenerator.GenerateCreatePrimaryKeyScript(destination, true);
+                var cg = CreateCodeGenerator();
+                var sql = cg.GenerateCreatePrimaryKeyScript(destination, true);
 
                 using (var cmd = new SqlCommand(sql))
                 {

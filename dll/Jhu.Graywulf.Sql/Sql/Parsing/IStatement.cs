@@ -10,6 +10,8 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         bool IsResolvable { get; }
 
+        StatementType StatementType { get; }
+
         IEnumerable<Statement> EnumerateSubStatements();
     }
 }

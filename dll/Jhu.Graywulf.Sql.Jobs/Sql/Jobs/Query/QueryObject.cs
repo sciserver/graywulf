@@ -456,7 +456,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             {
                 var parser = queryFactory.Value.CreateParser();
                 queryDetails = new QueryDetails();
-                queryDetails.ParsingTree = parser.Execute<StatementBlock>(parameters.QueryString);
+                queryDetails.ParsingTree = (StatementBlock)parser.Execute(parameters.QueryString);
             }
         }
 

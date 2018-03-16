@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Activities
     {
         protected override void Execute(CodeActivityContext context)
         {
-            throw new NotImplementedException();
+            // do nothing
         }
     }
 }

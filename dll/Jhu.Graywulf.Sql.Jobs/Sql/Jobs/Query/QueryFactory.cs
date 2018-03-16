@@ -90,9 +90,13 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var parser = CreateParser();
             var root = parser.Execute(queryString);
 
-            SqlQuery q = CreateQueryBase((Node)root);
+            var q = OnCreateQuery((Parsing.StatementBlock)root);
+
             q.Parameters.QueryFactoryTypeName = Util.TypeNameFormatter.ToUnversionedAssemblyQualifiedName(this.GetType());
-            InitializeQuery(q, queryString);
+            q.Parameters.QueryString = queryString;
+
+            SetQueryType(q, q.GetType());
+            OnSetParameters(q);
 
             return q;
         }
@@ -103,9 +107,14 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         public abstract Sql.NameResolution.SqlNameResolver CreateNameResolver();
 
-        protected abstract SqlQuery CreateQueryBase(Node root);
+        protected abstract SqlQuery OnCreateQuery(Graywulf.Sql.Parsing.StatementBlock parsingTree);
 
-        protected abstract void InitializeQuery(SqlQuery query, string queryString);
+        protected abstract void OnSetParameters(SqlQuery query);
+
+        protected void SetQueryType(SqlQuery query, Type type)
+        {
+            query.Parameters.QueryTypeName = Util.TypeNameFormatter.ToUnversionedAssemblyQualifiedName(type);
+        }
 
         public void AppendUserDatabase(SqlQuery query, SqlServerDataset userDatabase, ServerInstance serverInstance)
         {

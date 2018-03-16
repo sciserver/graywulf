@@ -13,6 +13,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return true; }
         }
 
+        public StatementType StatementType
+        {
+            get { return StatementType.Schema; }
+        }
+
         public IEnumerable<Statement> EnumerateSubStatements()
         {
             yield break;

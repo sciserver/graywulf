@@ -29,6 +29,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         protected QueryObject queryObject;
         private SqlServerDataset codeDataset;
         private SqlServerDataset tempDataset;
+        private SchemaManager schemaManager;
 
         #endregion
         #region Properties
@@ -45,6 +46,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             set { tempDataset = value; }
         }
 
+        public SchemaManager SchemaManager
+        {
+            get { return schemaManager; }
+            set { schemaManager = value; }
+        }
+
         private SqlQueryPartition Partition
         {
             get { return queryObject as SqlQueryPartition; }
@@ -53,25 +60,39 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         #endregion
         #region Constructors and initializers
 
-        // TODO: used only by tests, delete
         public SqlQueryCodeGenerator()
         {
+            InitializeMembers();
         }
 
         public SqlQueryCodeGenerator(QueryObject queryObject)
         {
-            this.queryObject = queryObject;
-            this.codeDataset = queryObject.CodeDataset;
-            this.tempDataset = queryObject.TemporaryDataset;
+            InitializeMembers();
+
+            if (queryObject != null)
+            {
+                this.queryObject = queryObject;
+                this.codeDataset = queryObject.CodeDataset;
+                this.tempDataset = queryObject.TemporaryDataset;
+                this.schemaManager = queryObject.GetSchemaManager();
+            }
+        }
+
+        private void InitializeMembers()
+        {
+            this.queryObject = null;
+            this.codeDataset = null;
+            this.tempDataset = null;
+            this.schemaManager = null;
         }
 
         #endregion
         #region Basic query rewrite functions
 
-        public SourceQuery GetExecuteQuery(QueryDetails query)
+        public SourceQuery GetExecuteQuery()
         {
             // Make a clone so that the parsing tree can be modified
-            query = new QueryDetails(query);
+            var query = new QueryDetails(queryObject.QueryDetails);
             return OnGetExecuteQuery(query);
         }
 
@@ -84,9 +105,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             if (queryObject.Parameters.ExecutionMode == ExecutionMode.Graywulf)
             {
-                AddSystemDatabaseMappings(query);
-                AddSourceTableMappings(query, queryObject.AssignedServerInstance, Partition.Parameters.SourceDatabaseVersionName, null);
-                AddOutputTableMappings(query);
+                AddSystemDatabaseMappings();
+                AddSourceTableMappings(Partition.Parameters.SourceDatabaseVersionName, null);
+                AddOutputTableMappings();
             }
 
             sql.AppendLine(Execute(query.ParsingTree));
@@ -222,54 +243,56 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         #endregion
         #region Graywulf table reference mapping
-        
-        public void AddSystemDatabaseMappings(QueryDetails query)
+
+        public void AddSystemDatabaseMappings()
         {
         }
 
-        public void AddSourceTableMappings(QueryDetails query, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
+        public void AddSystemDatabaseMappings(ITableSource tableSource)
         {
-            var sm = queryObject.GetSchemaManager();
+        }
 
-            foreach (var key in query.SourceTables.Keys)
+        public void AddSourceTableMappings(string databaseVersion, string surrogateDatabaseVersion)
+        {
+            foreach (var key in queryObject.QueryDetails.SourceTables.Keys)
             {
-                foreach (var tr in query.SourceTables[key])
+                foreach (var tr in queryObject.QueryDetails.SourceTables[key])
                 {
-                    TableReference ntr = null;
-
-                    if (tr.IsCachable && queryObject.IsRemoteDataset(sm.Datasets[tr.DatasetName]))
-                    {
-                        ntr = GetRemoteSourceTableMapping(tr);
-                    }
-                    else
-                    {
-                        // Local source tables need instance name substitution
-                        // **** TODO
-
-                        ntr = GetServerSpecificDatabaseMapping(tr, serverInstance, databaseVersion, surrogateDatabaseVersion);
-                    }
-                                       
-
-                    if (ntr != null)
-                    {
-                        TableReferenceMap.Add(tr, ntr);
-                    }
+                    AddSourceTableMapping(tr, databaseVersion, surrogateDatabaseVersion);
                 }
+            }
+        }
+
+        private void AddSourceTableMapping(TableReference tr, string databaseVersion, string surrogateDatabaseVersion)
+        {
+            TableReference ntr = null;
+
+            if (tr.IsCachable && queryObject.IsRemoteDataset(SchemaManager.Datasets[tr.DatasetName]))
+            {
+                ntr = GetRemoteSourceTableMapping(tr);
+            }
+            else
+            {
+                ntr = GetServerSpecificDatabaseMapping(tr, queryObject.AssignedServerInstance, databaseVersion, surrogateDatabaseVersion);
+            }
+
+
+            if (ntr != null)
+            {
+                TableReferenceMap.Add(tr, ntr);
             }
         }
 
         private TableReference GetServerSpecificDatabaseMapping(TableReference tr, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
         {
-            var sc = queryObject.GetSchemaManager();
-
             if (tr.Type != TableReferenceType.Subquery &&
                 tr.Type != TableReferenceType.CommonTable &&
                 !tr.IsComputed &&
                 tr.DatasetName != null)
             {
                 TableReference ntr = null;
-                var ds = sc.Datasets[tr.DatasetName];
-                                
+                var ds = SchemaManager.Datasets[tr.DatasetName];
+
                 // Graywulf datasets have changing database names depending on the server
                 // the database is on.
                 if (ds is GraywulfDataset)
@@ -333,11 +356,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
         }
 
-        public void AddOutputTableMappings(QueryDetails query)
+        public void AddOutputTableMappings()
         {
-            foreach (var key in query.OutputTables.Keys)
+            foreach (var key in queryObject.QueryDetails.OutputTables.Keys)
             {
-                foreach (var tr in query.OutputTables[key])
+                foreach (var tr in queryObject.QueryDetails.OutputTables[key])
                 {
                     var ntr = GetRemoteOutputTableMapping(tr);
 
@@ -375,18 +398,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
         }
 
-        private void SubstituteSystemDatabaseName(FunctionReference fr)
-        {
-            if (fr != null && !fr.IsSystem && fr.IsUdf)
-            {
-                fr.DatabaseName = CodeDataset.DatabaseName;
-            }
-        }
-
         #endregion
         #region Name substitution
 
-        /* TODO: reference
         /// <summary>
         /// Descends recursively the parsing tree and replaces the occurances of one table
         /// reference with another.
@@ -411,6 +425,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
         }
 
+        /* TODO: delete
         protected void SubstituteTableReference(ITableSource tableSource, TableReference tr)
         {
             tableSource.TableReference = tr;
@@ -454,10 +469,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 default:
                     throw new NotImplementedException();
             }
-        }*/
-
-        /*
-        // TODO: delete
+        }
         /// <summary>
         /// Substitutes the database name into a table reference.
         /// </summary>
@@ -507,7 +519,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         }
         */
 
-        /* TODO: delete
         public void SubstituteSystemDatabaseNames(Expression ex)
         {
             SubstituteSystemDatabaseNames((Node)ex);
@@ -536,72 +547,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 fr.DatabaseName = CodeDataset.DatabaseName;
             }
         }
-        */
-
-        /*
-        // TODO: delete
-        /// <summary>
-        /// Substitutes names of remote tables with name of temporary tables
-        /// holding a cached version of remote tables.
-        /// </summary>
-        /// <remarks></remarks>
-        protected virtual void SubstituteRemoteTableNames(SelectStatement ss)
-        {
-            if (queryObject != null)
-            {
-                switch (queryObject.Parameters.ExecutionMode)
-                {
-                    case ExecutionMode.SingleServer:
-                        // Nothing to do here
-                        break;
-                    case ExecutionMode.Graywulf:
-                        foreach (var qs in ss.QueryExpression.EnumerateQuerySpecifications())
-                        {
-                            // Replace remote table references with temp table references
-                            foreach (TableReference tr in qs.EnumerateSourceTableReferences(true))
-                            {
-                                SubstituteRemoteTableName(tr);
-                            }
-                        }
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-            }
-        }
-        */
-
-        /* TODO: delete
-        /// <summary>
-        /// Substitutes the name of a remote tables with name of the temporary table
-        /// holding a cached version of the remote data.
-        /// </summary>
-        /// <param name="sm"></param>
-        /// <param name="tr"></param>
-        /// <param name="temporaryDataset"></param>
-        /// <param name="temporarySchemaName"></param>
-        protected void SubstituteRemoteTableName(TableReference tr)
-        {
-            var sm = queryObject.GetSchemaManager();
-            var temporaryDataset = queryObject.TemporaryDataset;
-            var temporarySchemaName = queryObject.TemporaryDataset.DefaultSchemaName;
-
-            // Save unique name because it will change as names are substituted
-            var un = tr.UniqueName;
-
-            // TODO: write function to determine if a table is to be copied
-            // ie. the condition in the if clause of the following line
-            if (tr.IsCachable && queryObject.TemporaryTables.ContainsKey(tr.UniqueName) &&
-                queryObject.IsRemoteDataset(sm.Datasets[tr.DatasetName]))
-            {
-                tr.DatabaseName = temporaryDataset.DatabaseName;
-                tr.SchemaName = temporarySchemaName;
-                tr.DatabaseObjectName = queryObject.TemporaryTables[un].TableName;
-                tr.DatabaseObject = null;
-            }
-        }*/
-
-        /* todo: delete
+        
         /// <summary>
         /// Creates a clone of the expression tree, then descends it  and replaces the occurances
         /// of one table reference with another.
@@ -631,36 +577,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             return exp;
         }
-        */
 
         #endregion
         #region Table statistics
-
-        public virtual ITableSource SubstituteStatisticsDataset(ITableSource tableSource, DatasetBase statisticsDataset)
-        {
-            throw new NotImplementedException();
-
-            /*
-            if (statisticsDataset != null)
-            {
-                var nts = (ITableSource)tableSource.Clone();
-
-                var ntr = new TableReference(tableSource.TableReference);
-                ntr.DatabaseName = statisticsDataset.DatabaseName;
-                ntr.DatabaseObject = statisticsDataset.GetObject(ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName);
-
-                var nstat = new TableStatistics(queryObject.TableStatistics[tableSource]);
-                SubstituteTableReference(nstat.KeyColumn, tableSource.TableReference, ntr);
-                SubstituteTableReference(nts, ntr);
-
-                return nts;
-            }
-            else
-            {
-                return tableSource;
-            }
-            */
-        }
 
         /// <summary>
         /// Returns a command initialized for computing table statistics
@@ -669,9 +588,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <returns></returns>
         public virtual SqlCommand GetTableStatisticsCommand(ITableSource tableSource, DatasetBase statisticsDataset)
         {
-            throw new NotImplementedException();
-
-            /*
             if (!(tableSource.TableReference.DatabaseObject is TableOrView))
             {
                 throw new ArgumentException();
@@ -683,20 +599,35 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
 
             var sql = new StringBuilder(SqlQueryScripts.TableStatistics);
-            var statts = SubstituteStatisticsDataset(tableSource, statisticsDataset);
-            SubstituteTableStatisticsQueryTokens(sql, statts);
 
+            if (queryObject.Parameters.ExecutionMode == ExecutionMode.Graywulf)
+            {
+                AddSystemDatabaseMappings(tableSource);
+                AddSourceTableMappings(Partition.Parameters.SourceDatabaseVersionName, null);
+                AddOutputTableMappings();
+            }
+            
             var cmd = new SqlCommand(sql.ToString());
             AppendTableStatisticsCommandParameters(tableSource, cmd);
             return cmd;
-            */
+        }
+        
+        protected virtual WhereClause GetTableSpecificWhereClause(ITableSource tableSource)
+        {
+            var ts = (SimpleTableSource)tableSource;
+            var qs = ts.FindAscendant<QuerySpecification>();
+            var scn = new Graywulf.Sql.LogicalExpressions.SearchConditionNormalizer();
+
+            scn.CollectConditions(qs);
+
+            var predicates = scn.GenerateWherePredicatesSpecificToTable(ts.TableReference);
+            var where = predicates == null ? null : WhereClause.Create(predicates);
+
+            return where;
         }
 
         protected void SubstituteTableStatisticsQueryTokens(StringBuilder sql, ITableSource tableSource)
         {
-            throw new NotImplementedException();
-
-            /*
             var stat = queryObject.TableStatistics[tableSource];
 
             SubstituteSystemDatabaseNames(stat.KeyColumn);
@@ -705,6 +636,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var temptable = queryObject.GetTemporaryTable("stat_" + tablename);
             var keycol = Execute(stat.KeyColumn);
             var keytype = stat.KeyColumnDataType.TypeNameWithLength;
+
+
             var where = GetTableSpecificWhereClause(tableSource);
 
             sql.Replace("[$temptable]", GetResolvedTableName(temptable));
@@ -712,19 +645,14 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             sql.Replace("[$keycol]", keycol);
             sql.Replace("[$tablename]", GetResolvedTableNameWithAlias(tableSource.TableReference));
             sql.Replace("[$where]", Execute(where));
-            */
         }
 
         protected virtual void AppendTableStatisticsCommandParameters(ITableSource tableSource, SqlCommand cmd)
         {
-            throw new NotImplementedException();
-
-            /*
             var stat = queryObject.TableStatistics[tableSource];
             cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = stat.BinCount;
-            */
         }
-        
+
         #endregion
         #region Query partitioning
 

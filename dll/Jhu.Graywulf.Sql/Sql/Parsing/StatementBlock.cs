@@ -15,9 +15,14 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return false; }
         }
-        
+
+        public StatementType StatementType
+        {
+            get { return StatementType.Block; }
+        }
+
         #endregion
-        
+
         public IEnumerable<Statement> EnumerateSubStatements()
         {
             return EnumerateDescendants<Statement>(true);

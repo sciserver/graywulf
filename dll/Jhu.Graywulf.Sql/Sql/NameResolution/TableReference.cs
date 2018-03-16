@@ -20,6 +20,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private List<ColumnReference> columnReferences;
 
         #endregion
+        #region Properties
 
         /// <summary>
         /// Gets or sets the resolved alias
@@ -147,6 +148,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get { return columnReferences; }
         }
+
+#endregion
+        #region Constructors and initializer
 
         public TableReference()
         {
@@ -276,6 +280,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 this.columnReferences.Add(ncr);
             }
         }
+
+        public override object Clone()
+        {
+            return new TableReference(this);
+        }
+
+#endregion
 
         public void InterpretTableSource(Node tableSource)
         {
@@ -449,12 +460,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             TableOrView td;
             if (ds.Tables.ContainsKey(DatabaseName, SchemaName, DatabaseObjectName))
             {
-                //td = new Table(ds.Tables[databaseName, schemaName, databaseObjectName]);
                 td = ds.Tables[DatabaseName, SchemaName, DatabaseObjectName];
             }
             else if (ds.Views.ContainsKey(DatabaseName, SchemaName, DatabaseObjectName))
             {
-                //td = new View(ds.Views[databaseName, schemaName, databaseObjectName]);
                 td = ds.Views[DatabaseName, SchemaName, DatabaseObjectName];
             }
             else

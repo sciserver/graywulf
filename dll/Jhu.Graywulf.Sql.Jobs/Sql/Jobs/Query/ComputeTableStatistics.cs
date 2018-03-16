@@ -30,7 +30,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var scheduler = activityContext.GetExtension<IScheduler>();
             var query = Query.Get(activityContext);
             var tableSource = TableSource.Get(activityContext);
-            DatasetBase statisticsDataset = null;
+            DatasetBase statisticsDataset;
+
 
             using (RegistryContext registryContext = query.CreateContext())
             {

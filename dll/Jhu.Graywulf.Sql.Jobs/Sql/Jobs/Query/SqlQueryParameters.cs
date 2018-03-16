@@ -25,6 +25,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         private string queryFactoryTypeName;
 
         /// <summary>
+        /// Type name of the query class
+        /// </summary>
+        private string queryTypeName;
+
+        /// <summary>
         /// The original query to be executed
         /// </summary>
         private string queryString;
@@ -109,6 +114,16 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             get { return queryFactoryTypeName; }
             set { queryFactoryTypeName = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the type name string of the query class
+        /// </summary>
+        [DataMember]
+        public string QueryTypeName
+        {
+            get { return queryTypeName; }
+            set { queryTypeName = value; }
         }
 
         /// <summary>
@@ -304,6 +319,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         private void InitializeMembers(StreamingContext context)
         {
             this.queryFactoryTypeName = null;
+            this.queryTypeName = null;
             this.queryString = null;
             this.batchName = null;
             this.queryName = null;
@@ -330,6 +346,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         private void CopyMembers(SqlQueryParameters old)
         {
             this.queryFactoryTypeName = old.queryFactoryTypeName;
+            this.queryTypeName = old.queryTypeName;
             this.queryString = old.queryString;
             this.batchName = old.batchName;
             this.queryName = old.queryName;
