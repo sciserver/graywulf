@@ -234,18 +234,23 @@ WHERE @keyMin <= id AND id < @keyMax";
             var q = CreateQuery(sql);
             q.Parameters.ExecutionMode = ExecutionMode.SingleServer;
 
-            var cg = new SqlQueryCodeGenerator(q);
+            var cg = new SqlQueryCodeGenerator(q)
+            {
+                TableNameRendering = CodeGeneration.NameRendering.FullyQualified,
+                ColumnNameRendering = CodeGeneration.NameRendering.FullyQualified,
+                FunctionNameRendering = CodeGeneration.NameRendering.FullyQualified,
+            };
             var ts = q.QueryDetails.ParsingTree.FindDescendantRecursive<SelectStatement>().QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
 
             // Column to compute the statistics on, not partitioning!
-            var stat = new TableStatistics()
+            var stat = new TableStatistics(ts)
             {
                 BinCount = 200,
                 KeyColumn = Expression.Create(new ColumnReference("dec", DataTypes.SqlFloat)),
                 KeyColumnDataType = DataTypes.SqlFloat
             };
 
-            q.TableStatistics.Add(ts, stat);
+            q.TableStatistics.Add(ts.UniqueKey, stat);
 
             var cmd = cg.GetTableStatisticsCommand(ts, null);
 
@@ -261,9 +266,9 @@ FROM TEST:SDSSDR7PhotoObjAll
 WHERE ra > 2";
 
             var gt = @"SELECT ROW_NUMBER() OVER (ORDER BY [dec]) AS [rn], [dec] AS [key]
-INTO [Graywulf_Temp].[dbo].[temp_stat_TEST_dbo_SDSSDR7PhotoObjAll]
+INTO [Graywulf_Temp].[dbo].[temp_stat_TEST_SkyNode_TEST_dbo_SDSSDR7PhotoObjAll]
 FROM [SkyNode_TEST].[dbo].[SDSSDR7PhotoObjAll]
-WHERE [SkyNode_TEST].[dbo].[SDSSDR7PhotoObjAll].[ra] > 2;";
+WHERE ([SkyNode_TEST].[dbo].[SDSSDR7PhotoObjAll].[ra] > 2);";
 
             var res = GetStatisticsQuery(sql);
             Assert.IsTrue(res.Contains(gt));
@@ -279,9 +284,9 @@ INNER JOIN TEST:SDSSDR7PhotoObjAll b ON p.objID = b.objID
 WHERE p.ra > 2";
 
             var gt = @"SELECT ROW_NUMBER() OVER (ORDER BY [dec]) AS [rn], [dec] AS [key]
-INTO [Graywulf_Temp].[dbo].[temp_stat_TEST_dbo_SDSSDR7PhotoObjAll_p]
+INTO [Graywulf_Temp].[dbo].[temp_stat_TEST_SkyNode_TEST_dbo_SDSSDR7PhotoObjAll_p]
 FROM [SkyNode_TEST].[dbo].[SDSSDR7PhotoObjAll] AS [p]
-WHERE [p].[ra] > 2;";
+WHERE ([p].[ra] > 2);";
 
             var res = GetStatisticsQuery(sql);
             Assert.IsTrue(res.Contains(gt));

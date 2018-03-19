@@ -152,8 +152,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             if (QueryDetails.IsPartitioned)
             {
-                throw new NotImplementedException();
-
                 // Partitioning is always done on the table specified right after the FROM keyword
                 // TODO: what if more than one QS?
                 var qs = QueryDetails.ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateQuerySpecifications().FirstOrDefault();
@@ -161,17 +159,17 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                 // TODO: modify this when expression output type functions are implemented
                 // and figure out data type directly from expression
-                var stat = new TableStatistics()
+                var stat = new TableStatistics(ts)
                 {
                     KeyColumn = ts.PartitioningKeyExpression,
                     KeyColumnDataType = ts.PartitioningKeyDataType,
                 };
 
-                TableStatistics.Add(ts, stat);
+                TableStatistics.Add(ts.UniqueKey, stat);
             }
         }
 
-        public Jhu.Graywulf.Sql.Schema.DatasetBase GetStatisticsDataset(ITableSource tableSource)
+        private Jhu.Graywulf.Sql.Schema.DatasetBase GetStatisticsDataset(ITableSource tableSource)
         {
             if (!String.IsNullOrEmpty(Parameters.StatDatabaseVersionName))
             {
@@ -195,17 +193,24 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             return null;
         }
 
+        public SqlCommand GetComputeTableStatisticsCommand(ITableSource tableSource)
+        {
+            var ds = GetStatisticsDataset(tableSource);
+            var cg = CreateCodeGenerator();
+            var cmd = cg.GetTableStatisticsCommand(tableSource, ds);
+            return cmd;
+        }
+
         /// <summary>
         /// Gather statistics for the table with the specified bin size
         /// </summary>
         /// <param name="tr"></param>
         /// <param name="binSize"></param>
-        public async Task ComputeTableStatisticsAsync(ITableSource tableSource, DatasetBase statisticsDataset)
+        public async Task ComputeTableStatisticsAsync(ITableSource tableSource, SqlCommand cmd)
         {
-            var stat = TableStatistics[tableSource];
-            var cg = CreateCodeGenerator();
+            var stat = TableStatistics[tableSource.UniqueKey];
 
-            using (var cmd = cg.GetTableStatisticsCommand(tableSource, statisticsDataset))
+            using (cmd)
             {
                 await ExecuteSqlOnAssignedServerReaderAsync(cmd, CommandTarget.Code, async (dr, ct) =>
                 {

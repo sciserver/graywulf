@@ -65,11 +65,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         };
 
         #endregion
-        #region Property storage variables
+        #region Private member variables
 
         // The schema manager is used to resolve identifiers that are not local to the details,
         // i.e. database, table, columns etc. names
         private SchemaManager schemaManager;
+        private QueryDetails details;
 
         private string defaultTableDatasetName;
         private string defaultFunctionDatasetName;
@@ -169,19 +170,20 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public void Execute(QueryDetails details)
         {
-            ResolveStatementBlock(details, details.ParsingTree);
+            this.details = details;
+            ResolveStatementBlock(details.ParsingTree);
             details.IsResolved = true;
         }
 
-        protected void ResolveStatementBlock(QueryDetails details, StatementBlock statementBlock)
+        protected void ResolveStatementBlock(StatementBlock statementBlock)
         {
             foreach (var statement in statementBlock.EnumerateDescendants<Statement>(true))
             {
-                ResolveStatement(details, statement);
+                ResolveStatement(statement);
             }
         }
 
-        private void ResolveStatement(QueryDetails details, Statement statement)
+        private void ResolveStatement(Statement statement)
         {
             var s = statement.SpecificStatement;
 
@@ -191,61 +193,61 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 switch (s)
                 {
                     case WhileStatement ss:
-                        ResolveWhileStatement(details, ss);
+                        ResolveWhileStatement(ss);
                         break;
                     case ReturnStatement ss:
-                        ResolveReturnStatement(details, ss);
+                        ResolveReturnStatement(ss);
                         break;
                     case IfStatement ss:
-                        ResolveIfStatement(details, ss);
+                        ResolveIfStatement(ss);
                         break;
                     case ThrowStatement ss:
-                        ResolveThrowStatement(details, ss);
+                        ResolveThrowStatement(ss);
                         break;
                     case DeclareVariableStatement ss:
-                        ResolveDeclareVariableStatement(details, ss);
+                        ResolveDeclareVariableStatement(ss);
                         break;
                     case DeclareTableStatement ss:
-                        ResolveDeclareTableStatement(details, ss);
+                        ResolveDeclareTableStatement(ss);
                         break;
                     case DeclareCursorStatement ss:
-                        ResolveDeclareCursorStatement(details, ss);
+                        ResolveDeclareCursorStatement(ss);
                         break;
                     case SetCursorStatement ss:
-                        ResolveSetCursorStatement(details, ss);
+                        ResolveSetCursorStatement(ss);
                         break;
                     case CursorOperationStatement ss:
-                        ResolveCursorOperationStatement(details, ss);
+                        ResolveCursorOperationStatement(ss);
                         break;
                     case FetchStatement ss:
-                        ResolveFetchStatement(details, ss);
+                        ResolveFetchStatement(ss);
                         break;
                     case SetVariableStatement ss:
-                        ResolveSetVariableStatement(details, ss);
+                        ResolveSetVariableStatement(ss);
                         break;
                     case CreateTableStatement ss:
-                        ResolveCreateTableStatement(details, ss);
+                        ResolveCreateTableStatement(ss);
                         break;
                     case DropTableStatement ss:
-                        ResolveDropTableStatement(details, ss);
+                        ResolveDropTableStatement(ss);
                         break;
                     case TruncateTableStatement ss:
-                        ResolveTruncateTableStatement(details, ss);
+                        ResolveTruncateTableStatement(ss);
                         break;
                     case CreateIndexStatement ss:
-                        ResolveCreateIndexStatement(details, ss);
+                        ResolveCreateIndexStatement(ss);
                         break;
                     case DropIndexStatement ss:
-                        ResolveDropIndexStatement(details, ss);
+                        ResolveDropIndexStatement(ss);
                         break;
                     case SelectStatement ss:
-                        ResolveSelectStatement(details, ss);
+                        ResolveSelectStatement(ss);
                         break;
                     case InsertStatement ss:
-                        ResolveInsertStatement(details, ss);
+                        ResolveInsertStatement(ss);
                         break;
                     case DeleteStatement ss:
-                        ResolveDeleteStatement(details, ss);
+                        ResolveDeleteStatement(ss);
                         break;
                     default:
                         throw new NotImplementedException();
@@ -255,68 +257,68 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // Call recursively for sub-statements
             foreach (var ss in s.EnumerateSubStatements())
             {
-                ResolveStatement(details, ss);
+                ResolveStatement(ss);
             }
         }
 
-        private void ResolveWhileStatement(QueryDetails details, WhileStatement statement)
+        private void ResolveWhileStatement(WhileStatement statement)
         {
-            ResolveSubtree(details, statement.Condition);
+            ResolveSubtree(statement.Condition);
         }
 
-        private void ResolveReturnStatement(QueryDetails details, ReturnStatement statement)
+        private void ResolveReturnStatement(ReturnStatement statement)
         {
             // it might have a query in the parameter
             // do we support functions or stored procedures?
             throw new NotImplementedException();
         }
 
-        private void ResolveIfStatement(QueryDetails details, IfStatement statement)
+        private void ResolveIfStatement(IfStatement statement)
         {
-            ResolveSubtree(details, statement.Condition);
+            ResolveSubtree(statement.Condition);
         }
 
-        private void ResolveThrowStatement(QueryDetails details, ThrowStatement statement)
+        private void ResolveThrowStatement(ThrowStatement statement)
         {
             // Resolve variables
             throw new NotImplementedException();
         }
 
-        private void ResolveDeclareCursorStatement(QueryDetails details, DeclareCursorStatement statement)
+        private void ResolveDeclareCursorStatement(DeclareCursorStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveSetCursorStatement(QueryDetails details, SetCursorStatement statement)
+        private void ResolveSetCursorStatement(SetCursorStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveCursorOperationStatement(QueryDetails details, CursorOperationStatement statement)
+        private void ResolveCursorOperationStatement(CursorOperationStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveFetchStatement(QueryDetails details, FetchStatement statement)
+        private void ResolveFetchStatement(FetchStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveDeclareVariableStatement(QueryDetails details, DeclareVariableStatement statement)
+        private void ResolveDeclareVariableStatement(DeclareVariableStatement statement)
         {
             foreach (var vd in statement.EnumerateDescendantsRecursive<VariableDeclaration>())
             {
-                ResolveVariableDeclaration(details, vd);
+                ResolveVariableDeclaration(vd);
             }
         }
 
-        private void ResolveVariableDeclaration(QueryDetails details, VariableDeclaration vd)
+        private void ResolveVariableDeclaration(VariableDeclaration vd)
         {
             var exp = vd.Expression;
 
             if (exp != null)
             {
-                ResolveSubtree(details, exp);
+                ResolveSubtree(exp);
             }
 
             if (!details.VariableReferences.ContainsKey(vd.VariableReference.Name))
@@ -329,7 +331,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        private void ResolveSetVariableStatement(QueryDetails details, SetVariableStatement statement)
+        private void ResolveSetVariableStatement(SetVariableStatement statement)
         {
             if (details.VariableReferences.ContainsKey(statement.VariableReference.Name))
             {
@@ -341,69 +343,69 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        private void ResolveDeclareTableStatement(QueryDetails details, DeclareTableStatement statement)
+        private void ResolveDeclareTableStatement(DeclareTableStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveCreateTableStatement(QueryDetails details, CreateTableStatement statement)
+        private void ResolveCreateTableStatement(CreateTableStatement statement)
         {
             throw new NotImplementedException();
         }
 
         // TODO: add alter table here
 
-        private void ResolveDropTableStatement(QueryDetails details, DropTableStatement statement)
+        private void ResolveDropTableStatement(DropTableStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveTruncateTableStatement(QueryDetails details, TruncateTableStatement statement)
+        private void ResolveTruncateTableStatement(TruncateTableStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveCreateIndexStatement(QueryDetails details, CreateIndexStatement statement)
+        private void ResolveCreateIndexStatement(CreateIndexStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveDropIndexStatement(QueryDetails details, DropIndexStatement statement)
+        private void ResolveDropIndexStatement(DropIndexStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveSelectStatement(QueryDetails details, SelectStatement statement)
+        private void ResolveSelectStatement(SelectStatement statement)
         {
             var cte = statement.FindDescendant<CommonTableExpression>();
 
             if (cte != null)
             {
-                ResolveCommonTableExpression(details, cte);
+                ResolveCommonTableExpression(cte);
             }
 
-            ResolveSelect(details, cte, 0, statement);
+            ResolveSelect(cte, 0, statement);
 
             var firstqs = statement.QueryExpression.FirstQuerySpecification;
 
             if (firstqs != null)
             {
-                SubstituteOutputTableDefaults(details, firstqs);
-                statement.OutputTableReference = ResolveOutputTableReference(details, firstqs);
+                SubstituteOutputTableDefaults(firstqs);
+                statement.OutputTableReference = ResolveOutputTableReference(firstqs);
             }
         }
 
-        private void ResolveInsertStatement(QueryDetails details, InsertStatement statement)
+        private void ResolveInsertStatement(InsertStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveUpdateStatement(QueryDetails details, UpdateStatement statement)
+        private void ResolveUpdateStatement(UpdateStatement statement)
         {
             throw new NotImplementedException();
         }
 
-        private void ResolveDeleteStatement(QueryDetails details, DeleteStatement statement)
+        private void ResolveDeleteStatement(DeleteStatement statement)
         {
             throw new NotImplementedException();
         }
@@ -411,15 +413,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #endregion
         #region Expression resolution
 
-        private void ResolveSubtree(QueryDetails details, Node node)
+        private void ResolveSubtree(Node node)
         {
-            ResolveSubtree(details, null, null, 0, ColumnContext.None, node);
+            ResolveSubtree(null, null, 0, ColumnContext.None, node);
         }
 
-        private void ResolveSubtree(QueryDetails details, CommonTableExpression cte, QuerySpecification qs, int depth, ColumnContext context, Node node)
+        private void ResolveSubtree(CommonTableExpression cte, QuerySpecification qs, int depth, ColumnContext context, Node node)
         {
-            ResolveSubqueries(details, cte, depth, node);
-            ResolveExpressionReferences(details, cte, qs, context, node);
+            ResolveSubqueries(cte, depth, node);
+            ResolveExpressionReferences(cte, qs, context, node);
         }
 
         /// <summary>
@@ -431,7 +433,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// <param name="cte"></param>
         /// <param name="node"></param>
         /// <param name="context"></param>
-        private void ResolveExpressionReferences(QueryDetails details, CommonTableExpression cte, QuerySpecification qs, ColumnContext context, Node node)
+        private void ResolveExpressionReferences(CommonTableExpression cte, QuerySpecification qs, ColumnContext context, Node node)
         {
             context = GetColumnContext(node, context);
 
@@ -444,19 +446,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (n is Node)
                 {
-                    ResolveExpressionReferences(details, cte, qs, context, (Node)n);   // Recursive call
+                    ResolveExpressionReferences(cte, qs, context, (Node)n);   // Recursive call
 
                     if (n is IFunctionReference)
                     {
-                        ResolveFunctionReference(details, (IFunctionReference)n);
+                        ResolveFunctionReference((IFunctionReference)n);
                     }
                     else if (n is IVariableReference)
                     {
-                        ResolveScalarVariableReference(details, (IVariableReference)n);
+                        ResolveScalarVariableReference((IVariableReference)n);
                     }
                     else if (n is IColumnReference)
                     {
-                        ResolveColumnReference(details, cte, qs, context, (IColumnReference)n);
+                        ResolveColumnReference(cte, qs, context, (IColumnReference)n);
                     }
                 }
             }
@@ -467,7 +469,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return SystemFunctionNames.Contains(name);
         }
 
-        private void ResolveFunctionReference(QueryDetails details, IFunctionReference node)
+        private void ResolveFunctionReference(IFunctionReference node)
         {
             // TODO: extend this to CLR static function calls
 
@@ -513,7 +515,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        private void ResolveScalarVariableReference(QueryDetails details, IVariableReference vr)
+        private void ResolveScalarVariableReference(IVariableReference vr)
         {
             // TODO: extend this to UDTs, including member access
 
@@ -541,7 +543,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        private void ResolveColumnReference(QueryDetails details, CommonTableExpression cte, QuerySpecification qs, ColumnContext context, IColumnReference cr)
+        private void ResolveColumnReference(CommonTableExpression cte, QuerySpecification qs, ColumnContext context, IColumnReference cr)
         {
             // Star columns cannot be resolved, treat them separately
             if (!cr.ColumnReference.IsResolved && !cr.ColumnReference.IsStar && !cr.ColumnReference.IsComplexExpression)
@@ -618,37 +620,37 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         /// <param name="node"></param>
         /// <param name="depth"></param>
-        private void ResolveSubqueries(QueryDetails details, CommonTableExpression cte, int depth, Node node)
+        private void ResolveSubqueries(CommonTableExpression cte, int depth, Node node)
         {
             foreach (var n in node.Nodes)
             {
                 if (n is Node && !(n is Subquery))
                 {
-                    ResolveSubqueries(details, cte, depth, (Node)n);
+                    ResolveSubqueries(cte, depth, (Node)n);
                 }
 
                 if (n is Subquery)
                 {
-                    ResolveSelect(details, cte, depth + 1, (Subquery)n);
+                    ResolveSelect(cte, depth + 1, (Subquery)n);
                 }
             }
         }
 
-        protected void ResolveSelect(QueryDetails details, CommonTableExpression cte, int depth, ISelect select)
+        protected void ResolveSelect(CommonTableExpression cte, int depth, ISelect select)
         {
             var qe = select.QueryExpression;
-            ResolveQueryExpression(details, cte, qe, depth);
+            ResolveQueryExpression(cte, qe, depth);
 
             var orderBy = select.OrderByClause;
 
             if (orderBy != null)
             {
                 var qs = qe.EnumerateQuerySpecifications().FirstOrDefault();
-                ResolveOrderByClause(details, cte, orderBy, qs);
+                ResolveOrderByClause(cte, orderBy, qs);
             }
         }
 
-        private void ResolveCommonTableExpression(QueryDetails details, CommonTableExpression cte)
+        private void ResolveCommonTableExpression(CommonTableExpression cte)
         {
             foreach (var ct in cte.EnumerateCommonTableSpecifications())
             {
@@ -656,17 +658,17 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // the specification is added to the dictionary before the resolver
                 // is called on it
                 cte.CommonTableReferences.Add(ct.TableReference.Alias, ct.TableReference);
-                ResolveCommonTableSpecification(details, cte, ct);
+                ResolveCommonTableSpecification(cte, ct);
             }
         }
 
-        private void ResolveCommonTableSpecification(QueryDetails details, CommonTableExpression cte, CommonTableSpecification ts)
+        private void ResolveCommonTableSpecification(CommonTableExpression cte, CommonTableSpecification ts)
         {
             var subquery = ts.Subquery;
-            ResolveSelect(details, cte, 1, subquery);
+            ResolveSelect(cte, 1, subquery);
         }
 
-        protected void ResolveQueryExpression(QueryDetails details, CommonTableExpression cte, QueryExpression qe, int depth)
+        protected void ResolveQueryExpression(CommonTableExpression cte, QueryExpression qe, int depth)
         {
             // Resolve the first part of the query expression independently
             // and make sure it's set as ResultsTableReference
@@ -677,7 +679,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // Resolve query specifications in the FROM clause
             foreach (var qs in qe.EnumerateDescendants<QuerySpecification>())
             {
-                ResolveQuerySpecification(details, cte, qs, depth);
+                ResolveQuerySpecification(cte, qs, depth);
 
                 if (q == 0)
                 {
@@ -696,7 +698,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// query specification
         /// </summary>
         /// <param name="qs"></param>
-        protected void ResolveQuerySpecification(QueryDetails details, CommonTableExpression cte, QuerySpecification qs, int depth)
+        protected void ResolveQuerySpecification(CommonTableExpression cte, QuerySpecification qs, int depth)
         {
             // At this point the table and column references are all parsed
             // from the query but no name resolution and cross-identification
@@ -709,21 +711,21 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // expressions
             foreach (var sq in qs.EnumerateSubqueries())
             {
-                ResolveSelect(details, cte, depth + 1, sq);
+                ResolveSelect(cte, depth + 1, sq);
             }
 
-            SubstituteSourceTableDefaults(details, cte, qs);
-            CollectSourceTableReferences(details, cte, qs);
+            SubstituteSourceTableDefaults(cte, qs);
+            CollectSourceTableReferences(cte, qs);
 
             // Column identifiers can contain table names, aliases or nothing,
             // resolve them now
-            ResolveTableReferences(details, cte, qs);
+            ResolveTableReferences(cte, qs);
 
             // Substitute SELECT * expressions
             SubstituteStars(qs);
 
             // Resolve variables and column references of each occurance
-            ResolveExpressionReferences(details, cte, qs, ColumnContext.None, qs);
+            ResolveExpressionReferences(cte, qs, ColumnContext.None, qs);
 
             // Copy resultset columns to the appropriate collection
             CopyResultsColumns(qs);
@@ -732,12 +734,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             AssignDefaultColumnAliases(qs, depth != 0);
         }
 
-        protected void ResolveOrderByClause(QueryDetails details, CommonTableExpression cte, OrderByClause orderBy, QuerySpecification firstqs)
+        protected void ResolveOrderByClause(CommonTableExpression cte, OrderByClause orderBy, QuerySpecification firstqs)
         {
             if (orderBy != null)
             {
-                ResolveTableReferences(details, cte, firstqs, TableContext.None, ColumnContext.OrderBy, orderBy);
-                ResolveExpressionReferences(details, cte, firstqs, ColumnContext.OrderBy, orderBy);
+                ResolveTableReferences(cte, firstqs, TableContext.None, ColumnContext.OrderBy, orderBy);
+                ResolveExpressionReferences(cte, firstqs, ColumnContext.OrderBy, orderBy);
             }
         }
 
@@ -749,12 +751,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// or table name.
         /// </remarks>
         /// <param name="qs"></param>
-        private void CollectSourceTableReferences(QueryDetails details, CommonTableExpression cte, QuerySpecification qs)
+        private void CollectSourceTableReferences(CommonTableExpression cte, QuerySpecification qs)
         {
             // Collect column references from subqueries or load from the database schema
 
-            foreach (var tr in qs.EnumerateSourceTableReferences(false))
+            foreach (var ts in qs.EnumerateSourceTables(false))
             {
+                var tr = ts.TableReference;
                 var exportedName = tr.ExportedName;
 
                 // Make sure that table key is used only once
@@ -764,7 +767,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 else
                 {
-                    var ntr = ResolveSourceTableReference(details, cte, tr);
+                    var ntr = ResolveSourceTableReference(cte, tr);
 
                     // Save the table in the query specification
                     qs.SourceTableReferences.Add(exportedName, ntr);
@@ -780,12 +783,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
                         }
 
                         details.SourceTables[uniqueKey].Add(ntr);
+                        ts.UniqueKey = String.Format("{0}_{1}", uniqueKey, details.SourceTables[uniqueKey].Count - 1);
                     }
                 }
             }
         }
 
-        public TableReference ResolveSourceTableReference(QueryDetails details, CommonTableExpression cte, TableReference tr)
+        public TableReference ResolveSourceTableReference(CommonTableExpression cte, TableReference tr)
         {
             TableReference ntr;
 
@@ -835,7 +839,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return ntr;
         }
 
-        private TableReference ResolveOutputTableReference(QueryDetails details, QuerySpecification qs)
+        private TableReference ResolveOutputTableReference(QuerySpecification qs)
         {
             var into = qs.IntoClause;
             var tr = into?.TableName.TableReference;
@@ -903,14 +907,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// not descending into subqueries
         /// </summary>
         /// <param name="qs"></param>
-        private void ResolveTableReferences(QueryDetails details, CommonTableExpression cte, QuerySpecification qs)
+        private void ResolveTableReferences(CommonTableExpression cte, QuerySpecification qs)
         {
-            ResolveTableReferences(details, cte, qs, TableContext.None, ColumnContext.None, (Node)qs);
+            ResolveTableReferences(cte, qs, TableContext.None, ColumnContext.None, (Node)qs);
         }
 
-        public void ResolveTableReferences(QueryDetails details, CommonTableExpression cte, TableContext tableContext, ColumnContext columnContext, Node n)
+        public void ResolveTableReferences(CommonTableExpression cte, TableContext tableContext, ColumnContext columnContext, Node n)
         {
-            ResolveTableReferences(details, cte, null, tableContext, columnContext, n);
+            ResolveTableReferences(cte, null, tableContext, columnContext, n);
         }
 
         /// <summary>
@@ -919,7 +923,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         /// <param name="qs"></param>
         /// <param name="n"></param>
-        private void ResolveTableReferences(QueryDetails details, CommonTableExpression cte, QuerySpecification qs, TableContext tableContext, ColumnContext columnContext, Node n)
+        private void ResolveTableReferences(CommonTableExpression cte, QuerySpecification qs, TableContext tableContext, ColumnContext columnContext, Node n)
         {
             tableContext = GetTableContext(n, tableContext);
             columnContext = GetColumnContext(n, columnContext);
@@ -929,13 +933,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // Skip the into and clause and subqueries
                 if (o is Node && !(o is IntoClause) && !(o is SubqueryTableSource))
                 {
-                    ResolveTableReferences(details, cte, qs, tableContext, columnContext, (Node)o);   // Recursive call
+                    ResolveTableReferences(cte, qs, tableContext, columnContext, (Node)o);   // Recursive call
                 }
             }
 
             if (n is ITableReference)
             {
-                ResolveTableReference(details, cte, qs, (ITableReference)n, tableContext, columnContext);
+                ResolveTableReference(cte, qs, (ITableReference)n, tableContext, columnContext);
             }
         }
 
@@ -944,7 +948,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         /// <param name="qs"></param>
         /// <param name="tr"></param>
-        private void ResolveTableReference(QueryDetails details, CommonTableExpression cte, QuerySpecification qs, ITableReference node, TableContext tableContext, ColumnContext columnContext)
+        private void ResolveTableReference(CommonTableExpression cte, QuerySpecification qs, ITableReference node, TableContext tableContext, ColumnContext columnContext)
         {
             // Try to resolve the table alias part of a table reference
             // If and alias or table name is specified, this can be done based on
@@ -1118,7 +1122,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// Substitutes dataset and schema defaults into table source table references
         /// </summary>
         /// <param name="qs"></param>
-        protected void SubstituteSourceTableDefaults(QueryDetails details, CommonTableExpression cte, QuerySpecification qs)
+        protected void SubstituteSourceTableDefaults(CommonTableExpression cte, QuerySpecification qs)
         {
             foreach (var tr in qs.EnumerateSourceTableReferences(false))
             {
@@ -1144,7 +1148,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        private void SubstituteOutputTableDefaults(QueryDetails details, QuerySpecification qs)
+        private void SubstituteOutputTableDefaults(QuerySpecification qs)
         {
             // TODO: what to do with table variables?
 

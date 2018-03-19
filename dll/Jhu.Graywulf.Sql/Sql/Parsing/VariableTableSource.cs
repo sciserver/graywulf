@@ -10,7 +10,8 @@ namespace Jhu.Graywulf.Sql.Parsing
     public partial class VariableTableSource : ITableSource
     {
         private TableReference tableReference;
-
+        private string uniqueKey;
+        
         public DatabaseObjectReference DatabaseObjectReference
         {
             get { return tableReference; }
@@ -20,6 +21,12 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return tableReference; }
             set { tableReference = value; }
+        }
+
+        public string UniqueKey
+        {
+            get { return uniqueKey; }
+            set { uniqueKey = value; }
         }
 
         public bool IsSubquery

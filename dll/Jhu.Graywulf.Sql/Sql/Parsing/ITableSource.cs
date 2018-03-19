@@ -10,6 +10,7 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         bool IsSubquery { get; }
         bool IsMultiTable { get; }
+        string UniqueKey { get; set; }
 
         IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive);
 

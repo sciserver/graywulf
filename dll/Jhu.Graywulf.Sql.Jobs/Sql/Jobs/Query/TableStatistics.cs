@@ -15,6 +15,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         #region Private member variables
 
         private int binCount;
+        private ITableSource tableSource;
         private Expression keyColumn;
         private Schema.DataType keyColumnDataType;
         private List<IComparable> keyValue;
@@ -28,6 +29,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             get { return binCount; }
             set { binCount = value; }
+        }
+
+        public ITableSource TableSource
+        {
+            get { return tableSource; }
+            set { tableSource = value; }
         }
 
         public Expression KeyColumn
@@ -61,9 +68,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         #endregion
         #region Constructors and initializers
 
-        public TableStatistics()
+        public TableStatistics(ITableSource tableSource)
         {
             InitializeMembers();
+
+            this.tableSource = tableSource;
         }
 
         public TableStatistics(TableStatistics old)
@@ -74,6 +83,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         private void InitializeMembers()
         {
             this.binCount = 250;
+            this.tableSource = null;
             this.keyColumn = null;
             this.keyColumnDataType = null;
             this.keyValue = new List<IComparable>();
@@ -84,6 +94,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         private void CopyMembers(TableStatistics old)
         {
             this.binCount = old.binCount;
+            this.tableSource = old.tableSource;
             this.keyColumn = old.keyColumn;
             this.keyColumnDataType = old.keyColumnDataType;
             this.keyValue = new List<IComparable>(old.keyValue);

@@ -9,6 +9,14 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class FunctionTableSource : ITableSource
     {
+
+        private string uniqueKey;
+
+        public string UniqueKey
+        {
+            get { return uniqueKey; }
+            set { uniqueKey = value; }
+        }
         public TableValuedFunctionCall FunctionCall
         {
             get { return FindDescendant<TableValuedFunctionCall>(); }

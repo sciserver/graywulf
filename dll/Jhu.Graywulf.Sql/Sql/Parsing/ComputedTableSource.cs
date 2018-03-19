@@ -9,6 +9,7 @@ namespace Jhu.Graywulf.Sql.Parsing
     public class ComputedTableSource : Jhu.Graywulf.Parsing.Node, ITableSource, ICloneable
     {
         private TableReference tableReference;
+        private string uniqueKey;
 
         public DatabaseObjectReference DatabaseObjectReference
         {
@@ -19,6 +20,12 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return tableReference; }
             set { tableReference = value; }
+        }
+
+        public string UniqueKey
+        {
+            get { return uniqueKey; }
+            set { uniqueKey = value; }
         }
 
         public bool IsSubquery

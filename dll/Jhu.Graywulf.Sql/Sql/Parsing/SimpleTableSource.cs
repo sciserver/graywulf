@@ -9,6 +9,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class SimpleTableSource : ITableSource
     {
+        private string uniqueKey;
         private ColumnIdentifier partitioningColumn;
         private Expression partitioningKeyExpression;
         private Schema.DataType partitioningKeyDataType;
@@ -37,6 +38,12 @@ namespace Jhu.Graywulf.Sql.Parsing
         public bool IsMultiTable
         {
             get { return false; }
+        }
+
+        public string UniqueKey
+        { 
+            get { return uniqueKey; }
+            set { uniqueKey = value; }
         }
 
         public Expression PartitioningKeyExpression

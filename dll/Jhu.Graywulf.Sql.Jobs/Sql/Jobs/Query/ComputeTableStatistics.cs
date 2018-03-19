@@ -30,16 +30,16 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var scheduler = activityContext.GetExtension<IScheduler>();
             var query = Query.Get(activityContext);
             var tableSource = TableSource.Get(activityContext);
-            DatasetBase statisticsDataset;
+            SqlCommand statisticsCommand;
 
 
             using (RegistryContext registryContext = query.CreateContext())
             {
                 query.InitializeQueryObject(cancellationContext, registryContext, scheduler, true);
-                statisticsDataset = query.GetStatisticsDataset(tableSource);
+                statisticsCommand = query.GetComputeTableStatisticsCommand(tableSource);
             }
 
-            await query.ComputeTableStatisticsAsync(tableSource, statisticsDataset);
+            await query.ComputeTableStatisticsAsync(tableSource, statisticsCommand);
         }
     }
 }

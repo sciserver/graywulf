@@ -593,7 +593,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 throw new ArgumentException();
             }
 
-            if (!queryObject.TableStatistics.ContainsKey(tableSource))
+            if (!queryObject.TableStatistics.ContainsKey(tableSource.UniqueKey))
             {
                 throw new ArgumentNullException();
             }
@@ -603,10 +603,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             if (queryObject.Parameters.ExecutionMode == ExecutionMode.Graywulf)
             {
                 AddSystemDatabaseMappings(tableSource);
-                AddSourceTableMappings(Partition.Parameters.SourceDatabaseVersionName, null);
+                AddSourceTableMappings(queryObject.Parameters.SourceDatabaseVersionName, null);
                 AddOutputTableMappings();
             }
-            
+
+            SubstituteTableStatisticsQueryTokens(sql, tableSource);
+
             var cmd = new SqlCommand(sql.ToString());
             AppendTableStatisticsCommandParameters(tableSource, cmd);
             return cmd;
@@ -628,7 +630,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         protected void SubstituteTableStatisticsQueryTokens(StringBuilder sql, ITableSource tableSource)
         {
-            var stat = queryObject.TableStatistics[tableSource];
+            var stat = queryObject.TableStatistics[tableSource.UniqueKey];
 
             SubstituteSystemDatabaseNames(stat.KeyColumn);
 
@@ -649,7 +651,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         protected virtual void AppendTableStatisticsCommandParameters(ITableSource tableSource, SqlCommand cmd)
         {
-            var stat = queryObject.TableStatistics[tableSource];
+            var stat = queryObject.TableStatistics[tableSource.UniqueKey];
             cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = stat.BinCount;
         }
 

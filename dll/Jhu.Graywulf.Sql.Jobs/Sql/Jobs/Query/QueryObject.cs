@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <summary>
         /// Holds table statistics gathered for all the tables in the query
         /// </summary>
-        private Dictionary<ITableSource, TableStatistics> tableStatistics;
+        private Dictionary<string, TableStatistics> tableStatistics;
 
         /// <summary>
         /// Holds a list of temporary tables created during query execution.
@@ -256,7 +256,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// by the query
         /// </summary>
         [IgnoreDataMember]
-        public Dictionary<ITableSource, TableStatistics> TableStatistics
+        public Dictionary<string, TableStatistics> TableStatistics
         {
             get { return tableStatistics; }
         }
@@ -326,7 +326,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             this.temporaryDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this);
             this.codeDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this);
 
-            this.tableStatistics = new Dictionary<ITableSource, TableStatistics>();
+            this.tableStatistics = new Dictionary<string, TableStatistics>();
             this.temporaryTables = new ConcurrentDictionary<string, Table>(SchemaManager.Comparer);
             this.temporaryViews = new ConcurrentDictionary<string, View>(SchemaManager.Comparer);
         }
@@ -360,7 +360,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             this.temporaryDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this, old.temporaryDatabaseInstanceReference);
             this.codeDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this, old.codeDatabaseInstanceReference);
 
-            this.tableStatistics = new Dictionary<ITableSource, TableStatistics>();
+            this.tableStatistics = new Dictionary<string, TableStatistics>();
             this.temporaryTables = new ConcurrentDictionary<string, Table>(old.temporaryTables, SchemaManager.Comparer);
             this.temporaryViews = new ConcurrentDictionary<string, View>(old.temporaryViews, SchemaManager.Comparer);
         }

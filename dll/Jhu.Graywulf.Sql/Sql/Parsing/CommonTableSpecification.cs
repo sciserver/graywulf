@@ -10,6 +10,14 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class CommonTableSpecification : ITableSource
     {
+        private string uniqueKey;
+
+        public string UniqueKey
+        {
+            get { return uniqueKey; }
+            set { uniqueKey = value; }
+        }
+
         public Subquery Subquery
         {
             get { return FindDescendant<Subquery>(); }
