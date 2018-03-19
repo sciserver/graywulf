@@ -395,7 +395,7 @@ namespace Jhu.Graywulf.Logging
 
         private void TidyUpEvent(Event e)
         {
-            // ServiceModel.xceptionDetail is non-serializable, this is a bug
+            // ServiceModel.ExceptionDetail is non-serializable, this is a bug
 
             var ex = e.Exception as System.ServiceModel.FaultException<System.ServiceModel.ExceptionDetail>;
             if (ex != null)

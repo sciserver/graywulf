@@ -558,11 +558,14 @@ namespace Jhu.Graywulf.Scheduler
                             }
 #endif
 
+                            var ex = workflow.LastException;
+                            ex = ConvertException(ex);
+
                             OnWorkflowEvent(
                                 new WorkflowApplicationHostEventArgs(
                                     WorkflowEventType.Failed,
                                     e.InstanceId,
-                                    workflow.LastException));
+                                    ex));
                             break;
                         default:
                             // TODO: what about persisting and persisted stages?
@@ -595,5 +598,16 @@ namespace Jhu.Graywulf.Scheduler
         }
 
         #endregion
+
+        private Exception ConvertException(Exception ex)
+        {
+            switch (ex)
+            {
+                case System.ServiceModel.FaultException<System.ServiceModel.ExceptionDetail> fault:
+                    return new Jhu.Graywulf.Components.FaultDetailsException(fault);
+                default:
+                    return ex;
+            }
+        }
     }
 }
