@@ -43,6 +43,8 @@ namespace Jhu.Graywulf.Activities
         [RequiredArgument]
         public InArgument<JobInfo> JobInfo { get; set; }
 
+        public InArgument<Type[]> HandledExceptionTypes { get; set; }
+
         public Activity Try { get; set; }
         public Activity Finally { get; set; }
 
@@ -63,6 +65,10 @@ namespace Jhu.Graywulf.Activities
             metadata.Bind(this.JobInfo, argument);
             metadata.AddArgument(argument);
 
+            argument = new RuntimeArgument("HandledExceptionTypes", typeof(Type[]), ArgumentDirection.In);
+            metadata.Bind(this.HandledExceptionTypes, argument);
+            metadata.AddArgument(argument);
+
             if (this.Try != null)
             {
                 metadata.AddChild(this.Try);
@@ -76,7 +82,7 @@ namespace Jhu.Graywulf.Activities
             argument = new RuntimeArgument("MaxRetries", typeof(int), ArgumentDirection.In);
             metadata.Bind(this.MaxRetries, argument);
             metadata.AddArgument(argument);
-
+            
             metadata.AddImplementationVariable(this.state);
         }
 
@@ -97,7 +103,7 @@ namespace Jhu.Graywulf.Activities
         protected override void Cancel(NativeActivityContext context)
         {
             var state = this.state.Get(context);
-            
+
             if (!state.SuppressCancel)
             {
                 context.CancelChildren();
@@ -149,7 +155,28 @@ namespace Jhu.Graywulf.Activities
             var state = this.state.Get(faultContext);
             state.Exception = propagatedException;
 
-            if (state.Retries < MaxRetries.Get(faultContext) - 1)
+            // Test if exception should be handled or passed on
+            bool handleException = false; ;
+            Type[] handledExceptionTypes = HandledExceptionTypes.Get(faultContext);
+
+            if (handledExceptionTypes == null)
+            {
+                handleException = true;
+            }
+            else
+            {
+                var petype = propagatedException.GetType();
+                foreach (var type in handledExceptionTypes)
+                {
+                    if (type.IsAssignableFrom(petype))
+                    {
+                        handleException = true;
+                        break;
+                    }
+                }
+            }
+
+            if (handleException && state.Retries < MaxRetries.Get(faultContext) - 1)
             {
                 // Absorb error
                 faultContext.CancelChild(propagatedFrom);
