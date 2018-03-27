@@ -32,6 +32,11 @@ namespace Jhu.Graywulf.Logging
             this.writers = new List<LogWriterBase>();
         }
 
+        public override object InitializeLifetimeService()
+        {
+            return null;
+        }
+
         #endregion
 
         public void Start(bool attachConsole)
