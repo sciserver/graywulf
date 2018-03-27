@@ -60,6 +60,7 @@ namespace Jhu.Graywulf.Components
         }
 
         protected FaultDetailsException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
             InitializeMembers();
         }

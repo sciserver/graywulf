@@ -18,5 +18,10 @@ namespace Jhu.Graywulf.Web.Services
             : base(message)
         {
         }
+
+        public ResourceNotFoundException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 }

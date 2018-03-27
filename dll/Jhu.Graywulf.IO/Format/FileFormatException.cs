@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Format
 {
@@ -17,6 +18,9 @@ namespace Jhu.Graywulf.Format
         {
         }
 
-        // TODO: more constructors
+        protected FileFormatException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 }

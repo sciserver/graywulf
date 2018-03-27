@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.AccessControl
 {
@@ -14,6 +15,10 @@ namespace Jhu.Graywulf.AccessControl
 
         public AccessDeniedException(string message)
             : base(message)
+        {
+        }
+
+        protected AccessDeniedException(SerializationInfo info, StreamingContext context)
         {
         }
     }

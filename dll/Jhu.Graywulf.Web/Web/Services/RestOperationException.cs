@@ -20,5 +20,10 @@ namespace Jhu.Graywulf.Web.Services
         {
             this.restError = new RestError(innerException, logEventID);
         }
+
+        public RestOperationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 }
