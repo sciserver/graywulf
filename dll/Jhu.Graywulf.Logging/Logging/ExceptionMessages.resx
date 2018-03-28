@@ -120,6 +120,9 @@
   <data name="AsyncTimeout" xml:space="preserve">
     <value>Log writing operation has timed out with writer '{0}'. Please check config.</value>
   </data>
+  <data name="LoggingContextNotInitialized" xml:space="preserve">
+    <value>The logging context is not initialized.</value>
+  </data>
   <data name="OperationNull" xml:space="preserve">
     <value>The operation field cannot be null</value>
   </data>

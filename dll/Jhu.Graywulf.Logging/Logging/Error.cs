@@ -17,5 +17,10 @@ namespace Jhu.Graywulf.Logging
         {
             return new LoggingException(ExceptionMessages.OperationNull);
         }
+
+        public static LoggingException LoggingContextNotInitialized()
+        {
+            return new LoggingException(ExceptionMessages.LoggingContextNotInitialized);
+        }
     }
 }

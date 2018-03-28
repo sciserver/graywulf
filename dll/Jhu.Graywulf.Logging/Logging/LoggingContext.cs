@@ -60,7 +60,17 @@ namespace Jhu.Graywulf.Logging
 
         public static LoggingContext Current
         {
-            get { return Get<LoggingContext>(); }
+            get
+            {
+                var context = Get<LoggingContext>();
+
+                if (context == null)
+                {
+                    throw Error.LoggingContextNotInitialized();
+                }
+
+                return context;
+            }
             set { Set(value); }
         }
 
