@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Activities
 
         protected sealed override void EndExecute(AsyncCodeActivityContext activityContext, IAsyncResult result)
         {
-            var state = (JobAsyncCodeActivityState)activityContext.UserState;
+            var activityState = (JobAsyncCodeActivityState)activityContext.UserState;
             var task = (Task)result;
 
             try
@@ -72,13 +72,17 @@ namespace Jhu.Graywulf.Activities
                     System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(helper.DispatchException()).Throw();
                 }
             }
-            finally
-            {
-                lock (state.SyncRoot)
+            //finally
+            //{
+                // TODO: for some reason, in some situations, this here gets
+                // called before the task above completes which leads to a
+                // NullException
+
+                /*lock (activityState.SyncRoot)
                 {
-                    state.Dispose();
-                }
-            }
+                    activityState.Dispose();
+                }*/
+            //}
         }
 
         protected override void Cancel(AsyncCodeActivityContext activityContext)
