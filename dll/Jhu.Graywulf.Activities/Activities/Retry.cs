@@ -176,7 +176,11 @@ namespace Jhu.Graywulf.Activities
                 }
             }
 
-            if (handleException && state.Retries < MaxRetries.Get(faultContext) - 1)
+            // For some reason, a fault is reported during cancellation of the activities within the try
+            // branch. Absorb these exceptions here so that the workflow completes gracefully.
+
+            if (faultContext.IsCancellationRequested ||
+                handleException && state.Retries < MaxRetries.Get(faultContext) - 1)
             {
                 // Absorb error
                 faultContext.CancelChild(propagatedFrom);
