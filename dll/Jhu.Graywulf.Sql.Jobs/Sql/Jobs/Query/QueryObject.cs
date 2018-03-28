@@ -520,7 +520,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var sc = GetSchemaManager();
             var dss = new Dictionary<string, GraywulfDataset>(SchemaManager.Comparer);
 
-            foreach (var trs in QueryDetails.SourceTables.Values)
+            foreach (var trs in QueryDetails.SourceTableReferences.Values)
             {
                 foreach (var tr in trs)
                 {

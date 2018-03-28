@@ -167,11 +167,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             if (Parameters.ExecutionMode == ExecutionMode.Graywulf)
             {
                 // Collect remote tables
-                foreach (var key in QueryDetails.OutputTables.Keys)
+                foreach (var key in QueryDetails.OutputTableReferences.Keys)
                 {
                     RemoteOutputTable rot = null;
 
-                    foreach (var tr in QueryDetails.OutputTables[key])
+                    foreach (var tr in QueryDetails.OutputTableReferences[key])
                     {
                         // TODO: Add support for insert and create table
 
@@ -223,11 +223,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             if (Parameters.ExecutionMode == ExecutionMode.Graywulf)
             {
                 // Collect remote tables
-                foreach (var key in QueryDetails.SourceTables.Keys)
+                foreach (var key in QueryDetails.SourceTableReferences.Keys)
                 {
                     RemoteSourceTable rst = null;
 
-                    foreach (var tr in QueryDetails.SourceTables[key])
+                    foreach (var tr in QueryDetails.SourceTableReferences[key])
                     {
                         if (tr.Type == TableReferenceType.TableOrView && tr.IsCachable && IsRemoteDataset(tr.DatabaseObject.Dataset))
                         {

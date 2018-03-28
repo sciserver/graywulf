@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 SELECT * FROM Book b";
             var details = Parse(sql);
 
-            Assert.AreEqual(2, details.SourceTables.Count);
+            Assert.AreEqual(2, details.SourceTableReferences.Count);
         }
 
         [TestMethod]
@@ -35,7 +35,7 @@ SELECT * FROM Book b";
             var sql = @"SELECT * FROM (SELECT * FROM Author) a";
             var details = Parse(sql);
 
-            Assert.AreEqual(1, details.SourceTables.Count);
+            Assert.AreEqual(1, details.SourceTableReferences.Count);
         }
 
         [TestMethod]
@@ -47,7 +47,7 @@ SELECT * FROM Book b";
 SELECT * FROM Book";
             var details = Parse(sql);
 
-            Assert.AreEqual(2, details.SourceTables.Count);
+            Assert.AreEqual(2, details.SourceTableReferences.Count);
         }
 
         [TestMethod]
@@ -56,9 +56,9 @@ SELECT * FROM Book";
             // Test is tables are correctly collected from all select statements
             var sql = @"SELECT ID FROM Author";
             var details = Parse(sql);
-            var tr = details.SourceTables.Values.First()[0];
+            var tr = details.SourceTableReferences.Values.First()[0];
 
-            Assert.AreEqual(1, details.SourceTables.Count);
+            Assert.AreEqual(1, details.SourceTableReferences.Count);
             Assert.AreEqual(2, tr.ColumnReferences.Count);
             Assert.AreEqual("ID", tr.ColumnReferences[0].ColumnName);
             Assert.AreEqual(ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].ColumnContext);
@@ -75,13 +75,13 @@ SELECT * FROM Book";
 SELECT Name FROM Author";
             var details = Parse(sql);
 
-            var tr = details.SourceTables.Values.First()[0];
-            Assert.AreEqual(1, details.SourceTables.Count);
+            var tr = details.SourceTableReferences.Values.First()[0];
+            Assert.AreEqual(1, details.SourceTableReferences.Count);
             Assert.AreEqual(2, tr.ColumnReferences.Count);
             Assert.AreEqual("ID", tr.ColumnReferences[0].ColumnName);
             Assert.AreEqual(ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].ColumnContext);
 
-            tr = details.SourceTables.Values.First()[1];
+            tr = details.SourceTableReferences.Values.First()[1];
             Assert.AreEqual("Name", tr.ColumnReferences[1].ColumnName);
             Assert.AreEqual(ColumnContext.SelectList, tr.ColumnReferences[1].ColumnContext);
         }
@@ -95,13 +95,13 @@ SELECT Name FROM Author";
 SELECT Name FROM Author WHERE ID = 2";
             var details = Parse(sql);
 
-            var tr = details.SourceTables.Values.First()[0];
-            Assert.AreEqual(1, details.SourceTables.Count);
+            var tr = details.SourceTableReferences.Values.First()[0];
+            Assert.AreEqual(1, details.SourceTableReferences.Count);
             Assert.AreEqual(2, tr.ColumnReferences.Count);
             Assert.AreEqual("ID", tr.ColumnReferences[0].ColumnName);
             Assert.AreEqual(ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].ColumnContext);
 
-            tr = details.SourceTables.Values.First()[1];
+            tr = details.SourceTableReferences.Values.First()[1];
             Assert.AreEqual("ID", tr.ColumnReferences[0].ColumnName);
             Assert.AreEqual(ColumnContext.PrimaryKey | ColumnContext.Where, tr.ColumnReferences[0].ColumnContext);
             Assert.AreEqual("Name", tr.ColumnReferences[1].ColumnName);
@@ -120,7 +120,7 @@ INTO newtable
 FROM Author";
             var details = Parse(sql);
 
-            Assert.AreEqual(1, details.OutputTables.Count);
+            Assert.AreEqual(1, details.OutputTableReferences.Count);
         }
 
         #endregion

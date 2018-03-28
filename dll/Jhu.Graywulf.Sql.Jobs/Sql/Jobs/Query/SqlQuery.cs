@@ -122,9 +122,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// </summary>
         public virtual void UpdateSourceTableList()
         {
-            foreach (var key in QueryDetails.SourceTables.Keys)
+            foreach (var key in QueryDetails.SourceTableReferences.Keys)
             {
-                Parameters.SourceTables.Add((TableOrView)QueryDetails.SourceTables[key][0].DatabaseObject);
+                Parameters.SourceTables.Add((TableOrView)QueryDetails.SourceTableReferences[key][0].DatabaseObject);
             }
         }
 

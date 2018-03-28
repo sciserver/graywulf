@@ -46,9 +46,9 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             var scn = new SearchConditionNormalizer();
             scn.CollectConditions(details.ParsingTree);
 
-            foreach (var key in details.SourceTables.Keys)
+            foreach (var key in details.SourceTableReferences.Keys)
             {
-                var trs = details.SourceTables[key];
+                var trs = details.SourceTableReferences[key];
                 var where = scn.GenerateWherePredicatesSpecificToTable(trs);
                 res.Add(where);
             }
@@ -64,9 +64,9 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             var scn = new SearchConditionNormalizer();
             scn.CollectConditions(details.ParsingTree);
 
-            foreach (var key in details.SourceTables.Keys)
+            foreach (var key in details.SourceTableReferences.Keys)
             {
-                foreach (var tr in details.SourceTables[key])
+                foreach (var tr in details.SourceTableReferences[key])
                 {
                     res.Add(scn.GenerateWherePredicatesSpecificToTable(tr));
                 }

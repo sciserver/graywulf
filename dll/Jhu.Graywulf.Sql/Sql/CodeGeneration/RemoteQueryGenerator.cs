@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             scn.CollectConditions(query.ParsingTree);
 
             // Loop through all tables
-            foreach (var key in query.SourceTables.Keys)
+            foreach (var key in query.SourceTableReferences.Keys)
             {
                 var columns = new Dictionary<string, ColumnReference>();
                 DatabaseObject table = null;
@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                 CodeGeneratorBase cg = null;
                 
                 // Loop through all references to the table
-                foreach (var tr in query.SourceTables[key])
+                foreach (var tr in query.SourceTableReferences[key])
                 {
                     if (ntr == null)
                     {
@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                 columnlist.Columns.AddRange(columns.Values);
 
                 // Generate where clause
-                var where = scn.GenerateWherePredicatesSpecificToTable(query.SourceTables[key]);
+                var where = scn.GenerateWherePredicatesSpecificToTable(query.SourceTableReferences[key]);
 
                 var select = cg.GenerateMostRestrictiveTableQuery(
                     cg.GetResolvedTableName(table),

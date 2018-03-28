@@ -777,13 +777,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     {
                         var uniqueKey = ntr.DatabaseObject.UniqueKey;
 
-                        if (!details.SourceTables.ContainsKey(uniqueKey))
+                        if (!details.SourceTableReferences.ContainsKey(uniqueKey))
                         {
-                            details.SourceTables.Add(uniqueKey, new List<TableReference>());
+                            details.SourceTableReferences.Add(uniqueKey, new List<TableReference>());
                         }
 
-                        details.SourceTables[uniqueKey].Add(ntr);
-                        ts.UniqueKey = String.Format("{0}_{1}", uniqueKey, details.SourceTables[uniqueKey].Count - 1);
+                        details.SourceTableReferences[uniqueKey].Add(ntr);
+                        ts.UniqueKey = String.Format("{0}_{1}", uniqueKey, details.SourceTableReferences[uniqueKey].Count - 1);
                     }
                 }
             }
@@ -883,16 +883,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // Save it to the global store
                 var uniqueKey = tr.DatabaseObject.UniqueKey;
 
-                if (!details.OutputTables.ContainsKey(uniqueKey))
+                if (!details.OutputTableReferences.ContainsKey(uniqueKey))
                 {
-                    details.OutputTables.Add(uniqueKey, new List<TableReference>());
+                    details.OutputTableReferences.Add(uniqueKey, new List<TableReference>());
                 }
                 else
                 {
                     throw NameResolutionError.DuplicateOutputTable(into.TableName);
                 }
 
-                details.OutputTables[uniqueKey].Add(tr);
+                details.OutputTableReferences[uniqueKey].Add(tr);
 
                 return tr;
             }

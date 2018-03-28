@@ -63,12 +63,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             get { return variableReferences; }
         }
 
-        public Dictionary<string, List<TableReference>> SourceTables
+        public Dictionary<string, List<TableReference>> SourceTableReferences
         {
             get { return sourceTableReferences; }
         }
 
-        public Dictionary<string, List<TableReference>> OutputTables
+        public Dictionary<string, List<TableReference>> OutputTableReferences
         {
             get { return outputTableReferences; }
         }

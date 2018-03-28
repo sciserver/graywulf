@@ -254,9 +254,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         public void AddSourceTableMappings(string databaseVersion, string surrogateDatabaseVersion)
         {
-            foreach (var key in queryObject.QueryDetails.SourceTables.Keys)
+            foreach (var key in queryObject.QueryDetails.SourceTableReferences.Keys)
             {
-                foreach (var tr in queryObject.QueryDetails.SourceTables[key])
+                foreach (var tr in queryObject.QueryDetails.SourceTableReferences[key])
                 {
                     AddSourceTableMapping(tr, databaseVersion, surrogateDatabaseVersion);
                 }
@@ -358,9 +358,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         public void AddOutputTableMappings()
         {
-            foreach (var key in queryObject.QueryDetails.OutputTables.Keys)
+            foreach (var key in queryObject.QueryDetails.OutputTableReferences.Keys)
             {
-                foreach (var tr in queryObject.QueryDetails.OutputTables[key])
+                foreach (var tr in queryObject.QueryDetails.OutputTableReferences[key])
                 {
                     var ntr = GetRemoteOutputTableMapping(tr);
 
