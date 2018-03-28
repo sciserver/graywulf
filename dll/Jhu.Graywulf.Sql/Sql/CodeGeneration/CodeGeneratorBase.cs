@@ -259,8 +259,6 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public string GenerateEscapedUniqueName(TableReference table)
         {
-            table = MapTableReference(table);
-
             if (table.Type == TableReferenceType.Subquery ||
                 table.Type == TableReferenceType.CommonTable ||
                 table.IsComputed)

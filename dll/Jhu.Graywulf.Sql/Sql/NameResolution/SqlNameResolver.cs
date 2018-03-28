@@ -783,7 +783,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                         }
 
                         details.SourceTableReferences[uniqueKey].Add(ntr);
-                        ts.UniqueKey = String.Format("{0}_{1}", uniqueKey, details.SourceTableReferences[uniqueKey].Count - 1);
+                        ts.UniqueKey = String.Format("{0}_{1}_{2}", uniqueKey, ntr.Alias, details.SourceTableReferences[uniqueKey].Count - 1);
                     }
                 }
             }
