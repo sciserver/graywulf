@@ -31,17 +31,31 @@ namespace Jhu.Graywulf.Activities
 
             task.ContinueWith(t =>
             {
+                bool res;
+
                 if (t.IsFaulted)
                 {
-                    tcs.TrySetException(t.Exception.InnerExceptions);
+                    res = tcs.TrySetException(t.Exception.InnerExceptions);
                 }
                 else if (t.IsCanceled)
                 {
-                    tcs.TrySetCanceled();
+                    res = tcs.TrySetCanceled();
                 }
                 else
                 {
-                    tcs.TrySetResult(null);
+                    res = tcs.TrySetResult(null);
+                }
+
+                if (!res)
+                {
+#if DEBUG
+                    if (System.Diagnostics.Debugger.IsAttached)
+                    {
+                        System.Diagnostics.Debugger.Break();
+                    }
+#endif
+
+                    throw new InvalidOperationException();
                 }
 
                 callback?.Invoke(tcs.Task);

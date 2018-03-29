@@ -58,6 +58,15 @@ namespace Jhu.Graywulf.Logging
 
         #region Properties
 
+        public static bool IsAvailable
+        {
+            get
+            {
+                var context = Get<LoggingContext>();
+                return context != null;
+            }
+        }
+
         public static LoggingContext Current
         {
             get

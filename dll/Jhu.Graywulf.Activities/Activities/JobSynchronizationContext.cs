@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Activities
         {
             var context = outerContext ?? new SynchronizationContext();
             var jobContext = JobContext.Current;
-            var loggingContext = LoggingContext.Current;
+            var loggingContext = LoggingContext.IsAvailable ? LoggingContext.Current : null;
 
             context.Post(
                 s =>
