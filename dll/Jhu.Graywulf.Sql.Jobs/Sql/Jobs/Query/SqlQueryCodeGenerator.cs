@@ -424,101 +424,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 trnode.TableReference = other;
             }
         }
-
-        /* TODO: delete
-        protected void SubstituteTableReference(ITableSource tableSource, TableReference tr)
-        {
-            tableSource.TableReference = tr;
-        }
-
-        protected void SubstituteServerSpecificDatabaseNames(SelectStatement ss)
-        {
-            if (queryObject != null && queryObject.AssignedServerInstance != null && queryObject.CodeDataset != null)
-            {
-                SubstituteServerSpecificDatabaseNames(ss, queryObject.AssignedServerInstance, queryObject.Parameters.SourceDatabaseVersionName);
-            }
-        }
-
-        private void SubstituteServerSpecificDatabaseNames(SelectStatement ss, ServerInstance serverInstance, string databaseVersion)
-        {
-            SubstituteServerSpecificDatabaseNames(ss, serverInstance, databaseVersion, null);
-        }
-
-        /// <summary>
-        /// Looks up actual database instance names on the specified server instance
-        /// </summary>
-        /// <param name="serverInstance"></param>
-        /// <param name="databaseVersion"></param>
-        /// <remarks>This function call must be synchronized!</remarks>
-        private void SubstituteServerSpecificDatabaseNames(SelectStatement ss, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
-        {
-            switch (queryObject.Parameters.ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    throw new InvalidOperationException();
-                case ExecutionMode.Graywulf:
-                    foreach (var qs in ss.QueryExpression.EnumerateQuerySpecifications())
-                    {
-                        foreach (var ts in qs.EnumerateSourceTables(true))
-                        {
-                            var tr = ts.TableReference;
-                            SubstituteServerSpecificDatabaseName(tr, serverInstance, databaseVersion, surrogateDatabaseVersion);
-                        }
-                    }
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-        /// <summary>
-        /// Substitutes the database name into a table reference.
-        /// </summary>
-        /// <param name="tr"></param>
-        /// <param name="serverInstance"></param>
-        /// <param name="databaseVersion"></param>
-        /// <remarks>
-        /// During query executions, actual database name are not known until a server instance is
-        /// assigned to the query partition.
-        /// </remarks>
-        public void SubstituteServerSpecificDatabaseName(TableReference tr, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
-        {
-            var sc = queryObject.GetSchemaManager();
-
-            if (tr.Type != TableReferenceType.Subquery &&
-                tr.Type != TableReferenceType.CommonTable &&
-                !tr.IsComputed && 
-                tr.DatabaseName != null)
-            {
-                var ds = sc.Datasets[tr.DatasetName];
-
-                // Graywulf datasets have changing database names depending on the server
-                // the database is on.
-                if (ds is GraywulfDataset)
-                {
-                    var gwds = ds as GraywulfDataset;
-                    gwds.RegistryContext = queryObject.RegistryContext;
-
-                    DatabaseInstance di;
-                    if (gwds.IsSpecificInstanceRequired)
-                    {
-                        di = gwds.DatabaseInstanceReference.Value;
-                    }
-                    else
-                    {
-                        // Find appropriate database instance
-                        var dis = queryObject.GetAvailableDatabaseInstances(serverInstance, gwds.DatabaseDefinitionReference.Value, databaseVersion, surrogateDatabaseVersion);
-                        di = dis[0];
-                    }
-
-                    // Refresh database object, now that the correct database name is set
-                    ds = di.GetDataset();
-                    tr.DatabaseName = di.DatabaseName;
-                    tr.DatabaseObject = ds.GetObject(tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName);
-                }
-            }
-        }
-        */
-
+        
         public void SubstituteSystemDatabaseNames(Expression ex)
         {
             SubstituteSystemDatabaseNames((Node)ex);
@@ -559,23 +465,19 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <param name="original"></param>
         /// <param name="other"></param>
         /// <returns></returns>
-        protected Expression SubstituteColumnTableReference(Expression exp, TableReference original, TableReference other)
+        protected void AddColumnTableReferenceMappings(Expression exp, TableReference original, TableReference other)
         {
-            exp = (Expression)exp.Clone();
-
             foreach (var ci in exp.EnumerateDescendantsRecursive<ColumnIdentifier>(typeof(Subquery)))
             {
                 var cr = ci.ColumnReference;
 
-                if (original.Compare(cr.TableReference))
+                if (original.Compare(cr.TableReference) && !ColumnReferenceMap.ContainsKey(cr))
                 {
-                    // TODO. this might be needed
-                    //cr.ColumnName = EscapePropagatedColumnName(cr.TableReference, cr.ColumnName);
-                    cr.TableReference = other;
+                    var ncr = new ColumnReference(cr);
+                    ncr.TableReference = other;
+                    ColumnReferenceMap.Add(cr, ncr);
                 }
             }
-
-            return exp;
         }
 
         #endregion
@@ -603,7 +505,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             if (queryObject.Parameters.ExecutionMode == ExecutionMode.Graywulf)
             {
                 AddSystemDatabaseMappings(tableSource);
-                AddSourceTableMappings(queryObject.Parameters.SourceDatabaseVersionName, null);
+                AddSourceTableMappings(queryObject.Parameters.StatDatabaseVersionName, queryObject.Parameters.SourceDatabaseVersionName);
                 AddOutputTableMappings();
             }
 
@@ -634,12 +536,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             SubstituteSystemDatabaseNames(stat.KeyColumn);
 
-            var tablename = GenerateEscapedUniqueName(tableSource.TableReference);
+            var table = MapTableReference(tableSource.TableReference);
+            var tablename = GenerateEscapedUniqueName(table);
             var temptable = queryObject.GetTemporaryTable("stat_" + tablename);
             var keycol = Execute(stat.KeyColumn);
             var keytype = stat.KeyColumnDataType.TypeNameWithLength;
-
-
             var where = GetTableSpecificWhereClause(tableSource);
 
             sql.Replace("[$temptable]", GetResolvedTableName(temptable));

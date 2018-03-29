@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             using (RegistryContext registryContext = query.CreateContext())
             {
-                query.InitializeQueryObject(cancellationContext, registryContext, scheduler, true);
+                query.InitializeQueryObject(cancellationContext, registryContext, scheduler, false);
                 statisticsCommand = query.GetComputeTableStatisticsCommand(tableSource);
             }
 

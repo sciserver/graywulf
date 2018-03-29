@@ -227,7 +227,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             return identifier.Replace(".", "_");
         }
 
-        private T MapDataset<T>(T databaseObjectReference)
+        protected T MapDataset<T>(T databaseObjectReference)
             where T : DatabaseObjectReference
         {
             var ds = databaseObjectReference?.DatabaseObject?.Dataset;
@@ -245,15 +245,13 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             }
         }
 
-        private TableReference MapTableReference(TableReference table)
+        protected TableReference MapTableReference(TableReference table)
         {
             if (tableReferenceMap != null && tableReferenceMap.ContainsKey(table))
             {
                 table = tableReferenceMap[table];
             }
-
-
-
+            
             return table;
         }
 
@@ -420,7 +418,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             }
         }
 
-        private ColumnReference MapColumnReference(ColumnReference column)
+        protected ColumnReference MapColumnReference(ColumnReference column)
         {
             if (columnReferenceMap != null && columnReferenceMap.ContainsKey(column))
             {
@@ -485,7 +483,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             return res;
         }
 
-        private FunctionReference MapFunctionReference(FunctionReference function)
+        protected FunctionReference MapFunctionReference(FunctionReference function)
         {
             if (functionReferenceMap != null && functionReferenceMap.ContainsKey(function))
             {
