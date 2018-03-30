@@ -225,10 +225,15 @@
     <Compile Include="Sql\LogicalExpressions\SearchConditionNormalizer.cs" />
     <Compile Include="Sql\LogicalExpressions\UnaryExpression.cs" />
     <Compile Include="Sql\NameResolution\ColumnReference.cs" />
+    <Compile Include="Sql\NameResolution\ColumnReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\DatabaseObjectReference.cs" />
+    <Compile Include="Sql\NameResolution\DatabaseObjectReferenceEqualityComparer.cs" />
+    <Compile Include="Sql\NameResolution\DataTypeReferenceEqualityComparer.cs" />
+    <Compile Include="Sql\NameResolution\FunctionReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\IDatabaseObjectReference.cs" />
     <Compile Include="Sql\NameResolution\NameResolutionError.cs" />
     <Compile Include="Sql\NameResolution\QueryDetails.cs" />
+    <Compile Include="Sql\NameResolution\TableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\TableReferenceType.cs" />
     <Compile Include="Sql\NameResolution\VariableReference.cs" />
     <Compile Include="Sql\NameResolution\DataTypeReference.cs" />
@@ -248,6 +253,7 @@
     <Compile Include="Sql\NameResolution\SqlNameResolver.cs" />
     <Compile Include="Sql\NameResolution\TableReference.cs" />
     <Compile Include="Sql\NameResolution\Util.cs" />
+    <Compile Include="Sql\NameResolution\VariableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\VariableReferenceType.cs" />
     <Compile Include="Sql\Parsing\Argument.cs" />
     <Compile Include="Sql\Parsing\ArgumentList.cs" />

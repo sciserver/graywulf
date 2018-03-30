@@ -23,12 +23,12 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         private AliasRendering columnAliasRendering;
         private NameRendering functionNameRendering;
 
-        private Dictionary<DatasetBase, DatasetBase> datasetMap;
-        private Dictionary<TableReference, TableReference> tableReferenceMap;
-        private Dictionary<ColumnReference, ColumnReference> columnReferenceMap;
-        private Dictionary<DataTypeReference, DataTypeReference> dataTypeReferenceMap;
-        private Dictionary<FunctionReference, FunctionReference> functionReferenceMap;
-        private Dictionary<VariableReference, VariableReference> variableReferenceMap;
+        private Lazy<Dictionary<DatasetBase, DatasetBase>> datasetMap;
+        private Lazy<Dictionary<TableReference, TableReference>> tableReferenceMap;
+        private Lazy<Dictionary<ColumnReference, ColumnReference>> columnReferenceMap;
+        private Lazy<Dictionary<DataTypeReference, DataTypeReference>> dataTypeReferenceMap;
+        private Lazy<Dictionary<FunctionReference, FunctionReference>> functionReferenceMap;
+        private Lazy<Dictionary<VariableReference, VariableReference>> variableReferenceMap;
 
         #endregion
         #region Properties
@@ -74,80 +74,32 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public Dictionary<DatasetBase, DatasetBase> DatasetMap
         {
-            get
-            {
-                if (datasetMap == null)
-                {
-                    return new Dictionary<DatasetBase, DatasetBase>();
-                }
-
-                return datasetMap;
-            }
+            get { return datasetMap.Value; }
         }
 
         public Dictionary<TableReference, TableReference> TableReferenceMap
         {
-            get
-            {
-                if (tableReferenceMap == null)
-                {
-                    tableReferenceMap = new Dictionary<TableReference, TableReference>();
-                }
-
-                return tableReferenceMap;
-            }
+            get { return tableReferenceMap.Value; }
         }
 
         public Dictionary<ColumnReference, ColumnReference> ColumnReferenceMap
         {
-            get
-            {
-                if (columnReferenceMap == null)
-                {
-                    columnReferenceMap = new Dictionary<ColumnReference, ColumnReference>();
-                }
-
-                return columnReferenceMap;
-            }
+            get { return columnReferenceMap.Value; }
         }
 
         public Dictionary<DataTypeReference, DataTypeReference> DataTypeReferenceMap
         {
-            get
-            {
-                if (dataTypeReferenceMap == null)
-                {
-                    dataTypeReferenceMap = new Dictionary<DataTypeReference, DataTypeReference>();
-                }
-
-                return dataTypeReferenceMap;
-            }
+            get { return dataTypeReferenceMap.Value; }
         }
 
         public Dictionary<FunctionReference, FunctionReference> FunctionReferenceMap
         {
-            get
-            {
-                if (functionReferenceMap == null)
-                {
-                    functionReferenceMap = new Dictionary<FunctionReference, FunctionReference>();
-                }
-
-                return functionReferenceMap;
-            }
+            get { return functionReferenceMap.Value; }
         }
 
         public Dictionary<VariableReference, VariableReference> VariableReferenceMap
         {
-            get
-            {
-                if (variableReferenceMap == null)
-                {
-                    variableReferenceMap = new Dictionary<VariableReference, VariableReference>();
-                }
-
-                return variableReferenceMap;
-            }
+            get { return variableReferenceMap.Value; }
         }
 
         #endregion
@@ -168,12 +120,13 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             this.columnAliasRendering = AliasRendering.Default;
             this.functionNameRendering = NameRendering.Default;
 
-            this.datasetMap = null;
-            this.tableReferenceMap = null;
-            this.columnReferenceMap = null;
-            this.dataTypeReferenceMap = null;
-            this.functionReferenceMap = null;
-            this.variableReferenceMap = null;
+            // TODO: how to compare datasets?
+            this.datasetMap = new Lazy<Dictionary<DatasetBase, DatasetBase>>(() => new Dictionary<DatasetBase, DatasetBase>());
+            this.tableReferenceMap = new Lazy<Dictionary<TableReference, TableReference>>(() => new Dictionary<TableReference, TableReference>(TableReferenceEqualityComparer.Default));
+            this.columnReferenceMap = new Lazy<Dictionary<ColumnReference, ColumnReference>>(() => new Dictionary<ColumnReference, ColumnReference>(ColumnReferenceEqualityComparer.Default));
+            this.dataTypeReferenceMap = new Lazy<Dictionary<DataTypeReference, DataTypeReference>>(() => new Dictionary<DataTypeReference, DataTypeReference>(DataTypeReferenceEqualityComparer.Default));
+            this.functionReferenceMap = new Lazy<Dictionary<FunctionReference, FunctionReference>>(() => new Dictionary<FunctionReference, FunctionReference>(FunctionReferenceEqualityComparer.Default));
+            this.variableReferenceMap = new Lazy<Dictionary<VariableReference, VariableReference>>(() => new Dictionary<VariableReference, VariableReference>(VariableReferenceEqualityComparer.Default));
         }
 
         #endregion
@@ -232,11 +185,11 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         {
             var ds = databaseObjectReference?.DatabaseObject?.Dataset;
 
-            if (ds != null && datasetMap.ContainsKey(ds))
+            if (ds != null && datasetMap.IsValueCreated && datasetMap.Value.ContainsKey(ds))
             {
                 var ndo = (T)databaseObjectReference.Clone();
                 ndo.DatabaseObject = (DatabaseObject)ndo.DatabaseObject.Clone();
-                ndo.DatabaseObject.Dataset = datasetMap[ds];
+                ndo.DatabaseObject.Dataset = datasetMap.Value[ds];
                 return ndo;
             }
             else
@@ -247,11 +200,11 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         protected TableReference MapTableReference(TableReference table)
         {
-            if (tableReferenceMap != null && tableReferenceMap.ContainsKey(table))
+            if (tableReferenceMap.IsValueCreated && tableReferenceMap.Value.ContainsKey(table))
             {
-                table = tableReferenceMap[table];
+                table = tableReferenceMap.Value[table];
             }
-            
+
             return table;
         }
 
@@ -420,9 +373,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         protected ColumnReference MapColumnReference(ColumnReference column)
         {
-            if (columnReferenceMap != null && columnReferenceMap.ContainsKey(column))
+            if (columnReferenceMap.IsValueCreated && columnReferenceMap.Value.ContainsKey(column))
             {
-                return columnReferenceMap[column];
+                return columnReferenceMap.Value[column];
             }
             else
             {
@@ -485,9 +438,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         protected FunctionReference MapFunctionReference(FunctionReference function)
         {
-            if (functionReferenceMap != null && functionReferenceMap.ContainsKey(function))
+            if (functionReferenceMap.IsValueCreated && functionReferenceMap.Value.ContainsKey(function))
             {
-                return functionReferenceMap[function];
+                return functionReferenceMap.Value[function];
             }
             else
             {

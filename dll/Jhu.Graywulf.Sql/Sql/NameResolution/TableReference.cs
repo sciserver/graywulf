@@ -475,6 +475,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.columnReferences.AddRange(td.Columns.Values.OrderBy(c => c.ID).Select(c => new ColumnReference(this, c)));
         }
 
+        /// <summary>
+        /// Compares two table references for name resolution.
+        /// </summary>
+        /// <remarks>
+        /// It is a logical comparison that follows the rules of name resolution logic
+        /// in queries.
+        /// </remarks>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Compare(TableReference other)
         {
             // If object are the same
