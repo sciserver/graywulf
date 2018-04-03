@@ -180,12 +180,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                         {
                             if (rot == null)
                             {
+                                // Add entry for temp table
                                 var table = (TableOrView)tr.DatabaseObject;
                                 var tablekey = table.UniqueKey;
-
-                                // Add entry for temp table
                                 var tempname = cg.GenerateEscapedUniqueName(table, null);
                                 var temptable = GetTemporaryTable(tempname);
+                                var temptablekey = temptable.UniqueKey;
 
                                 rot = new RemoteOutputTable()
                                 {
@@ -195,7 +195,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                                     TempTable = temptable
                                 };
 
-                                TemporaryTables.TryAdd(tablekey, temptable);
+                                TemporaryTables.Add(table, temptable);
                                 RemoteOutputTables.Add(tablekey, rot);
                             }
 
@@ -247,7 +247,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                                     TempTable = temptable
                                 };
 
-                                TemporaryTables.TryAdd(table.UniqueKey, temptable);
+                                TemporaryTables.Add(table, temptable);
                                 RemoteSourceTables.Add(rst.UniqueKey, rst);
                             }
 
@@ -317,7 +317,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             // TODO: add option to do by table or tr
 
             var table = remoteSourceTables[tableKey].Table;
-            var temptable = TemporaryTables[table.UniqueKey];
+            var temptable = TemporaryTables.GetValue(table);
 
             var dest = new DestinationTable(
                 temptable,
@@ -331,7 +331,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         #endregion
         #region Final query execution
-        
+
         public virtual void PrepareExecuteQuery(out SourceQuery sourceQuery, out DestinationTable destinationTable)
         {
             // Source query will be run on the code database to have access to UDTs
@@ -385,22 +385,14 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 // explicitly named in the query (SELECT INTO etc), but are generated as
                 // output table from simple SELECTs. These won't automatically show up in the
                 // temporary tables collection so add them now.
-
+                
                 foreach (var result in results)
                 {
-                    if (result.Status == TableCopyStatus.Success)
+                    if (result.Status == TableCopyStatus.Success &&
+                        !TemporaryTables.ContainsValue(result.DestinationTable))
                     {
-                        Table temp;
-
-                        if (!TemporaryTables.ContainsKey(result.DestinationTable))
-                        {
-                            temp = TemporaryDataset.Tables[result.DestinationTable];
-                            TemporaryTables.TryAdd(temp.UniqueKey, temp);
-                        }
-                        else
-                        {
-                            temp = TemporaryTables[result.DestinationTable];
-                        }
+                        var temp = TemporaryDataset.Tables[result.DestinationTable];
+                        TemporaryTables.Add(temp, temp);
 
                         var rot = new RemoteOutputTable()
                         {
@@ -444,7 +436,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             if (!rt.Table.IsExisting)
             {
                 // TODO: make table initialization async
-                ((Table)rt.Table).Initialize(columns, TableInitializationOptions.Create);
+                ((Table)rt.Table).Initialize(columns, TableInitializationOptions.Create | TableInitializationOptions.CreatePrimaryKey);
             }
 
             // TODO: how to lock in case of multiple partitions and multiple

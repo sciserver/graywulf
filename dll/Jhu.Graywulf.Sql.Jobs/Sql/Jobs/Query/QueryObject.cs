@@ -84,13 +84,13 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// Holds a list of temporary tables created during query execution.
         /// Need to delete all these after the query has completed.
         /// </summary>
-        private ConcurrentDictionary<string, Table> temporaryTables;
+        private ObjectMap<TableOrView, Table> temporaryTables;
 
         /// <summary>
         /// Holds a list of temporary views created during query execution.
         /// Need to delete all these after the query has completed.
         /// </summary>
-        private ConcurrentDictionary<string, View> temporaryViews;
+        private ObjectMap<TableOrView, View> temporaryViews;
 
         /// <summary>
         /// Holds a reference to the federation registry object.
@@ -265,7 +265,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// Gets the list of temporary tables created during query execution.
         /// </summary>
         [IgnoreDataMember]
-        public ConcurrentDictionary<string, Table> TemporaryTables
+        public ObjectMap<TableOrView, Table> TemporaryTables
         {
             get { return temporaryTables; }
         }
@@ -274,7 +274,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// Gets the list of temporary views created during query execution.
         /// </summary>
         [IgnoreDataMember]
-        public ConcurrentDictionary<string, View> TemporaryViews
+        public ObjectMap<TableOrView, View> TemporaryViews
         {
             get { return temporaryViews; }
         }
@@ -327,8 +327,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             this.codeDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this);
 
             this.tableStatistics = new Dictionary<string, TableStatistics>();
-            this.temporaryTables = new ConcurrentDictionary<string, Table>(SchemaManager.Comparer);
-            this.temporaryViews = new ConcurrentDictionary<string, View>(SchemaManager.Comparer);
+            this.temporaryTables = new ObjectMap<TableOrView, Table>();
+            this.temporaryViews = new ObjectMap<TableOrView, View>();
         }
 
         [OnDeserialized]
@@ -361,8 +361,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             this.codeDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this, old.codeDatabaseInstanceReference);
 
             this.tableStatistics = new Dictionary<string, TableStatistics>();
-            this.temporaryTables = new ConcurrentDictionary<string, Table>(old.temporaryTables, SchemaManager.Comparer);
-            this.temporaryViews = new ConcurrentDictionary<string, View>(old.temporaryViews, SchemaManager.Comparer);
+            this.temporaryTables = new ObjectMap<TableOrView, Table>(old.temporaryTables);
+            this.temporaryViews = new ObjectMap<TableOrView, View>(old.temporaryViews);
         }
 
         public abstract object Clone();
