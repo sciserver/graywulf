@@ -396,6 +396,7 @@
     <Compile Include="Sql\Schema\TableOrView.cs" />
     <Compile Include="Sql\Schema\TableStatistics.cs" />
     <Compile Include="Sql\Schema\TableValuedFunction.cs" />
+    <Compile Include="Sql\Schema\ObjectMap.cs" />
     <Compile Include="Sql\Schema\UnavailableDataset.cs" />
     <Compile Include="Sql\Schema\Unit.cs" />
     <Compile Include="Sql\Schema\UnitEntity.cs" />
