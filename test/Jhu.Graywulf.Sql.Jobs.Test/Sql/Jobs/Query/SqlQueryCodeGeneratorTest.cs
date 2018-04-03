@@ -37,9 +37,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             get { return new SqlParser(); }
         }
 
-        protected virtual SelectStatement Parse(string sql)
+        protected virtual StatementBlock Parse(string sql)
         {
-            return Parser.Execute<SelectStatement>(sql);
+            return Parser.Execute<StatementBlock>(sql);
         }
 
         private SqlQueryCodeGenerator CodeGenerator
@@ -66,14 +66,16 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         protected void RemoveExtraTokensHelper(string sql, string gt)
         {
-            var ss = Parse(sql);
+            var script = Parse(sql);
+            var ss = script.FindDescendantRecursive<SelectStatement>();
             CallMethod(CodeGenerator, "RemoveNonStandardTokens", ss);
-            Assert.AreEqual(gt, CodeGenerator.Execute(ss));
+            Assert.AreEqual(gt, CodeGenerator.Execute(script));
         }
 
         protected void RewriteQueryHelper(string sql, string gt, bool partitioningKeyMin, bool partitioningKeyMax)
         {
-            var ss = Parse(sql);
+            var script = Parse(sql);
+            var ss = script.FindDescendantRecursive<SelectStatement>();
             var partition = new SqlQueryPartition()
             {
                 CodeDataset = new Graywulf.Sql.Schema.SqlServer.SqlServerDataset()
@@ -93,7 +95,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var cg = new SqlQueryCodeGenerator(partition);
             CallMethod(cg, "RewriteForExecute", ss);
             CallMethod(cg, "RemoveNonStandardTokens", ss);
-            Assert.AreEqual(gt, CodeGenerator.Execute(ss));
+            Assert.AreEqual(gt, CodeGenerator.Execute(script));
         }
 
         #region Simple code rewrite functions
@@ -106,6 +108,34 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var gt = "SELECT * FROM Table1";
 
             RemoveExtraTokensHelper(sql, gt);
+        }
+
+        [TestMethod]
+        [TestCategory("Parsing")]
+        public void RewriteIntoClause()
+        {
+            var sql = "SELECT * INTO Table2 FROM Table1 ORDER BY column1";
+            var gt =
+@"BEGIN
+PRINT <graywulf><destinationName>Table2</destinationName></graywulf>;
+SELECT *  FROM Table1 
+END";
+
+            RewriteQueryHelper(sql, gt, false, false);
+        }
+
+        [TestMethod]
+        [TestCategory("Parsing")]
+        public void RewriteIntoClause2()
+        {
+            var sql = "SELECT * INTO dbo.Table2 FROM Table1 ORDER BY column1";
+            var gt =
+@"BEGIN
+PRINT <graywulf><destinationSchema>dbo</destinationSchema><destinationName>Table2</destinationName></graywulf>;
+SELECT *  FROM Table1 
+END";
+
+            RewriteQueryHelper(sql, gt, false, false);
         }
 
         [TestMethod]

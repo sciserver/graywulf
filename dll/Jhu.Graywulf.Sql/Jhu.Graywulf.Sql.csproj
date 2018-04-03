@@ -260,6 +260,8 @@
     <Compile Include="Sql\Parsing\CommonTableExpression.cs" />
     <Compile Include="Sql\Parsing\CommonTableSpecification.cs" />
     <Compile Include="Sql\Parsing\DataType.cs" />
+    <Compile Include="Sql\Parsing\PrintStatement.cs" />
+    <Compile Include="Sql\Parsing\StatementSeparator.cs" />
     <Compile Include="Sql\Parsing\StatementType.cs" />
     <Compile Include="Sql\Parsing\SystemVariable.cs" />
     <Compile Include="Sql\Parsing\TableVariable.cs" />

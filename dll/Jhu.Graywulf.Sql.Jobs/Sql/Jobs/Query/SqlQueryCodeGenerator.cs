@@ -135,6 +135,28 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         protected virtual void RewriteForExecute(SelectStatement selectStatement)
         {
+            // Exchange INTO with magic message
+            var into = selectStatement.FindDescendantRecursive<IntoClause>();
+
+            if (into != null)
+            {
+                var parent = selectStatement.FindAscendant<StatementBlock>();
+
+                into.Parent.Stack.Remove(into);
+
+                // Create a magic statement and insert before the SELECT
+                var msg = new IO.Tasks.ServerMessage()
+                {
+                    DestinationSchema = into.TableName.TableReference.SchemaName,
+                    DestinationName = into.TableName.TableReference.DatabaseObjectName,
+                };
+                var print = PrintStatement.Create(msg.Serialize());
+                var sb = StatementBlock.Create(print, selectStatement);
+                var be = BeginEndStatement.Create(sb);
+
+                selectStatement.ExchangeWith(be);
+            }
+
             int i = 0;
             foreach (var qs in selectStatement.QueryExpression.EnumerateQuerySpecifications())
             {

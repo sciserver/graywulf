@@ -10,6 +10,12 @@ namespace Jhu.Graywulf.IO.Tasks
     [XmlRoot("graywulf")]
     public class ServerMessage
     {
+        [XmlElement("destinationSchema")]
+        public string DestinationSchema { get; set; }
+
+        [XmlElement("destinationName")]
+        public string DestinationName { get; set; }
+
         public static ServerMessage Deserialize(string message)
         {
             if (message.StartsWith("<graywulf>"))
@@ -27,10 +33,25 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
-        [XmlElement("destinationSchema")]
-        public string DestinationSchema { get; set; }
+        public string Serialize()
+        {
+            var s = new XmlSerializer(typeof(ServerMessage));
+            var settings = new XmlWriterSettings()
+            {
+                Indent = false,
+                OmitXmlDeclaration = true,
+            };
+            var ns = new XmlSerializerNamespaces();
+            ns.Add("", "");
 
-        [XmlElement("destinationName")]
-        public string DestinationName { get; set; }
+            using (var tw = new StringWriter())
+            {
+                using (var w = XmlWriter.Create(tw, settings))
+                {
+                    s.Serialize(w, this, ns);
+                    return tw.ToString();
+                }
+            }
+        }
     }
 }

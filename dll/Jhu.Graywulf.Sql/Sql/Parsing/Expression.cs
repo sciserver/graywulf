@@ -101,5 +101,13 @@ namespace Jhu.Graywulf.Sql.Parsing
             nex.Stack.AddLast(num);
             return nex;
         }
+
+        public static Expression CreateString(string s)
+        {
+            var nex = new Expression();
+            var str = StringConstant.Create(s);
+            nex.Stack.AddLast(str);
+            return nex;
+        }
     }
 }

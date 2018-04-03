@@ -564,6 +564,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 WhileStatement,
                 BreakStatement,
                 ContinueStatement,
+                PrintStatement,
                 ReturnStatement,
                 IfStatement,
                 TryCatchStatement,
@@ -636,6 +637,14 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
         public static Expression<Rule> ReturnStatement = () => Keyword("RETURN");
         // TODO: return can take a value
+
+        public static Expression<Rule> PrintStatement = () =>
+            Sequence
+            (
+                Keyword("PRINT"),
+                CommentOrWhitespace,
+                Expression
+            );
 
         public static Expression<Rule> IfStatement = () =>
             Sequence
