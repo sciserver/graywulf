@@ -19,6 +19,7 @@ namespace Jhu.Graywulf.Data
         List<Column> Columns { get; }
         List<TypeMapping> TypeMappings { get; }
 
+        void MatchColumns(IList<Column> columns);
         Task<bool> NextResultAsync();
         Task<bool> NextResultAsync(CancellationToken cancellationToken);
         Task<bool> ReadAsync();

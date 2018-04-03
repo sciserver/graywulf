@@ -192,6 +192,11 @@ namespace Jhu.Graywulf.Data
         #endregion
         #region IDataReader functions
 
+        public void MatchColumns(IList<Column> columns)
+        {
+            // Do nothing, used with certain file readers only
+        }
+
         public override bool NextResult()
         {
             queryName = null;

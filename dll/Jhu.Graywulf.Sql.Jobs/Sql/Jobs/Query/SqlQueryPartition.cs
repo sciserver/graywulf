@@ -328,16 +328,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 await tc.Value.ExecuteAsyncEx(source, dest, settings);
             }
         }
-        
+
         #endregion
         #region Final query execution
-
-        /// <summary>
-        /// Gets a query that can be used to figure out the schema of
-        /// the destination table.
-        /// </summary>
-        /// <returns></returns>
-        public SourceQuery GetExecuteSourceQuery()
+        
+        public virtual void PrepareExecuteQuery(out SourceQuery sourceQuery, out DestinationTable destinationTable)
         {
             // Source query will be run on the code database to have access to UDTs
             // At this point, SELECT INTOs and similar table creation statements with
@@ -345,27 +340,29 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             // Outputs from simple selects will be dealt with later in ExecuteQueryAsync
 
             var cg = CreateCodeGenerator();
-            var source = cg.GetExecuteQuery();
-            source.Dataset = CodeDataset;
-            return source;
-        }
 
-        public DestinationTable GetExecuteDestinationTable()
-        {
+            sourceQuery = cg.GetExecuteQuery();
+            sourceQuery.Dataset = CodeDataset;
+
             // Destination tables go to the local temp database first and will
             // be gathered lates
 
             // TODO: with single partition queries, we could write the tables
             // directly to MyDB
 
-            var temp = GetTemporaryTable(Constants.DefaultOutputTableNamePattern);
+            // TODO: Now we create the PK automatically, still in tempdb,
+            // which is not optimal since order by is not supported in the
+            // follow up bulk-insert step. Figure out how to convey info on PK
+            // from here to the final table copy step in meta-data or else.
 
-            return new DestinationTable()
+            var temp = GetTemporaryTable(Constants.DefaultOutputTableNamePattern);
+            destinationTable = new DestinationTable()
             {
                 Dataset = TemporaryDataset,
                 SchemaName = TemporaryDataset.DefaultSchemaName,
                 TableNamePattern = temp.TableName,
-                Options = TableInitializationOptions.Create,
+                Options = TableInitializationOptions.Create |
+                          TableInitializationOptions.CreatePrimaryKey,
             };
         }
 
@@ -381,12 +378,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     BypassExceptions = false,
                     Timeout = Parameters.QueryTimeout,
                 };
-                
+
                 var results = await task.Value.ExecuteAsyncEx(source, destination, settings);
 
-                // The results collection now contains output tables that are either
-                // explicitly names in the query (SELECT INTO etc), or generated as
-                // output table from simple SELECTs. The latter won't show up in the
+                // The results collection now contains output tables that are not
+                // explicitly named in the query (SELECT INTO etc), but are generated as
+                // output table from simple SELECTs. These won't automatically show up in the
                 // temporary tables collection so add them now.
 
                 foreach (var result in results)
@@ -496,7 +493,10 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         public async Task<Table> PrepareCreateDestinationTablePrimaryKeyAsync()
         {
-            throw new NotImplementedException();
+            // TODO:
+            // rename to outputtablepk
+            // make sure PKs are recorded somewhere when the output tables
+            // are written to tempdb so they can be created at this point
 
             /*
             Table destination = null;
@@ -515,12 +515,14 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 }
             }
 
-            return destination;
-            */
+            return destination;*/
+
+            return null;
         }
 
-        public async Task CreateOutputTablePrimaryKeyAsync(Table destination)
+        public Task CreateOutputTablePrimaryKeyAsync(Table destination)
         {
+            /*
             if (destination != null && destination.PrimaryKey != null)
             {
                 var cg = CreateCodeGenerator();
@@ -551,6 +553,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     }
                 }
             }
+            */
+
+            return Task.CompletedTask;
         }
 
         #endregion

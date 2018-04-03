@@ -120,6 +120,40 @@ SELECT * FROM SampleData_PrimaryKey";
         }
 
         [TestMethod]
+        public async Task TableCopyWithTargetTest()
+        {
+            var sql =
+@"
+PRINT '<graywulf><destinationName>TableCopyWithTargetTest_temptablename1</destinationName></graywulf>'
+SELECT * FROM SampleData_PrimaryKey
+PRINT '<graywulf><destinationName>TableCopyWithTargetTest_temptablename2</destinationName></graywulf>'
+SELECT * FROM SampleData_PrimaryKey";
+
+            using (var cancellationContext = new CancellationContext())
+            {
+                var table = GetTestUniqueName() + "_" + Constants.ResultsetNameToken;
+
+                using (var q = GetTableCopy(
+                    cancellationContext, sql, table, false,
+                    out var source, out var destination, out var settings))
+                {
+                    var t = destination.GetTable(null, null, null, 0, null);
+                    t.TableName = "TableCopyWithTargetTest_temptablename1";
+                    DropTable(t);
+                    t.TableName = "TableCopyWithTargetTest_temptablename2";
+                    DropTable(t);
+
+                    await q.Value.ExecuteAsyncEx(source, destination, settings);
+
+                    t.TableName = "TableCopyWithTargetTest_temptablename1";
+                    DropTable(t);
+                    t.TableName = "TableCopyWithTargetTest_temptablename2";
+                    DropTable(t);
+                }
+            }
+        }
+
+        [TestMethod]
         public async Task RemoteSimpleTableCopyTest()
         {
             using (RemoteServiceTester.Instance.GetToken())

@@ -955,7 +955,7 @@ namespace Jhu.Graywulf.Sql.Schema
                 OnCreateTable(table, createPrimaryKey, createIndexes);
             });
         }
-
+        
         protected abstract void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes);
 
         public void DropObject(DatabaseObject obj)
@@ -1141,7 +1141,7 @@ namespace Jhu.Graywulf.Sql.Schema
                 // not part of the select list.
                 if (dr[SchemaTableOptionalColumn.IsHidden] == DBNull.Value || !(bool)dr[SchemaTableOptionalColumn.IsHidden])
                 {
-                    columns.Add(MapColumn(dr));
+                    columns.Add(DetectColumn(dr));
                 }
             }
 
@@ -1153,7 +1153,7 @@ namespace Jhu.Graywulf.Sql.Schema
         /// </summary>
         /// <param name="dr"></param>
         /// <returns></returns>
-        private Column MapColumn(DataRow dr)
+        private Column DetectColumn(DataRow dr)
         {
             var column = new Column()
             {

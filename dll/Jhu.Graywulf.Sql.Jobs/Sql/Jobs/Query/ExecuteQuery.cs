@@ -29,8 +29,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             using (RegistryContext context = querypartition.Query.CreateContext())
             {
                 querypartition.InitializeQueryObject(cancellationContext, context, activityContext.GetExtension<IScheduler>(), true);
-                source = querypartition.GetExecuteSourceQuery();
-                destination = querypartition.GetExecuteDestinationTable();
+                querypartition.PrepareExecuteQuery(out source, out destination);
             }
 
             await querypartition.ExecuteQueryAsync(source, destination);

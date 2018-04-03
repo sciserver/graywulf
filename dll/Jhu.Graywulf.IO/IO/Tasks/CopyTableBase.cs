@@ -50,6 +50,9 @@ namespace Jhu.Graywulf.IO.Tasks
         [NonSerialized]
         private TableCopyResults results;
 
+        [NonSerialized]
+        private Stack<string> messages;
+
         #endregion
         #region Properties
 
@@ -88,12 +91,14 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             this.settings = null;
             this.results = new TableCopyResults();
+            this.messages = new Stack<string>();
         }
 
         private void CopyMembers(CopyTableBase old)
         {
             this.settings = old.settings;
             this.results = old.results;
+            this.messages = new Stack<string>();
         }
 
         public abstract object Clone();
@@ -127,6 +132,13 @@ namespace Jhu.Graywulf.IO.Tasks
             // Create command that reads the table
             using (var cn = await source.OpenConnectionAsync(CancellationContext.Token))
             {
+                // Initialize message logging so that PRINT etc. from queries can be
+                // processed
+                if (cn is System.Data.SqlClient.SqlConnection)
+                {
+                    ((System.Data.SqlClient.SqlConnection)cn).InfoMessage += CopyTableBase_InfoMessage;
+                }
+
                 using (var tn = cn.BeginTransaction(IsolationLevel.ReadUncommitted))
                 {
                     using (var cmd = source.CreateCommand())
@@ -141,6 +153,11 @@ namespace Jhu.Graywulf.IO.Tasks
                     }
                 }
             }
+        }
+
+        private void CopyTableBase_InfoMessage(object sender, System.Data.SqlClient.SqlInfoMessageEventArgs e)
+        {
+            messages.Push(e.Message);
         }
 
         protected async Task CopyToTableAsync(ISmartCommand cmd, DestinationTable destination)
@@ -161,31 +178,34 @@ namespace Jhu.Graywulf.IO.Tasks
                     {
                         try
                         {
-                            // DestinationTable has the property TableNameTemplate which needs to
-                            // be evaluated now
-
-                            // TODO: how to deal with multiple tables in files inside archives?
-                            var queryName = sdr.QueryName;
-                            var resultsetName = sdr.ResultsetName ?? resultsetCounter.ToString();
-
-                            var table = destination.GetTable(settings.BatchName, queryName, resultsetName, resultsetCounter, sdr.Metadata);
+                            var table = GetDestinationTable(destination, sdr, resultsetCounter);
                             result.DestinationTable = table.UniqueKey;
+
+                            // TODO: figure out how to save primary key here and
+                            // pass back to caller. It's too expensive to create the PK at this point
 
                             // Certain data readers cannot determine the columns from the data file,
                             // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
                             // from the destination table instead
                             if ((destination.Options & TableInitializationOptions.Create) == 0 &&
-                                sdr is FileDataReader &&
                                 (sdr.Columns == null || sdr.Columns.Count == 0))
                             {
-                                var fdr = (FileDataReader)sdr;
-                                fdr.MatchColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
+                                sdr.MatchColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
                             }
 
+                            // Make sure indices are only created afterwards
+                            var opts = destination.Options & ~(TableInitializationOptions.CreateIndexes | TableInitializationOptions.CreatePrimaryKey);
+
                             // TODO: make schema operation async
-                            table.Initialize(sdr.Columns, destination.Options);
+                            table.Initialize(sdr.Columns, opts);
 
                             await ExecuteBulkCopyAsync(sdr, table, result);
+
+                            if (destination.Options.HasFlag(TableInitializationOptions.CreatePrimaryKey) &&
+                                table.PrimaryKey != null)
+                            {
+                                table.PrimaryKey.Create();
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -198,6 +218,45 @@ namespace Jhu.Graywulf.IO.Tasks
                 }
                 while (await sdr.NextResultAsync(CancellationContext.Token));
             }
+        }
+
+        private Table GetDestinationTable(DestinationTable destination, ISmartDataReader sdr, int resultsetCounter)
+        {
+            // DestinationTable has the property TableNameTemplate which needs to
+            // be evaluated now
+
+            // TODO: how to deal with multiple tables in files inside archives?
+            var queryName = sdr.QueryName;
+            var resultsetName = sdr.ResultsetName ?? resultsetCounter.ToString();
+
+            // Figure out target table name. If a special message is send from
+            // the server, use that, otherwise use what's defined in the
+            // destination object
+
+            var table = destination.GetTable(settings.BatchName, queryName, resultsetName, resultsetCounter, sdr.Metadata);
+
+            while (messages.Count > 0)
+            {
+                var msg = messages.Pop();
+                var msgobj = ServerMessage.Deserialize(msg);
+
+                if (msgobj != null)
+                {
+                    if (!String.IsNullOrWhiteSpace(msgobj.DestinationSchema))
+                    {
+                        table.SchemaName = msgobj.DestinationSchema;
+                    }
+
+                    if (!String.IsNullOrWhiteSpace(msgobj.DestinationName))
+                    {
+                        table.ObjectName = msgobj.DestinationName;
+                    }
+
+                    break;
+                }
+            }
+
+            return table;
         }
 
         #endregion

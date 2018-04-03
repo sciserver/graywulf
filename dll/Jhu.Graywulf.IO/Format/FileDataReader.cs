@@ -448,7 +448,7 @@ namespace Jhu.Graywulf.Format
         /// information. In this case columns are taken from the destination table
         /// </remarks>
         /// <param name="columns"></param>
-        internal void MatchColumns(IList<Column> columns)
+        public void MatchColumns(IList<Column> columns)
         {
             file.CurrentBlock.CreateColumns(columns);
         }

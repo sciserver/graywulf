@@ -133,12 +133,42 @@
                   <Sequence sap2010:WorkflowViewState.IdRef="Sequence_3">
                     <local:InitializeOutputTable sap2010:WorkflowViewState.IdRef="PrepareDestinationTable_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" RemoteTable="[tableKey]" />
                     <local:CopyOutputTable sap2010:WorkflowViewState.IdRef="CopyResultset_1" JobInfo="[JobInfo]" QueryPartition="[queryPartition]" RemoteTable="[tableKey]" />
-                    <jga:PlaceholderActivity DisplayName="TODO: CreateOutputTablePrimaryKey" sap2010:WorkflowViewState.IdRef="PlaceholderActivity_2" />
                   </Sequence>
                 </ActivityAction>
               </ParallelForEach>
             </Sequence>
           </jga:Retry>
+        </ActivityAction>
+      </ParallelForEach>
+      <ParallelForEach x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="ParallelForEach`1_8">
+        <ParallelForEach.Values>
+          <InArgument x:TypeArguments="scg:IEnumerable(x:String)">
+            <mca:CSharpValue x:TypeArguments="scg:IEnumerable(x:String)">Query.QueryDetails.OutputTableReferences.Keys</mca:CSharpValue>
+          </InArgument>
+        </ParallelForEach.Values>
+        <ActivityAction x:TypeArguments="x:String">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="x:String" Name="tableKey" />
+          </ActivityAction.Argument>
+          <Sequence sap2010:WorkflowViewState.IdRef="Sequence_4">
+            <local:CreateOutputTablePrimaryKey sap2010:WorkflowViewState.IdRef="CreateOutputTablePrimaryKey_2">
+              <local:CreateOutputTablePrimaryKey.JobInfo>
+                <InArgument x:TypeArguments="jga:JobInfo">
+                  <mca:CSharpValue x:TypeArguments="jga:JobInfo">JobInfo</mca:CSharpValue>
+                </InArgument>
+              </local:CreateOutputTablePrimaryKey.JobInfo>
+              <local:CreateOutputTablePrimaryKey.Query>
+                <InArgument x:TypeArguments="local:SqlQuery">
+                  <mca:CSharpValue x:TypeArguments="local:SqlQuery">Query</mca:CSharpValue>
+                </InArgument>
+              </local:CreateOutputTablePrimaryKey.Query>
+              <local:CreateOutputTablePrimaryKey.RemoteTable>
+                <InArgument x:TypeArguments="x:String">
+                  <mca:CSharpValue x:TypeArguments="x:String">tableKey</mca:CSharpValue>
+                </InArgument>
+              </local:CreateOutputTablePrimaryKey.RemoteTable>
+            </local:CreateOutputTablePrimaryKey>
+          </Sequence>
         </ActivityAction>
       </ParallelForEach>
       <ParallelForEach x:TypeArguments="local:SqlQueryPartition" DisplayName="ParallelForEach&lt;SqlQueryPartition&gt;" sap2010:WorkflowViewState.IdRef="ParallelForEach`1_4" Values="[Query.Partitions]">
@@ -160,7 +190,7 @@
         </ActivityAction>
       </ParallelForEach>
     </CancellationScope.CancellationHandler>
-    <sads:DebugSymbol.Symbol>d3JDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjRcbW9kdWxlc1xncmF5d3VsZlxkbGxcSmh1LkdyYXl3dWxmLlNxbC5Kb2JzXFNxbFxKb2JzXFF1ZXJ5XFNxbFF1ZXJ5Sm9iLnhhbWxGTAOkARcCAQFQBZgBEAIBCpoBB6EBGQIBAlEHUagBAgFgUgdShAECAV9TB1PBAQIBWlQHYhkCAU5jB2OUAQIBSWQHjwEZAgETkAEHlwEZAgELmgG2AZoBygECAQmfAQufAdUBAgEDUYcBUZUBAgFlUXBRewIBY1GcAVGlAQIBYVOdAVOoAQIBXVO1AVO+AQIBW1ScAVS6AQIBWVkLYBcCAU9jdmOBAQIBTGOIAWORAQIBSmS2AWTKAQIBSGkLjQEXAgEUkAG2AZABygECARKVAQuVAc4BAgEMnwGqAZ8BvAECAQefAcwBnwHSAQIBBp8BjwGfAZoBAgEEWXJZdQIBUllbWWYCAVBfDV/DAQIBU2lyaXUCARdpW2lmAgEVcw2MARgCARiVAaMBlQG1AQIBEJUBxQGVAcsBAgEPlQGIAZUBkwECAQ1fbl95AgFXX5YBX8ABAgFWX4ABX4kBAgFUdA90rwECAUN1D3WoAQIBPnYPdqgBAgE5dw9+IQIBMH8Pf4wBAgErgAEPiwEhAgEZdIIBdI0BAgFGdJoBdKwBAgFEdZMBdaUBAgFBdXh1gwECAT92kwF2pQECATx2eHaDAQIBOnd4d6IBAgE4fBN8rwECATF/d3+JAQIBLn9cf2cCASyAAXiAAaIBAgEqhQETiQEeAgEafIEBfJMBAgE2fKABfKwBAgE0fGZ8cQIBMoYBFYYBvwECASOHARWHAa8BAgEciAEViAGYAQIBG4YBkQGGAaMBAgEohgGwAYYBvAECASaGAXaGAYEBAgEkhwGBAYcBkwECASGHAaABhwGsAQIBH4cBZocBcQIBHQ==</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d3JDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjRcbW9kdWxlc1xncmF5d3VsZlxkbGxcSmh1LkdyYXl3dWxmLlNxbC5Kb2JzXFNxbFxKb2JzXFF1ZXJ5XFNxbFF1ZXJ5Sm9iLnhhbWxOTAPCARcCAQFQBbYBEAIBCrgBB78BGQIBAlEHUagBAgF/UgdShAECAX5TB1PBAQIBeVQHYhkCAWhjB2OUAQIBY2QHjgEZAgEpjwEHrQEZAgETrgEHtQEZAgELuAG2AbgBygECAQm9AQu9AdUBAgEDUYcBUZUBAwGEAVFwUXsDAYIBUZwBUaUBAwGAAVOdAVOoAQIBfFO1AVO+AQIBelScAVS6AQIBeFkLYBcCAWljdmOBAQIBZmOIAWORAQIBZGS2AWTKAQIBYmkLjAEXAgEqkgENkgGJAQIBJZkBC6sBFgIBFK4BtgGuAcoBAgESswELswHOAQIBDL0BqgG9AbwBAgEHvQHMAb0B0gECAQa9AY8BvQGaAQIBBFlyWXUCAXFZW1lmAgFvXBFcggECAWpfDV/DAQIBcmlyaXUCATJpW2lmAgEwbBFwFAIBK3MNiwEYAgEzmgENqgExAgEVswGjAbMBtQECARCzAcUBswHLAQIBD7MBiAGzAZMBAgENX25feQIBdl+WAV/AAQIBdV+AAV+JAQIBc3QPdK8BAgFddQ91qAECAVh2D3aoAQIBU3cPfiECAUp/D3+MAQIBRYABD4oBIQIBNKcBE6cBWQIBIJ0BE50BWwIBG6IBE6IBXAIBFnSCAXSNAQIBYHSaAXSsAQIBXnWTAXWlAQIBW3V4dYMBAgFZdpMBdqUBAgFWdnh2gwECAVR3eHeiAQIBUnwTfK8BAgFLf3d/iQECAUh/XH9nAgFGgAF4gAGiAQIBRIUBE4gBHgIBNXyBAXyTAQIBUHygAXysAQIBTnxmfHECAUyGARWGAb8BAgE9hwEVhwGvAQIBNoYBkQGGAaMBAgFChgGwAYYBvAECAUCGAXaGAYEBAgE+hwGBAYcBkwECATuHAaABhwGsAQIBOYcBZocBcQIBNw==</sads:DebugSymbol.Symbol>
   </CancellationScope>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
@@ -179,27 +209,35 @@
       <sap2010:ViewStateData Id="ExecuteQuery_1" sap:VirtualizedContainerService.HintSize="285.714285714286,21.7142857142857" />
       <sap2010:ViewStateData Id="PrepareDestinationTable_1" sap:VirtualizedContainerService.HintSize="200,21.7142857142857" />
       <sap2010:ViewStateData Id="CopyResultset_1" sap:VirtualizedContainerService.HintSize="200,21.7142857142857" />
-      <sap2010:ViewStateData Id="PlaceholderActivity_2" sap:VirtualizedContainerService.HintSize="200,21.7142857142857" />
-      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="221.714285714286,268.571428571429">
+      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="221.714285714286,206.857142857143">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ParallelForEach`1_6" sap:VirtualizedContainerService.HintSize="285.714285714286,420.571428571429" />
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="307.428571428571,1042.85714285714">
+      <sap2010:ViewStateData Id="ParallelForEach`1_6" sap:VirtualizedContainerService.HintSize="285.714285714286,358.857142857143" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="307.428571428571,981.142857142857">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Retry_2" sap:VirtualizedContainerService.HintSize="321.142857142857,1155.42857142857" />
-      <sap2010:ViewStateData Id="ParallelForEach`1_3" sap:VirtualizedContainerService.HintSize="350.857142857143,1307.42857142857" />
+      <sap2010:ViewStateData Id="Retry_2" sap:VirtualizedContainerService.HintSize="321.142857142857,1093.71428571429" />
+      <sap2010:ViewStateData Id="ParallelForEach`1_3" sap:VirtualizedContainerService.HintSize="350.857142857143,1245.71428571429" />
+      <sap2010:ViewStateData Id="CreateOutputTablePrimaryKey_2" sap:VirtualizedContainerService.HintSize="200,21.7142857142857" />
+      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="221.714285714286,145.142857142857">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ParallelForEach`1_8" sap:VirtualizedContainerService.HintSize="350.857142857143,297.142857142857" />
       <sap2010:ViewStateData Id="DropTemporaryTables_1" sap:VirtualizedContainerService.HintSize="200,21.7142857142857" />
-      <sap2010:ViewStateData Id="ParallelForEach`1_4" sap:VirtualizedContainerService.HintSize="350.857142857143,211.428571428571" />
-      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="372.571428571429,2255.42857142857">
+      <sap2010:ViewStateData Id="ParallelForEach`1_4" sap:VirtualizedContainerService.HintSize="350.857142857143,212" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="372.571428571429,2531.42857142857">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -207,9 +245,9 @@
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="DropTemporaryTables_2" sap:VirtualizedContainerService.HintSize="200,21.7142857142857" />
-      <sap2010:ViewStateData Id="ParallelForEach`1_5" sap:VirtualizedContainerService.HintSize="285.714285714286,211.428571428571" />
-      <sap2010:ViewStateData Id="CancellationScope_1" sap:VirtualizedContainerService.HintSize="409.142857142857,2679.42857142857" />
-      <sap2010:ViewStateData Id="Jhu.Graywulf.Sql.Jobs.Query.SqlQueryJob_1" sap:VirtualizedContainerService.HintSize="449.142857142857,2759.42857142857" />
+      <sap2010:ViewStateData Id="ParallelForEach`1_5" sap:VirtualizedContainerService.HintSize="285.714285714286,212" />
+      <sap2010:ViewStateData Id="CancellationScope_1" sap:VirtualizedContainerService.HintSize="409.142857142857,2956" />
+      <sap2010:ViewStateData Id="Jhu.Graywulf.Sql.Jobs.Query.SqlQueryJob_1" sap:VirtualizedContainerService.HintSize="449.142857142857,3036" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

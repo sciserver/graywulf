@@ -18,6 +18,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
 
+        [RequiredArgument]
+        public InArgument<string> RemoteTable { get; set; }
+
         protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {
             var workflowInstanceId = activityContext.WorkflowInstanceId;
@@ -33,7 +36,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 case ExecutionMode.Graywulf:
                     using (RegistryContext registryContext = query.CreateContext())
                     {
-                        queryPartition.InitializeQueryObject(cancellationContext, registryContext, activityContext.GetExtension<IScheduler>(), true);
+                        queryPartition.InitializeQueryObject(cancellationContext, registryContext);
                         destinationTable = await queryPartition.PrepareCreateDestinationTablePrimaryKeyAsync();
                     }
                     break;

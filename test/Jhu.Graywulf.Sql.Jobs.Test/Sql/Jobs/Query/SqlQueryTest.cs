@@ -86,6 +86,15 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             RunQuery(sql);
         }
 
+        [TestMethod]
+        [TestCategory("Query")]
+        public void SimpleQueryWithPrimaryKeyTest()
+        {
+            var sql = "SELECT TOP 10 * INTO [$into] FROM TEST:SampleData_PrimaryKey";
+
+            RunQuery(sql);
+        }
+
         /// <summary>
         /// This is to test round-robin scheduling over a set of servers
         /// </summary>
@@ -100,7 +109,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 RunQuery(sql);
             }
         }
-
+        
         /// <summary>
         /// Joins two tables of the same dataset.
         /// This one won't create a primary key on the target table because there's no

@@ -202,8 +202,8 @@ namespace Jhu.Graywulf.Sql.Schema
                 }
                 else if ((options & TableInitializationOptions.Create) != 0)
                 {
-                    Create
-                        (options.HasFlag(TableInitializationOptions.CreatePrimaryKey),
+                    Create(
+                        options.HasFlag(TableInitializationOptions.CreatePrimaryKey),
                         (options & TableInitializationOptions.CreateIndexes) != 0);
                 }
                 else
