@@ -117,7 +117,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var sql = "SELECT * INTO Table2 FROM Table1 ORDER BY column1";
             var gt =
 @"BEGIN
-PRINT <graywulf><destinationName>Table2</destinationName></graywulf>;
+PRINT '<graywulf><destinationName>Table2</destinationName></graywulf>';
 SELECT *  FROM Table1 
 END";
 
@@ -131,7 +131,7 @@ END";
             var sql = "SELECT * INTO dbo.Table2 FROM Table1 ORDER BY column1";
             var gt =
 @"BEGIN
-PRINT <graywulf><destinationSchema>dbo</destinationSchema><destinationName>Table2</destinationName></graywulf>;
+PRINT '<graywulf><destinationSchema>dbo</destinationSchema><destinationName>Table2</destinationName></graywulf>';
 SELECT *  FROM Table1 
 END";
 

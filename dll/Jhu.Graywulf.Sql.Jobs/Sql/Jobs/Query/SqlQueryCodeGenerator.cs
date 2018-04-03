@@ -98,18 +98,17 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         protected virtual SourceQuery OnGetExecuteQuery(QueryDetails query)
         {
-            var sql = new StringBuilder();
-
-            RewriteForExecute(query);
-            RemoveNonStandardTokens(query);
-
             if (queryObject.Parameters.ExecutionMode == ExecutionMode.Graywulf)
             {
                 AddSystemDatabaseMappings();
                 AddSourceTableMappings(Partition.Parameters.SourceDatabaseVersionName, null);
                 AddOutputTableMappings();
             }
-
+            
+            RewriteForExecute(query);
+            RemoveNonStandardTokens(query);
+            
+            var sql = new StringBuilder();
             sql.AppendLine(Execute(query.ParsingTree));
 
             var source = new SourceQuery()
@@ -141,16 +140,17 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             if (into != null)
             {
                 var parent = selectStatement.FindAscendant<StatementBlock>();
+                var tr = MapTableReference(into.TableName.TableReference);
 
                 into.Parent.Stack.Remove(into);
 
                 // Create a magic statement and insert before the SELECT
                 var msg = new IO.Tasks.ServerMessage()
                 {
-                    DestinationSchema = into.TableName.TableReference.SchemaName,
-                    DestinationName = into.TableName.TableReference.DatabaseObjectName,
+                    DestinationSchema = tr.SchemaName,
+                    DestinationName = tr.DatabaseObjectName,
                 };
-                var print = PrintStatement.Create(msg.Serialize());
+                var print = PrintStatement.Create("'" + msg.Serialize().Replace("'", "''") + "'");
                 var sb = StatementBlock.Create(print, selectStatement);
                 var be = BeginEndStatement.Create(sb);
 
@@ -352,7 +352,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         private TableReference GetRemoteSourceTableMapping(TableReference tr)
         {
-            // Save unique name because it will change as names are substituted
             var key = tr.DatabaseObject.UniqueKey;
 
             // TODO: write function to determine if a table is to be copied
@@ -366,7 +365,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 {
                     DatabaseName = temporaryDataset.DatabaseName,
                     SchemaName = temporarySchemaName,
-                    DatabaseObjectName = queryObject.TemporaryTables[key].TableName,
+                    DatabaseObjectName = queryObject.TemporaryTables.GetValue(key).TableName,
                     DatabaseObject = null
                 };
 
@@ -396,7 +395,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         private TableReference GetRemoteOutputTableMapping(TableReference tr)
         {
-            // Save unique name because it will change as names are substituted
             var key = tr.DatabaseObject.UniqueKey;
 
             if (queryObject.TemporaryTables.ContainsKey(key))
@@ -408,7 +406,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 {
                     DatabaseName = temporaryDataset.DatabaseName,
                     SchemaName = temporarySchemaName,
-                    DatabaseObjectName = queryObject.TemporaryTables[key].TableName,
+                    DatabaseObjectName = queryObject.TemporaryTables.GetValue(key).TableName,
                     DatabaseObject = null
                 };
 
