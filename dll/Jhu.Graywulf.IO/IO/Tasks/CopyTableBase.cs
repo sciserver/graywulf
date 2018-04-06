@@ -414,6 +414,12 @@ namespace Jhu.Graywulf.IO.Tasks
         protected void HandleException(Exception ex, TableCopyResult result)
         {
             // Put a breakpoint here when debuggin bypassed exceptions
+#if DEBUG
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                System.Diagnostics.Debugger.Break();
+            }
+#endif
 
             result.Status = TableCopyStatus.Failed;
             result.Error = ex.Message;
