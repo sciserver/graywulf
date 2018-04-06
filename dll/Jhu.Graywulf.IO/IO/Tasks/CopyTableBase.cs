@@ -174,43 +174,41 @@ namespace Jhu.Graywulf.IO.Tasks
                     {
                         result.Status = TableCopyStatus.NoOutput;
                     }
-                    else
+
+                    try
                     {
-                        try
+                        var table = GetDestinationTable(destination, sdr, resultsetCounter);
+                        result.DestinationTable = table.UniqueKey;
+
+                        // TODO: figure out how to save primary key here and
+                        // pass back to caller. It's too expensive to create the PK at this point
+
+                        // Certain data readers cannot determine the columns from the data file,
+                        // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
+                        // from the destination table instead
+                        if ((destination.Options & TableInitializationOptions.Create) == 0 &&
+                            (sdr.Columns == null || sdr.Columns.Count == 0))
                         {
-                            var table = GetDestinationTable(destination, sdr, resultsetCounter);
-                            result.DestinationTable = table.UniqueKey;
-
-                            // TODO: figure out how to save primary key here and
-                            // pass back to caller. It's too expensive to create the PK at this point
-
-                            // Certain data readers cannot determine the columns from the data file,
-                            // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
-                            // from the destination table instead
-                            if ((destination.Options & TableInitializationOptions.Create) == 0 &&
-                                (sdr.Columns == null || sdr.Columns.Count == 0))
-                            {
-                                sdr.MatchColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
-                            }
-
-                            // Make sure indices are only created afterwards
-                            var opts = destination.Options & ~(TableInitializationOptions.CreateIndexes | TableInitializationOptions.CreatePrimaryKey);
-
-                            // TODO: make schema operation async
-                            table.Initialize(sdr.Columns, opts);
-
-                            await ExecuteBulkCopyAsync(sdr, table, result);
-
-                            if (destination.Options.HasFlag(TableInitializationOptions.CreatePrimaryKey) &&
-                                table.PrimaryKey != null)
-                            {
-                                table.PrimaryKey.Create();
-                            }
+                            sdr.MatchColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
                         }
-                        catch (Exception ex)
+
+                        // Make sure indices are only created afterwards
+                        var opts = destination.Options & ~(TableInitializationOptions.CreateIndexes | TableInitializationOptions.CreatePrimaryKey);
+
+                        // TODO: make schema operation async
+                        table.Initialize(sdr.Columns, opts);
+
+                        await ExecuteBulkCopyAsync(sdr, table, result);
+
+                        if (destination.Options.HasFlag(TableInitializationOptions.CreatePrimaryKey) &&
+                            table.PrimaryKey != null)
                         {
-                            HandleException(ex, result);
+                            table.PrimaryKey.Create();
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        HandleException(ex, result);
                     }
 
                     Results.Add(result);
@@ -358,8 +356,10 @@ namespace Jhu.Graywulf.IO.Tasks
             var cg = new SqlServerCodeGenerator();
             var dr = (DbDataReader)sdr;
 
-            // Turn on TABLOCK
-            var sbo = System.Data.SqlClient.SqlBulkCopyOptions.TableLock;
+            // Turn on TABLOCK and other important options
+            var sbo = System.Data.SqlClient.SqlBulkCopyOptions.TableLock |
+                System.Data.SqlClient.SqlBulkCopyOptions.KeepIdentity |
+                System.Data.SqlClient.SqlBulkCopyOptions.KeepNulls;
 
             // Initialize bulk copy
             var sbc = new System.Data.SqlClient.SqlBulkCopy(destination.Dataset.ConnectionString, sbo)
@@ -368,8 +368,23 @@ namespace Jhu.Graywulf.IO.Tasks
                 BulkCopyTimeout = settings.Timeout,
                 NotifyAfter = Math.Max(settings.BatchSize, 1000),
                 BatchSize = settings.BatchSize,       // Must be set to 0, otherwise SQL Server will write log
-                EnableStreaming = true    // TODO: add, new in .net 4.5
+                EnableStreaming = true,
             };
+
+            // Create explicit column mapping from source to destination. This is
+            // necessary because the source might contain hidden columns that are
+            // not treated nicely by SqlBulkCopy. This usually happens when KeyInfo is
+            // turned on on the DataReader but not all key columns are on the select list.
+            // In this case the remaining key columns show up as hidden and must be
+            // ignored here.
+            foreach (var col in sdr.Columns)
+            {
+                if (!col.IsHidden)
+                {
+                    var map = new System.Data.SqlClient.SqlBulkCopyColumnMapping(col.Name, col.Name);
+                    sbc.ColumnMappings.Add(map);
+                }
+            }
 
             // Initialize events
             sbc.SqlRowsCopied += delegate (object sender, System.Data.SqlClient.SqlRowsCopiedEventArgs e)

@@ -1129,19 +1129,39 @@ namespace Jhu.Graywulf.Sql.Schema
             // actual query execution...
             // or just create an overload that takes a command...
 
+            bool resetKey = false;
             var columns = new List<Column>();
             var st = reader.GetSchemaTable();
 
             for (int i = 0; i < st.Rows.Count; i++)
             {
                 var dr = st.Rows[i];
+                var col = DetectColumn(dr);
+
 
                 // Skip hidden columns, for example key columns returned when
                 // CommandBehaviour.KeyInfo is set but the key column is
                 // not part of the select list.
-                if (dr[SchemaTableOptionalColumn.IsHidden] == DBNull.Value || !(bool)dr[SchemaTableOptionalColumn.IsHidden])
+                if (!col.IsHidden)
                 {
-                    columns.Add(DetectColumn(dr));
+                    columns.Add(col);
+                }
+                else
+                {
+                    // If hidden column is a key, make sure all key flags are cleared
+                    // because only full combinations of key columns are unique
+                    if (col.IsKey)
+                    {
+                        resetKey = true;
+                    }
+                }
+            }
+
+            if (resetKey)
+            {
+                foreach (var c in columns)
+                {
+                    c.IsKey = false;
                 }
             }
 
