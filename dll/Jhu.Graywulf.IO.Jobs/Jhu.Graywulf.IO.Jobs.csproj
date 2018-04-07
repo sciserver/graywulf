@@ -161,10 +161,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="IO\Jobs\ExportTables\ExportTablesToUriForm.ascx">
+    <EmbeddedResource Include="IO\Jobs\ExportTables\ExportTablesToUriForm.ascx">
       <SubType>ASPXCodeBehind</SubType>
-    </Content>
-    <Content Include="IO\Jobs\ImportTables\ImportTablesFromUriForm.ascx" />
+    </EmbeddedResource>
+    <EmbeddedResource Include="IO\Jobs\ImportTables\ImportTablesFromUriForm.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\build\Jhu.Graywulf.Build.targets" />

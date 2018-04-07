@@ -10,16 +10,34 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
 
             var job = (QueryJob)Job;
 
-            edit.NavigateUrl = EditQuery.GetUrl(job.Guid);
-            output.Text = job.Output;
+            // TODO: here we add links to all output tables
+            output.Text = "";
 
-            if (job.Query.Length < 100)
+            if (job.Output != null)
             {
-                query.Text = job.Query;
+                foreach (var table in job.Output)
+                {
+                    output.Text += table;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(job.Query))
+            {
+                edit.Visible = false;
+                query.Text = "N/A";
             }
             else
             {
-                query.Text = job.Query.Substring(0, 100) + "...";
+                edit.NavigateUrl = EditQuery.GetUrl(job.Guid);
+
+                if (job.Query.Length < 100)
+                {
+                    query.Text = job.Query;
+                }
+                else
+                {
+                    query.Text = job.Query.Substring(0, 100) + "...";
+                }
             }
         }
     }

@@ -1,0 +1,86 @@
+<ArrayOfParameter xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Parameter Name="Parameters" Direction="InOut">
+    <Value>
+      <SqlQueryParameters xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/" z:Id="1" z:Type="Jhu.Graywulf.Sql.Jobs.Query.SqlQueryParameters" z:Assembly="Jhu.Graywulf.Sql.Jobs, Version=1.4.0.302, Culture=neutral, PublicKeyToken=null">
+        <BatchName i:nil="true" />
+        <CustomDatasets z:Id="2" z:Size="1">
+          <DatasetBase z:Id="3" z:Type="Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerDataset" z:Assembly="Jhu.Graywulf.Sql, Version=1.4.0.302, Culture=neutral, PublicKeyToken=null">
+            <ConnectionString z:Id="4">Data Source=test</ConnectionString>
+            <DefaultSchemaName z:Id="5">mydb</DefaultSchemaName>
+            <IsCacheable>false</IsCacheable>
+            <IsMutable>true</IsMutable>
+            <IsRestrictedSchema>false</IsRestrictedSchema>
+            <Name z:Id="6">MYDB</Name>
+            <IsOnLinkedServer>false</IsOnLinkedServer>
+          </DatasetBase>
+        </CustomDatasets>
+        <DefaultOutputDataset z:Ref="3" i:nil="true" />
+        <DefaultSourceDataset z:Ref="3" i:nil="true" />
+        <Destination xmlns:d2p1="http://schemas.datacontract.org/2004/07/Jhu.Graywulf.IO.Tasks" z:Id="7">
+          <d2p1:DatabaseName z:Id="8">MYDB_1768162722</d2p1:DatabaseName>
+          <d2p1:Dataset z:Ref="3" i:nil="true" />
+          <d2p1:DatasetName z:Ref="6" i:nil="true" />
+          <d2p1:Options>Drop Create</d2p1:Options>
+          <d2p1:SchemaName z:Ref="5" i:nil="true" />
+          <d2p1:TableNamePattern z:Id="9">testtable</d2p1:TableNamePattern>
+        </Destination>
+        <DumpSql>false</DumpSql>
+        <ExecutionMode>Graywulf</ExecutionMode>
+        <FederationName z:Id="10">Federation:Graywulf\SciServer\SkyQuery</FederationName>
+        <MaxPartitions>1</MaxPartitions>
+        <OutputTables z:Id="11" z:Size="1">
+          <Table z:Id="12">
+            <DatabaseName z:Id="13">MYDB_1768162722</DatabaseName>
+            <Dataset z:Ref="3" i:nil="true" />
+            <DatasetName z:Ref="6" i:nil="true" />
+            <ObjectName z:Id="14">SqlQueryTest_AliasSelectStarQueryTest</ObjectName>
+            <SchemaName z:Ref="5" i:nil="true" />
+            <UniqueKey z:Id="15">Table|MYDB|MYDB_1768162722|mydb|SqlQueryTest_AliasSelectStarQueryTest</UniqueKey>
+          </Table>
+		  <Table z:Id="12">
+            <DatabaseName z:Id="35">MYDB_1768162722</DatabaseName>
+            <Dataset z:Ref="3" i:nil="true" />
+            <DatasetName z:Ref="6" i:nil="true" />
+            <ObjectName z:Id="36">SqlQueryTest_AliasSelectStarQueryTest</ObjectName>
+            <SchemaName z:Ref="5" i:nil="true" />
+            <UniqueKey z:Id="37">Table|MYDB|MYDB_1768162722|mydb|SqlQueryTest_AliasSelectStarQueryTest</UniqueKey>
+          </Table>
+        </OutputTables>
+        <QueryFactoryTypeName z:Id="16">Jhu.Graywulf.Sql.Jobs.Query.SqlQueryFactory, Jhu.Graywulf.Sql.Jobs</QueryFactoryTypeName>
+        <QueryName i:nil="true" />
+        <QueryString z:Id="17">SELECT TOP 10 p.* INTO SqlQueryTest_AliasSelectStarQueryTest FROM SDSSDR13:PhotoObj p</QueryString>
+        <QueryTimeout>7200</QueryTimeout>
+        <QueryTypeName z:Id="18">Jhu.Graywulf.Sql.Jobs.Query.SqlQuery, Jhu.Graywulf.Sql.Jobs</QueryTypeName>
+        <SourceDatabaseVersionName z:Id="19">PROD</SourceDatabaseVersionName>
+        <SourceTables z:Id="20" z:Size="1">
+          <TableOrView z:Id="21" z:Type="Jhu.Graywulf.Sql.Schema.View" z:Assembly="Jhu.Graywulf.Sql, Version=1.4.0.302, Culture=neutral, PublicKeyToken=null">
+            <DatabaseName z:Id="22">SkyNode_SDSSDR13</DatabaseName>
+            <Dataset z:Id="23" z:Type="Jhu.Graywulf.Sql.Schema.GraywulfDataset" z:Assembly="Jhu.Graywulf.Registry, Version=1.4.0.302, Culture=neutral, PublicKeyToken=null">
+              <ConnectionString z:Id="24">Data Source=test</ConnectionString>
+              <DefaultSchemaName z:Id="25">dbo</DefaultSchemaName>
+              <IsCacheable>true</IsCacheable>
+              <IsMutable>false</IsMutable>
+              <IsRestrictedSchema>false</IsRestrictedSchema>
+              <Name z:Id="26">SDSSDR13</Name>
+              <IsOnLinkedServer>false</IsOnLinkedServer>
+              <DatabaseDefinitionReference z:Id="27">
+                <Name z:Id="28">DatabaseDefinition:Graywulf\SciServer\SkyQuery\SDSSDR13</Name>
+              </DatabaseDefinitionReference>
+              <DatabaseInstanceReference z:Id="29">
+                <Name i:nil="true" />
+              </DatabaseInstanceReference>
+              <DatabaseVersionReference z:Id="30">
+                <Name i:nil="true" />
+              </DatabaseVersionReference>
+            </Dataset>
+            <DatasetName z:Ref="26" i:nil="true" />
+            <ObjectName z:Id="31">PhotoObj</ObjectName>
+            <SchemaName z:Id="32">dbo</SchemaName>
+            <UniqueKey z:Id="33">View|SDSSDR13|SkyNode_SDSSDR13|dbo|PhotoObj</UniqueKey>
+          </TableOrView>
+        </SourceTables>
+        <StatDatabaseVersionName z:Id="34">STAT</StatDatabaseVersionName>
+      </SqlQueryParameters>
+    </Value>
+  </Parameter>
+</ArrayOfParameter>

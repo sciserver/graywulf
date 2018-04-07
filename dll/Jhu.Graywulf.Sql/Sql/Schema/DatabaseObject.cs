@@ -68,6 +68,13 @@ namespace Jhu.Graywulf.Sql.Schema
             get { return dataset.Name; }
         }
 
+        [DataMember(Name = "DatasetName")]
+        public string DatasetName_ForXml
+        {
+            get { return dataset.Name; }
+            set { }
+        }
+
         /// <summary>
         /// Gets or sets the name of the database this object belongs to.
         /// </summary>
@@ -107,7 +114,7 @@ namespace Jhu.Graywulf.Sql.Schema
         {
             get
             {
-                return 
+                return
                     (String.IsNullOrWhiteSpace(schemaName) ? "" : (dataset.QuoteIdentifier(schemaName) + ".")) +
                     dataset.QuoteIdentifier(objectName);
             }
@@ -159,6 +166,13 @@ namespace Jhu.Graywulf.Sql.Schema
         {
             get { return dataset.GetObjectUniqueKey(this); }
             set { dataset.GetNamePartsFromObjectUniqueKey(this, value); }
+        }
+
+        [DataMember(Name = "UniqueKey")]
+        public string UniqueKey_ForXml
+        {
+            get { return dataset.GetObjectUniqueKey(this); }
+            set { }
         }
 
         /// <summary>

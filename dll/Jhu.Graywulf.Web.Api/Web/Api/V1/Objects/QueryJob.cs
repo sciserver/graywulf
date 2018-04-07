@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         #region Private member variables
 
         private string query;
-        private string output;
+        private string[] output;
 
         #endregion
         #region Properties
@@ -36,8 +36,8 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         [DataMember(Name = "output", EmitDefaultValue=false)]
         [DefaultValue(null)]
-        [Description("Output table")]
-        public string Output
+        [Description("Output tables")]
+        public string[] Output
         {
             get { return output; }
             set { output = value; }
@@ -72,6 +72,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             base.Type = JobType.Query;
 
             this.query = null;
+            this.output = null;
         }
 
         #endregion
@@ -85,48 +86,66 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             if (jobInstance.Parameters.ContainsKey(Jhu.Graywulf.Registry.Constants.JobParameterQuery))
             {
-                var xml = new XmlDocument();
-                xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Registry.Constants.JobParameterQuery].XmlValue);
-
-                var xr = new Util.XmlReader(xml);
-
-                this.query = xr.GetXmlInnerText("Query/QueryString");
-
-                var datasetName = xr.GetXmlInnerText("Query/Output/Dataset/Name");
-                var schemaName = xr.GetXmlInnerText("Query/Output/SchemaName");
-                var tableName = xr.GetXmlInnerText("Query/Output/ObjectName");
-
-                string name = String.Empty;
-
-                if (datasetName != null)
-                {
-                    name += datasetName + ":";
-                }
-
-                if (schemaName != null)
-                {
-                    name += schemaName + ".";
-                }
-
-                if (tableName != null)
-                {
-                    name += tableName;
-                }
-
-                if (name.Length > 0)
-                {
-                    this.output = name;
-                }
-                else
-                {
-                    this.output = null;
-                }
+                LoadFromRegistry_V1_3(jobInstance);
+            }
+            else if (jobInstance.Parameters.ContainsKey(Jhu.Graywulf.Registry.Constants.JobParameterParameters))
+            {
+                LoadFromRegistry_V1_4(jobInstance);
             }
             else
             {
                 // TODO
                 // This is probably a wrong job in the database
             }
+        }
+
+        private void LoadFromRegistry_V1_3(JobInstance jobInstance)
+        {
+            var xml = new XmlDocument();
+            xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Registry.Constants.JobParameterQuery].XmlValue);
+
+            var xr = new Util.XmlReader(xml);
+
+            this.query = xr.GetXmlInnerText("Query/QueryString");
+
+
+            var datasetName = xr.GetXmlInnerText("Query/Output/Dataset/Name");
+            var schemaName = xr.GetXmlInnerText("Query/Output/SchemaName");
+            var tableName = xr.GetXmlInnerText("Query/Output/ObjectName");
+
+            string name = String.Empty;
+
+            if (datasetName != null)
+            {
+                name += datasetName + ":";
+            }
+
+            if (schemaName != null)
+            {
+                name += schemaName + ".";
+            }
+
+            if (tableName != null)
+            {
+                name += tableName;
+            }
+
+            if (name.Length > 0)
+            {
+                this.output = new string[] { name };
+            }
+            else
+            {
+                this.output = null;
+            }
+        }
+
+        private void LoadFromRegistry_V1_4(JobInstance jobInstance)
+        {
+            var xml = new XmlDocument();
+            xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Registry.Constants.JobParameterParameters].XmlValue);
+
+            var xr = new Util.XmlReader(xml);
         }
 
         /// <summary>

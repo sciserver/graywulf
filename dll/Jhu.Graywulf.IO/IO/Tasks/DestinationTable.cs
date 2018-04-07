@@ -51,6 +51,13 @@ namespace Jhu.Graywulf.IO.Tasks
             set { dataset = value; }
         }
 
+        [DataMember(Name = "DatasetName")]
+        public string DatasetName_ForXml
+        {
+            get { return dataset.Name; }
+            set { }
+        }
+
         /// <summary>
         /// Gets or sets the name of the destination database.
         /// </summary>

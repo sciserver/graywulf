@@ -95,6 +95,7 @@
     <Compile Include="Web\Api\V1\ImportTest.cs" />
     <Compile Include="Web\Api\V1\JobsServiceTest.cs" />
     <Compile Include="Web\Api\V1\ObjectSerializationTest.cs" />
+    <Compile Include="Web\Api\Util\XmlReaderTest.cs" />
     <Compile Include="Web\Util\UrlFormatterTest.cs" />
   </ItemGroup>
   <ItemGroup>
