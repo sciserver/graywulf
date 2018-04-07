@@ -137,11 +137,12 @@ namespace Jhu.Graywulf.Scheduler
         [TestMethod]
         [TestCategory("Scheduler")]
         [TestCategory("Slow")]
-        public void StartAndCancelJobTest()
+        public void InjectStartAndCancelJobTest()
         {
-            // TODO: this test fails because the scheduler takes quite a bit of time
-            // to start. Add delay or logic in TestInitialize to wait for the control service
-            // to start.
+            // TODO: this test fails because the inject operation deadlocks on the poller
+            // sync context
+
+            System.Threading.Thread.Sleep(10000);
 
             using (var control = GetControl())
             {

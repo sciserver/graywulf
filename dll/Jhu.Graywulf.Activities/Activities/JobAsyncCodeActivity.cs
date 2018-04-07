@@ -83,6 +83,8 @@ namespace Jhu.Graywulf.Activities
                 }
                 else
                 {
+                    // TODO: this sometimes throws an exception, even though the activity
+                    // is being canceled
                     System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(helper.DispatchException()).Throw();
                 }
             }

@@ -139,7 +139,7 @@ namespace Jhu.Graywulf.Scheduler
             WaitJobComplete(guid, TimeSpan.FromSeconds(3));
 
             var ji = LoadJob(guid);
-            Assert.AreEqual(JobExecutionState.Failed, ji.JobExecutionStatus);
+            Assert.AreEqual(JobExecutionState.TimedOut, ji.JobExecutionStatus);
         }
     }
 }

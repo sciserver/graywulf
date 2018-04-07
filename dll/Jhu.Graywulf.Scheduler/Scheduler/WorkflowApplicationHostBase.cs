@@ -24,7 +24,6 @@ namespace Jhu.Graywulf.Scheduler
 
         #region Private variables
 
-        private object syncRoot = new object();
         protected Logging.LoggingContext loggingContext;
 
         /// <summary>
@@ -69,10 +68,9 @@ namespace Jhu.Graywulf.Scheduler
 
         public virtual void Start(Logging.Logger logger)
         {
-            lock (syncRoot)
+            // Initialize logging
+            lock (loggingContext = new Logging.LoggingContext())
             {
-                // Initialize logging
-                loggingContext = new Logging.LoggingContext();
                 loggingContext.SetLogger(logger);
 
                 trackingParticipant = new JobTrackingParticipant();
@@ -90,7 +88,7 @@ namespace Jhu.Graywulf.Scheduler
             }
             else
             {
-                lock (syncRoot)
+                lock (loggingContext)
                 {
                     loggingContext.Push();
 
@@ -106,7 +104,7 @@ namespace Jhu.Graywulf.Scheduler
 
         public virtual void Abort()
         {
-            lock (syncRoot)
+            lock (loggingContext)
             {
                 loggingContext.Push();
 
@@ -164,10 +162,7 @@ namespace Jhu.Graywulf.Scheduler
 
         public Guid PrepareStartWorkflow(Activity wf, Dictionary<string, object> par)
         {
-            loggingContext.Push();
-
             var wfapp = CreateWorkflowApplication(wf, par);
-
             var workflow = new WorkflowApplicationDetails()
             {
                 WorkflowApplication = wfapp,
@@ -175,15 +170,11 @@ namespace Jhu.Graywulf.Scheduler
 
             BookkeepWorkflow(wfapp, workflow);
 
-            loggingContext.Pop();
-
             return wfapp.Id;
         }
 
         public void RunWorkflow(Guid instanceId)
         {
-            loggingContext.Push();
-
             WorkflowApplicationDetails workflow;
 
             if (workflows.TryGetValue(instanceId, out workflow))
@@ -194,8 +185,6 @@ namespace Jhu.Graywulf.Scheduler
             {
                 throw new InvalidOperationException();
             }
-
-            loggingContext.Pop();
         }
 
         protected Guid CancelWorkflow(Guid instanceId, TimeSpan timeout)
@@ -321,7 +310,7 @@ namespace Jhu.Graywulf.Scheduler
 
             if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                lock (syncRoot)
+                lock (loggingContext)
                 {
                     loggingContext.Push();
 
@@ -351,7 +340,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 if (WorkflowEvent != null)
                 {
-                    lock (syncRoot)
+                    lock (loggingContext)
                     {
                         loggingContext.Push();
 
@@ -395,7 +384,7 @@ namespace Jhu.Graywulf.Scheduler
 
             if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                lock (syncRoot)
+                lock (loggingContext)
                 {
                     loggingContext.Push();
 
@@ -422,7 +411,7 @@ namespace Jhu.Graywulf.Scheduler
 
             if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                lock (syncRoot)
+                lock (loggingContext)
                 {
                     loggingContext.Push();
 
@@ -447,7 +436,7 @@ namespace Jhu.Graywulf.Scheduler
 
             if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                lock (syncRoot)
+                lock (loggingContext)
                 {
                     loggingContext.Push();
 
@@ -468,7 +457,7 @@ namespace Jhu.Graywulf.Scheduler
 
             if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                lock (syncRoot)
+                lock (loggingContext)
                 {
                     loggingContext.Push();
 
