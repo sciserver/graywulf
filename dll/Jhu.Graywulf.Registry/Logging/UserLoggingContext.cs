@@ -10,8 +10,8 @@ namespace Jhu.Graywulf.Logging
 {
     public abstract class UserLoggingContext : LoggingContext
     {
-
-        public UserLoggingContext()
+        public UserLoggingContext(bool isAsync, AmbientContextStoreLocation supportedLocation)
+            : base(isAsync, supportedLocation)
         {
             if (LoggingContext.Current is UserLoggingContext)
             {
@@ -22,7 +22,8 @@ namespace Jhu.Graywulf.Logging
                 InitializeMembers(new StreamingContext());
             }
         }
-        
+
+
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {

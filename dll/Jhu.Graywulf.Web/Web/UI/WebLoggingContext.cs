@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
 using System.Runtime.Serialization;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.Web.UI
@@ -20,6 +21,13 @@ namespace Jhu.Graywulf.Web.UI
         #endregion
 
         public WebLoggingContext()
+            : this(true, AmbientContextStoreLocation.AsyncLocal | AmbientContextStoreLocation.WebHttpContext)
+        {
+            // overload
+        }
+
+        public WebLoggingContext(bool isAsync, AmbientContextStoreLocation supportedLocation)
+            :base(isAsync, supportedLocation)
         {
             if (LoggingContext.Current is WebLoggingContext)
             {

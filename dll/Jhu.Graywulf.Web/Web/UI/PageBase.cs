@@ -141,108 +141,33 @@ namespace Jhu.Graywulf.Web.UI
         {
             new WebLoggingContext();
 
-            //loggingContext.Push();
-
             LogDebug();
 
             base.OnPreInit(e);
-            //loggingContext.Pop();
         }
-
-        /*
-        protected override void OnInit(EventArgs e)
-        {
-            loggingContext.Push();
-            base.OnInit(e);
-            loggingContext.Pop();
-        }
-
-        protected override void OnInitComplete(EventArgs e)
-        {
-            loggingContext.Push();
-            base.OnInitComplete(e);
-            loggingContext.Pop();
-        }
-
-        protected override void OnPreLoad(EventArgs e)
-        {
-            loggingContext.Push();
-            base.OnPreLoad(e);
-            loggingContext.Pop();
-        }
-        */
-
+        
         protected override void OnLoad(EventArgs e)
         {
-            //loggingContext.Push();
-
             base.OnLoad(e);
 
             if (!IsPostBack && Request.UrlReferrer != null)
             {
                 OriginalReferer = Request.UrlReferrer.ToString();
             }
-
-            //loggingContext.Pop();
         }
-
-        /*
-        protected override void RaisePostBackEvent(IPostBackEventHandler sourceControl, string eventArgument)
-        {
-            loggingContext.Push();
-            base.RaisePostBackEvent(sourceControl, eventArgument);
-            loggingContext.Pop();
-        }
-
-        public override void Validate()
-        {
-            loggingContext.Push();
-            base.Validate();
-            loggingContext.Pop();
-        }
-
-        protected override void OnLoadComplete(EventArgs e)
-        {
-            loggingContext.Push();
-            base.OnLoadComplete(e);
-            loggingContext.Pop();
-        }
-        */
-
+        
         protected override void OnPreRender(EventArgs e)
         {
-            //loggingContext.Push();
-
             base.OnPreRender(e);
 
             if (!String.IsNullOrEmpty(overrideUrl))
             {
                 ScriptManager.RegisterClientScriptBlock(this, typeof(PageBase), "Jhu.Graywulf.Web.UI.PageBase.OverrideUrl", GetOverrideUrlScript(), true);
             }
-
-            //loggingContext.Pop();
         }
-
-        /*
-        protected override void OnPreRenderComplete(EventArgs e)
-        {
-            loggingContext.Push();
-            base.OnPreRenderComplete(e);
-            loggingContext.Pop();
-        }
-
-        protected override void OnSaveStateComplete(EventArgs e)
-        {
-            loggingContext.Push();
-            base.OnSaveStateComplete(e);
-            loggingContext.Pop();
-        }
-        */
-
+        
         protected override void OnUnload(EventArgs e)
         {
-            //loggingContext.Push();
-
             base.OnUnload(e);
 
             if (registryContext != null)
@@ -252,7 +177,6 @@ namespace Jhu.Graywulf.Web.UI
                 registryContext = null;
             }
 
-            //loggingContext.Pop();
             WebLoggingContext.Current.Dispose();
         }
 
@@ -290,7 +214,7 @@ namespace Jhu.Graywulf.Web.UI
             // reported to the user.
             if (!Response.HeadersWritten)
             {
-                Response.Redirect(Constants.PageUrlError, false);
+                Response.Redirect(Constants.PageUrlError, true);
             }
         }
 

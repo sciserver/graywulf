@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ServiceModel.Channels;
 using System.Runtime.Serialization;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.Web.Services
@@ -20,6 +21,12 @@ namespace Jhu.Graywulf.Web.Services
         #endregion
 
         public RestLoggingContext()
+            :this(true, AmbientContextStoreLocation.AsyncLocal | AmbientContextStoreLocation.WcfOperationContext)
+        {
+        }
+
+        public RestLoggingContext(bool isAsync, AmbientContextStoreLocation supportedLocation)
+            : base(isAsync, supportedLocation)
         {
             if (LoggingContext.Current is RestLoggingContext)
             {
