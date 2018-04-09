@@ -107,8 +107,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             var xr = new Util.XmlReader(xml);
 
             this.query = xr.GetXmlInnerText("Query/QueryString");
-
-
+            
             var datasetName = xr.GetXmlInnerText("Query/Output/Dataset/Name");
             var schemaName = xr.GetXmlInnerText("Query/Output/SchemaName");
             var tableName = xr.GetXmlInnerText("Query/Output/ObjectName");
@@ -146,6 +145,28 @@ namespace Jhu.Graywulf.Web.Api.V1
             xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Registry.Constants.JobParameterParameters].XmlValue);
 
             var xr = new Util.XmlReader(xml);
+            var outputs = new List<string>();
+            
+
+            foreach (var t in xr.EnumerateAsDictionary("SqlQueryParameters/OutputTables/Table"))
+            {
+                var table = new Sql.Schema.Table()
+                {
+                    Dataset = new SqlServerDataset()
+                    {
+                        Name = t.ContainsKey("DatasetName") ? t["DatasetName"] : null,
+
+                    },
+                    DatabaseName = t.ContainsKey("DatabaseName") ? t["DatabaseName"] : null,
+                    SchemaName = t.ContainsKey("SchemaName") ? t["SchemaName"] : null,
+                    ObjectName = t.ContainsKey("ObjectName") ? t["ObjectName"] : null,
+                };
+                
+                outputs.Add(table.Dataset.GetObjectFullyResolvedName(table));
+            }
+
+            this.query = xr.GetXmlInnerText("SqlQueryParameters/QueryString");
+            this.output = outputs.ToArray();
         }
 
         /// <summary>
