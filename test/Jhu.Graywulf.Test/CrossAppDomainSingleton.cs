@@ -110,29 +110,40 @@ namespace Jhu.Graywulf.Test
             return ad;
         }
 
-        private static IEnumerable<AppDomain> EnumerateAppDomains()
+        /// <summary>
+        /// Code from https://stackoverflow.com/questions/388554/list-appdomains-in-process
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<AppDomain> EnumerateAppDomains()
         {
-            var handle = IntPtr.Zero;
+            IntPtr enumHandle = IntPtr.Zero;
+            ICorRuntimeHost host = null;
 
-            var host = new CorRuntimeHostClass();
-
-            host.EnumDomains(out handle);
-
-            while (true)
+            try
             {
+                host = new CorRuntimeHostClass();
+                host.EnumDomains(out enumHandle);
                 object domain = null;
-                host.NextDomain(handle, out domain);
 
-                if (domain == null)
+                host.NextDomain(enumHandle, out domain);
+                while (domain != null)
                 {
-                    break;
+                    yield return (AppDomain)domain;
+                    host.NextDomain(enumHandle, out domain);
                 }
-
-                yield return domain as AppDomain;
             }
+            finally
+            {
+                if (host != null)
+                {
+                    if (enumHandle != IntPtr.Zero)
+                    {
+                        host.CloseEnum(enumHandle);
+                    }
 
-            host.CloseEnum(handle);
-            Marshal.ReleaseComObject(host);
+                    Marshal.ReleaseComObject(host);
+                }
+            }
         }
 
         public override object InitializeLifetimeService()

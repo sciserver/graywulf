@@ -28,6 +28,7 @@ namespace Jhu.Graywulf.Test
 
         private Random rnd = new Random();
         private SqlServerDataset ioTestDataset;
+        private SqlServerDataset schemaTestDataset;
         private User testUser;
 
         protected SqlServerDataset IOTestDataset
@@ -40,6 +41,19 @@ namespace Jhu.Graywulf.Test
                 }
 
                 return ioTestDataset;
+            }
+        }
+
+        protected SqlServerDataset SchemaTestDataset
+        {
+            get
+            {
+                if (schemaTestDataset == null)
+                {
+                    schemaTestDataset = CreateSchemaTestDataset();
+                }
+
+                return schemaTestDataset;
             }
         }
 
@@ -73,6 +87,15 @@ namespace Jhu.Graywulf.Test
         protected virtual SqlServerDataset CreateIOTestDataset()
         {
             return new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString);
+        }
+
+        protected virtual SqlServerDataset CreateSchemaTestDataset()
+        {
+            var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString);
+            var ds = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString);
+            ds.DatabaseName = csb.InitialCatalog;
+
+            return ds;
         }
 
         protected User SignInTestUser(RegistryContext context)

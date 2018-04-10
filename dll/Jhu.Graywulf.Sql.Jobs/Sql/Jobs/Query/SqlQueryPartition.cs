@@ -13,6 +13,7 @@ using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Sql.LogicalExpressions;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.CodeGeneration;
 using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
@@ -257,8 +258,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 }
 
                 // Generate most restrictive queries
-                var rqg = new RemoteQueryGenerator();
-                var queries = rqg.Execute(QueryDetails, ColumnContext.AllReferenced, 0);
+                var queries = GenerateRemoteSourceTableQueries(ColumnContext.AllReferenced, 0);
 
                 foreach (var key in queries.Keys)
                 {
@@ -293,12 +293,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 ds = new SqlServerDataset(ds);
             }
 
-            // Generate most restrictive query
-            var cg = CodeGeneratorFactory.CreateCodeGenerator(ds);
-
-            var rcg = new RemoteQueryGenerator();
-            var sql = rcg.Execute(QueryDetails, ColumnContext.All, 0);
-
             query = new SourceQuery()
             {
                 Dataset = ds,
@@ -329,6 +323,81 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
         }
 
+        public Dictionary<string, string> GenerateRemoteSourceTableQueries(ColumnContext columnContext, int top)
+        {
+            var res = new Dictionary<string, string>();
+
+            // Normalize all search conditions
+            var scn = new SearchConditionNormalizer();
+            scn.CollectConditions(QueryDetails.ParsingTree);
+
+            // Loop through all tables
+            foreach (var key in QueryDetails.SourceTableReferences.Keys)
+            {
+                var columns = new Dictionary<string, ColumnReference>();
+                DatabaseObject table = null;
+                TableReference ntr = null;
+                CodeGeneratorBase cg = null;
+
+                // Loop through all references to the table
+                foreach (var tr in QueryDetails.SourceTableReferences[key])
+                {
+                    if (ntr == null)
+                    {
+                        table = tr.DatabaseObject;
+
+                        ntr = new TableReference(tr);
+                        ntr.Alias = null;
+
+                        cg = CodeGeneratorFactory.CreateCodeGenerator(table.Dataset);
+                        cg.TableNameRendering = NameRendering.FullyQualified;
+                        cg.TableAliasRendering = AliasRendering.Never;
+                        cg.ColumnNameRendering = NameRendering.IdentifierOnly;
+                        cg.ColumnAliasRendering = AliasRendering.Never;
+                        cg.FunctionNameRendering = NameRendering.FullyQualified;
+                    }
+
+                    // Remap all table reference to the first one; this is to prevent different aliases etc.
+                    // Certain tables can be referenced multiple times without different alias,
+                    // for example UNION etc. queries.
+
+                    if (!cg.TableReferenceMap.ContainsKey(tr))
+                    {
+                        cg.TableReferenceMap.Add(tr, ntr);
+                    }
+
+                    // Collect columns that will be returned
+                    foreach (var c in tr.FilterColumnReferences(columnContext))
+                    {
+                        if (!columns.ContainsKey(c.ColumnName))
+                        {
+                            columns.Add(c.ColumnName, new ColumnReference(c));
+                        }
+                    }
+                }
+
+                // Generate select list
+                var columnlist = cg.CreateColumnListGenerator();
+                columnlist.ListType = ColumnListType.SelectWithOriginalNameNoAlias;
+                columnlist.TableAlias = String.Empty;
+                columnlist.Columns.AddRange(columns.Values);
+
+                // Generate where clause
+                var where = scn.GenerateWherePredicatesSpecificToTable(QueryDetails.SourceTableReferences[key]);
+
+                var select = cg.GenerateMostRestrictiveTableQuery(
+                    cg.GetResolvedTableName(table),
+                    null,
+                    columnlist.Execute(),
+                    cg.Execute(where),
+                    top);
+
+                res.Add(key, select);
+            }
+
+            return res;
+        }
+        
         #endregion
         #region Final query execution
 

@@ -210,7 +210,6 @@
     <Compile Include="Sql\CodeGeneration\PostgreSql\PostgreSqlColumnListGenerator.cs" />
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerCodeGenerator.cs" />
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerColumnListGenerator.cs" />
-    <Compile Include="Sql\CodeGeneration\RemoteQueryGenerator.cs" />
     <Compile Include="Sql\LogicalExpressions\BinaryExpression.cs" />
     <Compile Include="Sql\LogicalExpressions\Brackets.cs" />
     <Compile Include="Sql\LogicalExpressions\CnfConverter.cs" />
