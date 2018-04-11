@@ -13,13 +13,15 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         private const string columnNull = " NULL";
         private const string columnNotNull = " NOT NULL";
+        private const string identity = " IDENTITY(1, 1)";
 
         private List<ColumnReference> columns;
         private string tableAlias;
         private string joinedTableAlias;
         private ColumnListType listType;
-        private ColumnListNullType nullType;
-        private bool leadingSeparator;
+        private ColumnListNullRendering nullRendering;
+        private ColumnListSeparatorRendering separatorRendering;
+        private ColumnListIdentityRendering identityRendering;
 
         public List<ColumnReference> Columns
         {
@@ -44,16 +46,22 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             set { listType = value; }
         }
 
-        public ColumnListNullType NullType
+        public ColumnListNullRendering NullRendering
         {
-            get { return nullType; }
-            set { nullType = value; }
+            get { return nullRendering; }
+            set { nullRendering = value; }
         }
 
-        public bool LeadingSeparator
+        public ColumnListSeparatorRendering SeparatorRendering
         {
-            get { return leadingSeparator; }
-            set { leadingSeparator = value; }
+            get { return separatorRendering; }
+            set { separatorRendering = value; }
+        }
+
+        public ColumnListIdentityRendering IdentityRendering
+        {
+            get { return identityRendering; }
+            set { identityRendering = value; }
         }
 
         protected ColumnListGeneratorBase()
@@ -104,8 +112,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             this.tableAlias = null;
             this.joinedTableAlias = null;
             this.listType = ColumnListType.SelectWithOriginalNameNoAlias;
-            this.nullType = ColumnListNullType.Defined;
-            this.leadingSeparator = false;
+            this.nullRendering = ColumnListNullRendering.Original;
+            this.separatorRendering = ColumnListSeparatorRendering.Default;
+            this.identityRendering = ColumnListIdentityRendering.Original;
         }
 
         #region Column name escaping
@@ -144,16 +153,16 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         {
             string nullstring;
 
-            switch (nullType)
+            switch (nullRendering)
             {
-                case ColumnListNullType.Nothing:
-                case ColumnListNullType.Defined:
+                case ColumnListNullRendering.Never:
+                case ColumnListNullRendering.Original:
                     nullstring = String.Empty;
                     break;
-                case ColumnListNullType.Null:
+                case ColumnListNullRendering.Null:
                     nullstring = columnNull;
                     break;
-                case ColumnListNullType.NotNull:
+                case ColumnListNullRendering.NotNull:
                     nullstring = columnNotNull;
                     break;
                 default:
@@ -162,7 +171,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
             return nullstring;
         }
-
+        
         protected virtual string GetFormatString()
         {
             // 0: table alias
@@ -170,17 +179,18 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             // 2: original column name
             // 3: column type
             // 4: null string
-            // 5: joined table alias
+            // 5: identity string
+            // 6: joined table alias
 
             string format = null;
 
             switch (listType)
             {
                 case ColumnListType.CreateTableWithOriginalName:
-                    format = "{2} {3}{4}";
+                    format = "{2} {3}{4}{5}";
                     break;
                 case ColumnListType.CreateTableWithEscapedName:
-                    format = "{1} {3}{4}";
+                    format = "{1} {3}{4}{5}";
                     break;
                 case ColumnListType.CreateView:
                 case ColumnListType.CreateIndex:
@@ -200,10 +210,10 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                     format = "{0}{1}";
                     break;
                 case ColumnListType.JoinConditionWithOriginalName:
-                    format = "{0}{2} = {5}{2}";
+                    format = "{0}{2} = {6}{2}";
                     break;
                 case ColumnListType.JoinConditionWithEscapedName:
-                    format = "{0}{1} = {5}{1}";
+                    format = "{0}{1} = {6}{1}";
                     break;
                 default:
                     throw new NotImplementedException();
@@ -262,7 +272,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         {
             string nullspec;
 
-            if (nullType == ColumnListNullType.Defined)
+            if (nullRendering == ColumnListNullRendering.Original)
             {
                 nullspec = column.DataType.IsNullable ? columnNull : columnNotNull;
             }
@@ -272,6 +282,19 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             }
 
             return nullspec;
+        }
+
+        private string GetIdentitySpec(ColumnReference column)
+        {
+            if (identityRendering == ColumnListIdentityRendering.Original &&
+                column.ColumnContext.HasFlag(ColumnContext.Identity))
+            {
+                return identity;
+            }
+            else
+            {
+                return String.Empty;
+            }
         }
 
         /// <summary>
@@ -299,14 +322,15 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             int q = 0;
             foreach (var column in columns)
             {
-                if (leadingSeparator || q != 0)
+                if (separatorRendering.HasFlag(ColumnListSeparatorRendering.Leading) || q != 0)
                 {
                     columnlist.Append(separator);
                 }
 
                 var alias = GetTableAlias(column.TableReference);
                 var jalias = GetJoinedTableAlias();
-                string nullspec = GetNullSpec(column, nullstring);
+                var nullspec = GetNullSpec(column, nullstring);
+                var identityspec = GetIdentitySpec(column);
 
                 columnlist.AppendFormat(
                     format,
@@ -315,6 +339,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                     QuoteIdentifier(column.ColumnName),
                     column.DataType.TypeNameWithLength,
                     nullspec,
+                    identityspec,
                     jalias);
 
                 q++;

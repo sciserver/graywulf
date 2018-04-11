@@ -297,9 +297,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             {
                 ntr = GetServerSpecificDatabaseMapping(tr, queryObject.AssignedServerInstance, databaseVersion, surrogateDatabaseVersion);
             }
-
-
-            if (ntr != null)
+            
+            if (ntr != null && !TableReferenceMap.ContainsKey(tr))
             {
                 TableReferenceMap.Add(tr, ntr);
             }
@@ -363,11 +362,16 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                 var ntr = new TableReference(tr)
                 {
+                    DatasetName = temporaryDataset.Name,
                     DatabaseName = temporaryDataset.DatabaseName,
                     SchemaName = temporarySchemaName,
                     DatabaseObjectName = queryObject.TemporaryTables.GetValue(key).TableName,
                     DatabaseObject = null
                 };
+
+                // TODO: verify if this call here breaks any logic elsewhere, because
+                // the temp table might not yes exist
+                ntr.DatabaseObject = temporaryDataset.Tables[ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName];
 
                 return ntr;
             }

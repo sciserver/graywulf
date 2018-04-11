@@ -266,7 +266,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
             var columns = new SqlServerColumnListGenerator(table)
             {
                  ListType = ColumnListType.CreateTableWithOriginalName,
-                 LeadingSeparator = false
+                 SeparatorRendering = ColumnListSeparatorRendering.Default
             };
 
             sql.Append("CREATE TABLE ");

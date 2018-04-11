@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
     /// <summary>
     /// Column list nullable type.
     /// </summary>
-    public enum ColumnListNullType
+    public enum ColumnListNullRendering
     {
         /// <summary>
         /// No 'NULL' or 'NOT NULL' added after columns.
@@ -39,9 +39,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         /// <remarks>
         /// For use with select lists, view definitions.
         /// </remarks>
-        Nothing,
+        Never,
 
-        Defined,
+        Original,
 
         /// <summary>
         /// 'NULL' added after each column.
@@ -58,6 +58,19 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         /// From use with create table.
         /// </remarks>
         NotNull
+    }
+
+    [Flags]
+    public enum ColumnListSeparatorRendering
+    {
+        Default = 0,
+        Leading = 1,
+    }
+
+    public enum ColumnListIdentityRendering
+    {
+        Never,
+        Original,
     }
 
     /// <summary>
