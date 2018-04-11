@@ -1275,7 +1275,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             ServiceModel.ServiceProxy<ICopyTable> qi;
 
-            if (local)
+            if (local || System.Diagnostics.Debugger.IsAttached)
             {
                 qi = new ServiceModel.ServiceProxy<ICopyTable>(new CopyTable(CancellationContext));
             }
