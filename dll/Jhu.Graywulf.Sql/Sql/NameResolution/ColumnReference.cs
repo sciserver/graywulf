@@ -122,7 +122,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             if (columnDescription.IsKey)
             {
-                this.columnContext = ColumnContext.PrimaryKey;
+                this.columnContext |= ColumnContext.PrimaryKey;
+            }
+
+            if (columnDescription.IsIdentity)
+            {
+                this.columnContext |= ColumnContext.Identity;
             }
 
             // TODO: copy metadata here

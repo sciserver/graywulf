@@ -24,6 +24,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         Special = 1024,
         Key = 4096,             // Columns marked as 'Key' in schema description (usually taken from a data reader's schema table)
         PrimaryKey = 2048,      // Columns of the primary key index
+        Identity = 8192,        // Column is an identity column
 
         AllReferenced = Default | Hint | Special | PrimaryKey,
 

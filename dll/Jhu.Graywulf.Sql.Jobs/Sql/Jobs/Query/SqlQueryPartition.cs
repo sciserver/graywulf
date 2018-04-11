@@ -315,7 +315,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             var dest = new DestinationTable(
                 temptable,
-                TableInitializationOptions.Drop | TableInitializationOptions.Create);
+                TableInitializationOptions.Drop | TableInitializationOptions.Create | TableInitializationOptions.CreatePrimaryKey);
 
             using (var tc = CreateTableCopyTask(source, dest, false, out var settings))
             {
