@@ -93,18 +93,19 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             // Make a clone so that the parsing tree can be modified
             var query = new QueryDetails(queryObject.QueryDetails);
-            return OnGetExecuteQuery(query);
-        }
 
-        protected virtual SourceQuery OnGetExecuteQuery(QueryDetails query)
-        {
             if (queryObject.Parameters.ExecutionMode == ExecutionMode.Graywulf)
             {
                 AddSystemDatabaseMappings();
                 AddSourceTableMappings(Partition.Parameters.SourceDatabaseVersionName, null);
                 AddOutputTableMappings();
             }
-            
+
+            return OnGetExecuteQuery(query);
+        }
+
+        protected virtual SourceQuery OnGetExecuteQuery(QueryDetails query)
+        {
             RewriteForExecute(query);
             RemoveNonStandardTokens(query);
             
