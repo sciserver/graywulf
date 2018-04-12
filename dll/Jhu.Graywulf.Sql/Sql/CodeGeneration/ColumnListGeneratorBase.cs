@@ -132,7 +132,18 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         /// <returns>The excaped name of the temporary table column.</returns>
         public virtual string EscapeColumnName(TableReference table, string columnName)
         {
-            return String.Format("{0}_{1}_{2}_{3}_{4}",
+            string format;
+
+            if (String.IsNullOrWhiteSpace(table.Alias))
+            {
+                format = "{0}_{1}_{2}_{4}";
+            }
+            else
+            {
+                format = "{3}_{4}";
+            }
+
+            return String.Format(format,
                                  table.DatasetName,
                                  table.SchemaName,
                                  table.DatabaseObjectName,
@@ -142,7 +153,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public virtual string EscapePropagatedColumnName(TableReference table, string columnName)
         {
-            return String.Format("_{0}", EscapeColumnName(table, columnName));
+            return String.Format("__{0}", EscapeColumnName(table, columnName));
         }
 
         #endregion
