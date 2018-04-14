@@ -329,7 +329,7 @@ WHERE ([p].[ra] > 2);";
         #region Column name escaping
 
         [TestMethod]
-        public void EscapeColumnNameTest()
+        public void EscapeColumnNameTest1()
         {
             var tr = new TableReference()
             {
@@ -339,7 +339,25 @@ WHERE ([p].[ra] > 2);";
                 Alias = "a",
             };
 
-            var gt = "TEST_sch_table_a_col";
+            var gt = "a_col";
+
+            var columns = new SqlServerColumnListGenerator();
+            var res = (string)CallMethod(columns, "EscapeColumnName", tr, "col");
+
+            Assert.AreEqual(gt, res);
+        }
+
+        [TestMethod]
+        public void EscapeColumnNameTest2()
+        {
+            var tr = new TableReference()
+            {
+                DatasetName = "TEST",
+                SchemaName = "sch",
+                DatabaseObjectName = "table",
+            };
+
+            var gt = "TEST_sch_table_col";
 
             var columns = new SqlServerColumnListGenerator();
             var res = (string)CallMethod(columns, "EscapeColumnName", tr, "col");
