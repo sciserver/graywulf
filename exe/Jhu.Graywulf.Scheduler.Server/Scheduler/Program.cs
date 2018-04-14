@@ -17,21 +17,31 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="args"></param>
         public static void Main(string[] args)
         {
-            Scheduler.Configuration.RunSanityCheck();
-
             // Switch between interactive (command-line) and service modes.
             if (Environment.UserInteractive ||
                 (args != null && args.Length > 0 && args[0] == "-cmd"))
             {
+                RunInteractive();
+            }
+            else
+            {
+                // Run as service
+                ServiceBase.Run(new SchedulerService());
+            }
+        }
+
+        private static void RunInteractive()
+        {
+            using (var loggingContext = new LoggingContext(true, Components.AmbientContextStoreLocation.Default))
+            {
+                loggingContext.StartLogger(Logging.EventSource.Scheduler, true);
+
                 Console.WriteLine("Graywulf scheduler is starting...");
 
                 // TODO: move to logger
 #if BREAKDEBUG
                 Console.WriteLine("Warning: built with BREAKDEBUG flag enabled.");
 #endif
-
-                // Initialize logger
-                LoggingContext.Current.StartLogger(Logging.EventSource.Scheduler, true);
 
                 QueueManager.Instance.Start(Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName, true);
 
@@ -55,13 +65,7 @@ namespace Jhu.Graywulf.Scheduler
 
                 Console.WriteLine("                                       done.");
 
-                // Initialize logger
-                LoggingContext.Current.StopLogger();
-            }
-            else
-            {
-                // Run as service
-                ServiceBase.Run(new SchedulerService());
+                loggingContext.StopLogger();
             }
         }
     }

@@ -13,6 +13,8 @@ namespace Jhu.Graywulf.Scheduler
 {
     public class SchedulerService : ServiceBase
     {
+        private static LoggingContext loggingContext;
+
         public SchedulerService()
         {
             this.ServiceName = "SchedulerService";
@@ -22,8 +24,11 @@ namespace Jhu.Graywulf.Scheduler
         {
             AppDomain.CurrentDomain.UnhandledException += Util.ServiceControl.WriteErrorDump;
 
+            loggingContext = new LoggingContext(true, Components.AmbientContextStoreLocation.Default);
+            loggingContext.Pop();
+
             // Initialize logger
-            LoggingContext.Current.StartLogger(Logging.EventSource.Scheduler, false);
+            loggingContext.StartLogger(Logging.EventSource.Scheduler, false);
 
             // Initialize WCF service host to run the control service
             // It will start the logger
@@ -36,7 +41,10 @@ namespace Jhu.Graywulf.Scheduler
             QueueManager.Instance.Stop(TimeSpan.FromHours(1.5));
 
             // Stop logger
-            LoggingContext.Current.StopLogger();
+            loggingContext.StopLogger();
+            loggingContext.StopLogger();
+            loggingContext.Push();
+            loggingContext.Dispose();
         }
 
         protected override void OnPause()

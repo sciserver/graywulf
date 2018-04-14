@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Data.SqlClient;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.ServiceModel;
+using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.Scheduler
 {
@@ -28,7 +29,7 @@ namespace Jhu.Graywulf.Scheduler
             get { return (TimeSpan)base["appDomainIdle"]; }
             set { base["appDomainIdle"] = value; }
         }
-        
+
         [ConfigurationProperty("cancelTimeout")]
         [DefaultValue("00:02:00")]
         public TimeSpan CancelTimeout
@@ -63,22 +64,25 @@ namespace Jhu.Graywulf.Scheduler
 
         public void RunSanityCheck()
         {
-            // Test persistence service connection
-            using (var cn = new SqlConnection(PersistenceConnectionString))
+            using (var loggingContext = new LoggingContext())
             {
-                cn.Open();
-            }
+                // Test persistence service connection
+                using (var cn = new SqlConnection(PersistenceConnectionString))
+                {
+                    cn.Open();
+                }
 
-            // Test well-formated variables
-            TimeSpan ts;
-            ts = PollingInterval;
-            ts = AppDomainIdle;
+                // Test well-formated variables
+                TimeSpan ts;
+                ts = PollingInterval;
+                ts = AppDomainIdle;
 
-            // Test cluster registry settings
-            using (var context = ContextManager.Instance.CreateReadOnlyContext())
-            {
-                var ef = new EntityFactory(context);
-                ef.LoadEntity<Registry.Cluster>(Registry.ContextManager.Configuration.ClusterName);
+                // Test cluster registry settings
+                using (var context = ContextManager.Instance.CreateReadOnlyContext())
+                {
+                    var ef = new EntityFactory(context);
+                    ef.LoadEntity<Registry.Cluster>(Registry.ContextManager.Configuration.ClusterName);
+                }
             }
         }
     }
