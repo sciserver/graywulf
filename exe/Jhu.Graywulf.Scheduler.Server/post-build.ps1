@@ -3,6 +3,6 @@ cp $ProjectDir$OutDir$TargetName.pdb $SolutionDir$OutDir
 cp $ProjectDir$OutDir$TargetName.exe.config $SolutionDir$OutDir
 
 # Copy plugins
-$source = "$SolutionDir\plugins\$ConfigurationName\*"
+$source = "$SolutionDir\plugins\$OutDir\*"
 $target = "$ProjectDir$OutDir"
 cp $source $target

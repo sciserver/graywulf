@@ -1,4 +1,4 @@
 ﻿# Copy plugins
-$source = "$SolutionDir\plugins\$ConfigurationName\*"
+$source = "$SolutionDir\plugins\$OutDir\*"
 $target = "$ProjectDir$OutDir"
 cp $source $target
