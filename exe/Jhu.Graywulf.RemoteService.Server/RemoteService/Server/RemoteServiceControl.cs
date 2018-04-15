@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.RemoteService.Server
             return Task.FromResult(res);
         }
 
-        [OperationBehavior(Impersonation = ImpersonationOption.Required)]
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
         public Task<AuthenticationDetails> WhoAmIAsync()
         {
             // Switch to windows principal
@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.RemoteService.Server
             return Task.FromResult(details);
         }
 
-        [OperationBehavior(Impersonation = ImpersonationOption.NotAllowed)]
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
         public Task<AuthenticationDetails> WhoAreYouAsync()
         {
             var id = WindowsIdentity.GetCurrent();

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ServiceModel;
 using System.Security.Principal;
+using Jhu.Graywulf.ServiceModel;
 
 namespace Jhu.Graywulf.Scheduler
 {
@@ -17,7 +18,7 @@ namespace Jhu.Graywulf.Scheduler
             return res;
         }
 
-        [OperationBehavior(Impersonation = ImpersonationOption.Required)]
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
         public void WhoAmI(out string name, out bool isAuthenticated, out string authenticationType)
         {
             // Switch to windows principal
@@ -30,7 +31,7 @@ namespace Jhu.Graywulf.Scheduler
             QueueManager.Instance.LogDebug("Client is {0} and {1}authenticated", name, isAuthenticated ? "" : "not ");
         }
 
-        [OperationBehavior(Impersonation = ImpersonationOption.NotAllowed)]
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
         public void WhoAreYou(out string name, out bool isAuthenticated, out string authenticationType)
         {
             var id = WindowsIdentity.GetCurrent();
