@@ -30,3 +30,13 @@ function Add-App($name) {
 function Add-Script($package, $name) {
 	New-Link "${ProjectDir}Scripts\$name" "${SolutionDir}packages\$package\content\Scripts\$name"
 }
+
+function Copy-Plugins() {
+	if ($PlatformName -eq "AnyCPU") {
+		$source = "$SolutionDir\plugins\bin\$ConfigurationName\*"
+	} else {
+		$source = "$SolutionDir\plugins\bin\$PlatformName\$ConfigurationName\*"
+	}
+	$target = "$ProjectDir$OutDir"
+	cp $source $target
+}

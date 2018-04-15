@@ -1,4 +1,5 @@
-﻿# Copy plugins
-$source = "$SolutionDir\plugins\$OutDir\*"
-$target = "$ProjectDir$OutDir"
-cp $source $target
+﻿$ErrorActionPreference='Stop'
+
+. ../web-build.ps1
+
+Copy-Plugins
