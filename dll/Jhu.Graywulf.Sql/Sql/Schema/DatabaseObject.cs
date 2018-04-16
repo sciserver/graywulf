@@ -71,7 +71,7 @@ namespace Jhu.Graywulf.Sql.Schema
         [DataMember(Name = "DatasetName")]
         public string DatasetName_ForXml
         {
-            get { return dataset.Name; }
+            get { return dataset?.Name; }
             set { }
         }
 
@@ -171,7 +171,7 @@ namespace Jhu.Graywulf.Sql.Schema
         [DataMember(Name = "UniqueKey")]
         public string UniqueKey_ForXml
         {
-            get { return dataset.GetObjectUniqueKey(this); }
+            get { return dataset?.GetObjectUniqueKey(this); }
             set { }
         }
 
