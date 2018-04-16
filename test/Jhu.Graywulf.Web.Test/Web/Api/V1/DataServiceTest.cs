@@ -33,8 +33,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             return client;
         }
 
-        [TestMethod]
-        public void DownloadTableTest()
+        private void DownloadTableTestHelper(string dataset, string table)
         {
             // This test also demonstrates how to pass cookies between REST requests
             // and a standard HttpWebRequest
@@ -46,7 +45,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 // We create a raw HTTP request here to stream data back.
                 // The WCF interface apparently doesn't support this
 
-                var uri = new Uri(String.Format("{0}/MYDB/dbo.SampleData", ServiceUri));
+                var uri = new Uri(String.Format("{0}/{1}/{2}", ServiceUri, dataset, table));
 
                 var req = (HttpWebRequest)WebRequest.Create(uri);
 
@@ -63,13 +62,25 @@ namespace Jhu.Graywulf.Web.Api.V1
         }
 
         [TestMethod]
+        public void DownloadMyDBTableTest()
+        {
+            DownloadTableTestHelper("MYDB", "SampleData");
+        }
+
+        [TestMethod]
+        public void DownloadTableTest()
+        {
+            DownloadTableTestHelper("TEST", "CatalogA");
+        }
+
+        [TestMethod]
         public void UploadTableTest()
         {
             // This test also demonstrates how to call a WCF REST service from a standard
             // WCF client with custom headers. To access WebOperationContext from a client an
             // OperationContextScope needs to be created
 
-            var path = GetTestFilePath(@"graywulf\test\files\csv_numbers.csv");
+            var path = GetTestFilePath(@"modules\graywulf\test\files\csv_numbers.csv");
 
             using (var session = new RestClientSession())
             {

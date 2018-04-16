@@ -306,6 +306,11 @@ namespace Jhu.Graywulf.Format
 
         public override int GetOrdinal(string name)
         {
+            if (columnIndex == null)
+            {
+                InitializeColumns();
+            }
+
             return columnIndex[name];
         }
 

@@ -137,10 +137,8 @@ namespace Jhu.Graywulf.IO.Tasks
             this.source = source;
             this.destination = destination;
             this.Settings = settings;
-
-            await OpenAsync();
+            
             await ExecuteAsync();
-            Close();
 
             return Results;
         }

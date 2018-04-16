@@ -402,42 +402,42 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <param name="forceReinitialize"></param>
         public virtual void InitializeQueryObject(CancellationContext cancellationContext, RegistryContext registryContext, IScheduler scheduler, bool forceReinitialize)
         {
-            if (cancellationContext != null)
-            {
-                ((ICancelableTask)this).CancellationContext = cancellationContext;
-            }
-
-            if (registryContext != null)
-            {
-                registryContext.EnsureContextEntitiesLoaded();
-            }
-
             lock (syncRoot)
             {
+                if (cancellationContext != null)
+                {
+                    ((ICancelableTask)this).CancellationContext = cancellationContext;
+                }
+
                 if (registryContext != null)
                 {
                     UpdateContext(registryContext);
-
-                    switch (parameters.ExecutionMode)
-                    {
-                        case ExecutionMode.SingleServer:
-                            break;
-                        case ExecutionMode.Graywulf:
-                            LoadFederation(forceReinitialize);
-                            LoadAssignedServerInstance(forceReinitialize);
-                            LoadDatasets(forceReinitialize);
-                            LoadSystemDatabaseInstance(temporaryDatabaseInstanceReference, (GraywulfDataset)temporaryDataset, forceReinitialize);
-                            LoadSystemDatabaseInstance(codeDatabaseInstanceReference, (GraywulfDataset)codeDataset, forceReinitialize);
-
-                            break;
-                        default:
-                            throw new NotImplementedException();
-                    }
                 }
-
+                
                 if (scheduler != null)
                 {
                     this.scheduler = scheduler;
+                }
+
+                if (registryContext != null)
+                {
+                    registryContext.EnsureContextEntitiesLoaded();
+                }
+
+                switch (parameters.ExecutionMode)
+                {
+                    case ExecutionMode.SingleServer:
+                        break;
+                    case ExecutionMode.Graywulf:
+                        LoadFederation(forceReinitialize);
+                        LoadAssignedServerInstance(forceReinitialize);
+                        LoadDatasets(forceReinitialize);
+                        LoadSystemDatabaseInstance(temporaryDatabaseInstanceReference, (GraywulfDataset)temporaryDataset, forceReinitialize);
+                        LoadSystemDatabaseInstance(codeDatabaseInstanceReference, (GraywulfDataset)codeDataset, forceReinitialize);
+
+                        break;
+                    default:
+                        throw new NotImplementedException();
                 }
 
                 // TODO: try to take these out from lock

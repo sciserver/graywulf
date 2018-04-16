@@ -92,6 +92,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             var q = OnCreateQuery((Parsing.StatementBlock)root);
 
+            q.RegistryContext = this.RegistryContext;
             q.Parameters.QueryFactoryTypeName = Util.TypeNameFormatter.ToUnversionedAssemblyQualifiedName(this.GetType());
             q.Parameters.QueryString = queryString;
 

@@ -189,9 +189,8 @@ namespace Jhu.Graywulf.Web.Api.V1
             {
                 qf.AppendUserDatabase(q, udbs[key], usis[key]);
             }
-
-            // TODO: Target table settings will need to be modified
-            // once multi-select queries are implemented
+            
+            q.Parameters.FederationName = context.Federation.GetFullyQualifiedName();
             q.Parameters.BatchName = null;
             q.Parameters.QueryName = this.Name;
 
@@ -199,12 +198,19 @@ namespace Jhu.Graywulf.Web.Api.V1
             // by an INTO clause
             var userdb = (SqlServerDataset)context.SchemaManager.Datasets[Registry.Constants.UserDbName];
 
+            // Pass default target dataset and table name
+            q.Parameters.DefaultOutputDataset = userdb;
+            q.Parameters.DefaultSourceDataset = userdb;
+            
             q.Parameters.Destination = new IO.Tasks.DestinationTable()
             {
                 Dataset = userdb,
                 DatabaseName = userdb.DatabaseName,
                 SchemaName = userdb.DefaultSchemaName
             };
+
+            // TODO: Target table settings will need to be modified
+            // once multi-select queries are implemented
 
             switch (Queue)
             {

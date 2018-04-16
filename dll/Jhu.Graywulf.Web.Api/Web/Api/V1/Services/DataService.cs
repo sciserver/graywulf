@@ -98,6 +98,8 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                 if (!ds.DatabaseDefinitionReference.IsEmpty)
                 {
+                    ds.RegistryContext = RegistryContext;
+
                     var dd = ds.DatabaseDefinitionReference.Value;
                     var di = dd.GetRandomDatabaseInstance(Registry.Constants.ProdDatabaseVersionName);
 
@@ -117,10 +119,14 @@ namespace Jhu.Graywulf.Web.Api.V1
             var destination = ff.CreateFileFromAcceptHeader(accept);
 
             // Create export task
+            var settings = new TableCopySettings()
+            {
+            };
             var export = new ExportTable()
             {
                 Source = source,
-                Destination = destination
+                Destination = destination,
+                Settings = settings,
             };
 
             // Set content type based on output file format
@@ -169,14 +175,15 @@ namespace Jhu.Graywulf.Web.Api.V1
             var destination = new IO.Tasks.DestinationTable(table, Jhu.Graywulf.Sql.Schema.TableInitializationOptions.Create);
 
             // Create import task and execute it
-            var import = new ImportTable()
+            var import = new ImportTable();
+            var settings = new TableCopySettings()
             {
-                Source = source,
-                Destination = destination
+                StreamFactoryType = FederationContext.Federation.StreamFactory,
+                FileFormatFactoryType = FederationContext.Federation.FileFormatFactory,
             };
 
             // TODO: async
-            Jhu.Graywulf.Util.TaskHelper.Wait(import.ExecuteAsync());
+            Jhu.Graywulf.Util.TaskHelper.Wait(import.ExecuteAsyncEx(source, destination, settings));
         }
 
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
