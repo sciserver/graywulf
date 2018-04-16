@@ -30,10 +30,12 @@ namespace Jhu.Graywulf.Install
 
             // Find location of the assembly
             var filename = typeof(Jhu.Graywulf.Registry.EntityType).Assembly.Location;
-            var hex = GetFileAsHex(filename);
+            string hex, hash;
 
+            GetFileAsHex(filename, out hex, out hash);
+            sb.Replace("[$Hash]", hash);
             sb.Replace("[$Hex]", hex);
-
+            
             return sb.ToString();
         }
     }

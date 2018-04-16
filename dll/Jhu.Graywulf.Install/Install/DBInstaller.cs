@@ -255,20 +255,30 @@ namespace Jhu.Graywulf.Install
             }
         }
 
-        protected string GetFileAsHex(string filename)
+        protected void GetFileAsHex(string filename, out string hex, out string hash)
         {
+            var algorithm = System.Security.Cryptography.HashAlgorithm.Create("SHA512");
+
             // Load enum assembly as a binary and convert to hex
             var buffer = File.ReadAllBytes(filename);
             var sb = new StringBuilder();
 
+            WriteAsHex(buffer, sb);
+            hex = sb.ToString();
+
+            sb.Clear();
+            WriteAsHex(algorithm.ComputeHash(buffer), sb);
+            hash = sb.ToString();
+        }
+
+        private void WriteAsHex(byte[] buffer, StringBuilder sb)
+        {
             sb.Append("0x");
 
             for (int i = 0; i < buffer.Length; i++)
             {
                 sb.AppendFormat("{0:X2}", buffer[i]);
             }
-
-            return sb.ToString();
         }
     }
 }
