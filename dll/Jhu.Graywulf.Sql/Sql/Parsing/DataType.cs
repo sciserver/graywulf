@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
                 if (s == null)
                 {
-                    return -1;
+                    return 0;
                 }
                 else
                 {

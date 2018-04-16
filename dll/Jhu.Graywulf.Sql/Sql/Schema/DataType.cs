@@ -877,12 +877,14 @@ namespace Jhu.Graywulf.Sql.Schema
         {
             if (HasPrecision)
             {
-                // TODO: this is a little bit fishy but right now it will do it
-                if (precision == 0 && length > 0)
+                // Parser cannot distinguish precision from length so do this now
+                if (precision == 0 && length != 0)
                 {
-                    this.precision = (byte)length;
+                    precision = (byte)length;
+                    length = 0;
                 }
-                else if (precision != 0)
+
+                if (precision != 0)
                 {
                     this.precision = precision;
                 }
