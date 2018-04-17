@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.IO;
+using System.Threading.Tasks;
 using System.Web.UI;
-using System.Web.UI.WebControls;
+using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
 
@@ -11,6 +10,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
     public partial class Download : FederationPageBase
     {
+        private Stream stream;
+        private ExportTable task;
+        private DataFileBase file;
+
         public static string GetUrl(Guid guid)
         {
             return String.Format("~/Apps/MyDB/Download.aspx?guid={0}", guid.ToString("D"));
@@ -18,14 +21,19 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         
         protected void Page_Load(object sender, EventArgs e)
         {
-            WriteToResponse();
+            InitializeExportTask();
         }
 
-        private void WriteToResponse()
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            RegisterAsyncTask(new PageAsyncTask(WriteToResponseAsync));
+        }
+
+        private void InitializeExportTask()
         {
             var guid = Guid.Parse(Request["guid"]);
-            var task = (ExportTable)PopSessionItem(guid);
-            var file = task.Destination;
+            task = (ExportTable)PopSessionItem(guid);
+            file = task.Destination;
 
             // Set response headers
             Response.BufferOutput = false;
@@ -43,16 +51,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
             // Run export
             var sf = FederationContext.StreamFactory;
-            using (var stream = sf.Open(Response.OutputStream, DataFileMode.Write, file.Compression, DataFileArchival.None))
-            {
-                file.Open(stream, DataFileMode.Write);
-
-                // TODO: make it async
-                Util.TaskHelper.Wait(task.ExecuteAsync());
-
-                stream.Flush();
-            }
-
+            stream = sf.Open(Response.OutputStream, DataFileMode.Write, file.Compression, DataFileArchival.None);
+            file.Open(stream, DataFileMode.Write);
+        }
+            
+        private async Task WriteToResponseAsync()
+        {
+            await task.ExecuteAsync();
+            stream.Flush();
+            stream.Dispose();
             Response.End();
         }
     }
