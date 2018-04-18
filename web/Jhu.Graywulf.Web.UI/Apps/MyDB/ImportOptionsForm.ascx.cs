@@ -17,16 +17,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         }
 
-        /* TODO: figure out how to handle options
-        public IO.Tasks.ImportTableOptions GetOptions()
+        public void SetFileOptions(FileFormat format)
         {
-            var options = new IO.Tasks.ImportTableOptions()
-            {
-                GenerateIdentityColumn = generateIdentityColumn.Checked,
-            };
-
-            return options;
+            format.GenerateIdentityColumn = generateIdentityColumn.Checked;
         }
-        */
+
+        public void SetFileOptions(DataFileBase dataFile)
+        {
+            dataFile.GenerateIdentityColumn = generateIdentityColumn.Checked;
+        }
     }
 }

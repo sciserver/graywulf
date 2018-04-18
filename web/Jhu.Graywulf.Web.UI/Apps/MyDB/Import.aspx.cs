@@ -4,6 +4,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO.Jobs.ImportTables;
@@ -36,6 +37,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         #region Private member variables
 
         private Dictionary<string, Control> importForms;
+        private CopyTableBase task;
 
         #endregion
 
@@ -65,7 +67,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 RefreshImportMethodList();
             }
         }
-
+        
         protected void ImportMethod_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (importMethod.SelectedValue == "upload")
@@ -95,7 +97,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             {
                 if (importMethod.SelectedValue == "upload")
                 {
-                    ImportUploadedFile();
+                    InitializeImportTask();
                     uploadResultsForm.Visible = true;
                 }
                 else
@@ -144,20 +146,27 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             }
         }
 
-        private void ImportUploadedFile()
+        private void InitializeImportTask()
         {
+            // TODO: how to import archives?
+
             var uri = uploadForm.Uri;
             var file = fileFormatForm.GetDataFile(uri);
             var table = Web.Api.V1.DestinationTable.GetDestinationTable(FederationContext, destinationTableForm.Dataset.Name, destinationTableForm.TableName);
 
-            // TODO: how to pass options
-            //var options = importOptionsForm.GetOptions();
+            importOptionsForm.SetFileOptions(file);
 
-            // TODO: make this whole function async
-            var importer = Util.TaskHelper.Wait(uploadForm.OpenTableImporterAsync(file, table));
-            Util.TaskHelper.Wait(importer.ExecuteAsync());
+            task = uploadForm.CreateTableImporter(file, table);
 
-            foreach (var r in importer.Results)
+            RegisterAsyncTask(new PageAsyncTask(ImportViaBrowserAsync));
+        }
+
+        private async Task ImportViaBrowserAsync()
+        {
+            await uploadForm.OpenTableImporter(task);
+            await task.ExecuteAsync();
+
+            foreach (var r in task.Results)
             {
                 var li = new ListItem()
                 {
@@ -178,8 +187,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             var dataset = destinationTableForm.DatasetName;
             var table = destinationTableForm.TableName;
 
-            // TODO: how to get options
-            //var options = importOptionsForm.GetOptions();
+            importOptionsForm.SetFileOptions(file);
 
             var job = new ImportJob()
             {

@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true"
-    Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.Import" CodeBehind="Import.aspx.cs" %>
+    Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.Import" CodeBehind="Import.aspx.cs" Async="true" %>
 
 <%@ Register Src="Toolbar.ascx" TagPrefix="jgwc" TagName="Toolbar" %>
 <%@ Register Src="UploadForm.ascx" TagPrefix="jgwc" TagName="UploadForm" %>

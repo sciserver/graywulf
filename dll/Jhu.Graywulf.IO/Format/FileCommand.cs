@@ -175,17 +175,18 @@ namespace Jhu.Graywulf.Format
             return ExecuteReaderAsync(CommandBehavior.Default, cancellationToken);
         }
 
-        public Task<ISmartDataReader> ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+        public async Task<ISmartDataReader> ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
         {
             // TODO make it async
             // TODO forward cancellation token
-            dataReader = new FileDataReader(file);
-            return Task.FromResult((ISmartDataReader)dataReader);
+            dataReader = FileDataReader.CreateForAsync(file);
+            await dataReader.NextResultAsync();
+            return (ISmartDataReader)dataReader;
         }
         
-        async Task<ISmartDataReader> ISmartCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+        Task<ISmartDataReader> ISmartCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
         {
-            return await this.ExecuteReaderAsync(behavior, cancellationToken);
+            return this.ExecuteReaderAsync(behavior, cancellationToken);
         }
     }
 }

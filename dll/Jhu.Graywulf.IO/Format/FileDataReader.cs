@@ -117,16 +117,28 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Constructors and initializers
 
+        private FileDataReader()
+        {
+            InitializeMembers();
+        }
+
         internal protected FileDataReader(DataFileBase file)
         {
-            InizializeMembers();
+            InitializeMembers();
 
             this.file = file;
 
             NextResult();
         }
 
-        private void InizializeMembers()
+        internal static FileDataReader CreateForAsync(DataFileBase file)
+        {
+            var fdr = new FileDataReader();
+            fdr.file = file;
+            return fdr;
+        }
+
+        private void InitializeMembers()
         {
             this.file = null;
 

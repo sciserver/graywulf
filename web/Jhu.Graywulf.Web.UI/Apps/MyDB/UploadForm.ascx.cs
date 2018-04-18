@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Configuration;
 using System.Threading.Tasks;
+using System.IO;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
@@ -9,6 +10,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
     public partial class UploadForm : FederationUserControlBase
     {
+        private Stream stream;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             var configuration = WebConfigurationManager.OpenWebConfiguration("~");
@@ -45,7 +48,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             }
         }
 
-        public async Task<CopyTableBase> OpenTableImporterAsync(DataFileBase file, DestinationTable table)
+        public CopyTableBase CreateTableImporter(DataFileBase file, DestinationTable table)
         {
             var uri = this.Uri;
 
@@ -78,8 +81,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                     // TODO: generate identity?
                 };
 
-                await task.OpenAsync();
-
                 return task;
             }
             else
@@ -98,9 +99,28 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                     }
                 };
 
-                await task.OpenAsync(FederationContext.StreamFactory.Open(importedFile.PostedFile.InputStream, DataFileMode.Read, compression, archival));
+                stream = FederationContext.StreamFactory.Open(
+                    importedFile.PostedFile.InputStream, 
+                    DataFileMode.Read, 
+                    compression, 
+                    archival);
 
                 return task;
+            }
+        }
+
+        public async Task OpenTableImporter(CopyTableBase task)
+        {
+            switch (task)
+            {
+                case ImportTableArchive ita:
+                    await ita.OpenAsync(stream);
+                    break;
+                case ImportTable it:
+                    await it.OpenAsync();
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
         }
     }
