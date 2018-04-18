@@ -25,6 +25,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
         private Guid[] guids;
         private List<JobInstance> jobs;
 
+        public CancelJob()
+            : base(false)
+        {
+        }
+
         private void LoadJobs()
         {
             jobs = new List<JobInstance>();

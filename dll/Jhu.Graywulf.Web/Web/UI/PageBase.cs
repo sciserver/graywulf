@@ -16,12 +16,20 @@ namespace Jhu.Graywulf.Web.UI
 
         #region Private member variables
 
+        private bool readOnly;
+
         private string overrideUrl;
         private RegistryContext registryContext;
         private FederationContext federationContext;
         
         #endregion
         #region Properties
+
+        public bool ReadOnly
+        {
+            get { return readOnly; }
+            set { readOnly = value; }
+        }
 
         /// <summary>
         /// Gets the original referer of the page, even after postbacks.
@@ -82,14 +90,14 @@ namespace Jhu.Graywulf.Web.UI
         /// <summary>
         /// Gets an initialized  registry context.
         /// </summary>
-        public RegistryContext RegistryContext
+        public virtual RegistryContext RegistryContext
         {
             get
             {
                 if (registryContext == null)
                 {
                     var application = (UIApplicationBase)HttpContext.Current.ApplicationInstance;
-                    registryContext = application.CreateRegistryContext();
+                    registryContext = application.CreateRegistryContext(readOnly ? Registry.TransactionMode.ReadOnly : Registry.TransactionMode.ReadWrite);
                 }
 
                 return registryContext;
@@ -128,10 +136,19 @@ namespace Jhu.Graywulf.Web.UI
             InitializeMembers();
         }
 
+        protected PageBase(bool readOnly)
+        {
+            InitializeMembers();
+
+            this.readOnly = readOnly;
+        }
+
         private void InitializeMembers()
         {
+            this.readOnly = true;
             this.overrideUrl = null;
             this.registryContext = null;
+            this.federationContext = null;
         }
 
         #endregion

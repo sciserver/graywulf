@@ -25,6 +25,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         protected Jhu.Graywulf.Sql.Schema.DatabaseObject obj;
 
+        public Copy()
+            : base(false)
+        {
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
         }    

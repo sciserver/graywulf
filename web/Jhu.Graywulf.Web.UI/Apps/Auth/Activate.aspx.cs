@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Auth
         }
 
         protected Jhu.Graywulf.Registry.User user;
-
+        
         private bool ActivateUser(string code)
         {
             try

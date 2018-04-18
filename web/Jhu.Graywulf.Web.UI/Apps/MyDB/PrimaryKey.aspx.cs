@@ -16,6 +16,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         protected Jhu.Graywulf.Sql.Schema.Table table;
 
+        public PrimaryKey()
+            : base(false)
+        {
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             string objid = Request.QueryString["objid"];
@@ -133,7 +138,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 jobResultsForm.Visible = true;
             }
         }
-        
+
         protected void DropKey_Click(object sender, EventArgs e)
         {
             if (IsValid)

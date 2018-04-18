@@ -9,6 +9,7 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
+using Jhu.Graywulf.Web.UI;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Admin
@@ -30,7 +31,7 @@ namespace Jhu.Graywulf.Web.Admin
         {
             get { return item; }
         }
-
+        
         public Controls.EntityForm EntityForm
         {
             get { return ((EntityForm)Page.Master).EntityFormControl; }
@@ -40,7 +41,7 @@ namespace Jhu.Graywulf.Web.Admin
         {
             get { return (Label)FindControlRecursive("Message"); }
         }
-
+        
         protected virtual void Page_Load(object sender, EventArgs e)
         {
             LoadItem();

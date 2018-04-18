@@ -9,6 +9,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
 {
     public class QueryPageBase : FederationPageBase
     {
+        protected QueryPageBase()
+            : base(false)
+        {
+        }
+
         /// <summary>
         /// Creates a query job from the query string.
         /// </summary>

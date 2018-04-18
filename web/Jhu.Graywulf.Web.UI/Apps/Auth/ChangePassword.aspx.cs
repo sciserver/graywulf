@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Auth
         }
 
         protected Jhu.Graywulf.Registry.User user;
-
+        
         protected void Page_Load(object sender, EventArgs e)
         {
             if (RegistryUser != null)

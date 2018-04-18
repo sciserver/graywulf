@@ -76,12 +76,17 @@ namespace Jhu.Graywulf.Web.UI
             base.Dispose();
         }
 
+        public RegistryContext CreateRegistryContext()
+        {
+            return CreateRegistryContext(Registry.TransactionMode.ManualCommit | TransactionMode.ReadOnly);
+        }
+
         /// <summary>
         /// Gets an initialized registry context.
         /// </summary>
-        public RegistryContext CreateRegistryContext()
+        public RegistryContext CreateRegistryContext(TransactionMode transactionMode)
         {
-            var context = ContextManager.Instance.CreateContext(Registry.TransactionMode.ManualCommit | TransactionMode.ReadOnly);
+            var context = ContextManager.Instance.CreateContext(Registry.TransactionMode.ManualCommit | transactionMode);
             var session = HttpContext.Current.Session;
 
             if (session != null)

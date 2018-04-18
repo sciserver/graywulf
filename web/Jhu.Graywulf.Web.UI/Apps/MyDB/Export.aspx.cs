@@ -33,6 +33,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         #endregion
 
         public Export()
+            : base(false)
         {
             InitializeMembers();
         }
@@ -201,7 +202,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
                         ff.TryCreateFileFromMimeType(fileFormatForm.LastFileFormat, out last);
                         ff.TryCreateFileFromMimeType(fileFormatForm.FileFormat, out current);
-                        
+
                         if (current != null &&
                             (last == null || extension == last.Description.Extension))
                         {

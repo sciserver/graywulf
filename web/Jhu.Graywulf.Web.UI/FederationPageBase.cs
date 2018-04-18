@@ -20,6 +20,15 @@ namespace Jhu.Graywulf.Web.UI
 
         // ---
 
+        protected FederationPageBase()
+        {
+        }
+
+        protected FederationPageBase(bool readOnly)
+            : base(readOnly)
+        {
+        }
+
         protected bool HasQueryInSession()
         {
             return Util.QueryEditorUtil.HasQueryInSession(this);

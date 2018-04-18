@@ -8,6 +8,11 @@ namespace Jhu.Graywulf.Web.Admin
 {
     public class PageBase : Jhu.Graywulf.Web.UI.PageBase
     {
+        public PageBase()
+            : base(false)
+        {
+        }
+
         private string GetFormDataCacheKey(Guid guid)
         {
             var key = Web.UI.Constants.ApplicationFormDataCache + "_" + guid.ToString();
@@ -20,7 +25,7 @@ namespace Jhu.Graywulf.Web.Admin
             var key = GetFormDataCacheKey(guid);
 
             Page.Cache[key] = data;
-            
+
             return guid;
         }
 

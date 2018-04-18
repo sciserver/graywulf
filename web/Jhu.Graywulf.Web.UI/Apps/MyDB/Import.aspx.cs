@@ -40,6 +40,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         #endregion
 
         public Import()
+            : base(false)
         {
             InitializeMembers();
         }
@@ -87,7 +88,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 }
             }
         }
-        
+
         protected void Ok_Click(object sender, EventArgs e)
         {
             if (IsValid)
@@ -148,7 +149,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             var uri = uploadForm.Uri;
             var file = fileFormatForm.GetDataFile(uri);
             var table = Web.Api.V1.DestinationTable.GetDestinationTable(FederationContext, destinationTableForm.Dataset.Name, destinationTableForm.TableName);
-            
+
             // TODO: how to pass options
             //var options = importOptionsForm.GetOptions();
 
