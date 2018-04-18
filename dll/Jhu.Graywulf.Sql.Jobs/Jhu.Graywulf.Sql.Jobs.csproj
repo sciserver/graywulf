@@ -92,6 +92,11 @@
     <Compile Include="Sql\Jobs\Query\InitializeOutputTable.cs" />
     <Compile Include="Sql\Jobs\Query\InitializeQuery.cs" />
     <Compile Include="Sql\Jobs\Query\IQueryJob.cs" />
+    <Compile Include="Sql\Jobs\Query\LogMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LogMessages.resx</DependentUpon>
+    </Compile>
     <Compile Include="Sql\Jobs\Query\QueryFactory.cs" />
     <Compile Include="Sql\Jobs\Query\QueryObject.cs" />
     <Compile Include="Sql\Jobs\Query\RemoteOutputTable.cs" />
@@ -141,6 +146,10 @@
       <Project>{6797ed88-1d8c-491b-a036-4c42c4bf2eaf}</Project>
       <Name>Jhu.Graywulf.IO</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
+      <Project>{fd98fb58-a3e5-4d32-b6d6-3e20609c4d09}</Project>
+      <Name>Jhu.Graywulf.Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Parsing\Jhu.Graywulf.Parsing.csproj">
       <Project>{6215a919-1626-4f32-8c16-5764243b2748}</Project>
       <Name>Jhu.Graywulf.Parsing</Name>
@@ -174,6 +183,10 @@
     <EmbeddedResource Include="Sql\Jobs\JobNames.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>JobNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sql\Jobs\Query\LogMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LogMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Jobs\Query\SqlQueryScripts.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Logging
     public abstract class UserLoggingContext : LoggingContext
     {
         public UserLoggingContext(bool isAsync, AmbientContextStoreLocation supportedLocation)
-            : base(isAsync, supportedLocation)
+            : base(isAsync, null, supportedLocation)
         {
             if (LoggingContext.Current is UserLoggingContext)
             {

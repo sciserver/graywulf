@@ -152,6 +152,22 @@ namespace Jhu.Graywulf.Sql.Schema
             }
         }
 
+        [IgnoreDataMember]
+        public virtual string FullyResolvedName
+        {
+            get
+            {
+                if (dataset != null)
+                {
+                    return dataset.GetObjectFullyResolvedName(this);
+                }
+                else
+                {
+                    return DisplayName;
+                }
+            }
+        }
+
         /// <summary>
         /// Gets the internal object key.
         /// </summary>

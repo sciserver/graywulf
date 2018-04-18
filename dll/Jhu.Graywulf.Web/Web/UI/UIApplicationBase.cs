@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.Web.UI
         {
             virtualPathProvider = new EmbeddedVirtualPathProvider();
 
-            applicationLoggingContext = new LoggingContext(true, Components.AmbientContextStoreLocation.Default);
+            applicationLoggingContext = new LoggingContext(true, null, Components.AmbientContextStoreLocation.Default);
             applicationLoggingContext.Pop();
         }
 

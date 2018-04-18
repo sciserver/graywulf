@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.ServiceModel
         #endregion
 
         public ServiceLoggingContext()
-            :base(false, AmbientContextStoreLocation.WcfOperationContext)
+            :base(false, null, AmbientContextStoreLocation.WcfOperationContext)
         {
             InitializeMembers();
         }

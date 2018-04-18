@@ -18,11 +18,13 @@ namespace Jhu.Graywulf.Activities
         {
             new JobContext(this, activityContext).Push();
 
-            using (new LoggingContext(true))
+            using (var loggingContext = new LoggingContext(true))
             {
-                JobContext.Current.UpdateLoggingContext(LoggingContext.Current);
+                JobContext.Current.UpdateLoggingContext(loggingContext);
 
                 OnExecute(activityContext);
+
+                loggingContext.FlushEvents(activityContext);
             }
 
             JobContext.Current.Pop();

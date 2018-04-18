@@ -74,6 +74,7 @@
     <Compile Include="Logging\Error.cs" />
     <Compile Include="Logging\Event.cs" />
     <Compile Include="Logging\EventFilter.cs" />
+    <Compile Include="Logging\EventQueue.cs" />
     <Compile Include="Logging\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

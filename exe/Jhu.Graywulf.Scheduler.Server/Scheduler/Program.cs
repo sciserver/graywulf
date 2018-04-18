@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Scheduler
 
         private static void RunInteractive()
         {
-            using (var loggingContext = new LoggingContext(true, Components.AmbientContextStoreLocation.Default))
+            using (var loggingContext = new LoggingContext(true, null, Components.AmbientContextStoreLocation.Default))
             {
                 loggingContext.StartLogger(Logging.EventSource.Scheduler, true);
 

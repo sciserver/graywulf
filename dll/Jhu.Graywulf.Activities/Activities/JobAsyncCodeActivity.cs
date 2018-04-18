@@ -90,15 +90,20 @@ namespace Jhu.Graywulf.Activities
             }
             //finally
             //{
-                // TODO: for some reason, in some situations, this here gets
-                // called before the task above completes which leads to a
-                // NullException
+            // TODO: for some reason, in some situations, this here gets
+            // called before the task above completes which leads to a
+            // NullException
 
-                /*lock (activityState.SyncRoot)
-                {
-                    activityState.Dispose();
-                }*/
+            /*lock (activityState.SyncRoot)
+            {
+                activityState.Dispose();
+            }*/
             //}
+
+            using (var loggingContext = new LoggingContext(activityState.EventQueue))
+            {
+                loggingContext.FlushEvents(activityContext);
+            }
         }
 
         protected override void Cancel(AsyncCodeActivityContext activityContext)
@@ -108,7 +113,7 @@ namespace Jhu.Graywulf.Activities
             var state = (JobAsyncCodeActivityState)activityContext.UserState;
             var jobContext = new JobContext(this, activityContext);
 
-            using (new LoggingContext(true))
+            using (new LoggingContext(state.EventQueue))
             {
                 // Context becomes invalid once the activity has completed but cancel
                 // can be called after ExecuteAsync
@@ -127,12 +132,9 @@ namespace Jhu.Graywulf.Activities
             var state = (JobAsyncCodeActivityState)activityContext.UserState;
             var jobContext = new JobContext(this, activityContext);
 
-            using (new LoggingContext(true))
+            using (var loggingContext = new LoggingContext(state.EventQueue))
             {
-                // Save cancellation context to be called when cancel request arrives
-                // from another thread context
-
-                jobContext.UpdateLoggingContext(LoggingContext.Current);
+                jobContext.UpdateLoggingContext(loggingContext);
                 jobContext.Push();
 
                 await OnExecuteAsync(activityContext, state.CancellationContext);

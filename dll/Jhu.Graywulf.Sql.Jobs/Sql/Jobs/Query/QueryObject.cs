@@ -20,6 +20,7 @@ using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.RemoteService;
+using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
@@ -599,6 +600,15 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             LoadSystemDatabaseInstance(temporaryDatabaseInstanceReference, (GraywulfDataset)temporaryDataset, true);
             LoadSystemDatabaseInstance(codeDatabaseInstanceReference, (GraywulfDataset)codeDataset, true);
+
+            if (this is SqlQueryPartition)
+            {
+                LogDebug(LogMessages.ServerInstanceAssignedPartition, serverInstance.GetCompositeName(), ((SqlQueryPartition)this).ID);
+            }
+            else
+            {
+                LogDebug(LogMessages.ServerInstanceAssignedQuery, serverInstance.GetCompositeName());
+            }
         }
 
         #endregion
@@ -1323,6 +1333,44 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
 
             return host;
+        }
+
+        #endregion
+        #region Logging driver functions
+
+        public void LogDebug(string message, params object[] args)
+        {
+#if DEBUG
+            var method = LoggingContext.Current.UnwindStack(2);
+
+            Logging.LoggingContext.Current.LogDebug(
+                Logging.EventSource.Job,
+                String.Format(message, args),
+                method.DeclaringType.FullName + "." + method.Name,
+                null);
+#endif
+        }
+
+        public void LogOperation(string message, params object[] args)
+        {
+            var method = LoggingContext.Current.UnwindStack(2);
+
+            var e = Logging.LoggingContext.Current.LogOperation(
+                Logging.EventSource.Job,
+                String.Format(message, args),
+                method.DeclaringType.FullName + "." + method.Name,
+                null);
+        }
+
+        public void LogWarning(string message, params object[] args)
+        {
+            var method = LoggingContext.Current.UnwindStack(2);
+
+            var e = Logging.LoggingContext.Current.LogWarning(
+                Logging.EventSource.Job,
+                String.Format(message, args),
+                method.DeclaringType.FullName + "." + method.Name,
+                null);
         }
 
         #endregion

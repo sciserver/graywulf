@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             AppDomain.CurrentDomain.UnhandledException += Util.ServiceControl.WriteErrorDump;
 
-            loggingContext = new LoggingContext(true, Components.AmbientContextStoreLocation.Default);
+            loggingContext = new LoggingContext(true, null, Components.AmbientContextStoreLocation.Default);
             loggingContext.Pop();
 
             // Initialize logger

@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Test
         protected static void StartLogger()
         {
             // Here we allow storing the context in global static
-            new Logging.LoggingContext(true, Components.AmbientContextStoreLocation.All);
+            new Logging.LoggingContext(true, null, Components.AmbientContextStoreLocation.All);
             Logging.LoggingContext.Current.StartLogger(Logging.EventSource.Test, false);
         }
 

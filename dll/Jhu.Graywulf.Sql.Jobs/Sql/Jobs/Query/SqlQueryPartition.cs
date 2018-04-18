@@ -198,6 +198,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                                 TemporaryTables.Add(table, temptable);
                                 RemoteOutputTables.Add(tablekey, rot);
+
+                                if (this.id == 0)
+                                {
+                                    LogOperation(LogMessages.RemoteOutputTableIdentified, table.FullyResolvedName);
+                                }
                             }
 
                             rot.TableReferences.Add(tr);
@@ -250,6 +255,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                                 TemporaryTables.Add(table, temptable);
                                 RemoteSourceTables.Add(rst.UniqueKey, rst);
+
+                                if (this.id == 0)
+                                {
+                                    LogOperation(LogMessages.RemoteSourceTableIdentified, table.FullyResolvedName);
+                                }
                             }
 
                             rst.TableReferences.Add(tr);
@@ -319,7 +329,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             using (var tc = CreateTableCopyTask(source, dest, false, out var settings))
             {
-                await tc.Value.ExecuteAsyncEx(source, dest, settings);
+                var res = await tc.Value.ExecuteAsyncEx(source, dest, settings);
+
+                for (int i = 0; i < res.Count; i++)
+                {
+                    LogOperation(LogMessages.RemoteSourceTableCopied, res[i].SourceTable, id, res[i].Status, res[i].RecordsAffected);
+                }
             }
         }
 
@@ -397,7 +412,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             return res;
         }
-        
+
         #endregion
         #region Final query execution
 
@@ -454,7 +469,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 // explicitly named in the query (SELECT INTO etc), but are generated as
                 // output table from simple SELECTs. These won't automatically show up in the
                 // temporary tables collection so add them now.
-                
+
                 foreach (var result in results)
                 {
                     if (result.Status == TableCopyStatus.Success &&
@@ -470,6 +485,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                         remoteOutputTables.Add(temp.UniqueKey, rot);
                     }
+
+                    LogOperation(LogMessages.OutputTableCreated, result.DestinationTable, id, result.Status, result.RecordsAffected);
                 }
             }
         }
@@ -516,6 +533,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 Parameters.OutputTables.Add((Table)rt.Table);
             }
 
+            LogOperation(LogMessages.RemoteOutputTableInitialized, rt.Table.FullyResolvedName);
+
             return Task.CompletedTask;
         }
 
@@ -543,7 +562,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                         // Create bulk copy task and execute it
                         using (var tc = CreateTableCopyTask(source, destination, false, out var settings))
                         {
-                            await tc.Value.ExecuteAsyncEx(source, destination, settings);
+                            var res = await tc.Value.ExecuteAsyncEx(source, destination, settings);
+
+                            for (int i = 0; i < res.Count; i++)
+                            {
+                                LogOperation(LogMessages.RemoteOutputTableCopied, res[i].DestinationTable, id, res[i].Status, res[i].RecordsAffected);
+                            }
                         }
                     }
                     break;

@@ -12,6 +12,7 @@ namespace Jhu.Graywulf.Activities
     {
         private object syncRoot;
         private CancellationContext cancellationContext;
+        private EventQueue eventQueue;
 
         public object SyncRoot
         {
@@ -23,6 +24,11 @@ namespace Jhu.Graywulf.Activities
             get { return cancellationContext; }
         }
 
+        public EventQueue EventQueue
+        {
+            get { return eventQueue; }
+        }
+
         public JobAsyncCodeActivityState()
         {
             InitializeMembers();
@@ -32,6 +38,7 @@ namespace Jhu.Graywulf.Activities
         {
             syncRoot = new object();
             cancellationContext = new CancellationContext();
+            eventQueue = new EventQueue();
         }
 
         public void Dispose()
