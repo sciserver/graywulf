@@ -484,7 +484,11 @@ namespace Jhu.Graywulf.Registry
             cmd.CommandText = sql;
             cmd.Connection = DatabaseConnection;
             cmd.Transaction = DatabaseTransaction;
-            cmd.CommandTimeout = IsReadOnly ? ContextManager.Configuration.ReadOnlyCommandTimeout : ContextManager.Configuration.ReadOnlyCommandTimeout;
+
+            if (ContextManager.Configuration != null)
+            {
+                cmd.CommandTimeout = IsReadOnly ? ContextManager.Configuration.ReadOnlyCommandTimeout : ContextManager.Configuration.ReadOnlyCommandTimeout;
+            }
 
             return cmd;
         }
