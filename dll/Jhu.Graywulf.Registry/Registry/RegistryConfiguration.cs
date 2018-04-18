@@ -17,6 +17,12 @@ namespace Jhu.Graywulf.Registry
         private static readonly ConfigurationProperty propConnectionString = new ConfigurationProperty(
             "connectionString", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
 
+        private static readonly ConfigurationProperty propWriteCommandTimeout = new ConfigurationProperty(
+            "writeCommandTimeout", typeof(int), 2, ConfigurationPropertyOptions.None);
+
+        private static readonly ConfigurationProperty propReadOnlyCommandTimeout = new ConfigurationProperty(
+            "readOnlyCommandTimeout", typeof(int), 5, ConfigurationPropertyOptions.None);
+
         private static readonly ConfigurationProperty propClusterName = new ConfigurationProperty(
             "clusterName", typeof(string), null, ConfigurationPropertyOptions.None);
 
@@ -43,6 +49,20 @@ namespace Jhu.Graywulf.Registry
         {
             get { return (string)base[propConnectionString]; }
             set { base[propConnectionString] = value; }
+        }
+
+        [ConfigurationProperty("writeCommandTimeout")]
+        public int WriteCommandTimeout
+        {
+            get { return (int)base[propWriteCommandTimeout]; }
+            set { base[propWriteCommandTimeout] = value; }
+        }
+
+        [ConfigurationProperty("readOnlyCommandTimeout")]
+        public int ReadOnlyCommandTimeout
+        {
+            get { return (int)base[propReadOnlyCommandTimeout]; }
+            set { base[propReadOnlyCommandTimeout] = value; }
         }
 
         [ConfigurationProperty("clusterName")]

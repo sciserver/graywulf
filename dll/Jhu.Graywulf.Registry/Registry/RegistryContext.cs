@@ -445,6 +445,7 @@ namespace Jhu.Graywulf.Registry
 
             SqlCommand cmd = CreateCommand(sql);
             cmd.CommandType = CommandType.Text;
+
             return cmd;
         }
 
@@ -483,6 +484,7 @@ namespace Jhu.Graywulf.Registry
             cmd.CommandText = sql;
             cmd.Connection = DatabaseConnection;
             cmd.Transaction = DatabaseTransaction;
+            cmd.CommandTimeout = IsReadOnly ? ContextManager.Configuration.ReadOnlyCommandTimeout : ContextManager.Configuration.ReadOnlyCommandTimeout;
 
             return cmd;
         }

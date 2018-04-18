@@ -97,7 +97,7 @@ namespace Jhu.Graywulf.Web.UI
                 if (registryContext == null)
                 {
                     var application = (UIApplicationBase)HttpContext.Current.ApplicationInstance;
-                    registryContext = application.CreateRegistryContext(readOnly ? Registry.TransactionMode.ReadOnly : Registry.TransactionMode.ReadWrite);
+                    registryContext = application.CreateRegistryContext((!readOnly && IsPostBack)? Registry.TransactionMode.ReadWrite : Registry.TransactionMode.ReadOnly);
                 }
 
                 return registryContext;
@@ -193,8 +193,20 @@ namespace Jhu.Graywulf.Web.UI
                 registryContext.Dispose();
                 registryContext = null;
             }
+        }
+
+        public override void Dispose()
+        {
+            if (registryContext != null)
+            {
+                registryContext.RollbackTransaction();
+                registryContext.Dispose();
+                registryContext = null;
+            }
 
             WebLoggingContext.Current.Dispose();
+
+            base.Dispose();
         }
 
         protected override void OnError(EventArgs e)
