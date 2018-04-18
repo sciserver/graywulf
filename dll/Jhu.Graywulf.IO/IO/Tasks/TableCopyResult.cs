@@ -70,7 +70,7 @@ namespace Jhu.Graywulf.IO.Tasks
         public TimeSpan Elapsed
         {
             get { return elapsed; }
-            set { Elapsed = value; }
+            set { elapsed = value; }
         }
 
         [DataMember]
