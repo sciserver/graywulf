@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class LogMessages {
+    public class LogMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Jhu.Graywulf.Sql.Jobs.Query.LogMessages", typeof(LogMessages).Assembly);
@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,9 +61,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Computed statistics for table {0}..
+        ///   Looks up a localized string similar to Computed statistics for table {0} in {1} sec. The number of records affected is {2}..
         /// </summary>
-        internal static string ComputedStatistics {
+        public static string ComputedStatistics {
             get {
                 return ResourceManager.GetString("ComputedStatistics", resourceCulture);
             }
@@ -72,25 +72,25 @@ namespace Jhu.Graywulf.Sql.Jobs.Query {
         /// <summary>
         ///   Looks up a localized string similar to Generated {0} partitions..
         /// </summary>
-        internal static string GeneratedPartitions {
+        public static string GeneratedPartitions {
             get {
                 return ResourceManager.GetString("GeneratedPartitions", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Output table {0} created on partition {1} with {2}. Records affected: {3}..
+        ///   Looks up a localized string similar to Output table {0} created on partition {1} with {2} in {3} sec. The number of records affected is {4}..
         /// </summary>
-        internal static string OutputTableCreated {
+        public static string OutputTableCreated {
             get {
                 return ResourceManager.GetString("OutputTableCreated", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remote output table {0} copied from partition {1} with {2}. Records affected: {3}..
+        ///   Looks up a localized string similar to Remote output table {0} copied from partition {1} with {2} in {3} sec. The number of records affected is {4}..
         /// </summary>
-        internal static string RemoteOutputTableCopied {
+        public static string RemoteOutputTableCopied {
             get {
                 return ResourceManager.GetString("RemoteOutputTableCopied", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query {
         /// <summary>
         ///   Looks up a localized string similar to Identified remote output table {0}..
         /// </summary>
-        internal static string RemoteOutputTableIdentified {
+        public static string RemoteOutputTableIdentified {
             get {
                 return ResourceManager.GetString("RemoteOutputTableIdentified", resourceCulture);
             }
@@ -108,16 +108,16 @@ namespace Jhu.Graywulf.Sql.Jobs.Query {
         /// <summary>
         ///   Looks up a localized string similar to Initialized remote output table {0}..
         /// </summary>
-        internal static string RemoteOutputTableInitialized {
+        public static string RemoteOutputTableInitialized {
             get {
                 return ResourceManager.GetString("RemoteOutputTableInitialized", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remote source table {0} copied to partition {1} with {2}. Records affected: {3}..
+        ///   Looks up a localized string similar to Remote source table {0} copied to partition {1} with {2} in {3} sec. The number of records affected is {4}..
         /// </summary>
-        internal static string RemoteSourceTableCopied {
+        public static string RemoteSourceTableCopied {
             get {
                 return ResourceManager.GetString("RemoteSourceTableCopied", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query {
         /// <summary>
         ///   Looks up a localized string similar to Identified remote source table {0}. It will be copied to worker node for query execution..
         /// </summary>
-        internal static string RemoteSourceTableIdentified {
+        public static string RemoteSourceTableIdentified {
             get {
                 return ResourceManager.GetString("RemoteSourceTableIdentified", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query {
         /// <summary>
         ///   Looks up a localized string similar to Server instance {0} is assigned to query partition {1}..
         /// </summary>
-        internal static string ServerInstanceAssignedPartition {
+        public static string ServerInstanceAssignedPartition {
             get {
                 return ResourceManager.GetString("ServerInstanceAssignedPartition", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query {
         /// <summary>
         ///   Looks up a localized string similar to Server instance {0} is assigned to query..
         /// </summary>
-        internal static string ServerInstanceAssignedQuery {
+        public static string ServerInstanceAssignedQuery {
             get {
                 return ResourceManager.GetString("ServerInstanceAssignedQuery", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query {
         /// <summary>
         ///   Looks up a localized string similar to Identified table {0} to gather statistics on..
         /// </summary>
-        internal static string StatisticsTableIdentified {
+        public static string StatisticsTableIdentified {
             get {
                 return ResourceManager.GetString("StatisticsTableIdentified", resourceCulture);
             }

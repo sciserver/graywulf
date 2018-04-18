@@ -333,7 +333,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                 for (int i = 0; i < res.Count; i++)
                 {
-                    LogOperation(LogMessages.RemoteSourceTableCopied, res[i].SourceTable, id, res[i].Status, res[i].RecordsAffected);
+                    LogOperation(LogMessages.RemoteSourceTableCopied, res[i].SourceTable, id, res[i].Status, res[i].Elapsed.TotalSeconds, res[i].RecordsAffected);
                 }
             }
         }
@@ -486,7 +486,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                         remoteOutputTables.Add(temp.UniqueKey, rot);
                     }
 
-                    LogOperation(LogMessages.OutputTableCreated, result.DestinationTable, id, result.Status, result.RecordsAffected);
+                    LogOperation(LogMessages.OutputTableCreated, result.DestinationTable, id, result.Status, result.Elapsed.TotalSeconds, result.RecordsAffected);
                 }
             }
         }
@@ -566,7 +566,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                             for (int i = 0; i < res.Count; i++)
                             {
-                                LogOperation(LogMessages.RemoteOutputTableCopied, res[i].DestinationTable, id, res[i].Status, res[i].RecordsAffected);
+                                LogOperation(LogMessages.RemoteOutputTableCopied, res[i].DestinationTable, id, res[i].Status, res[i].Elapsed.TotalSeconds, res[i].RecordsAffected);
                             }
                         }
                     }

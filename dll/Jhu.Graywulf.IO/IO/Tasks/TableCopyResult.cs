@@ -19,6 +19,7 @@ namespace Jhu.Graywulf.IO.Tasks
         private string destinationTable;
         private string destinationFileName;
         private long recordsAffected;
+        private TimeSpan elapsed;
         private TableCopyStatus status;
         private string error;
 
@@ -63,6 +64,13 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             get { return recordsAffected; }
             set { recordsAffected = value; }
+        }
+
+        [DataMember]
+        public TimeSpan Elapsed
+        {
+            get { return elapsed; }
+            set { Elapsed = value; }
         }
 
         [DataMember]

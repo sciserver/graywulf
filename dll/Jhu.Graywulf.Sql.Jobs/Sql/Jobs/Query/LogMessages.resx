@@ -118,16 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ComputedStatistics" xml:space="preserve">
-    <value>Computed statistics for table {0}.</value>
+    <value>Computed statistics for table {0} in {1} sec. The number of records affected is {2}.</value>
   </data>
   <data name="GeneratedPartitions" xml:space="preserve">
     <value>Generated {0} partitions.</value>
   </data>
   <data name="OutputTableCreated" xml:space="preserve">
-    <value>Output table {0} created on partition {1} with {2}. Records affected: {3}.</value>
+    <value>Output table {0} created on partition {1} with {2} in {3} sec. The number of records affected is {4}.</value>
   </data>
   <data name="RemoteOutputTableCopied" xml:space="preserve">
-    <value>Remote output table {0} copied from partition {1} with {2}. Records affected: {3}.</value>
+    <value>Remote output table {0} copied from partition {1} with {2} in {3} sec. The number of records affected is {4}.</value>
   </data>
   <data name="RemoteOutputTableIdentified" xml:space="preserve">
     <value>Identified remote output table {0}.</value>
@@ -136,7 +136,7 @@
     <value>Initialized remote output table {0}.</value>
   </data>
   <data name="RemoteSourceTableCopied" xml:space="preserve">
-    <value>Remote source table {0} copied to partition {1} with {2}. Records affected: {3}.</value>
+    <value>Remote source table {0} copied to partition {1} with {2} in {3} sec. The number of records affected is {4}.</value>
   </data>
   <data name="RemoteSourceTableIdentified" xml:space="preserve">
     <value>Identified remote source table {0}. It will be copied to worker node for query execution.</value>

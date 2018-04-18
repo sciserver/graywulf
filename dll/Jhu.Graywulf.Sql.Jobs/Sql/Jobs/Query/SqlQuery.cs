@@ -214,7 +214,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             using (cmd)
             {
-                await ExecuteSqlOnAssignedServerReaderAsync(cmd, CommandTarget.Code, async (dr, ct) =>
+                var w = System.Diagnostics.Stopwatch.StartNew();
+
+                var res = await ExecuteSqlOnAssignedServerReaderAsync(cmd, CommandTarget.Code, async (dr, ct) =>
                 {
                     long rc = 0;
                     while (await dr.ReadAsync(ct))
@@ -227,7 +229,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     stat.RowCount = rc;
                 });
 
-                LogOperation(LogMessages.ComputedStatistics, tableSource.TableReference.DatabaseObject.FullyResolvedName);
+                LogOperation(LogMessages.ComputedStatistics, tableSource.TableReference.DatabaseObject.FullyResolvedName, w.Elapsed.TotalSeconds, res);
             }
         }
 

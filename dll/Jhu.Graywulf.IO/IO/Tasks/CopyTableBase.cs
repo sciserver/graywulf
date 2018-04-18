@@ -162,6 +162,8 @@ namespace Jhu.Graywulf.IO.Tasks
 
         protected async Task CopyToTableAsync(ISmartCommand cmd, DestinationTable destination)
         {
+            var w = System.Diagnostics.Stopwatch.StartNew();
+
             using (var sdr = await cmd.ExecuteReaderAsync(CommandBehavior.KeyInfo, CancellationContext.Token))
             {
                 int resultsetCounter = 0;
@@ -242,6 +244,9 @@ namespace Jhu.Graywulf.IO.Tasks
                         HandleException(ex, result);
                     }
 
+                    result.Elapsed = w.Elapsed;
+                    w.Restart();
+
                     Results.Add(result);
                     resultsetCounter++;
                 }
@@ -319,6 +324,8 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private async Task CopyToFileAsync(ISmartCommand cmd, DataFileBase destination)
         {
+            var w = System.Diagnostics.Stopwatch.StartNew();
+
             await destination.WriteHeaderAsync();
 
             using (var sdr = await cmd.ExecuteReaderAsync(CommandBehavior.Default, CancellationContext.Token))
@@ -341,6 +348,9 @@ namespace Jhu.Graywulf.IO.Tasks
                     }
 
                     await CopyToFileAsync(sdr, destination, result);
+
+                    result.Elapsed = w.Elapsed;
+                    w.Restart();
 
                     Results.Add(result);
 

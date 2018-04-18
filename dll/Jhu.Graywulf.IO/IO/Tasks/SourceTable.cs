@@ -154,7 +154,6 @@ namespace Jhu.Graywulf.IO.Tasks
             return new TableCopyResult()
             {
                 SourceTable = table.UniqueKey,
-
             };
         }
     }
