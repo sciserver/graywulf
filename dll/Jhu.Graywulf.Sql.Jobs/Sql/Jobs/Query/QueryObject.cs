@@ -603,11 +603,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             if (this is SqlQueryPartition)
             {
-                LogDebug(LogMessages.ServerInstanceAssignedPartition, serverInstance.GetCompositeName(), ((SqlQueryPartition)this).ID);
+                LogOperation(LogMessages.ServerInstanceAssignedPartition, serverInstance.GetCompositeName(), ((SqlQueryPartition)this).ID);
             }
             else
             {
-                LogDebug(LogMessages.ServerInstanceAssignedQuery, serverInstance.GetCompositeName());
+                LogOperation(LogMessages.ServerInstanceAssignedQuery, serverInstance.GetCompositeName());
             }
         }
 
@@ -1338,7 +1338,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         #endregion
         #region Logging driver functions
 
-        public void LogDebug(string message, params object[] args)
+        protected void LogDebug(string message, params object[] args)
         {
 #if DEBUG
             var method = LoggingContext.Current.UnwindStack(2);
@@ -1351,7 +1351,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 #endif
         }
 
-        public void LogOperation(string message, params object[] args)
+        protected void LogOperation(string message, params object[] args)
         {
             var method = LoggingContext.Current.UnwindStack(2);
 
@@ -1362,7 +1362,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 null);
         }
 
-        public void LogWarning(string message, params object[] args)
+        protected void LogWarning(string message, params object[] args)
         {
             var method = LoggingContext.Current.UnwindStack(2);
 

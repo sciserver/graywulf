@@ -66,14 +66,24 @@ namespace Jhu.Graywulf.Scheduler
             else if (record is ActivityStateRecord)
             {
                 e = ProcessTrackingRecord((ActivityStateRecord)record);
-            }
-            else if (record is CustomTrackingRecord)
-            {
-                e = ProcessTrackingRecord((CustomTrackingRecord)record);
+
+                if (e != null)
+                {
+                    e.Severity = EventSeverity.Debug;
+                }
             }
             else if (record is FaultPropagationRecord)
             {
                 e = ProcessTrackingRecord((FaultPropagationRecord)record);
+
+                if (e != null)
+                {
+                    e.Severity = EventSeverity.Error;
+                }
+            }
+            else if (record is CustomTrackingRecord)
+            {
+                e = ProcessTrackingRecord((CustomTrackingRecord)record);
             }
             else
             {
@@ -85,9 +95,8 @@ namespace Jhu.Graywulf.Scheduler
                 loggingContext.UpdateEvent(e);
 
                 e.Source |= EventSource.Workflow;
-                e.Severity = EventSeverity.Debug;   // MapEventSeverity(record.Level);
-                e.DateTime = record.EventTime;
                 e.Order = record.RecordNumber;
+                e.DateTime = record.EventTime;
 
                 loggingContext.WriteEvent(e);
             }

@@ -166,6 +166,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 };
 
                 TableStatistics.Add(ts.UniqueKey, stat);
+
+                LogOperation(LogMessages.StatisticsTableIdentified, ts.TableReference.DatabaseObject.FullyResolvedName);
             }
         }
 
@@ -224,6 +226,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     }
                     stat.RowCount = rc;
                 });
+
+                LogOperation(LogMessages.ComputedStatistics, tableSource.TableReference.DatabaseObject.FullyResolvedName);
             }
         }
 
@@ -329,6 +333,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 default:
                     throw new NotImplementedException();
             }
+
+            LogOperation(LogMessages.GeneratedPartitions, partitions.Count);
         }
 
         /// <summary>

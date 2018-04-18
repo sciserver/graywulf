@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ComputedStatistics" xml:space="preserve">
+    <value>Computed statistics for table {0}.</value>
+  </data>
+  <data name="GeneratedPartitions" xml:space="preserve">
+    <value>Generated {0} partitions.</value>
+  </data>
   <data name="OutputTableCreated" xml:space="preserve">
     <value>Output table {0} created on partition {1} with {2}. Records affected: {3}.</value>
   </data>
@@ -140,5 +146,8 @@
   </data>
   <data name="ServerInstanceAssignedQuery" xml:space="preserve">
     <value>Server instance {0} is assigned to query.</value>
+  </data>
+  <data name="StatisticsTableIdentified" xml:space="preserve">
+    <value>Identified table {0} to gather statistics on.</value>
   </data>
 </root>

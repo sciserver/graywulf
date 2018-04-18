@@ -61,6 +61,24 @@ namespace Jhu.Graywulf.Sql.Jobs.Query {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Computed statistics for table {0}..
+        /// </summary>
+        internal static string ComputedStatistics {
+            get {
+                return ResourceManager.GetString("ComputedStatistics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Generated {0} partitions..
+        /// </summary>
+        internal static string GeneratedPartitions {
+            get {
+                return ResourceManager.GetString("GeneratedPartitions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Output table {0} created on partition {1} with {2}. Records affected: {3}..
         /// </summary>
         internal static string OutputTableCreated {
@@ -129,6 +147,15 @@ namespace Jhu.Graywulf.Sql.Jobs.Query {
         internal static string ServerInstanceAssignedQuery {
             get {
                 return ResourceManager.GetString("ServerInstanceAssignedQuery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Identified table {0} to gather statistics on..
+        /// </summary>
+        internal static string StatisticsTableIdentified {
+            get {
+                return ResourceManager.GetString("StatisticsTableIdentified", resourceCulture);
             }
         }
     }
