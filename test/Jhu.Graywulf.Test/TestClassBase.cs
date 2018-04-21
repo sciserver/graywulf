@@ -20,11 +20,11 @@ namespace Jhu.Graywulf.Test
     public abstract class TestClassBase : LoggingTestClassBase
     {
         protected const string TestUser = "test";
-        protected const string OtherUser = "testother";
+        protected const string OtherUser = "other";
         protected const string TestGroup = "test";
-        protected const string GroupAdminUser = "testadmin";
-        protected const string GroupWriterUser = "testwriter";
-        protected const string GroupReaderUser = "testreader";
+        protected const string GroupAdminUser = "test-admin";
+        protected const string GroupWriterUser = "test-writer";
+        protected const string GroupReaderUser = "test-reader";
 
         private Random rnd = new Random();
         private SqlServerDataset ioTestDataset;
