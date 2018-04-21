@@ -11,5 +11,14 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return FindDescendant<Identifier>(); }
         }
+
+        public Expression[] GetArguments()
+        {
+            return FindDescendant<FunctionArguments>()
+                       .FindDescendant<ArgumentList>()
+                       .EnumerateDescendants<Argument>()
+                       .Select(a => (Expression)a.Expression)
+                       .ToArray();
+        }
     }
 }
