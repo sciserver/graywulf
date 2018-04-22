@@ -32,6 +32,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { columnReference.TableReference = value; }
         }
 
+        public UserVariable AssignedVariable
+        {
+            get { return FindDescendant<UserVariable>(); }
+        }
+
         protected override void OnInitializeMembers()
         {
             base.OnInitializeMembers();

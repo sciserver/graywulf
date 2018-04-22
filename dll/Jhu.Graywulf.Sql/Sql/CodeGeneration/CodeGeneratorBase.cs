@@ -589,26 +589,33 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             // optionally followed by a column alias in the form of
             // 'AS alias'
 
-            if (columnAliasRendering == AliasRendering.Always)
-            {
-                // Write the expression first as it is
-                var exp = node.FindDescendant<Parsing.Expression>();
-                WriteNode(exp);
+            // TODO: test with @v = column AND alias = column syntax
 
-                // If it's not a * column and there's an alias, write it
-                if (!node.ColumnReference.IsStar && !String.IsNullOrEmpty(node.ColumnReference.ColumnAlias))
+            var variable = node.AssignedVariable;
+
+            if (variable == null)
+            {
+                if (columnAliasRendering == AliasRendering.Always)
                 {
-                    Writer.Write(
-                        " AS {0}",
-                        GetQuotedIdentifier(node.ColumnReference.ColumnAlias));
+                    // Write the expression first as it is
+                    var exp = node.FindDescendant<Parsing.Expression>();
+                    WriteNode(exp);
+
+                    // If it's not a * column and there's an alias, write it
+                    if (!node.ColumnReference.IsStar && !String.IsNullOrEmpty(node.ColumnReference.ColumnAlias))
+                    {
+                        Writer.Write(
+                            " AS {0}",
+                            GetQuotedIdentifier(node.ColumnReference.ColumnAlias));
+                    }
+                }
+                else if (columnAliasRendering == AliasRendering.Never)
+                {
+                    var exp = node.FindDescendant<Parsing.Expression>();
+                    WriteNode(exp);
                 }
             }
-            else if (columnAliasRendering == AliasRendering.Never)
-            {
-                var exp = node.FindDescendant<Parsing.Expression>();
-                WriteNode(exp);
-            }
-            else if (columnAliasRendering == AliasRendering.Default)
+            else
             {
                 // Fall back to original behavior
                 base.WriteNode(node);
