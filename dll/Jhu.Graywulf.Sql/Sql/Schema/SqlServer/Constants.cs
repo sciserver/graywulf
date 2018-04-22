@@ -25,6 +25,7 @@ namespace Jhu.Graywulf.Sql.Schema.SqlServer
             { DatabaseObjectType.ClrTableValuedFunction, "FT"},
             { DatabaseObjectType.SqlScalarFunction, "FN" },
             { DatabaseObjectType.ClrScalarFunction, "FS" },
+            { DatabaseObjectType.ClrAggregateFunction, "AF" },
             { DatabaseObjectType.SqlStoredProcedure, "P" },
             { DatabaseObjectType.ClrStoredProcedure, "PC" },
         };
@@ -41,6 +42,7 @@ namespace Jhu.Graywulf.Sql.Schema.SqlServer
             { DatabaseObjectType.ClrTableValuedFunction, "FUNCTION"},
             { DatabaseObjectType.SqlScalarFunction, "FUNCTION" },
             { DatabaseObjectType.ClrScalarFunction, "FUNCTION" },
+            { DatabaseObjectType.ClrAggregateFunction, "AGGREGATE" },
             { DatabaseObjectType.SqlStoredProcedure, "PROCEDURE" },
             { DatabaseObjectType.ClrStoredProcedure, "PROCEDURE" },
         };

@@ -75,6 +75,9 @@ namespace Jhu.Graywulf.Sql.Schema
         private DatabaseObjectCollection<ScalarFunction> scalarFunctions;
 
         [NonSerialized]
+        private DatabaseObjectCollection<AggregateFunction> aggregateFunctions;
+
+        [NonSerialized]
         private DatabaseObjectCollection<StoredProcedure> storedProcedures;
 
         [NonSerialized]
@@ -248,6 +251,15 @@ namespace Jhu.Graywulf.Sql.Schema
         }
 
         /// <summary>
+        /// Gets the collection of aggregate functions
+        /// </summary>
+        [IgnoreDataMember]
+        public DatabaseObjectCollection<AggregateFunction> AggregateFunctions
+        {
+            get { return aggregateFunctions; }
+        }
+
+        /// <summary>
         /// Gets the collection of stored procedures
         /// </summary>
         [IgnoreDataMember]
@@ -320,6 +332,7 @@ namespace Jhu.Graywulf.Sql.Schema
             this.views = new DatabaseObjectCollection<View>(this);
             this.tableValuedFunctions = new DatabaseObjectCollection<TableValuedFunction>(this);
             this.scalarFunctions = new DatabaseObjectCollection<ScalarFunction>(this);
+            this.aggregateFunctions = new DatabaseObjectCollection<AggregateFunction>(this);
             this.storedProcedures = new DatabaseObjectCollection<StoredProcedure>(this);
 
             this.statistics = new LazyProperty<DatasetStatistics>(LoadDatasetStatistics);
@@ -353,6 +366,7 @@ namespace Jhu.Graywulf.Sql.Schema
             this.views = new DatabaseObjectCollection<View>(this);
             this.tableValuedFunctions = new DatabaseObjectCollection<TableValuedFunction>(this);
             this.scalarFunctions = new DatabaseObjectCollection<ScalarFunction>(this);
+            this.aggregateFunctions = new DatabaseObjectCollection<AggregateFunction>(this);
             this.storedProcedures = new DatabaseObjectCollection<StoredProcedure>(this);
 
             this.statistics = new LazyProperty<DatasetStatistics>(LoadDatasetStatistics);
@@ -377,6 +391,9 @@ namespace Jhu.Graywulf.Sql.Schema
 
             scalarFunctions.ItemLoading += OnObjectLoading<ScalarFunction>;
             scalarFunctions.AllItemsLoading += OnAllObjectLoading<ScalarFunction>;
+
+            aggregateFunctions.ItemLoading += OnObjectLoading<AggregateFunction>;
+            aggregateFunctions.AllItemsLoading += OnAllObjectLoading<AggregateFunction>;
 
             storedProcedures.ItemLoading += OnObjectLoading<StoredProcedure>;
             storedProcedures.AllItemsLoading += OnAllObjectLoading<StoredProcedure>;
@@ -509,6 +526,8 @@ namespace Jhu.Graywulf.Sql.Schema
                     return tableValuedFunctions[objectKey];
                 case DatabaseObjectType.ScalarFunction:
                     return scalarFunctions[objectKey];
+                case DatabaseObjectType.AggregateFunction:
+                    return aggregateFunctions[objectKey];
                 case DatabaseObjectType.StoredProcedure:
                     return storedProcedures[objectKey];
                 default:
@@ -533,6 +552,10 @@ namespace Jhu.Graywulf.Sql.Schema
             else if (scalarFunctions.ContainsKey(databaseName, schemaName, objectName))
             {
                 return scalarFunctions[databaseName, schemaName, objectName];
+            }
+            else if (aggregateFunctions.ContainsKey(databaseName, schemaName, objectName))
+            {
+                return aggregateFunctions[databaseName, schemaName, objectName];
             }
             else if (storedProcedures.ContainsKey(databaseName, schemaName, objectName))
             {
@@ -1208,6 +1231,7 @@ namespace Jhu.Graywulf.Sql.Schema
             this.views.Clear();
             this.tableValuedFunctions.Clear();
             this.scalarFunctions.Clear();
+            this.aggregateFunctions.Clear();
             this.storedProcedures.Clear();
             this.statistics.Clear();
             this.metadata.Clear();

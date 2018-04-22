@@ -61,6 +61,24 @@ namespace Jhu.Graywulf.Sql.Schema {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Aggregate Functions.
+        /// </summary>
+        internal static string AggregateFunction_Plural {
+            get {
+                return ResourceManager.GetString("AggregateFunction_Plural", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Aggregate Function.
+        /// </summary>
+        internal static string AggregateFunction_Singular {
+            get {
+                return ResourceManager.GetString("AggregateFunction_Singular", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Data Types.
         /// </summary>
         internal static string DataType_Plural {

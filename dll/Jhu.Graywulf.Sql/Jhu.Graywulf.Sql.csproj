@@ -383,6 +383,7 @@
     <Compile Include="Sql\Schema\PostgreSql\PostgreSqlDataset.cs" />
     <Compile Include="Sql\Schema\Quantity.cs" />
     <Compile Include="Sql\Schema\QuantityIndex.cs" />
+    <Compile Include="Sql\Schema\AggregateFunction.cs" />
     <Compile Include="Sql\Schema\ScalarFunction.cs" />
     <Compile Include="Sql\Schema\SchemaException.cs" />
     <Compile Include="Sql\Schema\SchemaManager.cs" />

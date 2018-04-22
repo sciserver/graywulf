@@ -27,9 +27,9 @@ namespace Jhu.Graywulf.Sql.Schema
         ScalarFunction = SqlScalarFunction | ClrScalarFunction,
         Function = TableValuedFunction | ScalarFunction,
 
-        SqlAggregateFunction = 512,
+        // SqlAggregateFunction = 512,      -- There's only CLR aggregates in SQL Server
         ClrAggregateFunction = 1024,
-        AggregateFunction = SqlAggregateFunction | ClrAggregateFunction,
+        AggregateFunction = ClrAggregateFunction,
 
         SqlStoredProcedure = 2048,
         ClrStoredProcedure = 4096,

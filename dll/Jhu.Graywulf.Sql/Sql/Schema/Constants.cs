@@ -15,6 +15,7 @@ namespace Jhu.Graywulf.Sql.Schema
             { typeof(View), DatabaseObjectType.View },
             { typeof(TableValuedFunction), DatabaseObjectType.TableValuedFunction },
             { typeof(ScalarFunction), DatabaseObjectType.ScalarFunction },
+            { typeof(AggregateFunction), DatabaseObjectType.AggregateFunction },
             { typeof(StoredProcedure), DatabaseObjectType.StoredProcedure },
         };
 
@@ -30,27 +31,12 @@ namespace Jhu.Graywulf.Sql.Schema
             { DatabaseObjectType.ScalarFunction,DatabaseObjectType.ScalarFunction},
             { DatabaseObjectType.SqlScalarFunction, DatabaseObjectType.ScalarFunction },
             { DatabaseObjectType.ClrScalarFunction, DatabaseObjectType.ScalarFunction },
+            { DatabaseObjectType.ClrAggregateFunction, DatabaseObjectType.AggregateFunction },
             { DatabaseObjectType.StoredProcedure, DatabaseObjectType.StoredProcedure },
             { DatabaseObjectType.SqlStoredProcedure, DatabaseObjectType.StoredProcedure },
             { DatabaseObjectType.ClrStoredProcedure, DatabaseObjectType.StoredProcedure },
         };
-
-        /// <summary>
-        /// SQL Server object type indentifiers, as used in the sys.objects table
-        /// </summary>
-        public static readonly Map<DatabaseObjectType, string> SqlServerObjectTypeIds = new Map<DatabaseObjectType, string>()
-        {
-            { DatabaseObjectType.Table, "U" },
-            { DatabaseObjectType.View, "V" },
-            { DatabaseObjectType.SqlTableValuedFunction, "TF"},
-            { DatabaseObjectType.SqlInlineTableValuedFunction, "IF"},
-            { DatabaseObjectType.ClrTableValuedFunction, "FT"},
-            { DatabaseObjectType.SqlScalarFunction, "FN" },
-            { DatabaseObjectType.ClrScalarFunction, "FS" },
-            { DatabaseObjectType.SqlStoredProcedure, "P" },
-            { DatabaseObjectType.ClrStoredProcedure, "PC" },
-        };
-
+        
         /// <summary>
         /// Database object singular names
         /// </summary>
@@ -65,6 +51,7 @@ namespace Jhu.Graywulf.Sql.Schema
             { DatabaseObjectType.ScalarFunction, DatabaseObjectNames.ScalarFunction_Singular },
             { DatabaseObjectType.SqlScalarFunction, DatabaseObjectNames.ScalarFunction_Singular },
             { DatabaseObjectType.ClrScalarFunction, DatabaseObjectNames.ScalarFunction_Singular },
+            { DatabaseObjectType.ClrAggregateFunction, DatabaseObjectNames.AggregateFunction_Singular },
             { DatabaseObjectType.StoredProcedure, DatabaseObjectNames.StoredProcedure_Singular },
             { DatabaseObjectType.SqlStoredProcedure, DatabaseObjectNames.StoredProcedure_Singular },
             { DatabaseObjectType.ClrStoredProcedure, DatabaseObjectNames.StoredProcedure_Singular },
@@ -84,11 +71,13 @@ namespace Jhu.Graywulf.Sql.Schema
             { DatabaseObjectType.ScalarFunction, DatabaseObjectNames.ScalarFunction_Plural },
             { DatabaseObjectType.SqlScalarFunction, DatabaseObjectNames.ScalarFunction_Plural },
             { DatabaseObjectType.ClrScalarFunction, DatabaseObjectNames.ScalarFunction_Plural },
+            { DatabaseObjectType.ClrAggregateFunction, DatabaseObjectNames.AggregateFunction_Plural },
             { DatabaseObjectType.StoredProcedure, DatabaseObjectNames.StoredProcedure_Plural },
             { DatabaseObjectType.SqlStoredProcedure, DatabaseObjectNames.StoredProcedure_Plural },
             { DatabaseObjectType.ClrStoredProcedure, DatabaseObjectNames.StoredProcedure_Plural },
         };
 
+        // TODO: this all has to go into a unit provide imlementation
         public static readonly List<string> UnitNames = new List<string> {
             "%",
             "A",
