@@ -614,6 +614,11 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                     var exp = node.FindDescendant<Parsing.Expression>();
                     WriteNode(exp);
                 }
+                else
+                {
+                    // Fall back to original behavior
+                    base.WriteNode(node);
+                }
             }
             else
             {
