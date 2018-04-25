@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 
-namespace Jhu.Graywulf.Web.Services
+namespace Jhu.Graywulf.Web.Services.CodeGen
 {
     [TestClass]
     public class JavascriptClientGeneratorTest

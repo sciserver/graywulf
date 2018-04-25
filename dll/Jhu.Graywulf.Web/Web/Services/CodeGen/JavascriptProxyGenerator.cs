@@ -7,7 +7,7 @@ using System.ServiceModel.Description;
 using System.IO;
 using System.Reflection;
 
-namespace Jhu.Graywulf.Web.Services
+namespace Jhu.Graywulf.Web.Services.CodeGen
 {
     public class JavascriptProxyGenerator : RestProxyGeneratorBase
     {
@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Web.Services
 
         protected override void WriteHeader(TextWriter writer)
         {
-            var script = new StringBuilder(Templates.Javascript.Class);
+            var script = new StringBuilder(Javascript.Class);
             script.Replace("__serviceName__", ServiceName);
             script.Replace("__serviceUrl__", ServiceUrl);
             writer.Write(script);
@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Web.Services
 
         protected override void WriteMethod(TextWriter writer, MethodInfo method, ParameterInfo[] parameters, ParameterInfo bodyParameter, string httpMethod, RestUriTemplate uriTemplate)
         {
-            var script = new StringBuilder(Templates.Javascript.Method);
+            var script = new StringBuilder(Javascript.Method);
 
             var methodName = GetMethodName_Camel(method);
             var parameterList = GetParameterList(parameters);

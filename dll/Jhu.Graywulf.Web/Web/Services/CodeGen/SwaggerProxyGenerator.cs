@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.ServiceModel.Web;
 using System.Net;
 
-namespace Jhu.Graywulf.Web.Services
+namespace Jhu.Graywulf.Web.Services.CodeGen
 {
     public class SwaggerProxyGenerator : RestProxyGeneratorBase
     {
@@ -62,7 +62,7 @@ namespace Jhu.Graywulf.Web.Services
                 host = WebOperationContext.Current.IncomingRequest.Headers[HttpRequestHeader.Host];
             }
 
-            var script = new StringBuilder(Templates.Swagger.Class);
+            var script = new StringBuilder(Swagger.Class);
             script.Replace("__serviceName__", ServiceName);
             script.Replace("__serviceUrl__", ServiceUrl);
             script.Replace("__serviceVersion__", ServiceVersion);
@@ -73,14 +73,14 @@ namespace Jhu.Graywulf.Web.Services
 
         protected override void WriteEndpoint(TextWriter writer, string uriTemplate)
         {
-            var script = new StringBuilder(Templates.Swagger.Endpoint);
+            var script = new StringBuilder(Swagger.Endpoint);
             script.Replace("__path__", uriTemplate);
             writer.Write(script);
         }
 
         protected override void WriteMethod(TextWriter writer, MethodInfo method, ParameterInfo[] parameters, ParameterInfo bodyParameter, string httpMethod, RestUriTemplate uriTemplate)
         {
-            var script = new StringBuilder(Templates.Swagger.Method);
+            var script = new StringBuilder(Swagger.Method);
 
             script.Replace("__path__", GetPath(uriTemplate));
             script.Replace("__httpMethod__", httpMethod.ToLowerInvariant());
@@ -100,7 +100,7 @@ namespace Jhu.Graywulf.Web.Services
 
         private void WriteParameter(TextWriter writer, RestUriTemplate uriTemplate, MethodInfo method, ParameterInfo parameter)
         {
-            var script = new StringBuilder(Templates.Swagger.Parameter);
+            var script = new StringBuilder(Swagger.Parameter);
 
             script.Replace("__parameterName__", parameter.Name);
             script.Replace("__parameterType__", types[parameter.ParameterType]);

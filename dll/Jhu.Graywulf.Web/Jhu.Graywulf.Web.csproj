@@ -109,18 +109,30 @@
     <Compile Include="Web\Security\Constants.cs" />
     <Compile Include="Web\Security\AuthenticationRequest.cs" />
     <Compile Include="Web\Security\WebAuthenticationModule.cs" />
+    <Compile Include="Web\Services\CodeGen\Javascript.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Javascript.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Web\Services\CodeGen\JavascriptProxyGenerator.cs" />
+    <Compile Include="Web\Services\CodeGen\RestProxyGeneratorBase.cs" />
+    <Compile Include="Web\Services\CodeGen\RestUriTemplate.cs" />
+    <Compile Include="Web\Services\CodeGen\Swagger.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Swagger.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Web\Services\CodeGen\SwaggerProxyGenerator.cs" />
     <Compile Include="Web\Services\Constants.cs" />
     <Compile Include="Web\Services\DynamicDispatchMessageFormatter.cs" />
     <Compile Include="Web\Services\DynamicFormatAttribute.cs" />
     <Compile Include="Web\Services\HttpMethod.cs" />
     <Compile Include="Web\Services\IRestSessionState.cs" />
-    <Compile Include="Web\Services\JavascriptProxyGenerator.cs" />
     <Compile Include="Web\Services\ResourceNotFoundException.cs" />
     <Compile Include="Web\Services\RestAuthenticationModule.cs" />
     <Compile Include="Web\Services\RestClientBehavior.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Web\Services\RestProxyGeneratorBase.cs" />
     <Compile Include="Web\Services\RestClientSession.cs" />
     <Compile Include="Web\Services\RestEndpointBehavior.cs" />
     <Compile Include="Web\Services\RestError.cs" />
@@ -138,7 +150,6 @@
     <Compile Include="Web\Services\RestServiceBase.cs" />
     <Compile Include="Web\Services\RestServiceBehavior.cs" />
     <Compile Include="Web\Services\RestServiceFactory.cs" />
-    <Compile Include="Web\Services\RestUriTemplate.cs" />
     <Compile Include="Web\Services\ServiceNameAttribute.cs" />
     <Compile Include="Web\Services\StreamingRawBodyWriter.cs" />
     <Compile Include="Web\Services\StreamingRawFormatAttribute.cs" />
@@ -152,17 +163,6 @@
     <Compile Include="Web\Services\StreamingRawFormatter.cs" />
     <Compile Include="Web\Services\StreamingRawFormatterBase.cs" />
     <Compile Include="Web\Services\StreamingRawFormatterDirection.cs" />
-    <Compile Include="Web\Services\SwaggerProxyGenerator.cs" />
-    <Compile Include="Web\Services\Templates\Javascript.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Javascript.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Web\Services\Templates\Swagger.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Swagger.resx</DependentUpon>
-    </Compile>
     <Compile Include="Web\Services\TextJsonXmlFormatAttribute.cs" />
     <Compile Include="Web\Services\TextResponseMessageBodyWriter.cs" />
     <Compile Include="Web\Services\TextResponseMessageFormatter.cs" />
@@ -191,15 +191,15 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Web\Services\Templates\Swagger.resx">
+    <EmbeddedResource Include="Web\Services\CodeGen\Javascript.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Javascript.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Web\Services\CodeGen\Swagger.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Swagger.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Web\Services\Templates\Javascript.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Javascript.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -248,18 +248,16 @@
     <None Include="app.config" />
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
-    <None Include="Web\Services\Templates\Class.yaml" />
-    <None Include="Web\Services\Templates\Endpoint.yaml" />
-    <None Include="Web\Services\Templates\Method.yaml" />
-    <None Include="Web\Services\Templates\Parameter.yaml" />
+    <None Include="Web\Services\CodeGen\Templates\Class.yaml" />
+    <None Include="Web\Services\CodeGen\Templates\Endpoint.yaml" />
+    <None Include="Web\Services\CodeGen\Templates\Method.yaml" />
+    <None Include="Web\Services\CodeGen\Templates\Parameter.yaml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Web\Services\Templates\Class.js" />
-    <Content Include="Web\Services\Templates\Method.js" />
+    <Content Include="Web\Services\CodeGen\Templates\Class.js" />
+    <Content Include="Web\Services\CodeGen\Templates\Method.js" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Web\Services\CodeGen\Templates\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\build\Jhu.Graywulf.Build.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

@@ -7,6 +7,7 @@ using System.ServiceModel.Web;
 using System.Security.Principal;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.AccessControl;
+using Jhu.Graywulf.Web.Services.CodeGen;
 
 namespace Jhu.Graywulf.Web.Services
 {

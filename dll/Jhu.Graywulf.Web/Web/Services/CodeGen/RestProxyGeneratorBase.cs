@@ -6,7 +6,7 @@ using System.ServiceModel.Description;
 using System.ServiceModel.Web;
 using System.Reflection;
 
-namespace Jhu.Graywulf.Web.Services
+namespace Jhu.Graywulf.Web.Services.CodeGen
 {
     public abstract class RestProxyGeneratorBase
     {

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jhu.Graywulf.Web.Services.Templates {
+namespace Jhu.Graywulf.Web.Services.CodeGen {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Web.Services.Templates {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Jhu.Graywulf.Web.Services.Templates.Swagger", typeof(Swagger).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Jhu.Graywulf.Web.Services.CodeGen.Swagger", typeof(Swagger).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,16 +61,17 @@ namespace Jhu.Graywulf.Web.Services.Templates {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to openapi: &quot;2.0&quot;
+        ///   Looks up a localized string similar to swagger: &quot;2.0&quot;
         ///info:
         ///  title: __serviceName__ Service
-        ///  description: This is a __serviceName__ Service
+        ///  description: __serviceDescription__
         ///  version: __serviceVersion__
         ///
-        ///host: &quot;petstore.swagger.io&quot;
-        ///basePath: &quot;/api&quot;
+        ///host: &quot;__serviceHost__&quot;
+        ///basePath: &quot;/Api/V1/__serviceName__.svc&quot;
         ///schemes: 
         ///  - &quot;http&quot;
+        ///  - &quot;https&quot;
         ///consumes: 
         ///  - &quot;application/json&quot;
         ///produces: 
@@ -97,6 +98,8 @@ namespace Jhu.Graywulf.Web.Services.Templates {
         
         /// <summary>
         ///   Looks up a localized string similar to     __httpMethod__: 
+        ///      tags:
+        ///        - __serviceName__
         ///      description: &quot;&quot;
         ///      operationId: &quot;__methodName__&quot;
         ///      produces: 
@@ -118,10 +121,9 @@ namespace Jhu.Graywulf.Web.Services.Templates {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to         - 
-        ///          name: &quot;__parameterName__&quot;
-        ///          in: &quot;query&quot;
-        ///          description: &quot;tags to filter by&quot;
+        ///   Looks up a localized string similar to         - name: &quot;__parameterName__&quot;
+        ///          in: &quot;__parameterIn__&quot;
+        ///          description: &quot;__parameterDescription__&quot;
         ///          required: false
         ///          type: &quot;__parameterType__&quot;
         ///.
