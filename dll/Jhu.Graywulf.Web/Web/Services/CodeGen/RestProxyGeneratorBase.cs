@@ -18,6 +18,7 @@ namespace Jhu.Graywulf.Web.Services
         private Type contractType;
         private string serviceName;
         private string serviceUrl;
+        private string serviceVersion;
 
         public abstract string MimeType { get; }
 
@@ -31,6 +32,11 @@ namespace Jhu.Graywulf.Web.Services
         protected string ServiceUrl
         {
             get { return serviceUrl; }
+        }
+
+        protected string ServiceVersion
+        {
+            get { return serviceVersion; }
         }
 
         protected RestProxyGeneratorBase(Type contractType, string serviceUrl)
@@ -47,6 +53,16 @@ namespace Jhu.Graywulf.Web.Services
 
             var attr = (ServiceNameAttribute)attrs[0];
             this.serviceName = attr.Name;
+
+            serviceVersion = contractType.Assembly.GetName().Version.ToString();
+        }
+
+        private void InitializeMembers()
+        {
+            this.contractType = null;
+            this.serviceName = null;
+            this.serviceUrl = null;
+            this.serviceVersion = null;
         }
 
         public string Execute()
@@ -67,18 +83,45 @@ namespace Jhu.Graywulf.Web.Services
             WriteHeader(writer);
 
             var methods = contractType.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+            var endpoints = new Dictionary<string, Dictionary<string, MethodInfo>>();
 
+            // Sort by uri template
             for (int i = 0; i < methods.Length; i++)
             {
-                if (!reservedFunctionNames.Contains(methods[i].Name))
+                string httpMethod;
+                string uriTemplate;
+                GetMethodProperties(methods[i], out httpMethod, out uriTemplate);
+
+                if (!endpoints.ContainsKey(uriTemplate))
                 {
-                    ProcessMethod(writer, methods[i]);
+                    endpoints.Add(uriTemplate, new Dictionary<string, MethodInfo>());
                 }
+
+                if (!reservedFunctionNames.Contains(methods[i].Name))
+                    endpoints[uriTemplate].Add(httpMethod, methods[i]);
             }
 
+            foreach (var uriTemplate in endpoints.Keys)
+            {
+                ProcessEndpoint(writer, uriTemplate, endpoints[uriTemplate]);
+            }
+                        
             WriteFooter(writer);
 
             writer.Flush();
+        }
+
+        private void ProcessEndpoint(TextWriter writer, string uriTemplate, Dictionary<string, MethodInfo> methods)
+        {
+            if (uriTemplate != "*" && !uriTemplate.StartsWith("/proxy"))
+            {
+                WriteEndpoint(writer, uriTemplate);
+
+                foreach (var httpMethod in methods.Keys)
+                {
+                    ProcessMethod(writer, methods[httpMethod]);
+                }
+            }
         }
 
         private void ProcessMethod(TextWriter writer, MethodInfo method)
@@ -119,6 +162,24 @@ namespace Jhu.Graywulf.Web.Services
             }
         }
 
+        protected string GetMethodName_Camel(MethodInfo method)
+        {
+            // c# should use capitalized function names while javascript
+            // prefers camel
+            var name = method.Name;
+
+            if (name.Length > 1)
+            {
+                name = Char.ToLowerInvariant(name[0]) + name.Substring(1);
+            }
+            else
+            {
+                name = Char.ToLowerInvariant(name[0]).ToString();
+            }
+
+            return name;
+        }
+
         private ParameterInfo GetBodyParameter(ParameterInfo[] parameters, RestUriTemplate uriTemplate)
         {
             // Find parameter which doesn't correspond to any on the path and query parts
@@ -134,6 +195,8 @@ namespace Jhu.Graywulf.Web.Services
         }
 
         protected abstract void WriteHeader(TextWriter writer);
+
+        protected abstract void WriteEndpoint(TextWriter writer, string uriTemplate);
 
         protected abstract void WriteMethod(TextWriter writer, MethodInfo method, ParameterInfo[] parameters, ParameterInfo bodyParameter, string httpMethod, RestUriTemplate uriTemplate);
 

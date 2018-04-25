@@ -43,9 +43,39 @@ namespace Jhu.Graywulf.Web.Services
             return IsParameter(pathParts[i]);
         }
 
+        public bool IsPathParameter(string name)
+        {
+            name = "{" + name + "}";
+
+            for (int i = 0; i < pathParts.Length; i++)
+            {
+                if (pathParts[i] == name)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public bool IsQueryParameter(int i)
         {
             return IsParameter(queryValues[i]);
+        }
+
+        public bool IsQueryParameter(string name)
+        {
+            name = "{" + name + "}";
+
+            for (int i = 0; i < queryValues.Length; i++)
+            {
+                if (queryValues[i] == name)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool IsBodyParameter(string name)

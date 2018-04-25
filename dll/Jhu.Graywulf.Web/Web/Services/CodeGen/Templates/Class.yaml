@@ -1,0 +1,17 @@
+﻿swagger: "2.0"
+info:
+  title: __serviceName__ Service
+  description: __serviceDescription__
+  version: __serviceVersion__
+
+host: "__serviceHost__"
+basePath: "/Api/V1/__serviceName__.svc"
+schemes: 
+  - "http"
+  - "https"
+consumes: 
+  - "application/json"
+produces: 
+  - "application/json"
+
+paths:

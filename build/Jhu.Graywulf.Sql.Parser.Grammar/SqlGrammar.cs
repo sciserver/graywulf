@@ -69,6 +69,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Terminal> Variable = () => @"\G(@[a-zA-Z_][0-9a-zA-Z_]*)";
         public static Expression<Terminal> Variable2 = () => @"\G(@@[a-zA-Z_][0-9a-zA-Z_]*)";
         public static Expression<Terminal> Cursor = () => @"\G([$a-zA-Z_]+)";
+        public static Expression<Terminal> Hint = () => @"\K\G([$a-zA-Z_]+)";
 
         #endregion
         #region Arithmetic operators used in expressions

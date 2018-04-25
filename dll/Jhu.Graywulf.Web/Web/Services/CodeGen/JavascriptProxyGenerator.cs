@@ -34,10 +34,16 @@ namespace Jhu.Graywulf.Web.Services
             writer.Write(script);
         }
 
+        protected override void WriteEndpoint(TextWriter writer, string uriTemplate)
+        {
+            
+        }
+
         protected override void WriteMethod(TextWriter writer, MethodInfo method, ParameterInfo[] parameters, ParameterInfo bodyParameter, string httpMethod, RestUriTemplate uriTemplate)
         {
-            var methodName = GetMethodName(method);
             var script = new StringBuilder(Templates.Javascript.Method);
+
+            var methodName = GetMethodName_Camel(method);
             var parameterList = GetParameterList(parameters);
             var pathParts = GetPathPartsList(uriTemplate);
             var queryParts = GetQueryPartsList(uriTemplate);
@@ -122,22 +128,5 @@ namespace Jhu.Graywulf.Web.Services
             return String.IsNullOrEmpty(res) ? "null" : "{" + res + "}";
         }
 
-        private string GetMethodName(MethodInfo method)
-        {
-            // c# should use capitalized function names while javascript
-            // prefers camel
-            var name = method.Name;
-
-            if (name.Length > 1)
-            {
-                name = Char.ToLowerInvariant(name[0]) + name.Substring(1);
-            }
-            else
-            {
-                name = Char.ToLowerInvariant(name[0]).ToString();
-            }
-
-            return name;
-        }
     }
 }

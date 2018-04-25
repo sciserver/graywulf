@@ -1,0 +1,15 @@
+﻿    __httpMethod__: 
+      tags:
+        - __serviceName__
+      description: ""
+      operationId: "__methodName__"
+      produces: 
+        - "application/json"
+        - "application/xml"
+        - "text/xml"
+      responses: 
+        "200":
+          description: "__methodName__ response"
+        default: 
+          description: "unexpected error"
+      parameters: 

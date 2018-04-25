@@ -1,0 +1,5 @@
+﻿        - name: "__parameterName__"
+          in: "__parameterIn__"
+          description: "__parameterDescription__"
+          required: false
+          type: "__parameterType__"
