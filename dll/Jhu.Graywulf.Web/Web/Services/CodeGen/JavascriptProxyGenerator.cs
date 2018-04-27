@@ -18,66 +18,90 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         public override string Filename
         {
-            get { return ServiceName + "Service.js"; }
+            get { return "Proxy.js"; }
         }
 
-        public JavascriptProxyGenerator(Type contractType, string serviceUrl)
-            : base(contractType, serviceUrl)
+        public JavascriptProxyGenerator(RestApi api)
+            : base(api)
         {
         }
 
-        protected override void WriteHeader(TextWriter writer)
+        protected override void WriteScriptHeader(TextWriter writer, RestApi api)
         {
-            var script = new StringBuilder(Javascript.Class);
-            script.Replace("__serviceName__", ServiceName);
-            script.Replace("__serviceUrl__", ServiceUrl);
+            // no op
+        }
+
+        protected override void WriteScriptFooter(TextWriter writer, RestApi api)
+        {
+            // no op
+        }
+
+        protected override void WriteServiceContractHeader(TextWriter writer, RestServiceContract service)
+        {
+            var script = new StringBuilder(Javascript.ServiceClass);
+            service.SubstituteTokens(script);
             writer.Write(script);
         }
 
-        protected override void WriteEndpoint(TextWriter writer, string uriTemplate)
+        protected override void WriteServiceContractFooter(TextWriter writer, RestServiceContract service)
         {
-            
+            // no op
         }
 
-        protected override void WriteMethod(TextWriter writer, MethodInfo method, ParameterInfo[] parameters, ParameterInfo bodyParameter, string httpMethod, RestUriTemplate uriTemplate)
+        protected override void WriteServiceEndpointHeader(TextWriter writer, string uriTemplate)
         {
-            var script = new StringBuilder(Javascript.Method);
+            // no op
+        }
 
-            var methodName = GetMethodName_Camel(method);
-            var parameterList = GetParameterList(parameters);
-            var pathParts = GetPathPartsList(uriTemplate);
-            var queryParts = GetQueryPartsList(uriTemplate);
+        protected override void WriteServiceEndpointFooter(TextWriter writer, string uriTemplate)
+        {
+            // no op
+        }
 
-            script.Replace("__serviceName__", ServiceName);
-            script.Replace("__methodName__", methodName);
+        protected override void WriteOperationContractHeader(TextWriter writer, RestOperationContract operation)
+        {
+            var script = new StringBuilder(Javascript.ServiceMethod);
+
+            operation.Service.SubstituteTokens(script);
+            operation.SubstituteTokens(script);
+            
+            var parameterList = GetParameterList(operation);
+            var pathParts = GetPathPartsList(operation.UriTemplate);
+            var queryParts = GetQueryPartsList(operation.UriTemplate);
+
             script.Replace("__parameterList__", parameterList);
-            script.Replace("__bodyParameter__", bodyParameter?.Name ?? "null");
-            script.Replace("__returnType__", method.ReturnType == typeof(void) ? "\"text\"" : "\"json\"");
+            script.Replace("__bodyParameter__", operation.BodyParameter?.ParameterName ?? "null");
+            script.Replace("__returnType__", operation.ReturnParameter == null ? "\"text\"" : "\"json\"");
             script.Replace("__pathParts__", pathParts);
             script.Replace("__queryParts__", queryParts);
-            script.Replace("__httpMethod__", httpMethod);
 
             writer.Write(script);
         }
 
-        protected override void WriteFooter(TextWriter writer)
+        protected override void WriteOperationContractFooter(TextWriter writer, RestOperationContract operation)
         {
+            // no op
         }
 
-        private string GetParameterList(ParameterInfo[] parameters)
+        protected override void WriteMessageParameter(TextWriter writer, RestMessageParameter parameter)
+        {
+            // no op
+        }
+
+        private string GetParameterList(RestOperationContract operation)
         {
             var res = "";
 
-            for (int i = 0; i < parameters.Length; i++)
+            foreach (var par in operation.Parameters)
             {
-                res += parameters[i].Name + ", ";
+                res += par.ParameterName + ", ";
             }
 
             res += "on_success, on_error";
 
             return res;
         }
-
+      
         private string GetPathPartsList(RestUriTemplate uriTemplate)
         {
             var res = "";
@@ -127,6 +151,5 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
             return String.IsNullOrEmpty(res) ? "null" : "{" + res + "}";
         }
-
     }
 }

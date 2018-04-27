@@ -46,5 +46,25 @@ namespace Jhu.Graywulf.Web.Services
         [OperationContract]
         [WebGet(UriTemplate = "/SingleParameterFunction")]
         void SingleParameterFunction(string parameter);
+
+        [OperationContract]
+        [WebInvoke(UriTemplate = "/items", Method = HttpMethod.Get)]
+        TestItemListResponse ListItems();
+
+        [OperationContract]
+        [WebInvoke(UriTemplate = "/items/{id}", Method = HttpMethod.Post)]
+        TestItemResponse CreateItem(int id);
+
+        [OperationContract]
+        [WebInvoke(UriTemplate = "/items/{id}", Method = HttpMethod.Get)]
+        TestItemResponse GetItem(int id);
+
+        [OperationContract]
+        [WebInvoke(UriTemplate = "/items/{id}", Method = HttpMethod.Patch)]
+        TestItemResponse ModifyItem(int id);
+
+        [OperationContract]
+        [WebInvoke(UriTemplate = "/items/{id}", Method = HttpMethod.Delete)]
+        void Delete(int id);
     }
 }

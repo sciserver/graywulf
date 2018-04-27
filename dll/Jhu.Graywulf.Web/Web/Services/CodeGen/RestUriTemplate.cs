@@ -8,15 +8,16 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 {
     public class RestUriTemplate
     {
-        public class PathPart
-        {
-            public string Name { get; set; }
-        }
-        
+        private string value;
         private string[] pathParts;
         private string[] queryKeys;
         private string[] queryValues;
         private HashSet<string> allNames;
+
+        public string Value
+        {
+            get { return value; }
+        }
 
         public string[] PathParts
         {
@@ -35,7 +36,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         public RestUriTemplate(string uriTemplate)
         {
-            Parse(uriTemplate);
+            this.value = uriTemplate;
+            Parse();
         }
 
         public bool IsPathParameter(int i)
@@ -93,11 +95,11 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             return part.TrimStart('{').TrimEnd('}');
         }
 
-        private void Parse(string template)
+        private void Parse()
         {
             allNames = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
-            var parts = template.Split('?');
+            var parts = this.value.Split('?');
 
             if (parts.Length > 0 && parts[0] != null)
             {

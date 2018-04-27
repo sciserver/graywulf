@@ -1,0 +1,24 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Runtime.Serialization;
+
+namespace Jhu.Graywulf.Web.Services
+{
+    [DataContract]
+    [Description("Represents an item.")]
+    public class TestItemResponse
+    {
+        [DataMember(Name = "item", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        [Description("Conveys an item.")]
+        public TestItem Item { get; set; }
+
+        public TestItemResponse()
+        {
+        }
+    }
+}

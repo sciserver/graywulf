@@ -109,20 +109,36 @@
     <Compile Include="Web\Security\Constants.cs" />
     <Compile Include="Web\Security\AuthenticationRequest.cs" />
     <Compile Include="Web\Security\WebAuthenticationModule.cs" />
+    <Compile Include="Web\Services\CodeGen\Constants.cs" />
+    <Compile Include="Web\Services\CodeGen\Error.cs" />
+    <Compile Include="Web\Services\CodeGen\ExceptionMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+    </Compile>
     <Compile Include="Web\Services\CodeGen\Javascript.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Javascript.resx</DependentUpon>
     </Compile>
     <Compile Include="Web\Services\CodeGen\JavascriptProxyGenerator.cs" />
+    <Compile Include="Web\Services\CodeGen\RestApi.cs" />
+    <Compile Include="Web\Services\CodeGen\RestDataContract.cs" />
+    <Compile Include="Web\Services\CodeGen\RestOperationContract.cs" />
+    <Compile Include="Web\Services\CodeGen\RestObject.cs" />
+    <Compile Include="Web\Services\CodeGen\RestMessageParameter.cs" />
+    <Compile Include="Web\Services\CodeGen\RestDataMember.cs" />
     <Compile Include="Web\Services\CodeGen\RestProxyGeneratorBase.cs" />
+    <Compile Include="Web\Services\CodeGen\RestProxyGeneratorException.cs" />
+    <Compile Include="Web\Services\CodeGen\RestServiceReflector.cs" />
     <Compile Include="Web\Services\CodeGen\RestUriTemplate.cs" />
+    <Compile Include="Web\Services\CodeGen\RestServiceContract.cs" />
     <Compile Include="Web\Services\CodeGen\Swagger.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Swagger.resx</DependentUpon>
     </Compile>
-    <Compile Include="Web\Services\CodeGen\SwaggerProxyGenerator.cs" />
+    <Compile Include="Web\Services\CodeGen\SwaggerYamlGenerator.cs" />
     <Compile Include="Web\Services\Constants.cs" />
     <Compile Include="Web\Services\DynamicDispatchMessageFormatter.cs" />
     <Compile Include="Web\Services\DynamicFormatAttribute.cs" />
@@ -191,6 +207,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Web\Services\CodeGen\ExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Web\Services\CodeGen\Javascript.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
@@ -248,14 +268,16 @@
     <None Include="app.config" />
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
-    <None Include="Web\Services\CodeGen\Templates\Class.yaml" />
+    <None Include="Web\Services\CodeGen\Templates\Definition.yaml" />
     <None Include="Web\Services\CodeGen\Templates\Endpoint.yaml" />
     <None Include="Web\Services\CodeGen\Templates\Method.yaml" />
     <None Include="Web\Services\CodeGen\Templates\Parameter.yaml" />
+    <None Include="Web\Services\CodeGen\Templates\Property.yaml" />
+    <None Include="Web\Services\CodeGen\Templates\Service.yaml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Web\Services\CodeGen\Templates\Class.js" />
-    <Content Include="Web\Services\CodeGen\Templates\Method.js" />
+    <Content Include="Web\Services\CodeGen\Templates\ServiceClass.js" />
+    <Content Include="Web\Services\CodeGen\Templates\ServiceMethod.js" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

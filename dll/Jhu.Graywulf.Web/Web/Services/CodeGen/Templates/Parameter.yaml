@@ -2,4 +2,4 @@
           in: "__parameterIn__"
           description: "__parameterDescription__"
           required: false
-          type: "__parameterType__"
+          __parameterType__

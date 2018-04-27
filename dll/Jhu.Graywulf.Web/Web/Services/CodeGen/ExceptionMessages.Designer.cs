@@ -22,14 +22,14 @@ namespace Jhu.Graywulf.Web.Services.CodeGen {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Javascript {
+    internal class ExceptionMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Javascript() {
+        internal ExceptionMessages() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Jhu.Graywulf.Web.Services.CodeGen.Javascript", typeof(Javascript).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Jhu.Graywulf.Web.Services.CodeGen.ExceptionMessages", typeof(ExceptionMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,52 +61,29 @@ namespace Jhu.Graywulf.Web.Services.CodeGen {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /* This is an auto-generated proxy */
-        ///
-        ///function __serviceName__Service(serviceUrl) {
-        ///    this.serviceUrl = serviceUrl ? serviceUrl : &quot;__serviceUrl__&quot;;
-        ///}
-        ///
-        ///__serviceName__Service.prototype.error = function (xhr, status, message) {
-        ///    alert(message);
-        ///}
-        ///
-        ///__serviceName__Service.prototype.__createUrl = function (pathParts, queryParts) {
-        ///    var finalUrl = this.serviceUrl;
-        ///    $.each(pathParts, function (i, part) {
-        ///        finalUrl += &quot;/&quot; + part;
-        ///    });
-        ///
-        ///    if (queryParts) {
-        ///        finalUrl += [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to Duplicate method {0} with URI template {1}..
         /// </summary>
-        internal static string ServiceClass {
+        internal static string DuplicateMethod {
             get {
-                return ResourceManager.GetString("ServiceClass", resourceCulture);
+                return ResourceManager.GetString("DuplicateMethod", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to __serviceName__Service.prototype.__methodName__ = function (__parameterList__) {
-        ///    var __me = this;
-        ///    var __pathParts = __pathParts__;
-        ///    var __queryParts = __queryParts__;
-        ///    var __data = __bodyParameter__;
-        ///    var __dataType = __returnType__;
-        ///    var __url = this.__createUrl(__pathParts, __queryParts);
-        ///    var __request = {
-        ///        dataType: __dataType
-        ///    };
-        ///
-        ///    if (__data) {
-        ///        __request.contentType = &quot;application/json&quot;;
-        ///        __request.data = JSON.stringify(__data);
-        ///    };
-        /// [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to Missing HTTP method or URI template on function {0} or class {1}..
         /// </summary>
-        internal static string ServiceMethod {
+        internal static string MissingHttpMethodOrUriTemplate {
             get {
-                return ResourceManager.GetString("ServiceMethod", resourceCulture);
+                return ResourceManager.GetString("MissingHttpMethodOrUriTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing ServiceNameAttribute on type {0}..
+        /// </summary>
+        internal static string MissingServiceNameAttribute {
+            get {
+                return ResourceManager.GetString("MissingServiceNameAttribute", resourceCulture);
             }
         }
     }

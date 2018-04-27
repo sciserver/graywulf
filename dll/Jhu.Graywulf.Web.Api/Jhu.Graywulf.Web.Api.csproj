@@ -126,7 +126,6 @@
     <Compile Include="Web\Api\V1\Services\JobsService.cs" />
     <Compile Include="Web\Api\V1\Services\ManageService.cs" />
     <Compile Include="Web\Api\V1\Services\SchemaService.cs" />
-    <Compile Include="Web\Api\V1\Services\TestService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jhu.Graywulf.AccessControl\Jhu.Graywulf.AccessControl.csproj">

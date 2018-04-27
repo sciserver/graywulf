@@ -159,20 +159,23 @@ namespace Jhu.Graywulf.Web.Services
             var contractType = endpoint.Contract.ContractType;
             var serviceUrl = endpoint.ListenUri.AbsoluteUri;
 
-            RestProxyGeneratorBase cg;
+            RestServiceReflector cg;
 
             switch (lang.ToLowerInvariant())
             {
                 case "js":
-                    cg = new JavascriptProxyGenerator(contractType, serviceUrl);
+                    throw new NotImplementedException();
+                    //cg = new JavascriptProxyGenerator(contractType, serviceUrl);
                     break;
                 case "yaml":
-                    cg = new SwaggerProxyGenerator(contractType, serviceUrl);
+                    throw new NotImplementedException();
+                    //cg = new SwaggerProxyGenerator(contractType, serviceUrl);
                     break;
                 default:
                     throw new NotImplementedException();
             }
 
+            /*
             response.Headers[HttpResponseHeader.ContentType] = cg.MimeType;
             response.Headers[HttpResponseHeader.CacheControl] = "public";
             response.Headers["Content-Disposition"] = "attachment;filename=\"" + cg.Filename + "\"";
@@ -181,6 +184,7 @@ namespace Jhu.Graywulf.Web.Services
             cg.Execute(ms);
             ms.Seek(0, SeekOrigin.Begin);
             return ms;
+            */
         }
 
         #endregion

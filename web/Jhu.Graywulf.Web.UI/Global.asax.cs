@@ -27,7 +27,6 @@ namespace Jhu.Graywulf.Web.UI
             RegisterService(typeof(ISchemaService));
             RegisterService(typeof(IJobsService));
             RegisterService(typeof(IDataService));
-            RegisterService(typeof(ITestService));
         }
 
         protected override void OnRegisterButtons()

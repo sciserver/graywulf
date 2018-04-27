@@ -1,4 +1,4 @@
-﻿__serviceName__Service.prototype.__methodName__ = function (__parameterList__) {
+﻿__serviceName__Service.prototype.__operationName__ = function (__parameterList__) {
     var __me = this;
     var __pathParts = __pathParts__;
     var __queryParts = __queryParts__;

@@ -85,8 +85,8 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\GraywulfIdentityProviderTest.cs" />
+    <Compile Include="Web\Services\CodeGen\RestServiceReflectorTest.cs" />
     <Compile Include="Web\Services\ITestService.cs" />
-    <Compile Include="Web\Services\CodeGen\JavascriptClientGeneratorTest.cs" />
     <Compile Include="Web\Api\V1\ApiTestBase.cs" />
     <Compile Include="Web\Api\V1\AuthServiceTest.cs" />
     <Compile Include="Web\Api\V1\DataServiceTest.cs" />
@@ -96,6 +96,10 @@
     <Compile Include="Web\Api\V1\JobsServiceTest.cs" />
     <Compile Include="Web\Api\V1\ObjectSerializationTest.cs" />
     <Compile Include="Web\Api\Util\XmlReaderTest.cs" />
+    <Compile Include="Web\Services\TestItem.cs" />
+    <Compile Include="Web\Services\TestItemListResponse.cs" />
+    <Compile Include="Web\Services\TestItemRequest.cs" />
+    <Compile Include="Web\Services\TestItemResponse.cs" />
     <Compile Include="Web\Util\UrlFormatterTest.cs" />
   </ItemGroup>
   <ItemGroup>

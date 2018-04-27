@@ -2,14 +2,14 @@
       tags:
         - __serviceName__
       description: ""
-      operationId: "__methodName__"
+      operationId: "__operationName__"
       produces: 
         - "application/json"
         - "application/xml"
         - "text/xml"
       responses: 
         "200":
-          description: "__methodName__ response"
+          description: "__operationName__ response"
         default: 
           description: "unexpected error"
       parameters: 

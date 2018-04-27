@@ -61,32 +61,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to swagger: &quot;2.0&quot;
-        ///info:
-        ///  title: __serviceName__ Service
-        ///  description: __serviceDescription__
-        ///  version: __serviceVersion__
-        ///
-        ///host: &quot;__serviceHost__&quot;
-        ///basePath: &quot;/Api/V1/__serviceName__.svc&quot;
-        ///schemes: 
-        ///  - &quot;http&quot;
-        ///  - &quot;https&quot;
-        ///consumes: 
-        ///  - &quot;application/json&quot;
-        ///produces: 
-        ///  - &quot;application/json&quot;
-        ///
-        ///paths:
-        ///.
-        /// </summary>
-        internal static string Class {
-            get {
-                return ResourceManager.GetString("Class", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to   __path__: 
         ///.
         /// </summary>
@@ -131,6 +105,32 @@ namespace Jhu.Graywulf.Web.Services.CodeGen {
         internal static string Parameter {
             get {
                 return ResourceManager.GetString("Parameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to swagger: &quot;2.0&quot;
+        ///info:
+        ///  title: __serviceName__ Service
+        ///  description: __serviceDescription__
+        ///  version: __serviceVersion__
+        ///
+        ///host: &quot;__serviceHost__&quot;
+        ///basePath: &quot;/Api/V1/__serviceName__.svc&quot;
+        ///schemes: 
+        ///  - &quot;http&quot;
+        ///  - &quot;https&quot;
+        ///consumes: 
+        ///  - &quot;application/json&quot;
+        ///produces: 
+        ///  - &quot;application/json&quot;
+        ///
+        ///paths:
+        ///.
+        /// </summary>
+        internal static string Service {
+            get {
+                return ResourceManager.GetString("Service", resourceCulture);
             }
         }
     }
