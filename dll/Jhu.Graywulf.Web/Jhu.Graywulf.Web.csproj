@@ -136,11 +136,6 @@
     <Compile Include="Web\Services\CodeGen\RestServiceReflector.cs" />
     <Compile Include="Web\Services\CodeGen\RestUriTemplate.cs" />
     <Compile Include="Web\Services\CodeGen\RestServiceContract.cs" />
-    <Compile Include="Web\Services\CodeGen\Swagger.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Swagger.resx</DependentUpon>
-    </Compile>
     <Compile Include="Web\Services\CodeGen\SwaggerJsonGenerator.cs" />
     <Compile Include="Web\Services\Constants.cs" />
     <Compile Include="Web\Services\DynamicDispatchMessageFormatter.cs" />
@@ -219,11 +214,6 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Javascript.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Web\Services\CodeGen\Swagger.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>Swagger.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jhu.Graywulf.AccessControl\Jhu.Graywulf.AccessControl.csproj">
@@ -272,14 +262,6 @@
     <None Include="packages.config" />
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
-    <None Include="Web\Services\CodeGen\Templates\Definition.yaml" />
-    <None Include="Web\Services\CodeGen\Templates\Definitions.yaml" />
-    <None Include="Web\Services\CodeGen\Templates\Path.yaml" />
-    <None Include="Web\Services\CodeGen\Templates\Method.yaml" />
-    <None Include="Web\Services\CodeGen\Templates\Parameter.yaml" />
-    <None Include="Web\Services\CodeGen\Templates\Paths.yaml" />
-    <None Include="Web\Services\CodeGen\Templates\Property.yaml" />
-    <None Include="Web\Services\CodeGen\Templates\Header.yaml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web\Services\CodeGen\Templates\ServiceClass.js" />
