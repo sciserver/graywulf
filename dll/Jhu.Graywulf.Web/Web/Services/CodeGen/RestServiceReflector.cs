@@ -31,10 +31,12 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         public void ReflectServiceContract(Type type, string serviceUrl)
         {
-            // TODO: assume a single endpoint here, which is currently true
+            // TODO: assume a single WCF endpoint here, which is currently true
 
+            type = GetServiceInterface(type);
+            
             var service = new RestServiceContract(api, type);
-            var attr = type.GetCustomAttribute<ServiceNameAttribute>();
+            var attr = type.GetCustomAttribute<ServiceNameAttribute>(true);
 
             if (attr == null)
             {
@@ -49,6 +51,30 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             ReflectOperationContracts(service);
 
             api.ServiceContracts.Add(type, service);
+        }
+
+        private Type GetServiceInterface(Type type)
+        {
+            if (type.IsInterface)
+            {
+                return type;
+            }
+            else
+            {
+                // Find interface with the RestServiceBehavior attribute
+                var ifs = type.GetInterfaces();
+
+                for (int i = 0; i < ifs.Length; i++)
+                {
+                    var attr = ifs[i].GetCustomAttribute<System.ServiceModel.ServiceContractAttribute>(true);
+                    if (attr != null)
+                    {
+                        return ifs[i];
+                    }
+                }
+            }
+
+            throw Error.MissingServiceContractAttribute(type);
         }
 
         private void ReflectOperationContracts(RestServiceContract service)

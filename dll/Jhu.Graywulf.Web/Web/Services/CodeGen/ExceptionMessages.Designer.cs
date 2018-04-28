@@ -79,6 +79,15 @@ namespace Jhu.Graywulf.Web.Services.CodeGen {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Missing ServiceContractAttribute in type {0} and any of its interfaces..
+        /// </summary>
+        internal static string MissingServiceContractAttribute {
+            get {
+                return ResourceManager.GetString("MissingServiceContractAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Missing ServiceNameAttribute on type {0}..
         /// </summary>
         internal static string MissingServiceNameAttribute {

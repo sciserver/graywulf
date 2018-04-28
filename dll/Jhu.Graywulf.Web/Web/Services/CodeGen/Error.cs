@@ -14,6 +14,11 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             return new RestProxyGeneratorException(String.Format(ExceptionMessages.MissingServiceNameAttribute, contractType.FullName));
         }
 
+        public static RestProxyGeneratorException MissingServiceContractAttribute(Type contractType)
+        {
+            return new RestProxyGeneratorException(String.Format(ExceptionMessages.MissingServiceContractAttribute, contractType.FullName));
+        }
+
         public static RestProxyGeneratorException MissingHttpMethodOrUriTemplate(MethodInfo method)
         {
             return new RestProxyGeneratorException(String.Format(ExceptionMessages.MissingHttpMethodOrUriTemplate, method.DeclaringType.FullName, method.Name));

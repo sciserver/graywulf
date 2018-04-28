@@ -123,6 +123,9 @@
   <data name="MissingHttpMethodOrUriTemplate" xml:space="preserve">
     <value>Missing HTTP method or URI template on function {0} or class {1}.</value>
   </data>
+  <data name="MissingServiceContractAttribute" xml:space="preserve">
+    <value>Missing ServiceContractAttribute in type {0} and any of its interfaces.</value>
+  </data>
   <data name="MissingServiceNameAttribute" xml:space="preserve">
     <value>Missing ServiceNameAttribute on type {0}.</value>
   </data>
