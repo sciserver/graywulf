@@ -3,15 +3,12 @@ info:
   title: "__apiTitle__"
   description: "__apiDescription__"
   version: "__apiVersion__"
-
-schemes: 
-  - "http"
-  - "https"
 host: "__hostName__"
 basePath: "__basePath__"
 consumes: 
   - "application/json"
 produces: 
   - "application/json"
-
-paths:
+schemes: 
+  - "http"
+  - "https"

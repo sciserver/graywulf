@@ -11,16 +11,29 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 {
     public class RestDataContract : RestObject
     {
+        private RestApi api;
         private Type type;
+        private Type elementType;
 
         private string dataContractName;
         private string dataContractDescription;
 
         private Dictionary<string, RestDataMember> dataMembers;
 
+        public RestApi Api
+        {
+            get { return api; }
+        }
+
         public Type Type
         {
             get { return type; }
+        }
+
+        public Type ElementType
+        {
+            get { return elementType; }
+            internal set { elementType = value; }
         }
 
         public string DataContractName
@@ -40,16 +53,19 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             get { return dataMembers; }
         }
 
-        public RestDataContract(Type type)
+        public RestDataContract(RestApi api, Type type)
         {
             InitializeMembers();
 
+            this.api = api;
             this.type = type;
         }
 
         private void InitializeMembers()
         {
+            this.api = null;
             this.type = null;
+            this.elementType = null;
             this.dataContractName = null;
             this.dataContractDescription = null;
             this.dataMembers = new Dictionary<string, RestDataMember>();
@@ -57,7 +73,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         public override void SubstituteTokens(StringBuilder script)
         {
-            throw new NotImplementedException();
+            script.Replace("__className__", dataContractName);
+            script.Replace("__classDescription__", dataContractDescription);
         }
     }
 }

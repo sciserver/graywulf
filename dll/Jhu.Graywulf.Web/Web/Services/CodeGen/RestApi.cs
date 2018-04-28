@@ -17,6 +17,36 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         private Dictionary<Type, RestServiceContract> serviceContracts;
         private Dictionary<Type, RestDataContract> dataContracts;
 
+        public string HostName
+        {
+            get { return hostName; }
+            internal set { hostName = value; }
+        }
+
+        public string BasePath
+        {
+            get { return basePath; }
+            internal set { basePath = value; }
+        }
+
+        public string Title
+        {
+            get { return title; }
+            internal set { title = value; }
+        }
+
+        public string Description
+        {
+            get { return description; }
+            internal set { description = value; }
+        }
+
+        public string Version
+        {
+            get { return version; }
+            internal set { version = value; }
+        }
+
         public Dictionary<Type, RestServiceContract> ServiceContracts
         {
             get { return serviceContracts; }

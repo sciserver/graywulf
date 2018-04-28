@@ -12,6 +12,11 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         private TextWriter writer;
         private RestApi api;
 
+        protected RestApi Api
+        {
+            get { return api; }
+        }
+
         public abstract string MimeType { get; }
 
         public abstract string Filename { get; }
@@ -21,7 +26,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             this.api = api;
             this.writer = null;
         }
-        
+
         public string Execute()
         {
             using (this.writer = new StringWriter())
@@ -43,19 +48,24 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         {
             this.writer = writer;
 
-            WriteScriptHeader(writer, api);
+            WriteScriptHeader(writer);
+            WriteServiceContractsHeader(writer, api);
 
             foreach (var type in api.ServiceContracts.Keys)
             {
                 ProcessServiceContract(api.ServiceContracts[type]);
             }
 
+            WriteServiceContractsFooter(writer, api);
+            WriteDataContractsHeader(writer, api);
+
             foreach (var type in api.DataContracts.Keys)
             {
                 ProcessDataContract(api.DataContracts[type]);
             }
 
-            WriteScriptFooter(writer, api);
+            WriteDataContractsFooter(writer, api);
+            WriteScriptFooter(writer);
         }
 
         private void ProcessServiceContract(RestServiceContract service)
@@ -97,27 +107,48 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             WriteOperationContractFooter(writer, operation);
         }
 
-        private void ProcessDataContract(RestDataContract dataContract)
+        private void ProcessDataContract(RestDataContract contract)
         {
+            WriteDataContractHeader(writer, contract);
+
+            foreach (var member in contract.DataMembers.Keys)
+            {
+                WriteDataMember(writer, contract.DataMembers[member]);
+            }
+
+            WriteDataContractFooter(writer, contract);
         }
-        
-        protected abstract void WriteScriptHeader(TextWriter writer, RestApi api);
 
-        protected abstract void WriteScriptFooter(TextWriter writer, RestApi api);
+        protected virtual void WriteScriptHeader(TextWriter writer) { }
 
-        protected abstract void WriteServiceContractHeader(TextWriter writer, RestServiceContract service);
+        protected virtual void WriteScriptFooter(TextWriter writer) { }
 
-        protected abstract void WriteServiceContractFooter(TextWriter writer, RestServiceContract service);
+        protected virtual void WriteServiceContractsHeader(TextWriter writer, RestApi api) { }
 
-        protected abstract void WriteServiceEndpointHeader(TextWriter writer, string uriTemplate);
+        protected virtual void WriteServiceContractsFooter(TextWriter writer, RestApi api) { }
 
-        protected abstract void WriteServiceEndpointFooter(TextWriter writer, string uriTemplate);
+        protected virtual void WriteServiceContractHeader(TextWriter writer, RestServiceContract service) { }
 
-        protected abstract void WriteOperationContractHeader(TextWriter writer, RestOperationContract operation);
+        protected virtual void WriteServiceContractFooter(TextWriter writer, RestServiceContract service) { }
 
-        protected abstract void WriteOperationContractFooter(TextWriter writer, RestOperationContract operation);
+        protected virtual void WriteServiceEndpointHeader(TextWriter writer, string uriTemplate) { }
 
-        protected abstract void WriteMessageParameter(TextWriter writer, RestMessageParameter parameter);
+        protected virtual void WriteServiceEndpointFooter(TextWriter writer, string uriTemplate) { }
 
+        protected virtual void WriteOperationContractHeader(TextWriter writer, RestOperationContract operation) { }
+
+        protected virtual void WriteOperationContractFooter(TextWriter writer, RestOperationContract operation) { }
+
+        protected virtual void WriteMessageParameter(TextWriter writer, RestMessageParameter parameter) { }
+
+        protected virtual void WriteDataContractsHeader(TextWriter writer, RestApi api) { }
+
+        protected virtual void WriteDataContractsFooter(TextWriter writer, RestApi api) { }
+
+        protected virtual void WriteDataContractHeader(TextWriter writer, RestDataContract contract) { }
+
+        protected virtual void WriteDataContractFooter(TextWriter writer, RestDataContract contract) { }
+
+        protected virtual void WriteDataMember(TextWriter writer, RestDataMember member) { }
     }
 }

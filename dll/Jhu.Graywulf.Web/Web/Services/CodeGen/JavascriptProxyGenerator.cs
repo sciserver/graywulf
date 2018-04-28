@@ -25,17 +25,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             : base(api)
         {
         }
-
-        protected override void WriteScriptHeader(TextWriter writer, RestApi api)
-        {
-            // no op
-        }
-
-        protected override void WriteScriptFooter(TextWriter writer, RestApi api)
-        {
-            // no op
-        }
-
+        
         protected override void WriteServiceContractHeader(TextWriter writer, RestServiceContract service)
         {
             var script = new StringBuilder(Javascript.ServiceClass);
@@ -84,6 +74,31 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         }
 
         protected override void WriteMessageParameter(TextWriter writer, RestMessageParameter parameter)
+        {
+            // no op
+        }
+
+        protected override void WriteDataContractsHeader(TextWriter writer, RestApi api)
+        {
+            // no op
+        }
+
+        protected override void WriteDataContractsFooter(TextWriter writer, RestApi api)
+        {
+            // no op
+        }
+
+        protected override void WriteDataContractHeader(TextWriter writer, RestDataContract contract)
+        {
+            // no op
+        }
+
+        protected override void WriteDataContractFooter(TextWriter writer, RestDataContract contract)
+        {
+            // no op
+        }
+
+        protected override void WriteDataMember(TextWriter writer, RestDataMember member)
         {
             // no op
         }

@@ -1,2 +1,4 @@
-﻿      __parameterName__:
-        __parameterType__
+﻿      __memberName__:
+        type: "__memberType__"
+		format: "__memberFormat__"
+		description: "__memberDescription__"

@@ -57,7 +57,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         public override void SubstituteTokens(StringBuilder script)
         {
-            throw new NotImplementedException();
+            script.Replace("__memberName__", dataMemberName);
+            script.Replace("__memberDescription__", dataMemberDescription);
         }
     }
 }

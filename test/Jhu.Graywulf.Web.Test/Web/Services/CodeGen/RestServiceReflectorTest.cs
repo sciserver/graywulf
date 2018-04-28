@@ -29,6 +29,16 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         }
 
         [TestMethod]
+        public void GenerateSwaggerJsonTest()
+        {
+            var r = new RestServiceReflector();
+            r.ReflectServiceContract(typeof(ITestService), "http://localhost/TestService.svc");
+            var cg = new SwaggerJsonGenerator(r.Api);
+            var code = cg.Execute();
+        }
+
+        /*
+        [TestMethod]
         public void GenerateTest()
         {
             var r = new RestServiceReflector();
@@ -36,5 +46,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             var cg = new SwaggerYamlGenerator(r.Api);
             var code = cg.Execute();
         }
+        */
     }
 }

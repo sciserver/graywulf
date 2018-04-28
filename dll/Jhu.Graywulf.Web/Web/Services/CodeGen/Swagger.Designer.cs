@@ -61,12 +61,48 @@ namespace Jhu.Graywulf.Web.Services.CodeGen {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to   __path__: 
+        ///   Looks up a localized string similar to   __className__:
+        ///    properties:
         ///.
         /// </summary>
-        internal static string Endpoint {
+        internal static string Definition {
             get {
-                return ResourceManager.GetString("Endpoint", resourceCulture);
+                return ResourceManager.GetString("Definition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to definitions:
+        ///.
+        /// </summary>
+        internal static string Definitions {
+            get {
+                return ResourceManager.GetString("Definitions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to swagger: &quot;2.0&quot;
+        ///info:
+        ///  title: &quot;__apiTitle__&quot;
+        ///  description: &quot;__apiDescription__&quot;
+        ///  version: &quot;__apiVersion__&quot;
+        ///
+        ///schemes: 
+        ///  - &quot;http&quot;
+        ///  - &quot;https&quot;
+        ///host: &quot;__hostName__&quot;
+        ///basePath: &quot;__basePath__&quot;
+        ///consumes: 
+        ///  - &quot;application/json&quot;
+        ///produces: 
+        ///  - &quot;application/json&quot;
+        ///
+        ///.
+        /// </summary>
+        internal static string Header {
+            get {
+                return ResourceManager.GetString("Header", resourceCulture);
             }
         }
         
@@ -75,14 +111,14 @@ namespace Jhu.Graywulf.Web.Services.CodeGen {
         ///      tags:
         ///        - __serviceName__
         ///      description: &quot;&quot;
-        ///      operationId: &quot;__methodName__&quot;
+        ///      operationId: &quot;__operationName__&quot;
         ///      produces: 
         ///        - &quot;application/json&quot;
         ///        - &quot;application/xml&quot;
         ///        - &quot;text/xml&quot;
         ///      responses: 
         ///        &quot;200&quot;:
-        ///          description: &quot;__methodName__ response&quot;
+        ///          description: &quot;__operationName__ response&quot;
         ///        default: 
         ///          description: &quot;unexpected error&quot;
         ///      parameters: 
@@ -99,7 +135,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen {
         ///          in: &quot;__parameterIn__&quot;
         ///          description: &quot;__parameterDescription__&quot;
         ///          required: false
-        ///          type: &quot;__parameterType__&quot;
+        ///          __parameterType__
         ///.
         /// </summary>
         internal static string Parameter {
@@ -109,28 +145,33 @@ namespace Jhu.Graywulf.Web.Services.CodeGen {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to swagger: &quot;2.0&quot;
-        ///info:
-        ///  title: __serviceName__ Service
-        ///  description: __serviceDescription__
-        ///  version: __serviceVersion__
-        ///
-        ///host: &quot;__serviceHost__&quot;
-        ///basePath: &quot;/Api/V1/__serviceName__.svc&quot;
-        ///schemes: 
-        ///  - &quot;http&quot;
-        ///  - &quot;https&quot;
-        ///consumes: 
-        ///  - &quot;application/json&quot;
-        ///produces: 
-        ///  - &quot;application/json&quot;
-        ///
-        ///paths:
+        ///   Looks up a localized string similar to   __path__: 
         ///.
         /// </summary>
-        internal static string Service {
+        internal static string Path {
             get {
-                return ResourceManager.GetString("Service", resourceCulture);
+                return ResourceManager.GetString("Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to paths:
+        ///.
+        /// </summary>
+        internal static string Paths {
+            get {
+                return ResourceManager.GetString("Paths", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to       __parameterName__:
+        ///        __parameterType__
+        ///.
+        /// </summary>
+        internal static string Property {
+            get {
+                return ResourceManager.GetString("Property", resourceCulture);
             }
         }
     }

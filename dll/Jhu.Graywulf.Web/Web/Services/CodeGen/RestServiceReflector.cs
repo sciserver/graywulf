@@ -21,18 +21,18 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         public RestServiceReflector()
         {
-            InitializeMembers();   
+            InitializeMembers();
         }
 
         private void InitializeMembers()
         {
             this.api = new RestApi();
         }
-        
+
         public void ReflectServiceContract(Type type, string serviceUrl)
         {
             // TODO: assume a single endpoint here, which is currently true
-            
+
             var service = new RestServiceContract(api, type);
             var attr = type.GetCustomAttribute<ServiceNameAttribute>();
 
@@ -132,7 +132,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             if (operation.Method.ReturnType != typeof(void))
             {
                 var parameter = ReflectParameter(operation, operation.Method.ReturnParameter);
-                operation.ReturnParameter = parameter; 
+                operation.ReturnParameter = parameter;
             }
         }
 
@@ -146,15 +146,16 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
             return par;
         }
-        
+
         private RestDataContract ReflectDataContract(Type type)
         {
-            var dataContract = new RestDataContract(type);
-
             var attr = type.GetCustomAttribute<DataContractAttribute>();
 
-            dataContract.DataContractName = attr?.Name ?? type.Name;
-            dataContract.DataContractDescription = ReflectDescription(type);
+            var dataContract = new RestDataContract(api, type)
+            {
+                DataContractName = attr?.Name ?? type.Name,
+                DataContractDescription = ReflectDescription(type),
+            };
 
             ReflectDataMembers(dataContract);
 
@@ -206,24 +207,40 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         private RestDataContract ReflectType(Type type)
         {
-            if (type.IsArray)
-            {
-                type = type.GetElementType();
-            }
-            
             if (type == typeof(Stream) || type.IsSubclassOf(typeof(Stream)))
             {
                 // TODO: figure this out
                 return null;
             }
-            
-            if (!api.DataContracts.ContainsKey(type))
+            else if (type.IsPrimitive || type == typeof(String) || type == typeof(Guid))
             {
-                var dc = ReflectDataContract(type);
-                api.DataContracts.Add(type, dc);
+                return null;
             }
+            else
+            {
+                if (!api.DataContracts.ContainsKey(type))
+                {
+                    var dc = ReflectDataContract(type);
+                    
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                    {
+                        dc.ElementType = type.GetGenericArguments()[0];
+                    }
+                    else if (type.IsArray)
+                    {
+                        dc.ElementType = type.GetElementType();
+                    }
 
-            return api.DataContracts[type];
+                    api.DataContracts.Add(type, dc);
+
+                    if (dc.ElementType != null)
+                    {
+                        ReflectType(dc.ElementType);
+                    }
+                }
+
+                return api.DataContracts[type];
+            }
         }
     }
 }

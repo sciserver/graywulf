@@ -8,12 +8,12 @@ using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Web.Services
 {
-    [DataContract(Name = "itemList")]
+    [DataContract(Name = "TestItemList")]
     [Description("Represents a list of items.")]
     public class TestItemListResponse
     {
         [DataMember(Name = "items")]
         [Description("An array of items.")]
-        public TestItemResponse[] Items { get; set; }
+        public IEnumerable<TestItem> Items { get; set; }
     }
 }

@@ -37,15 +37,11 @@ namespace Jhu.Graywulf.Web.Services
 
         [OperationContract]
         [WebGet(UriTemplate = "/MultipleQueryPartFunction?parameter={parameter}&parameter2={parameter2}")]
-        void MultipleQueryPartFunction(string parameter);
+        void MultipleQueryPartFunction(string parameter, int parameter2);
 
         [OperationContract]
         [WebGet(UriTemplate = "/PathAndQueryPartFunction/{pathParameter}?parameter={parameter}&parameter2={parameter2}")]
-        void PathAndQueryParameterFunction(string parameter);
-
-        [OperationContract]
-        [WebGet(UriTemplate = "/SingleParameterFunction")]
-        void SingleParameterFunction(string parameter);
+        void PathAndQueryParameterFunction(string pathParameter, int parameter, double parameter2);
 
         [OperationContract]
         [WebInvoke(UriTemplate = "/items", Method = HttpMethod.Get)]

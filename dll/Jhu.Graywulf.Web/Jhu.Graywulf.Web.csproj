@@ -55,6 +55,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -138,7 +141,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Swagger.resx</DependentUpon>
     </Compile>
-    <Compile Include="Web\Services\CodeGen\SwaggerYamlGenerator.cs" />
+    <Compile Include="Web\Services\CodeGen\SwaggerJsonGenerator.cs" />
     <Compile Include="Web\Services\Constants.cs" />
     <Compile Include="Web\Services\DynamicDispatchMessageFormatter.cs" />
     <Compile Include="Web\Services\DynamicFormatAttribute.cs" />
@@ -266,14 +269,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
     <None Include="Web\Services\CodeGen\Templates\Definition.yaml" />
-    <None Include="Web\Services\CodeGen\Templates\Endpoint.yaml" />
+    <None Include="Web\Services\CodeGen\Templates\Definitions.yaml" />
+    <None Include="Web\Services\CodeGen\Templates\Path.yaml" />
     <None Include="Web\Services\CodeGen\Templates\Method.yaml" />
     <None Include="Web\Services\CodeGen\Templates\Parameter.yaml" />
+    <None Include="Web\Services\CodeGen\Templates\Paths.yaml" />
     <None Include="Web\Services\CodeGen\Templates\Property.yaml" />
-    <None Include="Web\Services\CodeGen\Templates\Service.yaml" />
+    <None Include="Web\Services\CodeGen\Templates\Header.yaml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web\Services\CodeGen\Templates\ServiceClass.js" />

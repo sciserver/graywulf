@@ -1,7 +1,7 @@
 ﻿    __httpMethod__: 
       tags:
         - __serviceName__
-      description: ""
+      description: "__operationDescription__"
       operationId: "__operationName__"
       produces: 
         - "application/json"
