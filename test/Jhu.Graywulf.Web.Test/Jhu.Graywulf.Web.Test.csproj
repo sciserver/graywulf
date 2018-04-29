@@ -96,7 +96,11 @@
     <Compile Include="Web\Api\V1\JobsServiceTest.cs" />
     <Compile Include="Web\Api\V1\ObjectSerializationTest.cs" />
     <Compile Include="Web\Api\Util\XmlReaderTest.cs" />
+    <Compile Include="Web\Services\TestItemAdapter.cs" />
+    <Compile Include="Web\Services\TestItemBinary.cs" />
     <Compile Include="Web\Services\TestItem.cs" />
+    <Compile Include="Web\Services\TestItemFormatter.cs" />
+    <Compile Include="Web\Services\TestItemFormatterAttribute.cs" />
     <Compile Include="Web\Services\TestItemListResponse.cs" />
     <Compile Include="Web\Services\TestItemRequest.cs" />
     <Compile Include="Web\Services\TestItemResponse.cs" />

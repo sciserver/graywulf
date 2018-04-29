@@ -119,17 +119,29 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             }
             else
             {
-                var info = GetParameterInfo(operation.ReturnParameter);
+                if (operation.ReturnParameter.DataContract != null)
+                {
+                    var info = GetParameterInfo(operation.ReturnParameter);
 
-                response =
-                    new JProperty("200",
-                        new JObject(
-                            new JProperty("description", ""),
-                            new JProperty("schema",
-                                new JObject(
-                                    new JProperty("$ref", info.Ref)))));
+                    response =
+                        new JProperty("200",
+                            new JObject(
+                                new JProperty("description", ""),
+                                new JProperty("schema",
+                                    new JObject(
+                                        new JProperty("$ref", info.Ref)))));
+                }
+                else
+                {
+                    response =
+                        new JProperty("200",
+                            new JObject(
+                                new JProperty("description", ""),
+                                new JProperty("schema",
+                                    new JObject(
+                                        new JProperty("type", "file")))));
+                }
             }
-
 
             responses.Add(response);
 
@@ -207,6 +219,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             var dcinfo = GetTypeInfo(member.DataContract.Type);
             var properties = (JObject)definitions[dcinfo.Name]["properties"];
             var prop = new JObject();
+            JObject type;
 
             var info = GetTypeInfo(member.Property.PropertyType);
 
@@ -219,9 +232,22 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                     prop.Add(new JProperty("type", info.Type));
                 }
 
+                if (info.Items == null)
+                {
+                    type = prop;
+                }
+                else
+                {
+                    type =
+                        new JObject(
+                            new JProperty("type", info.Items));
+
+                    prop.Add(new JProperty("items", type));
+                }
+
                 if (info.Format != null)
                 {
-                    prop.Add(new JProperty("format", info.Format));
+                    type.Add(new JProperty("format", info.Format));
                 }
             }
             else
@@ -244,37 +270,81 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         private VariableInfo GetTypeInfo(Type type)
         {
-            var info = new VariableInfo();
-
-            if (Constants.SwaggerTypes.ContainsKey(type))
+            if (base.Api.DataContracts.ContainsKey(type))
             {
-                info.Type = Constants.SwaggerTypes[type];
-                info.Format = Constants.SwaggerFormats[type];
-            }
-            else if (base.Api.DataContracts.ContainsKey(type))
-            {
-                var dc = base.Api.DataContracts[type];
-
-                if (dc.ElementType != null)
-                {
-                    var edc = base.Api.DataContracts[dc.ElementType];
-
-                    info.Name = edc.DataContractName + "_Array";
-                    info.Items = "#/definition/" + edc.DataContractName;
-                }
-                else
-                {
-                    info.Name = dc.DataContractName;
-                }
-
-                info.Ref = "#/definition/" + info.Name;
+                return GetTypeInfo_DataContract(type);
             }
             else
             {
-                throw new InvalidOperationException();
+                return GetTypeInfo_Swagger(type);
+            }
+        }
+
+        private VariableInfo GetTypeInfo_DataContract(Type type)
+        {
+            var info = new VariableInfo();
+
+            var dc = base.Api.DataContracts[type];
+
+            if (dc.ElementType != null)
+            {
+                var edc = base.Api.DataContracts[dc.ElementType];
+
+                info.Name = edc.DataContractName + "_Array";
+                info.Items = "#/definition/" + edc.DataContractName;
+            }
+            else
+            {
+                info.Name = dc.DataContractName;
             }
 
+            info.Ref = "#/definition/" + info.Name;
+
             return info;
+        }
+
+        private VariableInfo GetTypeInfo_Swagger(Type type)
+        {
+            var info = new VariableInfo();
+            bool nullable = false;
+            bool array = false;
+
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                nullable = true;
+                type = type.GetGenericArguments()[0];
+
+                // TODO: we could determine if parameter is required here
+            }
+
+            if (type.IsArray)
+            {
+                // Handle only arrays of primitive types here, all other arrays
+                // are already treated together with contracts
+
+                array = true;
+                type = type.GetElementType();
+            }
+
+
+            if (Constants.SwaggerTypes.ContainsKey(type))
+            {
+                if (!array)
+                {
+                    info.Type = Constants.SwaggerTypes[type];
+                    info.Format = Constants.SwaggerFormats[type];
+                }
+                else
+                {
+                    info.Type = "array";
+                    info.Items = Constants.SwaggerTypes[type];
+                    info.Format = Constants.SwaggerFormats[type];
+                }
+
+                return info;
+            }
+
+            throw new InvalidOperationException();
         }
 
         private VariableInfo GetParameterInfo(RestMessageParameter parameter)

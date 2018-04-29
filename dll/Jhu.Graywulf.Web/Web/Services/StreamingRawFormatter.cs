@@ -23,13 +23,7 @@ namespace Jhu.Graywulf.Web.Services
             }
         }
 
-        protected StreamingRawFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint, IDispatchMessageFormatter fallbackFormatter)
-            : base(operationDescription, endpoint, fallbackFormatter)
-        {
-        }
-
-        protected StreamingRawFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint, IClientMessageFormatter fallbackFormatter)
-            : base(operationDescription, endpoint, fallbackFormatter)
+        protected StreamingRawFormatter()
         {
         }
 

@@ -26,14 +26,16 @@ namespace Jhu.Graywulf.Web.Services
             var retval = outmsg.Body.ReturnValue;
             var rettype = retval.Type;
 
-            var formatter = clientOperation.Formatter;
-            clientOperation.Formatter = new StreamingListFormatter(formatter, rettype);
+            var formatter = new StreamingListFormatter();
+            formatter.Initialize(clientOperation.Formatter, rettype);
+            clientOperation.Formatter = formatter;
         }
 
         public void ApplyDispatchBehavior(OperationDescription operationDescription, DispatchOperation dispatchOperation)
         {
-            var formatter = dispatchOperation.Formatter;
-            dispatchOperation.Formatter = new StreamingListFormatter(formatter);
+            var formatter = new StreamingListFormatter();
+            formatter.Initialize(dispatchOperation.Formatter);
+            dispatchOperation.Formatter = formatter;
         }
 
         public void Validate(OperationDescription operationDescription)

@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         public void Execute(Stream stream)
         {
-            using (this.writer = new StreamWriter(stream))
+            using (this.writer = new StreamWriter(stream, Encoding.UTF8, 0x10000, true))
             {
                 Execute(writer);
             }

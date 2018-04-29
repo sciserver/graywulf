@@ -35,26 +35,22 @@ namespace Jhu.Graywulf.Web.Services
         {
             InitializeMembers();
         }
-
-        protected RestMessageFormatter(IDispatchMessageFormatter fallbackFormatter)
-        {
-            InitializeMembers();
-
-            this.fallbackDispatchMessageFormatter = fallbackFormatter;
-        }
-
-        protected RestMessageFormatter(IClientMessageFormatter fallbackFormatter)
-        {
-            InitializeMembers();
-
-            this.fallbackClientMessageFormatter = fallbackFormatter;
-        }
-
+        
         private void InitializeMembers()
         {
             this.fallbackDispatchMessageFormatter = null;
             this.fallbackClientMessageFormatter = null;
             this.mimeType = null;
+        }
+
+        protected void Initialize(IDispatchMessageFormatter fallbackFormatter)
+        {
+            this.fallbackDispatchMessageFormatter = fallbackFormatter;
+        }
+
+        protected void Initialize(IClientMessageFormatter fallbackFormatter)
+        {
+            this.fallbackClientMessageFormatter = fallbackFormatter;
         }
 
         public abstract string[] GetSupportedMimeTypes();

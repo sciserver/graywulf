@@ -52,22 +52,9 @@ namespace Jhu.Graywulf.Web.Services
             get;
         }
 
-        protected StreamingRawFormatterBase(OperationDescription operationDescription, ServiceEndpoint endpoint, IDispatchMessageFormatter fallbackFormatter)
-            : base(fallbackFormatter)
+        protected StreamingRawFormatterBase()
         {
             InitializeMembers();
-
-            this.operation = operationDescription;
-            this.endpoint = endpoint;
-        }
-
-        protected StreamingRawFormatterBase(OperationDescription operationDescription, ServiceEndpoint endpoint, IClientMessageFormatter fallbackFormatter)
-            : base(fallbackFormatter)
-        {
-            InitializeMembers();
-
-            this.operation = operationDescription;
-            this.endpoint = endpoint;
         }
 
         private void InitializeMembers()
@@ -76,6 +63,20 @@ namespace Jhu.Graywulf.Web.Services
             this.endpoint = null;
             this.operationUri = null;
             this.direction = StreamingRawFormatterDirection.None;
+        }
+
+        public void Initialize(OperationDescription operationDescription, ServiceEndpoint endpoint, IDispatchMessageFormatter fallbackFormatter)
+        {
+            base.Initialize(fallbackFormatter);
+            this.operation = operationDescription;
+            this.endpoint = endpoint;
+        }
+
+        public void Initialize(OperationDescription operationDescription, ServiceEndpoint endpoint, IClientMessageFormatter fallbackFormatter)
+        {
+            base.Initialize(fallbackFormatter);
+            this.operation = operationDescription;
+            this.endpoint = endpoint;
         }
 
         private void CreateOperationUri()

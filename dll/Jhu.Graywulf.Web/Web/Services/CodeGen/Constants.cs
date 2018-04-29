@@ -25,6 +25,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             { typeof(Boolean), "boolean" },
             { typeof(DateTime), "string" },
             { typeof(Guid), "string" },
+            { typeof(Uri), "string" },
         };
 
         public static readonly Dictionary<Type, string> SwaggerFormats = new Dictionary<Type, string>()
@@ -39,6 +40,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             { typeof(Boolean), "boolean" },
             { typeof(DateTime), "date" },
             { typeof(Guid), "string" },
+            { typeof(Uri), "string" },
         };
 
         public const string SwaggerTypeArray = "array";

@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             // TODO: assume a single WCF endpoint here, which is currently true
 
             type = GetServiceInterface(type);
-            
+
             var service = new RestServiceContract(api, type);
             var attr = type.GetCustomAttribute<ServiceNameAttribute>(true);
 
@@ -51,6 +51,14 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             ReflectOperationContracts(service);
 
             api.ServiceContracts.Add(type, service);
+
+            // Add error type
+
+            if (!api.DataContracts.ContainsKey(typeof(RestError)))
+            {
+                var dc = ReflectDataContract(typeof(RestError));
+                api.DataContracts.Add(typeof(RestError), dc);
+            }
         }
 
         private Type GetServiceInterface(Type type)
@@ -142,6 +150,16 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         private void ReflectOperationParameters(RestOperationContract operation)
         {
+            // See if a formatter attribute is defined on the operation
+            StreamingRawFormatterBase formatter = null;
+            var attr = operation.Method.GetCustomAttribute<StreamingRawFormatAttribute>();
+
+            if (attr != null)
+            {
+                formatter = attr.CreateFormatter();
+            }
+
+            // Process parameters
             var pars = operation.Method.GetParameters();
 
             for (int i = 0; i < pars.Length; i++)
@@ -152,12 +170,14 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 if (parameter.IsBodyParameter())
                 {
                     operation.BodyParameter = parameter;
+                    parameter.MimeTypes = formatter?.GetSupportedMimeTypes();
                 }
             }
 
             if (operation.Method.ReturnType != typeof(void))
             {
                 var parameter = ReflectParameter(operation, operation.Method.ReturnParameter);
+                parameter.MimeTypes = formatter?.GetSupportedMimeTypes();
                 operation.ReturnParameter = parameter;
             }
         }
@@ -233,6 +253,18 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         private RestDataContract ReflectType(Type type)
         {
+            var attr = type.GetCustomAttribute<DataContractAttribute>(true);
+            Type elementType = null;
+
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            {
+                elementType = type.GetGenericArguments()[0];
+            }
+            else if (type.IsArray)
+            {
+                elementType = type.GetElementType();
+            }
+
             if (type == typeof(Stream) || type.IsSubclassOf(typeof(Stream)))
             {
                 // TODO: figure this out
@@ -242,27 +274,41 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             {
                 return null;
             }
+            else if (elementType != null && (elementType.IsPrimitive || elementType == typeof(String) || elementType == typeof(Guid)))
+            {
+                return null;
+            }
+            else if (attr != null)
+            {
+                if (!api.DataContracts.ContainsKey(type))
+                {
+                    var dc = ReflectDataContract(type);
+                    api.DataContracts.Add(type, dc);
+                }
+
+                return api.DataContracts[type];
+            }
             else
             {
                 if (!api.DataContracts.ContainsKey(type))
                 {
                     var dc = ReflectDataContract(type);
                     
-                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                    if (elementType != null)
                     {
-                        dc.ElementType = type.GetGenericArguments()[0];
+                        dc.ElementType = elementType;
                     }
-                    else if (type.IsArray)
+                    else
                     {
-                        dc.ElementType = type.GetElementType();
+                        // This is a type that we cannot handle right now
+                        // This must be a body parameter of an operation
+                        // Will need to look for a formatter on the operation
+
+                        return null;
                     }
 
                     api.DataContracts.Add(type, dc);
-
-                    if (dc.ElementType != null)
-                    {
-                        ReflectType(dc.ElementType);
-                    }
+                    ReflectType(dc.ElementType);
                 }
 
                 return api.DataContracts[type];

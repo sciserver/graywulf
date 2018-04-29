@@ -17,6 +17,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         private string parameterName;
         private string parameterDescription;
+        private string[] mimeTypes;
 
         public RestOperationContract Operation
         {
@@ -39,11 +40,17 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             get { return dataContract; }
             internal set { dataContract = value; }
         }
-        
+
         public string ParameterDescription
         {
             get { return parameterDescription; }
             internal set { parameterDescription = value; }
+        }
+
+        public string[] MimeTypes
+        {
+            get { return mimeTypes; }
+            internal set { mimeTypes = value; }
         }
 
         public RestMessageParameter(RestOperationContract operation, ParameterInfo parameter)
@@ -61,8 +68,9 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             this.dataContract = null;
             this.parameterName = null;
             this.parameterDescription = null;
+            this.mimeTypes = null;
         }
-        
+
         public bool IsQueryParameter()
         {
             return operation.UriTemplate.IsQueryParameter(parameterName);

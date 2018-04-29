@@ -20,24 +20,27 @@ namespace Jhu.Graywulf.Web.Services
 
         private Type returnType;
 
-        public StreamingListFormatter(IDispatchMessageFormatter fallbackFormatter)
-            :base(fallbackFormatter)
+        public StreamingListFormatter()
         {
             InitializeMembers();
-        }
-
-        public StreamingListFormatter(IClientMessageFormatter fallbackFormatter, Type returnType)
-            :base(fallbackFormatter)
-        {
-            InitializeMembers();
-            
-            this.returnType = returnType;
         }
 
         private void InitializeMembers()
         {
             this.returnType = null;
         }
+
+        public new void Initialize(IDispatchMessageFormatter fallbackFormatter)
+        {
+            base.Initialize(fallbackFormatter);
+        }
+        
+        public void Initialize(IClientMessageFormatter fallbackFormatter, Type returnType)
+        {
+            base.Initialize(fallbackFormatter);
+            this.returnType = returnType;
+        }
+
 
         public override string[] GetSupportedMimeTypes()
         {

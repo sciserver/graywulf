@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Web.Services
 
         [OperationContract]
         [WebInvoke(UriTemplate = "/items/{id}", Method = HttpMethod.Post)]
-        TestItemResponse CreateItem(int id);
+        TestItemResponse CreateItem(int id, TestItemRequest item);
 
         [OperationContract]
         [WebInvoke(UriTemplate = "/items/{id}", Method = HttpMethod.Get)]
@@ -62,5 +62,33 @@ namespace Jhu.Graywulf.Web.Services
         [OperationContract]
         [WebInvoke(UriTemplate = "/items/{id}", Method = HttpMethod.Delete)]
         void Delete(int id);
+
+        [OperationContract]
+        [WebInvoke(UriTemplate = "/items/{id}/upload", Method = HttpMethod.Post)]
+        void UploadItem(int id, Stream stream);
+
+        [OperationContract]
+        [WebInvoke(UriTemplate = "/items/{id}/download", Method = HttpMethod.Get)]
+        Stream DownloadItem(int id);
+
+        [OperationContract]
+        [TestItemFormatter]
+        [WebInvoke(UriTemplate = "/items/{id}/upload/formatter", Method = HttpMethod.Post)]
+        void CreateItemFormatted(int id, TestItem item);
+
+        [OperationContract]
+        [TestItemFormatter]
+        [WebInvoke(UriTemplate = "/items/{id}/download/formatter", Method = HttpMethod.Get)]
+        TestItem GetItemFormatted(int id);
+
+        [OperationContract]
+        [TestItemFormatter]
+        [WebInvoke(UriTemplate = "/items/{id}/upload/binary", Method = HttpMethod.Post)]
+        void CreateItemBinary(int id, TestItemBinary item);
+
+        [OperationContract]
+        [TestItemFormatter]
+        [WebInvoke(UriTemplate = "/items/{id}/download/binary", Method = HttpMethod.Get)]
+        TestItemBinary GetItemBinary(int id);
     }
 }
