@@ -15,7 +15,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         private MethodInfo method;
 
         private string operationName;
-        private string operationDescription;
         private string httpMethod;
         private RestUriTemplate uriTemplate;
 
@@ -37,12 +36,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         {
             get { return operationName; }
             internal set { operationName = value; }
-        }
-
-        public string OperationDescription
-        {
-            get { return operationDescription; }
-            internal set { operationDescription = value; }
         }
 
         public string HttpMethod
@@ -87,7 +80,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             this.service = null;
             this.method = null;
             this.operationName = null;
-            this.operationDescription = null;
             this.httpMethod = null;
             this.uriTemplate = null;
             this.bodyParameter = null;
@@ -98,7 +90,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         public override void SubstituteTokens(StringBuilder script)
         {
             script.Replace("__operationName__", operationName);
-            script.Replace("__operationDescription__", operationDescription);
+            script.Replace("__operationDescription__", Description);
             script.Replace("__httpMethod__", httpMethod);
             script.Replace("__uriTemplate__", uriTemplate.Value);
         }

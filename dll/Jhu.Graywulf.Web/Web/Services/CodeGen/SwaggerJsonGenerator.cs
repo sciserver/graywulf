@@ -104,7 +104,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             path.Add(
                 new JProperty(operation.HttpMethod.ToLowerInvariant(),
                     new JObject(
-                        new JProperty("summary", operation.OperationDescription),
+                        new JProperty("summary", operation.Description),
                         new JProperty("operationId", operation.OperationName),
                         new JProperty("tags", new JArray(operation.Service.ServiceName)),
                         new JProperty("parameters", new JArray()),
@@ -166,7 +166,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                     new JObject(
                         new JProperty("name", parameter.ParameterName),
                         new JProperty("in", info.In),
-                        new JProperty("description", parameter.ParameterDescription),
+                        new JProperty("description", parameter.Description),
                         new JProperty("required", parameter.IsPathParameter()));
 
                 if (info.Type != null)
@@ -270,62 +270,62 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         private VariableInfo GetTypeInfo(Type type)
         {
-            if (base.Api.DataContracts.ContainsKey(type))
-            {
-                return GetTypeInfo_DataContract(type);
-            }
-            else
-            {
-                return GetTypeInfo_Swagger(type);
-            }
-        }
-
-        private VariableInfo GetTypeInfo_DataContract(Type type)
-        {
-            var info = new VariableInfo();
-
-            var dc = base.Api.DataContracts[type];
-
-            if (dc.ElementType != null)
-            {
-                var edc = base.Api.DataContracts[dc.ElementType];
-
-                info.Name = edc.DataContractName + "_Array";
-                info.Items = "#/definition/" + edc.DataContractName;
-            }
-            else
-            {
-                info.Name = dc.DataContractName;
-            }
-
-            info.Ref = "#/definition/" + info.Name;
-
-            return info;
-        }
-
-        private VariableInfo GetTypeInfo_Swagger(Type type)
-        {
-            var info = new VariableInfo();
-            bool nullable = false;
             bool array = false;
+            bool nullable = false;
+            VariableInfo info = null;
 
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 nullable = true;
                 type = type.GetGenericArguments()[0];
-
-                // TODO: we could determine if parameter is required here
             }
 
-            if (type.IsArray)
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             {
-                // Handle only arrays of primitive types here, all other arrays
-                // are already treated together with contracts
-
+                array = true;
+                type = type.GetGenericArguments()[0];
+            }
+            else if (type.IsArray)
+            {
                 array = true;
                 type = type.GetElementType();
             }
 
+            if (base.Api.DataContracts.ContainsKey(type))
+            {
+                info = GetTypeInfo_DataContract(type, nullable, array);
+            }
+            else
+            {
+                info = GetTypeInfo_Swagger(type, nullable, array);
+            }
+
+            return info;
+        }
+
+        private VariableInfo GetTypeInfo_DataContract(Type type, bool nullable, bool array)
+        {
+            var info = new VariableInfo();
+            var dc = base.Api.DataContracts[type];
+
+            info.Name = dc.DataContractName;
+            
+
+            if (!array)
+            {
+                info.Ref = "#/definition/" + dc.DataContractName;
+            }
+            else
+            {
+                info.Items = "#/definition/" + dc.DataContractName;
+            }
+
+            return info;
+        }
+
+        private VariableInfo GetTypeInfo_Swagger(Type type, bool nullable, bool array)
+        {
+            var info = new VariableInfo();
 
             if (Constants.SwaggerTypes.ContainsKey(type))
             {
@@ -343,8 +343,10 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
                 return info;
             }
-
-            throw new InvalidOperationException();
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
         private VariableInfo GetParameterInfo(RestMessageParameter parameter)

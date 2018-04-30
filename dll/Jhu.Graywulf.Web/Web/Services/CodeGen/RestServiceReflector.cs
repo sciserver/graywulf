@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             service.ServiceName = attr?.Name ?? type.Name;
 
             service.ServiceVersion = type.Assembly.GetName().Version.ToString();
-            service.ServiceDescription = ReflectDescription(type);
+            service.Description = ReflectDescription(type);
 
             ReflectOperationContracts(service);
 
@@ -120,7 +120,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             var operation = new RestOperationContract(service, method);
 
             operation.OperationName = method.Name;
-            operation.OperationDescription = ReflectDescription(method);
+            operation.Description = ReflectDescription(method);
 
             var attr = method.GetCustomAttributes(typeof(WebGetAttribute), true);
             if (attr != null && attr.Length > 0)
@@ -164,7 +164,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
             for (int i = 0; i < pars.Length; i++)
             {
-                var parameter = ReflectParameter(operation, pars[i]);
+                var parameter = ReflectParameter(operation, pars[i], formatter != null);
                 operation.Parameters.Add(parameter);
 
                 if (parameter.IsBodyParameter())
@@ -176,19 +176,22 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
             if (operation.Method.ReturnType != typeof(void))
             {
-                var parameter = ReflectParameter(operation, operation.Method.ReturnParameter);
+                var parameter = ReflectParameter(operation, operation.Method.ReturnParameter, formatter != null);
                 parameter.MimeTypes = formatter?.GetSupportedMimeTypes();
                 operation.ReturnParameter = parameter;
             }
         }
 
-        private RestMessageParameter ReflectParameter(RestOperationContract operation, ParameterInfo parameter)
+        private RestMessageParameter ReflectParameter(RestOperationContract operation, ParameterInfo parameter, bool isRawFormat)
         {
             var par = new RestMessageParameter(operation, parameter);
-
-            par.DataContract = ReflectType(parameter.ParameterType);
-
             par.ParameterName = parameter.Name;
+            par.IsRawFormat = isRawFormat;
+
+            if (!isRawFormat)
+            {
+                par.DataContract = ReflectType(parameter.ParameterType);
+            }
 
             return par;
         }
@@ -200,7 +203,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             var dataContract = new RestDataContract(api, type)
             {
                 DataContractName = attr?.Name ?? type.Name,
-                DataContractDescription = ReflectDescription(type),
+                Description = ReflectDescription(type),
             };
 
             ReflectDataMembers(dataContract);
@@ -214,9 +217,9 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
             for (int i = 0; i < props.Length; i++)
             {
-                var attr = props[i].GetCustomAttribute<DataMemberAttribute>();
+                var attr = props[i].GetCustomAttribute<IgnoreDataMemberAttribute>();
 
-                if (attr != null)
+                if (attr == null)
                 {
                     var member = ReflectDataMember(dataContract, props[i]);
                     dataContract.DataMembers.Add(member.DataMemberName, member);
@@ -256,6 +259,11 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             var attr = type.GetCustomAttribute<DataContractAttribute>(true);
             Type elementType = null;
 
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                type = type.GetGenericArguments()[0];
+            }
+
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             {
                 elementType = type.GetGenericArguments()[0];
@@ -270,15 +278,23 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 // TODO: figure this out
                 return null;
             }
-            else if (type.IsPrimitive || type == typeof(String) || type == typeof(Guid))
+            else if (type.IsPrimitive || Constants.PrimitiveTypes.Contains(type))
             {
                 return null;
             }
-            else if (elementType != null && (elementType.IsPrimitive || elementType == typeof(String) || elementType == typeof(Guid)))
+            else if (elementType != null && (elementType.IsPrimitive || Constants.PrimitiveTypes.Contains(elementType)))
             {
                 return null;
             }
-            else if (attr != null)
+            else if (elementType != null)
+            {
+                // This is a valid array or IEnumerable
+                // Reflect element type as part of the service
+
+                ReflectType(elementType);
+            }
+
+            if (elementType == null)
             {
                 if (!api.DataContracts.ContainsKey(type))
                 {
@@ -290,28 +306,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             }
             else
             {
-                if (!api.DataContracts.ContainsKey(type))
-                {
-                    var dc = ReflectDataContract(type);
-                    
-                    if (elementType != null)
-                    {
-                        dc.ElementType = elementType;
-                    }
-                    else
-                    {
-                        // This is a type that we cannot handle right now
-                        // This must be a body parameter of an operation
-                        // Will need to look for a formatter on the operation
-
-                        return null;
-                    }
-
-                    api.DataContracts.Add(type, dc);
-                    ReflectType(dc.ElementType);
-                }
-
-                return api.DataContracts[type];
+                return null;
             }
         }
     }

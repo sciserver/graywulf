@@ -13,6 +13,14 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             "HandleHttpOptionsRequest", "GenerateProxy"
         };
 
+        public static readonly HashSet<Type> PrimitiveTypes = new HashSet<Type>()
+        {
+            typeof(String),
+            typeof(Guid),
+            typeof(Uri),
+
+        };
+
         public static readonly Dictionary<Type, string> SwaggerTypes = new Dictionary<Type, string>()
         {
             { typeof(Int32), "integer" },

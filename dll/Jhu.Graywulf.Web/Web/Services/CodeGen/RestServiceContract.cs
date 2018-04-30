@@ -16,7 +16,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         private string serviceName;
         private string serviceUrl;
         private string serviceVersion;
-        private string serviceDescription;
 
         private Dictionary<string, Dictionary<string, RestOperationContract>> uriTemplates;
 
@@ -48,12 +47,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             internal set { serviceVersion = value; }
         }
 
-        public string ServiceDescription
-        {
-            get { return serviceDescription; }
-            internal set { serviceDescription = value; }
-        }
-
         public Dictionary<string, Dictionary<string, RestOperationContract>> UriTemplates
         {
             get { return uriTemplates; }
@@ -74,7 +67,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             this.serviceName = null;
             this.serviceUrl = null;
             this.serviceVersion = null;
-            this.serviceDescription = null;
             this.uriTemplates = new Dictionary<string, Dictionary<string, RestOperationContract>>();
         }
 
@@ -83,7 +75,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             script.Replace("__serviceName__", serviceName);
             script.Replace("__serviceUrl__", serviceUrl);
             script.Replace("__serviceVersion__", serviceVersion);
-            script.Replace("__serviceDescription__", serviceDescription);
+            script.Replace("__serviceDescription__", Description);
         }
     }
 }

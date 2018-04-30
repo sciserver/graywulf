@@ -11,7 +11,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         private string hostName;
         private string basePath;
         private string title;
-        private string description;
         private string version;
 
         private Dictionary<Type, RestServiceContract> serviceContracts;
@@ -34,13 +33,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             get { return title; }
             internal set { title = value; }
         }
-
-        public string Description
-        {
-            get { return description; }
-            internal set { description = value; }
-        }
-
+        
         public string Version
         {
             get { return version; }
@@ -67,7 +60,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             this.hostName = "localhost";
             this.basePath = "Api/V1/";
             this.title = null;
-            this.description = null;
             this.version = null;
 
             this.serviceContracts = new Dictionary<Type, RestServiceContract>();
@@ -79,7 +71,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             script.Replace("__hostName__", hostName);
             script.Replace("__basePath__", basePath);
             script.Replace("__apiTitle__", title);
-            script.Replace("__apiDescription__", description);
+            script.Replace("__apiDescription__", Description);
             script.Replace("__apiVersion__", version);
         }
     }
