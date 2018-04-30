@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         public string BasePath
         {
             get { return basePath; }
-            internal set { basePath = value; }
+            set { basePath = value; }
         }
 
         public string Title

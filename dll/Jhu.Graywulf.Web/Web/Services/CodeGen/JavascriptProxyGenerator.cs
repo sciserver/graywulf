@@ -38,12 +38,12 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             // no op
         }
 
-        protected override void WriteServiceEndpointHeader(TextWriter writer, string uriTemplate)
+        protected override void WriteServiceEndpointHeader(TextWriter writer, RestServiceContract service, string uriTemplate)
         {
             // no op
         }
 
-        protected override void WriteServiceEndpointFooter(TextWriter writer, string uriTemplate)
+        protected override void WriteServiceEndpointFooter(TextWriter writer, RestServiceContract service, string uriTemplate)
         {
             // no op
         }

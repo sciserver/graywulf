@@ -89,15 +89,15 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             // TODO: write tags
         }
 
-        protected override void WriteServiceEndpointHeader(TextWriter writer, string uriTemplate)
+        protected override void WriteServiceEndpointHeader(TextWriter writer, RestServiceContract service, string uriTemplate)
         {
             paths.Add(
-                new JProperty(uriTemplate, new JObject()));
+                new JProperty(service.ServiceUrl + uriTemplate, new JObject()));
         }
 
         protected override void WriteOperationContractHeader(TextWriter writer, RestOperationContract operation)
         {
-            var path = (JObject)paths[operation.UriTemplate.Value];
+            var path = (JObject)paths[operation.Service.ServiceUrl + operation.UriTemplate.Value];
             JObject responses = new JObject();
             JProperty response;
 
@@ -156,7 +156,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         protected override void WriteMessageParameter(TextWriter writer, RestMessageParameter parameter)
         {
-            var parameters = (JArray)paths[parameter.Operation.UriTemplate.Value][parameter.Operation.HttpMethod.ToLowerInvariant()]["parameters"];
+            var parameters = (JArray)paths[parameter.Operation.Service.ServiceUrl + parameter.Operation.UriTemplate.Value][parameter.Operation.HttpMethod.ToLowerInvariant()]["parameters"];
 
             if (!parameter.IsBodyParameter())
             {
@@ -313,11 +313,11 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
             if (!array)
             {
-                info.Ref = "#/definition/" + dc.DataContractName;
+                info.Ref = "#/definitions/" + dc.DataContractName;
             }
             else
             {
-                info.Items = "#/definition/" + dc.DataContractName;
+                info.Items = "#/definitions/" + dc.DataContractName;
             }
 
             return info;

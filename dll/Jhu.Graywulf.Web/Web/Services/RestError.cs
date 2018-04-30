@@ -7,6 +7,10 @@ using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Web.Services
 {
+
+    // TODO: consider substituting this with a proper FaultContract to
+    // be compatible with WCF but serialize in JSON for other clients
+
     [DataContract]
     public class RestError
     {

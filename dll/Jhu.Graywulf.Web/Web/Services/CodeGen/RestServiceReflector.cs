@@ -44,7 +44,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             }
 
             service.ServiceName = attr?.Name ?? type.Name;
-
+            service.ServiceUrl = serviceUrl;
             service.ServiceVersion = type.Assembly.GetName().Version.ToString();
             service.Description = ReflectDescription(type);
 

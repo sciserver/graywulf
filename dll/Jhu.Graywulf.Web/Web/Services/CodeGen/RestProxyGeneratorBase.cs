@@ -84,14 +84,14 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         {
             if (uriTemplate != "*" && !uriTemplate.StartsWith("/proxy"))
             {
-                WriteServiceEndpointHeader(writer, uriTemplate);
+                WriteServiceEndpointHeader(writer, service, uriTemplate);
 
                 foreach (var method in service.UriTemplates[uriTemplate].Keys)
                 {
                     ProcessOperationContract(service.UriTemplates[uriTemplate][method]);
                 }
 
-                WriteServiceEndpointFooter(writer, uriTemplate);
+                WriteServiceEndpointFooter(writer, service, uriTemplate);
             }
         }
 
@@ -131,9 +131,9 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         protected virtual void WriteServiceContractFooter(TextWriter writer, RestServiceContract service) { }
 
-        protected virtual void WriteServiceEndpointHeader(TextWriter writer, string uriTemplate) { }
+        protected virtual void WriteServiceEndpointHeader(TextWriter writer, RestServiceContract service, string uriTemplate) { }
 
-        protected virtual void WriteServiceEndpointFooter(TextWriter writer, string uriTemplate) { }
+        protected virtual void WriteServiceEndpointFooter(TextWriter writer, RestServiceContract service, string uriTemplate) { }
 
         protected virtual void WriteOperationContractHeader(TextWriter writer, RestOperationContract operation) { }
 

@@ -33,6 +33,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.Api
                 reflector.ReflectServiceContract(service, url);
             }
 
+            // Figure out API base URL
+
+            reflector.Api.BasePath = context.Request.ApplicationPath + "/Api/";
+
             // Figure out which code generator to use
             // TODO: this could be made more generic with a factory class
 
