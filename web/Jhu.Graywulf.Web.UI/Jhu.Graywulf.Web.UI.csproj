@@ -83,6 +83,9 @@
     <Compile Include="Apps\Api\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Api\Proxy.ashx.cs">
+      <DependentUpon>Proxy.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Apps\Auth\Activate.aspx.cs">
       <DependentUpon>Activate.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1255,6 +1258,7 @@
     <Content Include="build.config" />
     <Content Include="Apps\Query\Examples\Examples.master" />
     <Content Include="Apps\Query\Examples\Web.config" />
+    <Content Include="Apps\Api\Proxy.ashx" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
