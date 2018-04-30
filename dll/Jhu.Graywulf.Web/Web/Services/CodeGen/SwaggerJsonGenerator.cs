@@ -16,12 +16,12 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
     {
         class VariableInfo
         {
+            public bool Array { get; set; }
             public string Type { get; set; }
             public string Format { get; set; }
             public string In { get; set; }
             public string Name { get; set; }
             public string Ref { get; set; }
-            public string Items { get; set; }
         }
 
         private JObject jdoc;
@@ -99,7 +99,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         {
             var path = (JObject)paths[operation.Service.ServiceUrl + operation.UriTemplate.Value];
             JObject responses = new JObject();
-            JProperty response;
 
             path.Add(
                 new JProperty(operation.HttpMethod.ToLowerInvariant(),
@@ -107,44 +106,12 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                         new JProperty("summary", operation.Description),
                         new JProperty("operationId", operation.OperationName),
                         new JProperty("tags", new JArray(operation.Service.ServiceName)),
+                        new JProperty("consumes", new JArray()),
+                        new JProperty("produces", new JArray()),
                         new JProperty("parameters", new JArray()),
                         new JProperty("responses", responses))));
 
-            if (operation.ReturnParameter == null)
-            {
-                response =
-                    new JProperty("200",
-                        new JObject(
-                            new JProperty("description", "")));
-            }
-            else
-            {
-                if (operation.ReturnParameter.DataContract != null)
-                {
-                    var info = GetParameterInfo(operation.ReturnParameter);
-
-                    response =
-                        new JProperty("200",
-                            new JObject(
-                                new JProperty("description", ""),
-                                new JProperty("schema",
-                                    new JObject(
-                                        new JProperty("$ref", info.Ref)))));
-                }
-                else
-                {
-                    response =
-                        new JProperty("200",
-                            new JObject(
-                                new JProperty("description", ""),
-                                new JProperty("schema",
-                                    new JObject(
-                                        new JProperty("type", "file")))));
-                }
-            }
-
-            responses.Add(response);
-
+            // TODO: modify this if proper FaultContracts are implemented some day
             responses.Add(
                 new JProperty("default",
                     new JObject(
@@ -152,40 +119,71 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                         new JProperty("schema",
                             new JObject(
                                 new JProperty("$ref", "#/definitions/RestError"))))));
+
+
         }
 
         protected override void WriteMessageParameter(TextWriter writer, RestMessageParameter parameter)
         {
-            var parameters = (JArray)paths[parameter.Operation.Service.ServiceUrl + parameter.Operation.UriTemplate.Value][parameter.Operation.HttpMethod.ToLowerInvariant()]["parameters"];
+            var method = paths[parameter.Operation.Service.ServiceUrl + parameter.Operation.UriTemplate.Value][parameter.Operation.HttpMethod.ToLowerInvariant()];
+            var consumes = (JArray)method["consumes"];
+            var produces = (JArray)method["produces"];
+            var parameters = (JArray)method["parameters"];
+            var responses = (JObject)method["responses"];
 
-            if (!parameter.IsBodyParameter())
+            if (parameter.IsBodyParameter && !parameter.IsReturnParameter)
             {
                 var info = GetParameterInfo(parameter);
+                var schema = GetTypeSchema(info);
+
+                foreach (var mime in parameter.MimeTypes)
+                {
+                    consumes.Add(mime);
+                }
 
                 var par =
                     new JObject(
                         new JProperty("name", parameter.ParameterName),
                         new JProperty("in", info.In),
                         new JProperty("description", parameter.Description),
-                        new JProperty("required", parameter.IsPathParameter()));
-
-                if (info.Type != null)
-                {
-                    par.Add(
-                        new JProperty("type", info.Type));
-                }
-
-                if (info.Format != null)
-                {
-                    par.Add(
-                        new JProperty("format", info.Format));
-                }
+                        new JProperty("required", true),
+                        new JProperty("schema", schema));
 
                 parameters.Add(par);
             }
+            else if (parameter.IsReturnParameter)
+            {
+                var info = GetParameterInfo(parameter);
+                var schema = GetTypeSchema(info);
+
+                foreach (var mime in parameter.MimeTypes)
+                {
+                    produces.Add(mime);
+                }
+
+                var response =
+                        new JProperty("200",
+                            new JObject(
+                                new JProperty("description", ""),
+                                new JProperty("schema", schema)));
+
+                // TODO: consider adding pers mime type schema entries
+                responses.Add(response);
+            }
             else
             {
-                // TODO: reference if body?
+                var info = GetParameterInfo(parameter);
+                var schema = GetTypeSchema(info);
+
+                var par =
+                    new JObject(
+                        new JProperty("name", parameter.ParameterName),
+                        new JProperty("in", info.In),
+                        new JProperty("description", parameter.Description),
+                        new JProperty("required", parameter.IsPathParameter),
+                        new JProperty("schema", schema));
+
+                parameters.Add(par);
             }
         }
 
@@ -194,13 +192,9 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             var info = GetTypeInfo(contract.Type);
             JObject obj;
 
-            if (info.Items != null)
+            if (info.Array)
             {
-                obj = new JObject(
-                    new JProperty("type", "array"),
-                    new JProperty("items",
-                        new JObject(
-                            new JProperty("$ref", info.Items))));
+                obj = GetTypeSchema(info);
             }
             else
             {
@@ -210,7 +204,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             }
 
             var definition = new JProperty(info.Name, obj);
-
+            
             definitions.Add(definition);
         }
 
@@ -218,44 +212,10 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         {
             var dcinfo = GetTypeInfo(member.DataContract.Type);
             var properties = (JObject)definitions[dcinfo.Name]["properties"];
-            var prop = new JObject();
-            JObject type;
-
             var info = GetTypeInfo(member.Property.PropertyType);
+            var schema = GetTypeSchema(info);
 
-            if (info.Ref == null)
-            {
-                prop = new JObject();
-
-                if (info.Type != null)
-                {
-                    prop.Add(new JProperty("type", info.Type));
-                }
-
-                if (info.Items == null)
-                {
-                    type = prop;
-                }
-                else
-                {
-                    type =
-                        new JObject(
-                            new JProperty("type", info.Items));
-
-                    prop.Add(new JProperty("items", type));
-                }
-
-                if (info.Format != null)
-                {
-                    type.Add(new JProperty("format", info.Format));
-                }
-            }
-            else
-            {
-                prop.Add(new JProperty("$ref", info.Ref));
-            }
-
-            properties.Add(new JProperty(member.DataMemberName, prop));
+            properties.Add(new JProperty(member.DataMemberName, schema));
         }
 
         protected override void WriteDataContractsFooter(TextWriter writer, RestApi api)
@@ -309,17 +269,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             var dc = base.Api.DataContracts[type];
 
             info.Name = dc.DataContractName;
+            info.Ref = "#/definitions/" + dc.DataContractName;
             
-
-            if (!array)
-            {
-                info.Ref = "#/definitions/" + dc.DataContractName;
-            }
-            else
-            {
-                info.Items = "#/definitions/" + dc.DataContractName;
-            }
-
             return info;
         }
 
@@ -329,18 +280,10 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
             if (Constants.SwaggerTypes.ContainsKey(type))
             {
-                if (!array)
-                {
-                    info.Type = Constants.SwaggerTypes[type];
-                    info.Format = Constants.SwaggerFormats[type];
-                }
-                else
-                {
-                    info.Type = "array";
-                    info.Items = Constants.SwaggerTypes[type];
-                    info.Format = Constants.SwaggerFormats[type];
-                }
-
+                info.Array = array;
+                info.Type = Constants.SwaggerTypes[type];
+                info.Format = Constants.SwaggerFormats[type];
+                
                 return info;
             }
             else
@@ -351,27 +294,76 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         private VariableInfo GetParameterInfo(RestMessageParameter parameter)
         {
-            var t = parameter.Parameter.ParameterType;
-            var res = GetTypeInfo(t);
+            if (parameter.IsRawFormat || parameter.IsStream)
+            {
+                var res = new VariableInfo()
+                {
+                    Type = "file"
+                };
 
-            if (parameter.IsQueryParameter())
-            {
-                res.In = Constants.SwaggerParameterInQuery;
-            }
-            else if (parameter.IsPathParameter())
-            {
-                res.In = Constants.SwaggerParameterInPath;
-            }
-            else if (parameter.IsBodyParameter())
-            {
-                res.In = Constants.SwaggerParameterInBody;
+                return res;
             }
             else
             {
-                throw new NotImplementedException();
+                var t = parameter.Parameter.ParameterType;
+                var res = GetTypeInfo(t);
+
+                if (parameter.IsQueryParameter)
+                {
+                    res.In = Constants.SwaggerParameterInQuery;
+                }
+                else if (parameter.IsPathParameter)
+                {
+                    res.In = Constants.SwaggerParameterInPath;
+                }
+                else if (parameter.IsBodyParameter)
+                {
+                    res.In = Constants.SwaggerParameterInBody;
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+
+                return res;
+            }
+        }
+
+        private JObject GetTypeSchema(VariableInfo info)
+        {
+            JObject schema = new JObject();
+            JObject type;
+
+            if (info.Array)
+            {
+                var items = new JObject();
+
+                schema.Add(new JProperty("type", "array"));
+                schema.Add(new JProperty("items", items));
+
+                type = items;
+            }
+            else
+            {
+                type = schema;
             }
 
-            return res;
+            if (info.Ref != null)
+            {
+                type.Add(new JProperty("$ref", info.Ref));
+            }
+
+            if (info.Type != null)
+            {
+                type.Add(new JProperty("type", info.Type));
+            }
+
+            if (info.Format != null)
+            {
+                type.Add(new JProperty("format", info.Format));
+            }
+
+            return schema;
         }
     }
 }

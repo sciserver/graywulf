@@ -165,19 +165,29 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             for (int i = 0; i < pars.Length; i++)
             {
                 var parameter = ReflectParameter(operation, pars[i], formatter != null);
-                operation.Parameters.Add(parameter);
 
-                if (parameter.IsBodyParameter())
+                if (parameter.IsBodyParameter)
                 {
                     operation.BodyParameter = parameter;
-                    parameter.MimeTypes = formatter?.GetSupportedMimeTypes();
+                    parameter.MimeTypes = 
+                        formatter?.GetSupportedMimeTypes() ??
+                        new[] { "application/json" };
+                }
+                else
+                {
+                    operation.Parameters.Add(parameter);
                 }
             }
 
             if (operation.Method.ReturnType != typeof(void))
             {
                 var parameter = ReflectParameter(operation, operation.Method.ReturnParameter, formatter != null);
-                parameter.MimeTypes = formatter?.GetSupportedMimeTypes();
+
+                parameter.MimeTypes = 
+                    formatter?.GetSupportedMimeTypes() ??
+                    new[] { "application/json" };
+                parameter.IsReturnParameter = true;
+
                 operation.ReturnParameter = parameter;
             }
         }

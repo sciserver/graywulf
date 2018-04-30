@@ -104,6 +104,16 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 WriteMessageParameter(writer, parameter);
             }
 
+            if (operation.BodyParameter != null)
+            {
+                WriteMessageParameter(writer, operation.BodyParameter);
+            }
+
+            if (operation.ReturnParameter != null)
+            {
+                WriteMessageParameter(writer, operation.ReturnParameter);
+            }
+
             WriteOperationContractFooter(writer, operation);
         }
 

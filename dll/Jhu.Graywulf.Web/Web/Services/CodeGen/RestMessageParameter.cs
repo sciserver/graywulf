@@ -16,8 +16,9 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         private RestDataContract dataContract;
 
         private string parameterName;
-        private bool isRawFormat;
         private string[] mimeTypes;
+        private bool isRawFormat;
+        private bool isReturnParameter;
 
         public RestOperationContract Operation
         {
@@ -41,16 +42,46 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             internal set { parameterName = value; }
         }
 
+        public string[] MimeTypes
+        {
+            get { return mimeTypes; }
+            internal set { mimeTypes = value; }
+        }
+
         public bool IsRawFormat
         {
             get { return isRawFormat; }
             internal set { isRawFormat = value; }
         }
 
-        public string[] MimeTypes
+        public bool IsReturnParameter
         {
-            get { return mimeTypes; }
-            internal set { mimeTypes = value; }
+            get { return isReturnParameter; }
+            internal set { isReturnParameter = value; }
+        }
+
+        public bool IsQueryParameter
+        {
+            get { return operation.UriTemplate.IsQueryParameter(parameterName); }
+        }
+
+        public bool IsPathParameter
+        {
+            get { return operation.UriTemplate.IsPathParameter(parameterName); }
+        }
+
+        public bool IsBodyParameter
+        {
+            get { return operation.UriTemplate.IsBodyParameter(parameterName); }
+        }
+
+        public bool IsStream
+        {
+            get
+            {
+                return (parameter.ParameterType == typeof(System.IO.Stream) ||
+                    parameter.ParameterType.IsSubclassOf(typeof(System.IO.Stream)));
+            }
         }
 
         public RestMessageParameter(RestOperationContract operation, ParameterInfo parameter)
@@ -69,21 +100,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             this.parameterName = null;
             this.isRawFormat = false;
             this.mimeTypes = null;
-        }
-
-        public bool IsQueryParameter()
-        {
-            return operation.UriTemplate.IsQueryParameter(parameterName);
-        }
-
-        public bool IsPathParameter()
-        {
-            return operation.UriTemplate.IsPathParameter(parameterName);
-        }
-
-        public bool IsBodyParameter()
-        {
-            return operation.UriTemplate.IsBodyParameter(parameterName);
         }
 
         public override void SubstituteTokens(StringBuilder script)
