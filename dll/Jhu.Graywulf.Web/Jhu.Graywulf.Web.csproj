@@ -82,6 +82,7 @@
     <Compile Include="Util\EmailTemplateUtility.cs" />
     <Compile Include="Util\IIS.cs" />
     <Compile Include="Util\PageUtility.cs" />
+    <Compile Include="Util\WildCardSearch.cs" />
     <Compile Include="Web\Api\Util\DateFormatter.cs" />
     <Compile Include="Web\Api\Util\EnumFormatter.cs" />
     <Compile Include="Web\Api\Util\XmlReader.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="Web\Services\RestOperationException.cs" />
     <Compile Include="Web\Services\RestOperationInvoker.cs" />
     <Compile Include="Web\Services\RestCorsMessageInspector.cs" />
+    <Compile Include="Web\Services\RestQueryStringConverter.cs" />
     <Compile Include="Web\Services\RestServiceBase.cs" />
     <Compile Include="Web\Services\RestServiceBehavior.cs" />
     <Compile Include="Web\Services\RestServiceFactory.cs" />

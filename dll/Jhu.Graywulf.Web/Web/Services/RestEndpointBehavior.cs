@@ -10,6 +10,11 @@ namespace Jhu.Graywulf.Web.Services
 {
     public class RestEndpointBehavior : WebHttpBehavior, IEndpointBehavior
     {
+        protected override QueryStringConverter GetQueryStringConverter(OperationDescription operationDescription)
+        {
+            return new RestQueryStringConverter();
+        }
+
         protected override IDispatchMessageFormatter GetRequestDispatchFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint)
         {
             var formatter = base.GetRequestDispatchFormatter(operationDescription, endpoint);
