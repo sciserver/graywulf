@@ -81,9 +81,13 @@ namespace Jhu.Graywulf.Web.Services
                 formatter.Direction |= StreamingRawFormatterDirection.ReturnValue;
             }
 
-            if (parameterTypes.Length == 1 && formatter.FormattedType == parameterTypes[0])
+            for (int i = 0; i < parameterTypes.Length; i++)
             {
-                formatter.Direction |= StreamingRawFormatterDirection.ParameterIn;
+                if (formatter.FormattedType == parameterTypes[i])
+                {
+                    formatter.InParameterIndex = i;
+                    formatter.Direction |= StreamingRawFormatterDirection.ParameterIn;
+                }
             }
         }
     }

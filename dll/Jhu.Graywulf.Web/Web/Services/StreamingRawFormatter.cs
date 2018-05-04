@@ -25,6 +25,12 @@ namespace Jhu.Graywulf.Web.Services
 
         protected StreamingRawFormatter()
         {
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
+        {
+            
         }
 
         private WebHeaderCollection GetRequestHeaders()
@@ -59,6 +65,8 @@ namespace Jhu.Graywulf.Web.Services
             if (!message.IsEmpty &&
                 (Direction & StreamingRawFormatterDirection.ParameterIn) != 0)
             {
+                DeserializeUrlParameters(message, parameters);
+
                 var body = message.GetReaderAtBodyContents();
                 byte[] raw = body.ReadContentAsBase64();
 
@@ -66,7 +74,7 @@ namespace Jhu.Graywulf.Web.Services
                 {
                     var adapter = CreateAdapter();
                     adapter.Headers = GetRequestHeaders(message);
-                    parameters[parameters.Length - 1] = adapter.ReadFromStream(ms);
+                    parameters[InParameterIndex] = adapter.ReadFromStream(ms);
                 }
             }
             else
@@ -104,20 +112,27 @@ namespace Jhu.Graywulf.Web.Services
         public override Message SerializeRequest(MessageVersion messageVersion, object[] parameters)
         {
             if ((Direction & StreamingRawFormatterDirection.ParameterIn) != 0 &&
-                parameters != null && parameters.Length == 1 && parameters[0] is T)
+                parameters != null)
             {
                 var adapter = CreateAdapter();
                 var contentType = adapter.GetPreferredContentType();
-                var data = (T)parameters[0];
-                var body = new StreamingRawBodyWriter<T>(adapter, contentType, (T)parameters[0]);
-                var prop = new HttpRequestMessageProperty();
-                prop.Headers[HttpRequestHeader.ContentType] = contentType;
+                var data = (T)parameters[InParameterIndex];
+                var body = new StreamingRawBodyWriter<T>(adapter, contentType, data);
                 var action = Operation.Messages[0].Action;
                 var message = Message.CreateMessage(messageVersion, action, body);
-                message.Headers.To = OperationUri;
-                message.Properties.Add(WebBodyFormatMessageProperty.Name, new WebBodyFormatMessageProperty(WebContentFormat.Raw));
-                message.Properties.Add(HttpRequestMessageProperty.Name, prop);
 
+                if (!message.Properties.ContainsKey(HttpRequestMessageProperty.Name))
+                {
+                    message.Properties.Add(HttpRequestMessageProperty.Name, new HttpRequestMessageProperty());
+                }
+
+                message.Properties.Add(WebBodyFormatMessageProperty.Name, new WebBodyFormatMessageProperty(WebContentFormat.Raw));
+
+                var prop = (HttpRequestMessageProperty)message.Properties[HttpRequestMessageProperty.Name];
+                prop.Headers[HttpRequestHeader.ContentType] = contentType;
+
+                SerializeUrlParameters(message, parameters);
+                
                 return message;
             }
             else
