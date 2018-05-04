@@ -7,6 +7,8 @@ using System.IO;
 using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Jhu.Graywulf.Web.Services
 {
@@ -117,6 +119,19 @@ namespace Jhu.Graywulf.Web.Services
             return MakeWebRequest(url, "POST", accept, contentType, data);
         }
 
+        public byte[] HttpPut(string url, string accept, string contentType, byte[] data)
+        {
+            return MakeWebRequest(url, "PUT", accept, contentType, data);
+        }
+
+        public byte[] HttpPost(string url, string accept, object data)
+        {
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented);
+            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(json);
+
+            return MakeWebRequest(url, "POST", accept, "application/json", buffer);
+        }
+
         private byte[] MakeWebRequest(string url, string method, string accept, string contentType, byte[] data)
         {
             var req = (HttpWebRequest)WebRequest.Create(url);
@@ -133,7 +148,7 @@ namespace Jhu.Graywulf.Web.Services
             {
                 req.ContentType = contentType;
             }
-            
+
             if (data != null)
             {
                 req.ContentLength = data.Length;
@@ -157,7 +172,7 @@ namespace Jhu.Graywulf.Web.Services
 
                 ms.Write(buffer, 0, b);
             }
-            
+
             return ms.ToArray();
         }
     }
