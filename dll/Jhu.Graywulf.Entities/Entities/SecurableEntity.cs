@@ -69,8 +69,8 @@ namespace Jhu.Graywulf.Entities
 
         private void CopyMembers(SecurableEntity old)
         {
-            this.acl = new AccessControlList(old.acl);
-            this.access = new AccessCollection(old.access);
+            this.acl = old.acl == null ? null : new AccessControlList(old.acl);
+            this.access = old.access == null ? null : new AccessCollection(old.access);
         }
 
         #endregion
