@@ -14,6 +14,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         private RestApi api;
         private Type type;
 
+        private bool isClass;
+        private bool isEnum;
         private string dataContractName;
 
         private Dictionary<string, RestDataMember> dataMembers;
@@ -26,6 +28,18 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         public Type Type
         {
             get { return type; }
+        }
+
+        public bool IsClass
+        {
+            get { return isClass; }
+            internal set { isClass = value; }
+        }
+
+        public bool IsEnum
+        {
+            get { return isEnum; }
+            internal set { isEnum = value; }
         }
 
         public string DataContractName
@@ -51,6 +65,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         {
             this.api = null;
             this.type = null;
+            this.isClass = false;
+            this.isEnum = false;
             this.dataContractName = null;
             this.dataMembers = new Dictionary<string, RestDataMember>();
         }

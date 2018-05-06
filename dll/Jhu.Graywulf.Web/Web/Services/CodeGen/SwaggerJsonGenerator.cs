@@ -18,6 +18,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         {
             public bool Array { get; set; }
             public string Type { get; set; }
+            public string[] Enum { get; set; }
             public string Format { get; set; }
             public string In { get; set; }
             public string Name { get; set; }
@@ -134,7 +135,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             if (parameter.IsBodyParameter && !parameter.IsReturnParameter)
             {
                 var info = GetParameterInfo(parameter);
-                var schema = GetTypeSchema(info);
+                var schema = GetTypeRefSchema(info);
 
                 foreach (var mime in parameter.MimeTypes)
                 {
@@ -154,7 +155,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             else if (parameter.IsReturnParameter)
             {
                 var info = GetParameterInfo(parameter);
-                var schema = GetTypeSchema(info);
+                var schema = GetTypeRefSchema(info);
 
                 foreach (var mime in parameter.MimeTypes)
                 {
@@ -173,7 +174,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             else
             {
                 var info = GetParameterInfo(parameter);
-                var schema = GetTypeSchema(info);
+                var schema = GetTypeRefSchema(info);
 
                 var par =
                     new JObject(
@@ -190,21 +191,9 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         protected override void WriteDataContractHeader(TextWriter writer, RestDataContract contract)
         {
             var info = GetTypeInfo(contract.Type);
-            JObject obj;
-
-            if (info.Array)
-            {
-                obj = GetTypeSchema(info);
-            }
-            else
-            {
-                obj = new JObject(
-                        //new JProperty("required", new JArray()),
-                        new JProperty("properties", new JObject()));
-            }
-
+            var obj = GetTypeDefSchema(info);
             var definition = new JProperty(info.Name, obj);
-            
+
             definitions.Add(definition);
         }
 
@@ -213,7 +202,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             var dcinfo = GetTypeInfo(member.DataContract.Type);
             var properties = (JObject)definitions[dcinfo.Name]["properties"];
             var info = GetTypeInfo(member.Property.PropertyType);
-            var schema = GetTypeSchema(info);
+            var schema = GetTypeRefSchema(info);
 
             properties.Add(new JProperty(member.DataMemberName, schema));
         }
@@ -253,7 +242,14 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
             if (base.Api.DataContracts.ContainsKey(type))
             {
-                info = GetTypeInfo_DataContract(type, nullable, array);
+                if (Api.DataContracts[type].IsEnum)
+                {
+                    info = GetTypeInfo_Enum(type, array);
+                }
+                else
+                {
+                    info = GetTypeInfo_DataContract(type, array);
+                }
             }
             else
             {
@@ -263,14 +259,32 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             return info;
         }
 
-        private VariableInfo GetTypeInfo_DataContract(Type type, bool nullable, bool array)
+        private VariableInfo GetTypeInfo_Enum(Type type, bool array)
         {
             var info = new VariableInfo();
             var dc = base.Api.DataContracts[type];
 
+            info.Array = array;
+            info.Name = dc.DataContractName;
+            info.Enum = Enum.GetNames(type);
+            info.Ref = "#/definitions/" + dc.DataContractName;
+
+            // TODO: test with arrays of enums
+
+            return info;
+        }
+
+        private VariableInfo GetTypeInfo_DataContract(Type type, bool array)
+        {
+            var info = new VariableInfo();
+            var dc = base.Api.DataContracts[type];
+
+            info.Array = array;
             info.Name = dc.DataContractName;
             info.Ref = "#/definitions/" + dc.DataContractName;
-            
+
+            // TODO: test with arrays of complex objects
+
             return info;
         }
 
@@ -283,7 +297,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 info.Array = array;
                 info.Type = Constants.SwaggerTypes[type];
                 info.Format = Constants.SwaggerFormats[type];
-                
+
                 return info;
             }
             else
@@ -329,7 +343,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             }
         }
 
-        private JObject GetTypeSchema(VariableInfo info)
+        private JObject GetTypeRefSchema(VariableInfo info)
         {
             JObject schema = new JObject();
             JObject type;
@@ -357,13 +371,37 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             {
                 type.Add(new JProperty("type", info.Type));
             }
-
+            
             if (info.Format != null)
             {
                 type.Add(new JProperty("format", info.Format));
             }
 
             return schema;
+        }
+
+        private JObject GetTypeDefSchema(VariableInfo info)
+        {
+            JObject obj;
+
+            if (info.Array)
+            {
+                obj = GetTypeRefSchema(info);
+            }
+            else if (info.Enum != null)
+            {
+                obj = new JObject(
+                        new JProperty("type", "string"),
+                        new JProperty("enum", new JArray(info.Enum)));
+            }
+            else
+            {
+                obj = new JObject(
+                        //new JProperty("required", new JArray()),
+                        new JProperty("properties", new JObject()));
+            }
+            
+            return obj;
         }
     }
 }

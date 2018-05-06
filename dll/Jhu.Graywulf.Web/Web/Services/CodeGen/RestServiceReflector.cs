@@ -206,6 +206,21 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             return par;
         }
 
+        private RestDataContract ReflectEnum(Type type)
+        {
+            var attr = type.GetCustomAttribute<DataContractAttribute>();
+
+            var dataContract = new RestDataContract(api, type)
+            {
+                DataContractName = attr?.Name ?? type.Name,
+                Description = ReflectDescription(type),
+                IsClass = false,
+                IsEnum = true,
+            };
+
+            return dataContract;
+        }
+
         private RestDataContract ReflectDataContract(Type type)
         {
             var attr = type.GetCustomAttribute<DataContractAttribute>();
@@ -214,6 +229,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             {
                 DataContractName = attr?.Name ?? type.Name,
                 Description = ReflectDescription(type),
+                IsClass = true,
+                IsEnum = false,
             };
 
             ReflectDataMembers(dataContract);
@@ -308,7 +325,17 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             {
                 if (!api.DataContracts.ContainsKey(type))
                 {
-                    var dc = ReflectDataContract(type);
+                    RestDataContract dc;
+
+                    if (type.IsEnum)
+                    {
+                        dc = ReflectEnum(type);
+                    }
+                    else
+                    {
+                        dc = ReflectDataContract(type);
+                    }
+
                     api.DataContracts.Add(type, dc);
                 }
 

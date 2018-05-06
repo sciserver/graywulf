@@ -19,5 +19,13 @@ namespace Jhu.Graywulf.Web.Services
         [DataMember(Name = "name")]
         [Description("Name of the item.")]
         public string Name { get; set; }
+
+        [DataMember(Name = "value")]
+        [Description("Value of the item.")]
+        public TestEnum Value { get; set; }
+
+        [DataMember(Name = "moreValues")]
+        [Description("More values of the item.")]
+        public TestEnum[] MoreValues { get; set; }
     }
 }
