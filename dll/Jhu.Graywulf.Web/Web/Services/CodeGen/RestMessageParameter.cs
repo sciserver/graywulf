@@ -90,6 +90,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
             this.operation = operation;
             this.parameter = parameter;
+            this.parameterName = parameter.Name;
         }
 
         private void InitializeMembers()

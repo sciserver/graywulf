@@ -9,6 +9,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
     public class RestUriTemplate
     {
         private string value;
+        private string path;
+        private string query;
         private string[] pathParts;
         private string[] queryKeys;
         private string[] queryValues;
@@ -16,7 +18,17 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         public string Value
         {
-            get { return value; }
+            get { return Value; }
+        }
+
+        public string Path
+        {
+            get { return path; }
+        }
+
+        public string Query
+        {
+            get { return query; }
         }
 
         public string[] PathParts
@@ -103,6 +115,9 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
             if (parts.Length > 0 && parts[0] != null)
             {
+                path = parts[0];
+                query = parts.Length > 1 ? parts[1] : null;
+
                 pathParts = parts[0].Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 
                 for (int i = 0; i < pathParts.Length; i++)
@@ -116,6 +131,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             else
             {
                 pathParts = new string[0];
+                path = null;
+                value = null;
             }
 
             if (parts.Length > 1 && parts[1] != null)

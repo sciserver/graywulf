@@ -92,13 +92,14 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         protected override void WriteServiceEndpointHeader(TextWriter writer, RestServiceContract service, string uriTemplate)
         {
+            var path = uriTemplate;
             paths.Add(
-                new JProperty(service.ServiceUrl + uriTemplate, new JObject()));
+                new JProperty(service.ServiceUrl + path, new JObject()));
         }
 
         protected override void WriteOperationContractHeader(TextWriter writer, RestOperationContract operation)
         {
-            var path = (JObject)paths[operation.Service.ServiceUrl + operation.UriTemplate.Value];
+            var path = (JObject)paths[operation.Service.ServiceUrl + operation.UriTemplate.Path];
             JObject responses = new JObject();
 
             path.Add(
@@ -126,7 +127,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         protected override void WriteMessageParameter(TextWriter writer, RestMessageParameter parameter)
         {
-            var method = paths[parameter.Operation.Service.ServiceUrl + parameter.Operation.UriTemplate.Value][parameter.Operation.HttpMethod.ToLowerInvariant()];
+            var method = paths[parameter.Operation.Service.ServiceUrl + parameter.Operation.UriTemplate.Path][parameter.Operation.HttpMethod.ToLowerInvariant()];
             var consumes = (JArray)method["consumes"];
             var produces = (JArray)method["produces"];
             var parameters = (JArray)method["parameters"];
@@ -134,6 +135,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
             if (parameter.IsBodyParameter && !parameter.IsReturnParameter)
             {
+                // Input body parameter
+
                 var info = GetParameterInfo(parameter);
                 var schema = GetTypeRefSchema(info);
 
@@ -154,6 +157,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             }
             else if (parameter.IsReturnParameter)
             {
+                // Return value
+
                 var info = GetParameterInfo(parameter);
                 var schema = GetTypeRefSchema(info);
 
@@ -168,11 +173,13 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                                 new JProperty("description", ""),
                                 new JProperty("schema", schema)));
 
-                // TODO: consider adding pers mime type schema entries
+                // TODO: consider adding per mime type schema entries
                 responses.Add(response);
             }
             else
             {
+                // Path or query parameter
+
                 var info = GetParameterInfo(parameter);
                 var schema = GetTypeRefSchema(info);
 
@@ -211,7 +218,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         {
             jdoc.Add(new JProperty("definitions", definitions));
         }
-
+        
         private string GetEscapedName(string name)
         {
             return name.Replace('[', '_').Replace(']', '_');

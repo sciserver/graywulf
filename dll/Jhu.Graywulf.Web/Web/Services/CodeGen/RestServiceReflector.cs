@@ -98,14 +98,14 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 {
                     var method = ReflectOperationContract(service, methods[i]);
 
-                    if (!service.UriTemplates.ContainsKey(method.UriTemplate.Value))
+                    if (!service.UriTemplates.ContainsKey(method.UriTemplate.Path))
                     {
-                        service.UriTemplates.Add(method.UriTemplate.Value, new Dictionary<string, RestOperationContract>());
+                        service.UriTemplates.Add(method.UriTemplate.Path, new Dictionary<string, RestOperationContract>());
                     }
 
                     if (!Constants.ReservedFunctionNames.Contains(method.HttpMethod))
                     {
-                        service.UriTemplates[method.UriTemplate.Value].Add(method.HttpMethod, method);
+                        service.UriTemplates[method.UriTemplate.Path].Add(method.HttpMethod, method);
                     }
                     else
                     {
@@ -114,7 +114,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 }
             }
         }
-
+        
         private RestOperationContract ReflectOperationContract(RestServiceContract service, MethodInfo method)
         {
             var operation = new RestOperationContract(service, method);
@@ -179,6 +179,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 }
             }
 
+            // Process return value
             if (operation.Method.ReturnType != typeof(void))
             {
                 var parameter = ReflectParameter(operation, operation.Method.ReturnParameter, formatter != null);
@@ -195,10 +196,12 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         private RestMessageParameter ReflectParameter(RestOperationContract operation, ParameterInfo parameter, bool isRawFormat)
         {
             var par = new RestMessageParameter(operation, parameter);
-            par.ParameterName = parameter.Name;
-            par.IsRawFormat = isRawFormat;
 
-            if (!isRawFormat)
+            if (isRawFormat && (par.IsBodyParameter || par.IsReturnParameter))
+            {
+                par.IsRawFormat = true;
+            }
+            else
             {
                 par.DataContract = ReflectType(parameter.ParameterType);
             }
