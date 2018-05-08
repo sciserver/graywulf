@@ -187,6 +187,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         private RestMessageParameter ReflectParameter(RestOperationContract operation, ParameterInfo parameter, StreamingRawFormatterBase formatter)
         {
+            // TODO: it now supports body formatters but what about untyped streams?
+
             var par = new RestMessageParameter(operation, parameter);
             var israw = formatter != null &&
                        (formatter.FormattedType == parameter.ParameterType ||
@@ -195,13 +197,14 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             if (israw && (par.IsBodyParameter || par.IsReturnParameter))
             {
                 par.IsRawFormat = true;
+                par.Formatter = formatter;
             }
             else
             {
                 par.DataContract = ReflectType(parameter.ParameterType);
             }
 
-            par.MimeTypes = formatter?.GetSupportedMimeTypes() ?? new[] { "application/json" };
+            par.Formats = formatter?.GetSupportedFormats() ?? new List<RestBodyFormat>(){ RestBodyFormats.Json };
 
             return par;
         }

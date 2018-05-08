@@ -11,9 +11,12 @@ namespace Jhu.Graywulf.Web.Services
 {
     public class TextResponseMessageFormatter : RestMessageFormatter, IDispatchMessageFormatter
     {
-        public override string[] GetSupportedMimeTypes()
+        public override List<RestBodyFormat> GetSupportedFormats()
         {
-            return new string[] { Constants.MimeTypeText };
+            return new List<RestBodyFormat>()
+            {
+                RestBodyFormats.Text
+            };
         }
 
         public override void DeserializeRequest(Message message, object[] parameters)

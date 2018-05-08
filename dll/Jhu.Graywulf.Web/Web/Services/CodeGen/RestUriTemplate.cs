@@ -118,7 +118,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 path = parts[0];
                 query = parts.Length > 1 ? parts[1] : null;
 
-                pathParts = parts[0].Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                pathParts = parts[0].Split(new char[] { '/', '.' }, StringSplitOptions.RemoveEmptyEntries);
 
                 for (int i = 0; i < pathParts.Length; i++)
                 {

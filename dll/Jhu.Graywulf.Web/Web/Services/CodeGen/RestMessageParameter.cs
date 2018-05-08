@@ -16,8 +16,9 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         private RestDataContract dataContract;
 
         private string parameterName;
-        private string[] mimeTypes;
+        private List<RestBodyFormat> formats;
         private bool isRawFormat;
+        private StreamingRawFormatterBase formatter;
         private bool isReturnParameter;
 
         public RestOperationContract Operation
@@ -42,16 +43,22 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             internal set { parameterName = value; }
         }
 
-        public string[] MimeTypes
+        public List<RestBodyFormat> Formats
         {
-            get { return mimeTypes; }
-            internal set { mimeTypes = value; }
+            get { return formats; }
+            internal set { formats = value; }
         }
 
         public bool IsRawFormat
         {
             get { return isRawFormat; }
             internal set { isRawFormat = value; }
+        }
+
+        public StreamingRawFormatterBase Formatter
+        {
+            get { return formatter; }
+            set { formatter = value; }
         }
 
         public bool IsReturnParameter
@@ -100,7 +107,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             this.dataContract = null;
             this.parameterName = null;
             this.isRawFormat = false;
-            this.mimeTypes = null;
+            this.formats = null;
         }
 
         public override void SubstituteTokens(StringBuilder script)

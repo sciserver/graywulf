@@ -90,44 +90,43 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             // TODO: write tags
         }
 
-        protected override void WriteServiceEndpointHeader(TextWriter writer, RestServiceContract service, string uriTemplate)
-        {
-            var path = uriTemplate;
-            paths.Add(
-                new JProperty(service.ServiceUrl + path, new JObject()));
-        }
-
         protected override void WriteOperationContractHeader(TextWriter writer, RestOperationContract operation)
         {
-            var path = (JObject)paths[operation.Service.ServiceUrl + operation.UriTemplate.Path];
-            JObject responses = new JObject();
+            var path = (JObject)paths[GetOperationPath(operation)];
 
-            path.Add(
-                new JProperty(operation.HttpMethod.ToLowerInvariant(),
-                    new JObject(
-                        new JProperty("summary", operation.Description),
-                        new JProperty("operationId", operation.OperationName),
-                        new JProperty("tags", new JArray(operation.Service.ServiceName)),
-                        new JProperty("consumes", new JArray()),
-                        new JProperty("produces", new JArray()),
-                        new JProperty("parameters", new JArray()),
-                        new JProperty("responses", responses))));
+            if (path == null)
+            {
+                path = new JObject();
+                paths.Add(new JProperty(GetOperationPath(operation), path));
+            }
+
+            var operationId = GetOperationId(operation);
 
             // TODO: modify this if proper FaultContracts are implemented some day
-            responses.Add(
-                new JProperty("default",
+            var responses =
+                new JObject(
+                    new JProperty("default",
                     new JObject(
                         new JProperty("description", "unexpected error"),
                         new JProperty("schema",
                             new JObject(
                                 new JProperty("$ref", "#/definitions/RestError"))))));
 
+            var method = new JObject(
+                new JProperty("summary", operation.Description),
+                new JProperty("operationId", operationId),
+                new JProperty("tags", new JArray(operation.Service.ServiceName)),
+                new JProperty("consumes", new JArray()),
+                new JProperty("produces", new JArray()),
+                new JProperty("parameters", new JArray()),
+                new JProperty("responses", responses));
 
+            path.Add(new JProperty(operation.HttpMethod.ToLowerInvariant(), method));
         }
 
         protected override void WriteMessageParameter(TextWriter writer, RestMessageParameter parameter)
         {
-            var method = paths[parameter.Operation.Service.ServiceUrl + parameter.Operation.UriTemplate.Path][parameter.Operation.HttpMethod.ToLowerInvariant()];
+            var method = paths[GetOperationPath(parameter.Operation)][GetOperationMethod(parameter.Operation)];
             var consumes = (JArray)method["consumes"];
             var produces = (JArray)method["produces"];
             var parameters = (JArray)method["parameters"];
@@ -139,11 +138,11 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             if (parameter.IsBodyParameter && !parameter.IsReturnParameter)
             {
                 // Input body parameter
-                foreach (var mime in parameter.MimeTypes)
+                foreach (var format in parameter.Formats)
                 {
-                    consumes.Add(mime);
+                    consumes.Add(format.MimeType);
                 }
-
+                
                 var par =
                     new JObject(
                         new JProperty("name", parameter.ParameterName),
@@ -153,13 +152,47 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                         new JProperty("schema", schema));
 
                 parameters.Add(par);
+
+                /*
+                 * This would add a header parameter but it's currently overwrintten
+                 * by the python client. Have to check with newer swagger versions later
+                if (parameter.IsRawFormat)
+                {
+                    par =
+                        new JObject(
+                            new JProperty("name", "Content-Type"),
+                            new JProperty("in", "header"),
+                            new JProperty("description", "File format mime type."),
+                            new JProperty("default", parameter.Formats[0].MimeType),
+                            new JProperty("schema", new JObject(
+                                new JProperty("type", "string"),
+                                new JProperty("format", "string"))));
+
+                    parameters.Add(par);
+                }
+                */
             }
             else if (parameter.IsReturnParameter)
             {
                 // Return value
-                foreach (var mime in parameter.MimeTypes)
+                foreach (var format in parameter.Formats)
                 {
-                    produces.Add(mime);
+                    produces.Add(format.MimeType);
+                }
+
+                if (parameter.IsBodyParameter && parameter.IsRawFormat)
+                {
+                    var par =
+                        new JObject(
+                            new JProperty("name", "Accept"),
+                            new JProperty("in", "header"),
+                            new JProperty("description", "File format mime type."),
+                            new JProperty("default", parameter.Formats[0].MimeType),
+                            new JProperty("schema", new JObject(
+                                new JProperty("type", "string"),
+                                new JProperty("format", "string"))));
+
+                    parameters.Add(par);
                 }
 
                 var response =
@@ -209,10 +242,25 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         {
             jdoc.Add(new JProperty("definitions", definitions));
         }
-        
+
         private string GetEscapedName(string name)
         {
             return name.Replace('[', '_').Replace(']', '_');
+        }
+
+        private string GetOperationPath(RestOperationContract operation)
+        {
+            return operation.Service.ServiceUrl + operation.UriTemplate.Path;
+        }
+
+        private string GetOperationMethod(RestOperationContract operation)
+        {
+            return operation.HttpMethod.ToLowerInvariant();
+        }
+
+        private string GetOperationId(RestOperationContract operation)
+        {
+            return operation.OperationName;
         }
 
         private VariableInfo GetTypeInfo(Type type)
@@ -370,7 +418,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             {
                 type.Add(new JProperty("type", info.Type));
             }
-            
+
             if (info.Format != null)
             {
                 type.Add(new JProperty("format", info.Format));
@@ -399,7 +447,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                         //new JProperty("required", new JArray()),
                         new JProperty("properties", new JObject()));
             }
-            
+
             return obj;
         }
     }

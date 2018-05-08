@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.Web.Services
         {
             base.Initialize(fallbackFormatter);
         }
-        
+
         public void Initialize(IClientMessageFormatter fallbackFormatter, Type returnType)
         {
             base.Initialize(fallbackFormatter);
@@ -42,11 +42,11 @@ namespace Jhu.Graywulf.Web.Services
         }
 
 
-        public override string[] GetSupportedMimeTypes()
+        public override List<RestBodyFormat> GetSupportedFormats()
         {
-            return new string[] { 
-                Constants.MimeTypeXml,
-                Constants.MimeTypeJson,
+            return new List<RestBodyFormat>()
+            {
+                RestBodyFormats.Json,
             };
         }
 

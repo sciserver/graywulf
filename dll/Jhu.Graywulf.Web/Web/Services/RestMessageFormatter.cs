@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Web.Services
             this.fallbackClientMessageFormatter = fallbackFormatter;
         }
 
-        public abstract string[] GetSupportedMimeTypes();
+        public abstract List<RestBodyFormat> GetSupportedFormats();
 
         public virtual void DeserializeRequest(Message message, object[] parameters)
         {

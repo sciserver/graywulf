@@ -53,9 +53,9 @@ namespace Jhu.Graywulf.Web.Services
 
         protected abstract StreamingRawAdapter<T> CreateAdapter();
 
-        public override string[] GetSupportedMimeTypes()
+        public override List<RestBodyFormat> GetSupportedFormats()
         {
-            return CreateAdapter().GetSupportedMimeTypes();
+            return CreateAdapter().GetSupportedFormats();
         }
 
         #region Server
@@ -115,9 +115,9 @@ namespace Jhu.Graywulf.Web.Services
                 parameters != null)
             {
                 var adapter = CreateAdapter();
-                var contentType = adapter.GetPreferredContentType();
+                var format = adapter.GetPreferredFormat();
                 var data = (T)parameters[InParameterIndex];
-                var body = new StreamingRawBodyWriter<T>(adapter, contentType, data);
+                var body = new StreamingRawBodyWriter<T>(adapter, format.MimeType, data);
                 var action = Operation.Messages[0].Action;
                 var message = Message.CreateMessage(messageVersion, action, body);
 
@@ -129,7 +129,7 @@ namespace Jhu.Graywulf.Web.Services
                 message.Properties.Add(WebBodyFormatMessageProperty.Name, new WebBodyFormatMessageProperty(WebContentFormat.Raw));
 
                 var prop = (HttpRequestMessageProperty)message.Properties[HttpRequestMessageProperty.Name];
-                prop.Headers[HttpRequestHeader.ContentType] = contentType;
+                prop.Headers[HttpRequestHeader.ContentType] = format.MimeType;
 
                 SerializeUrlParameters(message, parameters);
                 

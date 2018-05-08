@@ -145,6 +145,8 @@
     <Compile Include="Web\Services\IRestSessionState.cs" />
     <Compile Include="Web\Services\ResourceNotFoundException.cs" />
     <Compile Include="Web\Services\RestAuthenticationModule.cs" />
+    <Compile Include="Web\Services\RestBodyFormat.cs" />
+    <Compile Include="Web\Services\RestBodyFormats.cs" />
     <Compile Include="Web\Services\RestClientBehavior.cs">
       <SubType>Code</SubType>
     </Compile>

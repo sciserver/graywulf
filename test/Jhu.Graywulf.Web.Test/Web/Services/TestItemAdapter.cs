@@ -9,13 +9,13 @@ namespace Jhu.Graywulf.Web.Services
 {
     public class TestItemAdapter : StreamingRawAdapter<TestItem>
     {
-        public override string[] GetSupportedMimeTypes()
+        public override List<RestBodyFormat> GetSupportedFormats()
         {
-            return new string[]
-                {
-                    "application/json",
-                    "text/xml",
-                };
+            return new List<RestBodyFormat>()
+            {
+                RestBodyFormats.Json,
+                RestBodyFormats.Text
+            };
         }
 
         protected override void OnSerializeResponse(Stream stream, string contentType, TestItem value)

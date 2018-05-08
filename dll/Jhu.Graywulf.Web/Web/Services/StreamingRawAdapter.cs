@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Web.Services
             this.headers = null;
         }
 
-        public abstract string[] GetSupportedMimeTypes();
+        public abstract List<RestBodyFormat> GetSupportedFormats();
 
         internal string GetPostedContentType()
         {
@@ -39,10 +39,10 @@ namespace Jhu.Graywulf.Web.Services
             return contentType;
         }
 
-        internal string GetPreferredContentType()
+        internal RestBodyFormat GetPreferredFormat()
         {
-            var mimes = GetSupportedMimeTypes();
-            return mimes[0];
+            var formats = GetSupportedFormats();
+            return formats[0];
         }
 
         internal string GetRequestedContentType()
@@ -52,15 +52,15 @@ namespace Jhu.Graywulf.Web.Services
 
             // Parse accept header
             var accept = WebOperationContext.Current.IncomingRequest.GetAcceptHeaderElements();
-            var mimes = GetSupportedMimeTypes();
+            var formats = GetSupportedFormats();
 
             for (int i = 0; i < accept.Count; i++)
             {
-                foreach (var mime in mimes)
+                foreach (var format in formats)
                 {
-                    if (Jhu.Graywulf.Util.MediaTypeComparer.Compare(accept[i].MediaType, mime))
+                    if (Jhu.Graywulf.Util.MediaTypeComparer.Compare(accept[i].MediaType, format.MimeType))
                     {
-                        return mime;
+                        return format.MimeType;
                     }
                 }
             }
