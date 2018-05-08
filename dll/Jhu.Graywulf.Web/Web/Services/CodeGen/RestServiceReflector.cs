@@ -114,7 +114,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 }
             }
         }
-        
+
         private RestOperationContract ReflectOperationContract(RestServiceContract service, MethodInfo method)
         {
             var operation = new RestOperationContract(service, method);
@@ -164,14 +164,11 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
             for (int i = 0; i < pars.Length; i++)
             {
-                var parameter = ReflectParameter(operation, pars[i], formatter != null);
+                var parameter = ReflectParameter(operation, pars[i], formatter);
 
                 if (parameter.IsBodyParameter)
                 {
                     operation.BodyParameter = parameter;
-                    parameter.MimeTypes = 
-                        formatter?.GetSupportedMimeTypes() ??
-                        new[] { "application/json" };
                 }
                 else
                 {
@@ -182,22 +179,20 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             // Process return value
             if (operation.Method.ReturnType != typeof(void))
             {
-                var parameter = ReflectParameter(operation, operation.Method.ReturnParameter, formatter != null);
-
-                parameter.MimeTypes = 
-                    formatter?.GetSupportedMimeTypes() ??
-                    new[] { "application/json" };
+                var parameter = ReflectParameter(operation, operation.Method.ReturnParameter, formatter);
                 parameter.IsReturnParameter = true;
-
                 operation.ReturnParameter = parameter;
             }
         }
 
-        private RestMessageParameter ReflectParameter(RestOperationContract operation, ParameterInfo parameter, bool isRawFormat)
+        private RestMessageParameter ReflectParameter(RestOperationContract operation, ParameterInfo parameter, StreamingRawFormatterBase formatter)
         {
             var par = new RestMessageParameter(operation, parameter);
+            var israw = formatter != null &&
+                       (formatter.FormattedType == parameter.ParameterType ||
+                        formatter.FormattedType.IsAssignableFrom(parameter.ParameterType));
 
-            if (isRawFormat && (par.IsBodyParameter || par.IsReturnParameter))
+            if (israw && (par.IsBodyParameter || par.IsReturnParameter))
             {
                 par.IsRawFormat = true;
             }
@@ -205,6 +200,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             {
                 par.DataContract = ReflectType(parameter.ParameterType);
             }
+
+            par.MimeTypes = formatter?.GetSupportedMimeTypes() ?? new[] { "application/json" };
 
             return par;
         }

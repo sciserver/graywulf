@@ -133,13 +133,12 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             var parameters = (JArray)method["parameters"];
             var responses = (JObject)method["responses"];
 
+            var info = GetParameterInfo(parameter);
+            var schema = GetTypeRefSchema(info);
+
             if (parameter.IsBodyParameter && !parameter.IsReturnParameter)
             {
                 // Input body parameter
-
-                var info = GetParameterInfo(parameter);
-                var schema = GetTypeRefSchema(info);
-
                 foreach (var mime in parameter.MimeTypes)
                 {
                     consumes.Add(mime);
@@ -158,10 +157,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             else if (parameter.IsReturnParameter)
             {
                 // Return value
-
-                var info = GetParameterInfo(parameter);
-                var schema = GetTypeRefSchema(info);
-
                 foreach (var mime in parameter.MimeTypes)
                 {
                     produces.Add(mime);
@@ -179,10 +174,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             else
             {
                 // Path or query parameter
-
-                var info = GetParameterInfo(parameter);
-                var schema = GetTypeRefSchema(info);
-
                 var par =
                     new JObject(
                         new JProperty("name", parameter.ParameterName),
@@ -319,6 +310,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             {
                 var res = new VariableInfo()
                 {
+                    In = "body",
                     Type = "file"
                 };
 
