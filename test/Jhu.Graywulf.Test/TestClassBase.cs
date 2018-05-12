@@ -20,6 +20,7 @@ namespace Jhu.Graywulf.Test
     public abstract class TestClassBase : LoggingTestClassBase
     {
         protected const string TestUser = "test";
+        protected const string TestUserPassword = "almafa";
         protected const string OtherUser = "other";
         protected const string TestGroup = "test";
         protected const string GroupAdminUser = "test-admin";
@@ -98,13 +99,16 @@ namespace Jhu.Graywulf.Test
             return ds;
         }
 
-        protected User SignInTestUser(RegistryContext context)
+        protected virtual User SignInTestUser(RegistryContext context)
+        {
+            return SignInTestUser(context, null, null);
+        }
+
+        protected User SignInTestUser(RegistryContext context, string name, string password)
         {
             var ip = IdentityProvider.Create(context.Domain);
-            ip.VerifyPassword(new AuthenticationRequest("test", "almafa"));
-
-            testUser = ip.GetUserByUserName("test");
-
+            ip.VerifyPassword(new AuthenticationRequest(name ?? TestUser, password ?? TestUserPassword));
+            testUser = ip.GetUserByUserName(name ?? TestUser);
             context.UserReference.Value = testUser;
             return testUser;
         }
