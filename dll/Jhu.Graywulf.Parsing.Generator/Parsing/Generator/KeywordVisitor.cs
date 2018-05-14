@@ -23,12 +23,20 @@ namespace Jhu.Graywulf.Parsing.Generator
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Method.Name == "Keyword")
+            if (node.Method.Name == nameof(Grammar.Keyword))
             {
+                var args = node.Arguments.Count;
                 var keyword = (string)((ConstantExpression)node.Arguments[0]).Value;
-                if (!keywords.Contains(keyword))
+
+                if (args == 1 || 
+                    args == 2 && !((bool)((ConstantExpression)node.Arguments[1]).Value))
                 {
-                    keywords.Add(keyword);
+                    // This is a global keyword
+
+                    if (!keywords.Contains(keyword))
+                    {
+                        keywords.Add(keyword);
+                    }
                 }
             }
 

@@ -7,8 +7,11 @@ using Jhu.Graywulf.Parsing.Generator;
 
 namespace Jhu.Graywulf.Sql.Parser.Grammar
 {
-    [Grammar(Namespace = "Jhu.Graywulf.Sql.Parsing", ParserName = "SqlParser",
-        Comparer = "StringComparer.InvariantCultureIgnoreCase", RootToken = "StatementBlock")]
+    [Grammar(
+        Namespace = "Jhu.Graywulf.Sql.Parsing", 
+        ParserName = "SqlParser",
+        Comparer = "StringComparer.InvariantCultureIgnoreCase", 
+        RootToken = "StatementBlock")]
     public class SqlGrammar : Jhu.Graywulf.Parsing.Generator.Grammar
     {
 
@@ -69,7 +72,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Terminal> Variable = () => @"\G(@[a-zA-Z_][0-9a-zA-Z_]*)";
         public static Expression<Terminal> Variable2 = () => @"\G(@@[a-zA-Z_][0-9a-zA-Z_]*)";
         public static Expression<Terminal> Cursor = () => @"\G([$a-zA-Z_]+)";
-        public static Expression<Terminal> Hint = () => @"\K\G([$a-zA-Z_]+)";
 
         #endregion
         #region Arithmetic operators used in expressions

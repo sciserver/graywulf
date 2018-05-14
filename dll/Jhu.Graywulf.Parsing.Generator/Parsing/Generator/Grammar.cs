@@ -41,6 +41,11 @@ namespace Jhu.Graywulf.Parsing.Generator
             return null;
         }
 
+        public static Expression Keyword(string keyword, bool contextual)
+        {
+            return null;
+        }
+
         public static Expression Inherit()
         {
             return null;

@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Parsing.Generator
         {
             var g = new GrammarInfo(typeof(TestGrammar));
 
-            Assert.AreEqual(10, g.Rules.Count);
+            Assert.AreEqual(12, g.Rules.Count);
             Assert.AreEqual(10, g.RuleDependencies.Count);
             Assert.AreEqual("List", g.RuleDependencies["CommentOrWhitespace"].First());
             Assert.AreEqual("BaseRule2", g.RuleDependencies["BaseRule3"].First());
@@ -78,6 +78,14 @@ namespace Jhu.Graywulf.Parsing.Generator
             Assert.AreEqual(2, g2.OverriddenRules.Count);
             Assert.IsTrue(g2.OverriddenRules.Contains("BaseRule2"));
             Assert.IsTrue(g2.OverriddenRules.Contains("BaseRule5"));
+        }
+
+        [TestMethod]
+        public void ContextualKeywordTest()
+        {
+            var g1 = new GrammarInfo(typeof(TestGrammar));
+
+            Assert.AreEqual(1, g1.Keywords.Count);
         }
     }
 }

@@ -54,7 +54,7 @@ namespace Jhu.Graywulf.Parsing.Generator
             var method = node.Method;
             var args = node.Arguments.ToArray();
 
-            if (method.Name == "Inherit")
+            if (method.Name == nameof(Grammar.Inherit))
             {
                 isInheritRule = true;
 
@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.Parsing.Generator
                     throw new NotImplementedException();
                 }
             }
-            else if (method.Name == "Override")
+            else if (method.Name == nameof(Grammar.Override))
             {
                 isOverrideRule = true;
 

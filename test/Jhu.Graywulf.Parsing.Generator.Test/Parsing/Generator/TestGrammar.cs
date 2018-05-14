@@ -77,5 +77,11 @@ namespace Jhu.Graywulf.Parsing.Generator
             (
                 Word, Comma, Word
             );
+
+        public static Expression<Rule> GlobalKeyword = () =>
+            Keyword("GLOBALKEYWORD");
+
+        public static Expression<Rule> ContextualKeyword = () =>
+            Keyword("CONTEXTUALKEYWORD", true);
     }
 }
