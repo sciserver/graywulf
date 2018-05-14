@@ -72,6 +72,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             Assert.AreEqual(gt, CodeGenerator.Execute(script));
         }
 
+        protected void RewriteQueryHelper(string sql, string gt)
+        {
+            RewriteQueryHelper(sql, gt);
+        }
+
         protected void RewriteQueryHelper(string sql, string gt, bool partitioningKeyMin, bool partitioningKeyMax)
         {
             var script = Parse(sql);
@@ -363,6 +368,46 @@ WHERE ([p].[ra] > 2);";
             var res = (string)CallMethod(columns, "EscapeColumnName", tr, "col");
 
             Assert.AreEqual(gt, res);
+        }
+
+        #endregion
+        #region System variables
+
+        private void RewriteScriptHelper(string sql, string gt)
+        {
+            var qd = new QueryDetails()
+            {
+                ParsingTree = Parse(sql)
+            };
+            var partition = new SqlQueryPartition()
+            {
+                CodeDataset = new Graywulf.Sql.Schema.SqlServer.SqlServerDataset()
+                {
+                    Name = "CODE",
+                    ConnectionString = "data source=localhost;initial catalog=SkyQuery_Code",
+                },
+                TemporaryDataset = new Graywulf.Sql.Schema.SqlServer.SqlServerDataset()
+                {
+                    Name = "TEMP",
+                    ConnectionString = "data source=localhost;initial catalog=Graywulf_Temp",
+                },
+                //PartitioningKeyMin = partitioningKeyMin ? (IComparable)(1.0) : null,
+                //PartitioningKeyMax = partitioningKeyMax ? (IComparable)(1.0) : null
+            };
+
+            var cg = new SqlQueryCodeGenerator(partition);
+            var sq = (IO.Tasks.SourceQuery)CallMethod(cg, "OnGetExecuteQuery", qd);
+            var res = CodeGenerator.Execute(qd.ParsingTree);
+            Assert.AreEqual(gt, res);
+        }
+
+        [TestMethod]
+        public void PartitionVariablesTest()
+        {
+            var sql = @"SELECT @@PARTCOUNT, @@PARTID";
+            var gt = @"SELECT @__partCount, @__partId";
+
+            RewriteScriptHelper(sql, gt);
         }
 
         #endregion

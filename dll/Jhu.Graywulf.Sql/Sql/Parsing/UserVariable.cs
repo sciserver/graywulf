@@ -35,6 +35,15 @@ namespace Jhu.Graywulf.Sql.Parsing
             this.variableReference = old.variableReference;
         }
 
+        public static UserVariable Create(string name)
+        {
+            var res = new UserVariable();
+            var vv = Variable.Create(name);
+            res.Stack.AddLast(vv);
+
+            return res;
+        }
+
         public override void Interpret()
         {
             base.Interpret();

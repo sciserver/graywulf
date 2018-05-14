@@ -76,6 +76,7 @@
     <Compile Include="Sql\Jobs\Query\SqlQueryTest.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryTestBase.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryTestException.cs" />
+    <Compile Include="Sql\Jobs\Query\SqlScriptsTest.cs" />
     <Compile Include="Sql\Jobs\Query\TableReferenceTest.cs" />
     <Compile Include="Sql\Jobs\SqlScript\SqlScriptJobTest.cs" />
   </ItemGroup>
