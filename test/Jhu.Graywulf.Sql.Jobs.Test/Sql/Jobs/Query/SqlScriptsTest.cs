@@ -52,5 +52,42 @@ INTO [$into]
 
             RunQuery(sql);
         }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void DeclareSetAndSelectVariableTest()
+        {
+            var sql = @"
+DECLARE @myvar float = 20
+SET @myvar = 15
+SELECT @myvar = @myvar - 5
+SELECT @myvar INTO [$into]
+";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void FlowControlTest()
+        {
+            var testName = GetTestUniqueName();
+            DropUserDatabaseTable(testName + "_1");
+            DropUserDatabaseTable(testName + "_2");
+
+            var sql = @"
+DECLARE @myvar int = 2
+IF @myvar < 5
+BEGIN
+    SELECT @myvar INTO [$into]_1
+END
+IF @myvar > 5
+BEGIN
+    SELECT @myvar INTO [$into]_2
+END
+";
+
+            RunQuery(sql);
+        }
     }
 }

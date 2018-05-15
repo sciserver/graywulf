@@ -498,42 +498,48 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             var rt = RemoteOutputTables[remoteTable];
 
-            // Create output table based on temp table colums
-            var columns = new List<Column>();
+            // Check if temp table is created at all. Scripts with conditions might not
+            // create all output tables
 
-            foreach (var name in rt.TempTable.Columns.Keys)
+            if (rt.TempTable.IsExisting)
             {
-                columns.Add(new Column(rt.TempTable.Columns[name]));
-            }
+                // Create output table based on temp table colums
+                var columns = new List<Column>();
 
-            // TODO: it works now with SELECT INTO and unnamed resultsets but options will need
-            // to be changes for INSERT, UPDATE etc.
-
-            // If it's an unnamed resultset then the remote table doesn't exist yet
-            if (rt.Table == null)
-            {
-                rt.Table = new Table(Query.Parameters.DefaultOutputDataset)
+                foreach (var name in rt.TempTable.Columns.Keys)
                 {
-                    SchemaName = Query.Parameters.DefaultOutputDataset.DefaultSchemaName,
-                    TableName = rt.TempTable.TableName,
-                };
+                    columns.Add(new Column(rt.TempTable.Columns[name]));
+                }
+
+                // TODO: it works now with SELECT INTO and unnamed resultsets but options will need
+                // to be changes for INSERT, UPDATE etc.
+
+                // If it's an unnamed resultset then the remote table doesn't exist yet
+                if (rt.Table == null)
+                {
+                    rt.Table = new Table(Query.Parameters.DefaultOutputDataset)
+                    {
+                        SchemaName = Query.Parameters.DefaultOutputDataset.DefaultSchemaName,
+                        TableName = rt.TempTable.TableName,
+                    };
+                }
+
+                if (!rt.Table.IsExisting)
+                {
+                    // TODO: make table initialization async
+                    ((Table)rt.Table).Initialize(columns, TableInitializationOptions.Create | TableInitializationOptions.CreatePrimaryKey);
+                }
+
+                // TODO: how to lock in case of multiple partitions and multiple
+                // output tables?
+
+                lock (Parameters)
+                {
+                    Parameters.OutputTables.Add((Table)rt.Table);
+                }
+
+                LogOperation(LogMessages.RemoteOutputTableInitialized, rt.Table.FullyResolvedName);
             }
-
-            if (!rt.Table.IsExisting)
-            {
-                // TODO: make table initialization async
-                ((Table)rt.Table).Initialize(columns, TableInitializationOptions.Create | TableInitializationOptions.CreatePrimaryKey);
-            }
-
-            // TODO: how to lock in case of multiple partitions and multiple
-            // output tables?
-
-            lock (Parameters)
-            {
-                Parameters.OutputTables.Add((Table)rt.Table);
-            }
-
-            LogOperation(LogMessages.RemoteOutputTableInitialized, rt.Table.FullyResolvedName);
 
             return Task.CompletedTask;
         }
@@ -551,22 +557,28 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 case ExecutionMode.Graywulf:
                     {
                         var rt = RemoteOutputTables[remoteTable];
-
                         var tempTable = rt.TempTable;
-                        var outputTable = (Table)rt.Table;
-                        var columns = new List<Column>();
 
-                        var source = SourceTable.Create(rt.TempTable);
-                        var destination = DestinationTable.Create((Table)rt.Table, TableInitializationOptions.Append);
+                        // Check if temp table is created at all. Scripts with conditions might not
+                        // create all output tables
 
-                        // Create bulk copy task and execute it
-                        using (var tc = CreateTableCopyTask(source, destination, false, out var settings))
+                        if (tempTable.IsExisting)
                         {
-                            var res = await tc.Value.ExecuteAsyncEx(source, destination, settings);
+                            var outputTable = (Table)rt.Table;
+                            var columns = new List<Column>();
 
-                            for (int i = 0; i < res.Count; i++)
+                            var source = SourceTable.Create(rt.TempTable);
+                            var destination = DestinationTable.Create((Table)rt.Table, TableInitializationOptions.Append);
+
+                            // Create bulk copy task and execute it
+                            using (var tc = CreateTableCopyTask(source, destination, false, out var settings))
                             {
-                                LogOperation(LogMessages.RemoteOutputTableCopied, res[i].DestinationTable, id, res[i].Status, res[i].Elapsed.TotalSeconds, res[i].RecordsAffected);
+                                var res = await tc.Value.ExecuteAsyncEx(source, destination, settings);
+
+                                for (int i = 0; i < res.Count; i++)
+                                {
+                                    LogOperation(LogMessages.RemoteOutputTableCopied, res[i].DestinationTable, id, res[i].Status, res[i].Elapsed.TotalSeconds, res[i].RecordsAffected);
+                                }
                             }
                         }
                     }

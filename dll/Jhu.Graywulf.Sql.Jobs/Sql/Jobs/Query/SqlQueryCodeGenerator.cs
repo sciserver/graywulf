@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
     public class SqlQueryCodeGenerator : SqlServerCodeGenerator
     {
         #region Constants
-        
+
         private const string partitionCountParameterName = "@__partCount";
         private const string partitionIdParameterName = "@__partId";
         private const string partitionKeyMinParameterName = "@__partKeyMin";
@@ -116,7 +116,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             RewriteForExecute(query);
             RemoveNonStandardTokens(query);
-            
+
             var sql = new StringBuilder();
             sql.AppendLine(Execute(query.ParsingTree));
 
@@ -128,19 +128,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             AppendPartitionParameters(source);
 
             return source;
-        }
-
-        protected virtual void RewriteForExecute(QueryDetails query)
-        {
-            RewriteNodes(query.ParsingTree);
-
-            foreach (var statement in query.ParsingTree.EnumerateSubStatements())
-            {
-                if (statement.SpecificStatement is SelectStatement)
-                {
-                    RewriteForExecute((SelectStatement)statement.SpecificStatement);
-                }
-            }
         }
 
         protected virtual void RewriteNodes(Node node)
@@ -166,6 +153,31 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     n = n.Next;
                 }
 
+            }
+        }
+
+        protected virtual void RewriteForExecute(QueryDetails query)
+        {
+            RewriteNodes(query.ParsingTree);
+
+            foreach (var s in query.ParsingTree.EnumerateSubStatements())
+            {
+                RewriteForExecute(s);
+            }
+        }
+
+        protected virtual void RewriteForExecute(Statement statement)
+        {
+            if (statement.SpecificStatement is SelectStatement)
+            {
+                RewriteForExecute((SelectStatement)statement.SpecificStatement);
+            }
+            else
+            {
+                foreach (var s in statement.SpecificStatement.EnumerateSubStatements())
+                {
+                    RewriteForExecute(s);
+                }
             }
         }
 
@@ -338,7 +350,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             {
                 ntr = GetServerSpecificDatabaseMapping(tr, queryObject.AssignedServerInstance, databaseVersion, surrogateDatabaseVersion);
             }
-            
+
             if (ntr != null && !TableReferenceMap.ContainsKey(tr))
             {
                 TableReferenceMap.Add(tr, ntr);
@@ -489,7 +501,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 trnode.TableReference = other;
             }
         }
-        
+
         public void SubstituteSystemDatabaseNames(Expression ex)
         {
             SubstituteSystemDatabaseNames((Node)ex);
@@ -518,7 +530,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 fr.DatabaseName = CodeDataset.DatabaseName;
             }
         }
-        
+
         /// <summary>
         /// Creates a clone of the expression tree, then descends it  and replaces the occurances
         /// of one table reference with another.
@@ -580,7 +592,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             AppendTableStatisticsCommandParameters(tableSource, cmd);
             return cmd;
         }
-        
+
         protected virtual WhereClause GetTableSpecificWhereClause(ITableSource tableSource)
         {
             var ts = (SimpleTableSource)tableSource;
