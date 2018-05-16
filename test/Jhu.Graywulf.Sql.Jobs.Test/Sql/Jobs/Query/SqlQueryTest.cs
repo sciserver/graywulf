@@ -289,8 +289,47 @@ FROM TEST:SDSSDR7PhotoObjAll a
         public void ClrAggregateFunctionTest()
         {
             var sql =
-@"SELECT point.AvgEq(a.ra, a.dec)
+@"SELECT region.UnionEvery(region.CircleEq(ra, dec, 1))
 INTO [$into]
+FROM TEST:SDSSDR7PhotoObjAll a
+";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void ClrUserDefinedTypeTest()
+        {
+            // TODO: something fails in the remote table copy job
+
+            var sql =
+            @"SELECT point.AvgEq(a.ra, a.dec)
+INTO [$into]
+FROM TEST:SDSSDR7PhotoObjAll a
+";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void SimpleCaseInSelectTest()
+        {
+            var sql =
+@"SELECT CASE type WHEN 1 THEN ra ELSE dec END AS coord
+FROM TEST:SDSSDR7PhotoObjAll a
+";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void SearchedCaseInSelectTest()
+        {
+            var sql =
+@"SELECT CASE WHEN type = 1 THEN ra ELSE dec END AS coord
 FROM TEST:SDSSDR7PhotoObjAll a
 ";
 
@@ -393,7 +432,7 @@ CROSS JOIN MyCatalog b";
         }
 
 #endregion
-#region Partitioned query tests
+        #region Partitioned query tests
 
         [TestMethod]
         [TestCategory("Query")]

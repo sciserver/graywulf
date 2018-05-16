@@ -132,6 +132,8 @@
     <Compile Include="Sql\Parsing\ScalarVariableTest.cs" />
     <Compile Include="Sql\Parsing\SearchConditionNormalizerTest.cs" />
     <Compile Include="Sql\Parsing\SearchConditionTest.cs" />
+    <Compile Include="Sql\Parsing\SearchedCaseTest.cs" />
+    <Compile Include="Sql\Parsing\SimpleCaseTest.cs" />
     <Compile Include="Sql\Parsing\SelectListTest.cs" />
     <Compile Include="Sql\Parsing\SelectStatementTest.cs" />
     <Compile Include="Sql\Parsing\SqlParserTest.cs" />
