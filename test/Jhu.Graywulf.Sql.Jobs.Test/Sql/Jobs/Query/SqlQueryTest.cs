@@ -336,6 +336,30 @@ FROM TEST:SDSSDR7PhotoObjAll a
             RunQuery(sql);
         }
 
+        [TestMethod]
+        [TestCategory("Query")]
+        public void CoalesceTest()
+        {
+            var sql =
+@"SELECT COALESCE(ra, dec)
+FROM TEST:SDSSDR7PhotoObjAll a
+";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void NullIfTest()
+        {
+            var sql =
+@"SELECT NULLIF(ra, dec)
+FROM TEST:SDSSDR7PhotoObjAll a
+";
+
+            RunQuery(sql);
+        }
+
         #endregion
         #region MyDB query tests
 
