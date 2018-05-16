@@ -271,8 +271,34 @@ WHERE point.GetAngleEq(0, 0, p.ra, p.dec) > 1000";
             RunQuery(sql);
         }
 
-#endregion
-#region MyDB query tests
+        [TestMethod]
+        [TestCategory("Query")]
+        public void AggregateFunctionTest()
+        {
+            var sql =
+@"SELECT MIN(a.ra), MIN(a.dec)
+INTO [$into]
+FROM TEST:SDSSDR7PhotoObjAll a
+";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void ClrAggregateFunctionTest()
+        {
+            var sql =
+@"SELECT point.AvgEq(a.ra, a.dec)
+INTO [$into]
+FROM TEST:SDSSDR7PhotoObjAll a
+";
+
+            RunQuery(sql);
+        }
+
+        #endregion
+        #region MyDB query tests
 
         /// <summary>
         /// Executes a simple query on a single MyDB table
