@@ -13,6 +13,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #region Constants 
         private static readonly HashSet<string> SystemFunctionNames = new HashSet<string>(Schema.SchemaManager.Comparer)
         {
+            "COALESCE", "NULLIF",
+
             "OPENDATASOURCE", "OPENQUERY", "OPENROWSET", "OPENXML",
 
             "AVG", "MIN", "CHECKSUM_AGG", "SUM", "COUNT", "STDEV", "COUNT_BIG", "STDEVP", "GROUPING", "VAR", "GROUPING_ID", "VARP", "MAX",
