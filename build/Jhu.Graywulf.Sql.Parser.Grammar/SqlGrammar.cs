@@ -211,8 +211,8 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 Sequence
                 (
                     Expression,
-                    May(Keyword("NOT")),
                     May(CommentOrWhitespace),
+                    May(Sequence(Keyword("NOT"), CommentOrWhitespace)),
                     Keyword("LIKE"),
                     May(CommentOrWhitespace),
                     Expression,
@@ -222,8 +222,8 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 Sequence
                 (
                     Expression,
-                    May(Sequence(May(CommentOrWhitespace), Keyword("NOT"))),
                     May(CommentOrWhitespace),
+                    May(Sequence(Keyword("NOT"), CommentOrWhitespace)),
                     Keyword("BETWEEN"),
                     May(CommentOrWhitespace),
                     Expression,
@@ -246,8 +246,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 Sequence
                 (
                     Expression,
-                    May(Keyword("NOT")),
-                    May(CommentOrWhitespace),
+                    May(Sequence(Keyword("NOT"), CommentOrWhitespace)),
                     Keyword("IN"),
                     May(CommentOrWhitespace),
                     Must

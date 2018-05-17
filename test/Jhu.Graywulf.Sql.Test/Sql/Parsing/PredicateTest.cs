@@ -20,19 +20,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         [TestMethod]
-        public void BetweenTest()
-        {
-            SelectStatement select;
-            BooleanExpression where;
-
-            var sql = "SELECT ID FROM Book WHERE ID BETWEEN 6 AND 10";
-            GetSearchCondition(sql, out select, out where);
-
-            sql = "SELECT ID FROM Book WHERE ID BETWEEN 6 AND 10 AND Title = ''";
-            GetSearchCondition(sql, out select, out where);
-        }
-
-        [TestMethod]
         public void IsSpecificToTableTest()
         {
             // TODO: this won't work due to changes in predicate filtering logic
@@ -73,6 +60,136 @@ namespace Jhu.Graywulf.Sql.Parsing
             predicate = where.FindDescendantRecursive<Predicate>();
 
             Assert.IsTrue(predicate.IsSpecificToTable(table));
+        }
+
+        private Predicate Parse(string query)
+        {
+            var p = new SqlParser();
+            return p.Execute<Predicate>(query);
+        }
+
+        [TestMethod]
+        public void ComparisonOperatorTest()
+        {
+            var sql = "a = b";
+            var sb = Parse(sql);
+
+            sql = "a=b";
+            sb = Parse(sql);
+
+            sql = "a>b";
+            sb = Parse(sql);
+
+            sql = "a<b";
+            sb = Parse(sql);
+
+            sql = "a<=b";
+            sb = Parse(sql);
+
+            sql = "a>=b";
+            sb = Parse(sql);
+
+            sql = "a<>b";
+            sb = Parse(sql);
+
+            sql = "a!<b";
+            sb = Parse(sql);
+
+            sql = "a!>b";
+            sb = Parse(sql);
+
+            sql = "a!=b";
+            sb = Parse(sql);
+        }
+
+        [TestMethod]
+        public void IsNotNullTest()
+        {
+            var sql = "a IS NULL";
+            var sb = Parse(sql);
+
+            sql = "(a)IS NULL";
+            sb = Parse(sql);
+
+            sql = "a IS NOT NULL";
+            sb = Parse(sql);
+
+            sql = "(a)IS NOT NULL";
+            sb = Parse(sql);
+        }
+
+        [TestMethod]
+        public void LikeTest()
+        {
+            var sql = "a LIKE 'alma'";
+            var sb = Parse(sql);
+
+            sql = "(a)LIKE'alma'";
+            sb = Parse(sql);
+
+            sql = "a + b LIKE c + d";
+            sb = Parse(sql);
+
+            sql = "a + b LIKE c + d ESCAPE 'x'";
+            sb = Parse(sql);
+
+            sql = "'a + b'LIKE'c + d'ESCAPE'x'";
+            sb = Parse(sql);
+
+            sql = "a NOT LIKE 'alma'";
+            sb = Parse(sql);
+
+            sql = "(a)NOT LIKE'alma'";
+            sb = Parse(sql);
+        }
+
+        [TestMethod]
+        public void BetweenTest()
+        {
+            var sql = "ID BETWEEN 6 AND 10";
+            var sb = Parse(sql);
+
+            sql = "(ID)BETWEEN(6)AND(10)";
+            sb = Parse(sql);
+
+            sql = "ID NOT BETWEEN 6 AND 10";
+            sb = Parse(sql);
+
+            sql = "(ID)NOT BETWEEN(6)AND(10)";
+            sb = Parse(sql);
+        }
+
+
+        [TestMethod]
+        public void AllSomeAnyComparisonTest()
+        {
+            var sql = "a = ALL (SELECT ID FROM test)";
+            var sb = Parse(sql);
+
+            sql = "a=ALL(SELECT ID FROM test)";
+            sb = Parse(sql);
+        
+            sql = "a = SOME (SELECT ID FROM test)";
+            sb = Parse(sql);
+
+            sql = "a=SOME(SELECT ID FROM test)";
+            sb = Parse(sql);
+
+            sql = "a = ANY (SELECT ID FROM test)";
+            sb = Parse(sql);
+
+            sql = "a=ANY(SELECT ID FROM test)";
+            sb = Parse(sql);
+        }
+
+        [TestMethod]
+        public void ExistsTest()
+        {
+            var sql = "EXISTS (SELECT ID FROM test)";
+            var sb = Parse(sql);
+
+            sql = "EXISTS(SELECT ID FROM test)";
+            sb = Parse(sql);
         }
     }
 }

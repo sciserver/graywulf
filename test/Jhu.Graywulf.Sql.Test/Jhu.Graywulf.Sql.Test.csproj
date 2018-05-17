@@ -125,6 +125,7 @@
     <Compile Include="Sql\Parsing\IfStatementTest.cs" />
     <Compile Include="Sql\Parsing\InsertStatementTest.cs" />
     <Compile Include="Sql\Parsing\LabelAndGotoTest.cs" />
+    <Compile Include="Sql\Parsing\BooleanExpressionTest.cs" />
     <Compile Include="Sql\Parsing\PredicateTest.cs" />
     <Compile Include="Sql\Parsing\QueryHintTest.cs" />
     <Compile Include="Sql\Parsing\QuerySpecificationTest.cs" />
