@@ -191,5 +191,37 @@ namespace Jhu.Graywulf.Sql.Parsing
             sql = "EXISTS(SELECT ID FROM test)";
             sb = Parse(sql);
         }
+
+        [TestMethod]
+        public void InListTest()
+        {
+            var sql = "a IN (1)";
+            var sb = Parse(sql);
+
+            sql = "(a)IN(1)";
+            sb = Parse(sql);
+
+            sql = "(a)IN( 1 )";
+            sb = Parse(sql);
+
+            sql = "a IN (1, 2, 3)";
+            sb = Parse(sql);
+
+            sql = "(a)IN(1,2,3)";
+            sb = Parse(sql);
+
+            sql = "( a )IN( 1 , 2 , 3 )";
+            sb = Parse(sql);
+        }
+
+        [TestMethod]
+        public void InQueryTest()
+        {
+            var sql = "a IN (SELECT ID FROM test)";
+            var sb = Parse(sql);
+
+            sql = "(a)IN(SELECT ID FROM test)";
+            sb = Parse(sql);
+        }
     }
 }

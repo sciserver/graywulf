@@ -246,16 +246,24 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 Sequence
                 (
                     Expression,
+                    May(CommentOrWhitespace),
                     May(Sequence(Keyword("NOT"), CommentOrWhitespace)),
                     Keyword("IN"),
                     May(CommentOrWhitespace),
                     Must
                     (
                         Subquery,
-                        Sequence(BracketOpen, May(CommentOrWhitespace), ArgumentList, May(CommentOrWhitespace), BracketClose)
+                        Sequence
+                        (
+                            BracketOpen,
+                            May(CommentOrWhitespace),
+                            ArgumentList,
+                            May(CommentOrWhitespace),
+                            BracketClose
+                        )
                     )
                 ),
-                // comparision semi join
+                // Comparison semi join
                 Sequence
                 (
                     Expression,
