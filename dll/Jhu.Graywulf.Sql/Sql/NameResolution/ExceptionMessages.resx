@@ -150,6 +150,9 @@
   <data name="ScalarVariableExpected" xml:space="preserve">
     <value>Scalar variable or variable with user-defined type expected at ({1},{2}).</value>
   </data>
+  <data name="SingleColumnSubqueryRequired" xml:space="preserve">
+    <value>Only one expression can be specified in the select list when the subquery is introduced with IN, ALL, ANY or SOME at ({1},{2}).</value>
+  </data>
   <data name="StarColumnNotAllowed" xml:space="preserve">
     <value>Stars (*) in column expressions are not allowed but found at ({1},{2}).</value>
   </data>

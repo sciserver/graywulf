@@ -360,6 +360,45 @@ FROM TEST:SDSSDR7PhotoObjAll a
             RunQuery(sql);
         }
 
+        [TestMethod]
+        [TestCategory("Query")]
+        public void AllSemiJoinTest()
+        {
+            var sql =
+@"SELECT ra, dec
+FROM TEST:SDSSDR7PhotoObjAll a
+WHERE ra > ALL (SELECT 10)
+";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void SomeSemiJoinTest()
+        {
+            var sql =
+@"SELECT ra, dec
+FROM TEST:SDSSDR7PhotoObjAll a
+WHERE ra > SOME (SELECT 10)
+";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void AnySemiJoinTest()
+        {
+            var sql =
+@"SELECT ra, dec
+FROM TEST:SDSSDR7PhotoObjAll a
+WHERE ra > ANY (SELECT 10)
+";
+
+            RunQuery(sql);
+        }
+
         #endregion
         #region MyDB query tests
 

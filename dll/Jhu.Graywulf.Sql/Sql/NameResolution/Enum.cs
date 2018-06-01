@@ -40,4 +40,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
         Into = 4,
         CreateTable = 8,
     }
+
+    [Flags]
+    public enum QueryContext : long
+    {
+        None,                       // Node is not part of a query
+        SelectStatement,            // Main select
+        CommonTableExpression,      // CTE definition part
+        Subquery,                   // Subquery in FROM
+        SemiJoin                    // Subquery in EXISTS, ALL, SOME and ANY, etc.
+    }
 }

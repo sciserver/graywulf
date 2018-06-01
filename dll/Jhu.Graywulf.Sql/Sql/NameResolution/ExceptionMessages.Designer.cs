@@ -160,6 +160,15 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only one expression can be specified in the select list when the subquery is introduced with IN, ALL, ANY or SOME at ({1},{2})..
+        /// </summary>
+        internal static string SingleColumnSubqueryRequired {
+            get {
+                return ResourceManager.GetString("SingleColumnSubqueryRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Stars (*) in column expressions are not allowed but found at ({1},{2})..
         /// </summary>
         internal static string StarColumnNotAllowed {

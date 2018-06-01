@@ -198,90 +198,104 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> Predicate = () =>
             Must
             (
-                // Expression comparieson
-                Sequence
-                (
-                    Expression,
-                    May(CommentOrWhitespace),
-                    ComparisonOperator,
-                    May(CommentOrWhitespace),
-                    Expression
-                ),
-                // Like
-                Sequence
-                (
-                    Expression,
-                    May(CommentOrWhitespace),
-                    May(Sequence(Keyword("NOT"), CommentOrWhitespace)),
-                    Keyword("LIKE"),
-                    May(CommentOrWhitespace),
-                    Expression,
-                    May(Sequence(May(CommentOrWhitespace), Keyword("ESCAPE"), May(CommentOrWhitespace), Expression))
-                ),
-                // Between
-                Sequence
-                (
-                    Expression,
-                    May(CommentOrWhitespace),
-                    May(Sequence(Keyword("NOT"), CommentOrWhitespace)),
-                    Keyword("BETWEEN"),
-                    May(CommentOrWhitespace),
-                    Expression,
-                    May(CommentOrWhitespace),
-                    Keyword("AND"),
-                    May(CommentOrWhitespace),
-                    Expression
-                ),
-                // IS NULL
-                Sequence
-                (
-                    Expression,
-                    May(CommentOrWhitespace),
-                    Keyword("IS"),
-                    May(Sequence(CommentOrWhitespace, Keyword("NOT"))),
-                    CommentOrWhitespace,
-                    Keyword("NULL")
-                ),
-                // IN - semi join
-                Sequence
-                (
-                    Expression,
-                    May(CommentOrWhitespace),
-                    May(Sequence(Keyword("NOT"), CommentOrWhitespace)),
-                    Keyword("IN"),
-                    May(CommentOrWhitespace),
-                    Must
-                    (
-                        Subquery,
-                        Sequence
-                        (
-                            BracketOpen,
-                            May(CommentOrWhitespace),
-                            ArgumentList,
-                            May(CommentOrWhitespace),
-                            BracketClose
-                        )
-                    )
-                ),
-                // Comparison semi join
-                Sequence
-                (
-                    Expression,
-                    May(CommentOrWhitespace),
-                    ComparisonOperator,
-                    May(CommentOrWhitespace),
-                    Must(Keyword("ALL"), Keyword("SOME"), Keyword("ANY")),
-                    May(CommentOrWhitespace),
-                    Subquery
-                ),
-                // EXISTS
-                Sequence
-                (
-                    Keyword("EXISTS"),
-                    May(CommentOrWhitespace),
-                    Subquery
-                )
+                ComparisonPredicate,
+                LikePredicate,
+                BetweenPredicate,
+                IsNullPredicate,
+                InSemiJoinPredicate,
+                ComparisonSemiJoinPredicate,
+                ExistsSemiJoinPredicate
             // *** TODO: add string constructs (contains, freetext etc.)
+            );
+
+        public static Expression<Rule> ComparisonPredicate = () =>
+            Sequence
+            (
+                Expression,
+                May(CommentOrWhitespace),
+                ComparisonOperator,
+                May(CommentOrWhitespace),
+                Expression
+            );
+
+        public static Expression<Rule> LikePredicate = () =>
+            Sequence
+            (
+                Expression,
+                May(CommentOrWhitespace),
+                May(Sequence(Keyword("NOT"), CommentOrWhitespace)),
+                Keyword("LIKE"),
+                May(CommentOrWhitespace),
+                Expression,
+                May(Sequence(May(CommentOrWhitespace), Keyword("ESCAPE"), May(CommentOrWhitespace), Expression))
+            );
+
+        public static Expression<Rule> BetweenPredicate = () =>
+            Sequence
+            (
+                Expression,
+                May(CommentOrWhitespace),
+                May(Sequence(Keyword("NOT"), CommentOrWhitespace)),
+                Keyword("BETWEEN"),
+                May(CommentOrWhitespace),
+                Expression,
+                May(CommentOrWhitespace),
+                Keyword("AND"),
+                May(CommentOrWhitespace),
+                Expression
+            );
+
+        public static Expression<Rule> IsNullPredicate = () =>
+            Sequence
+            (
+                Expression,
+                May(CommentOrWhitespace),
+                Keyword("IS"),
+                May(Sequence(CommentOrWhitespace, Keyword("NOT"))),
+                CommentOrWhitespace,
+                Keyword("NULL")
+            );
+
+        public static Expression<Rule> InSemiJoinPredicate = () =>
+            Sequence
+            (
+                Expression,
+                May(CommentOrWhitespace),
+                May(Sequence(Keyword("NOT"), CommentOrWhitespace)),
+                Keyword("IN"),
+                May(CommentOrWhitespace),
+                Must
+                (
+                    Subquery,
+                    Sequence
+                    (
+                        BracketOpen,
+                        May(CommentOrWhitespace),
+                        ArgumentList,
+                        May(CommentOrWhitespace),
+                        BracketClose
+                    )
+                )
+            );
+
+        public static Expression<Rule> ComparisonSemiJoinPredicate = () =>
+            Sequence
+            (
+                Expression,
+                May(CommentOrWhitespace),
+                ComparisonOperator,
+                May(CommentOrWhitespace),
+                Must(Keyword("ALL"), Keyword("SOME"), Keyword("ANY")),
+                May(CommentOrWhitespace),
+                Subquery
+            );
+
+        public static Expression<Rule> ExistsSemiJoinPredicate = () =>
+            Sequence
+            (
+                Keyword("EXISTS"),
+                May(CommentOrWhitespace),
+                Subquery
             );
 
         #endregion

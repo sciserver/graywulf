@@ -127,5 +127,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             return CreateException(ExceptionMessages.DuplicateOutputTable, null, node.TableReference.DatabaseObjectName, (Node)node);
         }
+
+        public static NameResolverException SingleColumnSubqueryRequired(Node node)
+        {
+            return CreateException(ExceptionMessages.SingleColumnSubqueryRequired, null, null, node);
+        }
     }
 }

@@ -265,7 +265,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveWhileStatement(WhileStatement statement)
         {
-            ResolveSubtree(statement.Condition);
+            ResolveSubtree(QueryContext.None, statement.Condition);
         }
 
         private void ResolveReturnStatement(ReturnStatement statement)
@@ -277,7 +277,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveIfStatement(IfStatement statement)
         {
-            ResolveSubtree(statement.Condition);
+            ResolveSubtree(QueryContext.None, statement.Condition);
         }
 
         private void ResolveThrowStatement(ThrowStatement statement)
@@ -320,7 +320,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             if (exp != null)
             {
-                ResolveSubtree(exp);
+                ResolveSubtree(QueryContext.None, exp);
             }
 
             if (!details.VariableReferences.ContainsKey(vd.VariableReference.Name))
@@ -386,7 +386,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 ResolveCommonTableExpression(cte);
             }
 
-            ResolveSelect(cte, 0, statement);
+            ResolveSelect(cte, 0, QueryContext.SelectStatement, statement);
 
             var firstqs = statement.QueryExpression.FirstQuerySpecification;
 
@@ -415,15 +415,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #endregion
         #region Expression resolution
 
-        private void ResolveSubtree(Node node)
+        private void ResolveSubtree(QueryContext queryContext, Node node)
         {
-            ResolveSubtree(null, null, 0, ColumnContext.None, node);
+            ResolveSubtree(null, null, 0, queryContext, ColumnContext.None, node);
         }
 
-        private void ResolveSubtree(CommonTableExpression cte, QuerySpecification qs, int depth, ColumnContext context, Node node)
+        private void ResolveSubtree(CommonTableExpression cte, QuerySpecification qs, int depth, QueryContext queryContext, ColumnContext columnContext, Node node)
         {
-            ResolveSubqueries(cte, depth, node);
-            ResolveExpressionReferences(cte, qs, context, node);
+            ResolveSubqueries(cte, depth, queryContext, node);
+            ResolveExpressionReferences(cte, qs, columnContext, node);
         }
 
         /// <summary>
@@ -622,33 +622,44 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         /// <param name="node"></param>
         /// <param name="depth"></param>
-        private void ResolveSubqueries(CommonTableExpression cte, int depth, Node node)
+        private void ResolveSubqueries(CommonTableExpression cte, int depth, QueryContext queryContext, Node node)
         {
             foreach (var n in node.Nodes)
             {
                 if (n is Node && !(n is Subquery))
                 {
-                    ResolveSubqueries(cte, depth, (Node)n);
+                    switch (n)
+                    {
+                        case InSemiJoinPredicate p1:
+                        case ComparisonSemiJoinPredicate p2:
+                        case ExistsSemiJoinPredicate p3:
+                            queryContext |= QueryContext.SemiJoin;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    ResolveSubqueries(cte, depth, queryContext, (Node)n);
                 }
 
                 if (n is Subquery)
                 {
-                    ResolveSelect(cte, depth + 1, (Subquery)n);
+                    ResolveSelect(cte, depth + 1, queryContext | QueryContext.Subquery, (Subquery)n);
                 }
             }
         }
 
-        protected void ResolveSelect(CommonTableExpression cte, int depth, ISelect select)
+        protected void ResolveSelect(CommonTableExpression cte, int depth, QueryContext queryContext, ISelect select)
         {
             var qe = select.QueryExpression;
-            ResolveQueryExpression(cte, qe, depth);
+            ResolveQueryExpression(cte, qe, depth, queryContext);
 
             var orderBy = select.OrderByClause;
 
             if (orderBy != null)
             {
                 var qs = qe.EnumerateQuerySpecifications().FirstOrDefault();
-                ResolveOrderByClause(cte, orderBy, qs);
+                ResolveOrderByClause(cte, orderBy, qs, queryContext);
             }
         }
 
@@ -667,10 +678,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void ResolveCommonTableSpecification(CommonTableExpression cte, CommonTableSpecification ts)
         {
             var subquery = ts.Subquery;
-            ResolveSelect(cte, 1, subquery);
+            ResolveSelect(cte, 1, QueryContext.CommonTableExpression, subquery);
         }
 
-        protected void ResolveQueryExpression(CommonTableExpression cte, QueryExpression qe, int depth)
+        protected void ResolveQueryExpression(CommonTableExpression cte, QueryExpression qe, int depth, QueryContext queryContext)
         {
             // Resolve the first part of the query expression independently
             // and make sure it's set as ResultsTableReference
@@ -681,7 +692,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // Resolve query specifications in the FROM clause
             foreach (var qs in qe.EnumerateDescendants<QuerySpecification>())
             {
-                ResolveQuerySpecification(cte, qs, depth);
+                ResolveQuerySpecification(cte, qs, depth, queryContext);
 
                 if (q == 0)
                 {
@@ -700,7 +711,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// query specification
         /// </summary>
         /// <param name="qs"></param>
-        protected void ResolveQuerySpecification(CommonTableExpression cte, QuerySpecification qs, int depth)
+        protected void ResolveQuerySpecification(CommonTableExpression cte, QuerySpecification qs, int depth, QueryContext queryContext)
         {
             // At this point the table and column references are all parsed
             // from the query but no name resolution and cross-identification
@@ -711,10 +722,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // First of all, call everything recursively for subqueries. Subqueries
             // can appear within the table sources and in the where clause semi-join
             // expressions
-            foreach (var sq in qs.EnumerateSubqueries())
-            {
-                ResolveSelect(cte, depth + 1, sq);
-            }
+            ResolveSubqueries(cte, depth + 1, queryContext | QueryContext.Subquery, qs);
 
             SubstituteSourceTableDefaults(cte, qs);
             CollectSourceTableReferences(cte, qs);
@@ -733,10 +741,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             CopyResultsColumns(qs);
 
             // Add default aliases to column expressions in the form of tablealias_columnname
-            AssignDefaultColumnAliases(qs, depth != 0);
+            AssignDefaultColumnAliases(qs, depth != 0, (queryContext & QueryContext.SemiJoin) != 0);
         }
 
-        protected void ResolveOrderByClause(CommonTableExpression cte, OrderByClause orderBy, QuerySpecification firstqs)
+
+
+        protected void ResolveOrderByClause(CommonTableExpression cte, OrderByClause orderBy, QuerySpecification firstqs, QueryContext queryContext)
         {
             if (orderBy != null)
             {
@@ -1231,21 +1241,25 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// Adds default aliases to columns with no aliases specified in the query
         /// </summary>
         /// <param name="qs"></param>
-        private void AssignDefaultColumnAliases(QuerySpecification qs, bool subquery)
+        private void AssignDefaultColumnAliases(QuerySpecification qs, bool subquery, bool singleColumnSubquery)
         {
             var aliases = new HashSet<string>(SchemaManager.Comparer);
-
+            int q = 0;
             foreach (var ce in qs.EnumerateSelectListColumnExpressions())
             {
                 var cr = ce.ColumnReference;
-
                 string alias;
+
+                if (singleColumnSubquery && q > 0)
+                {
+                    throw NameResolutionError.SingleColumnSubqueryRequired(ce);
+                }
 
                 if (cr.ColumnAlias == null)
                 {
                     if (cr.ColumnName == null)
                     {
-                        if (subquery)
+                        if (subquery && !singleColumnSubquery)
                         {
                             throw NameResolutionError.MissingColumnAlias(ce);
                         }
@@ -1286,6 +1300,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     aliases.Add(alias);
                     cr.ColumnAlias = alias;
                 }
+
+                q++;
             }
         }
 

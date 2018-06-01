@@ -92,15 +92,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         /// <summary>
-        /// Enumerates all subqueries of the query specification recursively.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Subquery> EnumerateSubqueries()
-        {
-            return this.EnumerateDescendantsRecursive<Subquery>(typeof(Subquery));
-        }
-
-        /// <summary>
         /// Enumerates source tables referenced in the current, and optionally in
         /// all subqueries.
         /// </summary>
