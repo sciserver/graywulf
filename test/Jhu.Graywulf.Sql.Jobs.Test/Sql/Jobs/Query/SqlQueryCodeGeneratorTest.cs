@@ -189,7 +189,7 @@ END";
         {
             var sql = "SELECT * FROM Table1 PARTITION BY id";
             var gt = @"SELECT * FROM Table1 
-WHERE @keyMin <= id";
+WHERE @__partKeyMin <= id";
 
             RewriteQueryHelper(sql, gt, true, false);
         }
@@ -199,7 +199,7 @@ WHERE @keyMin <= id";
         public void AppendPartitioningFromWithWhere()
         {
             var sql = "SELECT * FROM Table1 PARTITION BY id WHERE x < 5";
-            var gt = "SELECT * FROM Table1  WHERE (@keyMin <= id) AND (x < 5)";
+            var gt = "SELECT * FROM Table1  WHERE (@__partKeyMin <= id) AND (x < 5)";
 
             RewriteQueryHelper(sql, gt, true, false);
         }
@@ -210,7 +210,7 @@ WHERE @keyMin <= id";
         {
             var sql = "SELECT * FROM Table1 PARTITION BY id";
             var gt = @"SELECT * FROM Table1 
-WHERE id < @keyMax";
+WHERE id < @__partKeyMax";
 
             RewriteQueryHelper(sql, gt, false, true);
         }
@@ -221,7 +221,7 @@ WHERE id < @keyMax";
         {
             var sql = "SELECT * FROM Table1 PARTITION BY id";
             var gt = @"SELECT * FROM Table1 
-WHERE @keyMin <= id AND id < @keyMax";
+WHERE @__partKeyMin <= id AND id < @__partKeyMax";
 
             RewriteQueryHelper(sql, gt, true, true);
         }
@@ -231,7 +231,7 @@ WHERE @keyMin <= id AND id < @keyMax";
         public void AppendPartitioningBothWithWhere()
         {
             var sql = "SELECT * FROM Table1 PARTITION BY id WHERE x < 5";
-            var gt = @"SELECT * FROM Table1  WHERE (@keyMin <= id AND id < @keyMax) AND (x < 5)";
+            var gt = @"SELECT * FROM Table1  WHERE (@__partKeyMin <= id AND id < @__partKeyMax) AND (x < 5)";
 
             RewriteQueryHelper(sql, gt, true, true);
         }
@@ -242,7 +242,7 @@ WHERE @keyMin <= id AND id < @keyMax";
         {
             var sql = "SELECT * FROM Table1 PARTITION BY id CROSS JOIN Table2";
             var gt = @"SELECT * FROM Table1  CROSS JOIN Table2
-WHERE @keyMin <= id AND id < @keyMax";
+WHERE @__partKeyMin <= id AND id < @__partKeyMax";
 
             RewriteQueryHelper(sql, gt, true, true);
         }
@@ -252,7 +252,7 @@ WHERE @keyMin <= id AND id < @keyMax";
         public void AppendPartitioningBothWithWhereAndJoin()
         {
             var sql = "SELECT * FROM Table1 PARTITION BY id CROSS JOIN Table2 WHERE x < 5";
-            var gt = "SELECT * FROM Table1  CROSS JOIN Table2 WHERE (@keyMin <= id AND id < @keyMax) AND (x < 5)";
+            var gt = "SELECT * FROM Table1  CROSS JOIN Table2 WHERE (@__partKeyMin <= id AND id < @__partKeyMax) AND (x < 5)";
 
             RewriteQueryHelper(sql, gt, true, true);
         }
