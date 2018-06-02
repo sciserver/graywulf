@@ -63,7 +63,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             "FETCH_STATUS", "LANGID", "LANGUAGE", "LOCK_TIMEOUT", "MAX_CONNECTION",
             "MAX_PRECISION", "MICROSOFTVERSION", "NESTLEVEL", "OPTIONS",
             "PROCID", "REMSERVER", "SERVERNAME", "SERVICENAME", "SPID",
-            "TEXTSIZE", "VERSION"
+            "TEXTSIZE", "VERSION",
+
+            // Custom system variables
+            Constants.SystemVariableNamePartCount,
+            Constants.SystemVariableNamePartId,
         };
 
         #endregion

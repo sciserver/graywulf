@@ -225,6 +225,7 @@
     <Compile Include="Sql\LogicalExpressions\UnaryExpression.cs" />
     <Compile Include="Sql\NameResolution\ColumnReference.cs" />
     <Compile Include="Sql\NameResolution\ColumnReferenceEqualityComparer.cs" />
+    <Compile Include="Sql\NameResolution\Constants.cs" />
     <Compile Include="Sql\NameResolution\DatabaseObjectReference.cs" />
     <Compile Include="Sql\NameResolution\DatabaseObjectReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\DataTypeReferenceEqualityComparer.cs" />

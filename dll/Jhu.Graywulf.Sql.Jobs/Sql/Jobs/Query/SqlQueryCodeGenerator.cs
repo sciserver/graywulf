@@ -27,8 +27,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         private static readonly Dictionary<string, string> systemVariableMap = new Dictionary<string, string>(SqlParser.ComparerInstance)
         {
-            { "@@PARTCOUNT", partitionCountParameterName },
-            { "@@PARTID", partitionIdParameterName},
+            { NameResolution.Constants.SystemVariableNamePartCount, partitionCountParameterName },
+            { NameResolution.Constants.SystemVariableNamePartId, partitionIdParameterName},
         };
 
         #endregion
@@ -134,9 +134,10 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             if (node is SystemVariable)
             {
-                if (systemVariableMap.ContainsKey(node.Value))
+                var name = node.Value.TrimStart('@');
+                if (systemVariableMap.ContainsKey(name))
                 {
-                    var nn = UserVariable.Create(systemVariableMap[node.Value]);
+                    var nn = UserVariable.Create(systemVariableMap[name]);
                     node.ExchangeWith(nn);
                 }
             }
