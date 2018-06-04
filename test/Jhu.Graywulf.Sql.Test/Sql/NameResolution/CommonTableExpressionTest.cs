@@ -125,5 +125,26 @@ SELECT [a].[Name] AS [a_Name] FROM [a]";
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
         }
+
+        [TestMethod]
+        public void RankingFunctionInCteTest()
+        {
+            var sql =
+@"WITH q AS
+(
+    SELECT ROW_NUMBER() OVER (PARTITION BY FLOOR(ID) ORDER BY ID) AS rn, ID, Name
+    FROM Author a
+)
+SELECT *
+FROM q
+WHERE rn <= 10";
+
+            var gt = "";
+
+            var ss = Parse<SelectStatement>(sql);
+
+            var res = GenerateCode(ss);
+            Assert.AreEqual(gt, res);
+        }
     }
 }

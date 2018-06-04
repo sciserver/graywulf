@@ -582,6 +582,64 @@ CROSS JOIN MyCatalog b
             q.Parameters.Destination.CheckTableExistence();
         }
 
-#endregion
+        #endregion
+        #region Ranking functions tests
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void SimpleRowNumberTest()
+        {
+            var sql =
+@"SELECT TOP 10 ROW_NUMBER() OVER (ORDER BY objid), ra, dec
+FROM TEST:SDSSDR7PhotoObjAll a
+";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void RowNumberWithAliasTest()
+        {
+            var sql =
+@"SELECT TOP 10 ROW_NUMBER() OVER (ORDER BY objid) AS rn, ra, dec
+FROM TEST:SDSSDR7PhotoObjAll a
+";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void RowNumberWithPartitionByTest()
+        {
+            var sql =
+@"SELECT TOP 10 ROW_NUMBER() OVER (PARTITION BY FLOOR(ra) ORDER BY objid), ra, dec
+FROM TEST:SDSSDR7PhotoObjAll a
+";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void RowNumberInCteTest()
+        {
+            var sql =
+@"
+WITH q AS
+(
+    SELECT ROW_NUMBER() OVER (PARTITION BY FLOOR(ra) ORDER BY objid) AS rn, ra, dec
+    FROM TEST:SDSSDR7PhotoObjAll a
+)
+SELECT *
+FROM q
+WHERE rn <= 10
+";
+
+            RunQuery(sql);
+        }
+
+        #endregion
     }
 }
