@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var qs = Parse<QuerySpecification>(sql);
             var res = GenerateCode(qs);
 
-            Assert.AreEqual("SELECT [a].[Name] AS [Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
+            Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
         }
 
         [TestMethod]
@@ -78,6 +78,28 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         [TestMethod]
+        public void SubqueryWithColumnAliasTest()
+        {
+            var sql = "SELECT Name FROM (SELECT TOP 10 ID AS Name FROM Author ORDER BY Name) a";
+
+            var qs = Parse<QuerySpecification>(sql);
+
+            var res = GenerateCode(qs);
+            Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM (SELECT TOP 10 [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[Name]) [a]", res);
+        }
+
+        [TestMethod]
+        public void SubqueryWithColumnAlias2Test()
+        {
+            var sql = "SELECT Col_1 AS TestCol FROM (SELECT 1 AS Col_1 FROM Author) a";
+
+            var qs = Parse<QuerySpecification>(sql);
+
+            var res = GenerateCode(qs);
+            Assert.AreEqual("SELECT [a].[Col_1] AS [TestCol] FROM (SELECT 1 AS [Col_1] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
+        }
+
+        [TestMethod]
         public void RecursiveSubqueriesTest()
         {
             var sql = "SELECT Name FROM (SELECT Name FROM (SELECT * FROM Author) q) a";
@@ -111,6 +133,21 @@ INNER JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID], [Graywulf_Schema_Te
             Assert.AreEqual(2, qs.SourceTableReferences.Count);
             Assert.AreEqual(TableReferenceType.Subquery, qs.SourceTableReferences["a"].Type);
             Assert.AreEqual(TableReferenceType.Subquery, qs.SourceTableReferences["b"].Type);
+        }
+
+        [TestMethod]
+        public void SubSubQueriesTest()
+        {
+            var sql = @"SELECT a.Name FROM (SELECT * FROM (SELECT * FROM Author) b) a";
+
+            var gt = @"SELECT [a].[Name] AS [a_Name] FROM (SELECT [b].[ID], [b].[Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]) [a]";
+
+            var qs = Parse<QuerySpecification>(sql);
+            var res = GenerateCode(qs);
+
+            Assert.AreEqual(gt, res);
+            Assert.AreEqual(1, qs.SourceTableReferences.Count);
+            Assert.AreEqual(TableReferenceType.Subquery, qs.SourceTableReferences["a"].Type);
         }
 
         // Add SELECT * tests, function, sunquery in where etc.

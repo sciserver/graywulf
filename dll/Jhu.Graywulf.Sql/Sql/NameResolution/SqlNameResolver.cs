@@ -602,18 +602,24 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     throw NameResolutionError.UnresolvableColumnReference(cr);
                 }
 
-                // Column context must be updated on source
+                // Update column context of the referenced column
                 ncr.ColumnContext |= context;
+
+                // Make copy here
+                ncr = new ColumnReference(ncr);
                 ncr.IsResolved = true;
 
-                // Make copy here to preserve alias!
-                ncr = new ColumnReference(ncr);
-
-                if (cr.ColumnReference != null && cr.ColumnReference.ColumnAlias != null)
+                if (ncr.ColumnAlias != null)
                 {
-                    ncr.ColumnAlias = cr.ColumnReference.ColumnAlias;
+                    // If it is an aliased subquery column, make sure it remains referenced
+                    // by alias and re-aliasing remains
+                    ncr.ColumnName = ncr.ColumnAlias;
                 }
 
+                // Preserve column alias of referencing column
+                ncr.ColumnAlias = cr.ColumnReference.ColumnAlias;
+
+                // Associate column with the resolved reference
                 cr.ColumnReference = ncr;
             }
         }

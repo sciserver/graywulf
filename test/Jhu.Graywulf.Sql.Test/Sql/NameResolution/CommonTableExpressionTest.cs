@@ -139,7 +139,15 @@ SELECT *
 FROM q
 WHERE rn <= 10";
 
-            var gt = "";
+            var gt =
+@"WITH [q] AS
+(
+    SELECT ROW_NUMBER() OVER (PARTITION BY FLOOR([a].[ID]) ORDER BY [a].[ID]) AS [rn], [a].[ID], [a].[Name]
+    FROM [Graywulf_Schema_Test].[dbo].[Author] [a]
+)
+SELECT [q].[rn] AS [q_rn], [q].[ID] AS [q_ID], [q].[Name] AS [q_Name]
+FROM [q]
+WHERE [q].[rn] <= 10";
 
             var ss = Parse<SelectStatement>(sql);
 

@@ -265,20 +265,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 throw new InvalidOperationException();
             }
 
-
             bool res = true;
 
-            if (this.tableReference == null && !this.isComplexExpression)
+            if ((this.tableReference == null || this.tableReference.IsUndefined) && !this.isComplexExpression)
             {
-                // compare to a complex expression by alias
-
-                res &= SchemaManager.Comparer.Compare(this.columnName, other.columnName) == 0 ||
-                    SchemaManager.Comparer.Compare(this.columnName, other.columnAlias) == 0;
+                // No table is specified, only compare by column name
+                res &= this.CompareByName(other);
             }
-            else if (other.tableReference == null)
+            else if (other.tableReference == null || other.tableReference.IsUndefined)
             {
+                // TODO: verify if this can happen
                 // if this is an alias
-                res &= this.tableReference == null && StringComparer.CurrentCultureIgnoreCase.Compare(this.columnName, other.columnAlias) == 0;
+                res &= this.tableReference == null && SchemaManager.Comparer.Compare(this.columnName, other.columnAlias) == 0;
             }
             else
             {
@@ -288,29 +286,23 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 res &= (this.tableReference.Compare(other.tableReference));
 
                 // compare the two names
-                res &= (StringComparer.CurrentCultureIgnoreCase.Compare(this.columnName, other.columnName) == 0);
-
-                // either only one of them has column alias, or
-                // if both do, the aliases are equat
-                res &= (this.columnAlias == null || other.columnAlias == null ||
-                       (StringComparer.CurrentCultureIgnoreCase.Compare(this.columnAlias, other.columnAlias) == 0));
-
-
-                //      none of them have column aliases
-                res &= this.columnAlias == null && other.columnAlias == null ||
-
-                    this.columnAlias == null && other.columnAlias != null && StringComparer.CurrentCultureIgnoreCase.Compare(this.columnName, other.columnName) == 0 ||
-
-                    this.columnAlias != null;
-
-                // this one doesn't have an alias, so it's name must match the other name
-                // **** this seems to be the tricky one
-                //this.columnAlias == null && other.columnAlias != null && StringComparer.CurrentCultureIgnoreCase.Compare(other.columnAlias, other.ColumnName) == 0 ||
-                // ???
-                //this.columnAlias != null;
+                res &= this.CompareByName(other);
             }
 
             return res;
+        }
+
+        private bool CompareByName(ColumnReference other)
+        {
+            // If the other column is aliased, always compare by alias, otherwise fall back to compare by name
+            if (other.columnAlias != null)
+            {
+                return SchemaManager.Comparer.Compare(this.columnName, other.columnAlias) == 0;
+            }
+            else
+            {
+                return SchemaManager.Comparer.Compare(this.columnName, other.columnName) == 0;
+            }
         }
 
         /// <summary>
@@ -324,7 +316,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var res = String.Empty;
 
-            if (tableReference != null)
+            if (tableReference != null && !TableReference.IsUndefined)
             {
                 res += tableReference.ToString();
                 res += ".";
@@ -337,6 +329,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             else
             {
                 res += String.Format("[{0}]", columnName);
+            }
+
+            if (columnAlias != null)
+            {
+                res += String.Format(" AS [{0}]", columnAlias);
             }
 
             return res;
