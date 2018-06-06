@@ -7,6 +7,7 @@ using System.IO;
 using System.ComponentModel;
 using System.ServiceModel;
 using System.ServiceModel.Web;
+using Jhu.Graywulf.Web.Services.Serialization;
 
 namespace Jhu.Graywulf.Web.Services
 {
@@ -72,22 +73,22 @@ namespace Jhu.Graywulf.Web.Services
         Stream DownloadItem(int id);
 
         [OperationContract]
-        [TestItemFormatter]
+        [RawFormat(typeof(TestItemFormatter))]
         [WebInvoke(UriTemplate = "/items/{id}/upload/formatter", Method = HttpMethod.Post)]
         void CreateItemFormatted(int id, TestItem item);
 
         [OperationContract]
-        [TestItemFormatter]
+        [RawFormat(typeof(TestItemFormatter))]
         [WebInvoke(UriTemplate = "/items/{id}/download/formatter", Method = HttpMethod.Get)]
         TestItem GetItemFormatted(int id);
 
         [OperationContract]
-        [TestItemFormatter]
+        [RawFormat(typeof(TestItemFormatter))]
         [WebInvoke(UriTemplate = "/items/{id}/upload/binary", Method = HttpMethod.Post)]
         void CreateItemBinary(int id, TestItemBinary item);
 
         [OperationContract]
-        [TestItemFormatter]
+        [RawFormat(typeof(TestItemFormatter))]
         [WebInvoke(UriTemplate = "/items/{id}/download/binary", Method = HttpMethod.Get)]
         TestItemBinary GetItemBinary(int id);
     }

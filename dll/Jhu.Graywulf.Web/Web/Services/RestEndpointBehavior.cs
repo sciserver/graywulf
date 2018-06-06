@@ -33,9 +33,9 @@ namespace Jhu.Graywulf.Web.Services
         {
             foreach (var b in operationDescription.OperationBehaviors)
             {
-                if (b is StreamingRawFormatAttribute)
+                if (b is Serialization.RawFormatAttribute)
                 {
-                    var rf = (StreamingRawFormatAttribute)b;
+                    var rf = (Serialization.RawFormatAttribute)b;
                     var formatter = rf.CreateDispatchFormatter(operationDescription, endpoint, fallbackFormatter);
                     return formatter;
                 }
@@ -62,9 +62,9 @@ namespace Jhu.Graywulf.Web.Services
         {
             foreach (var b in operationDescription.OperationBehaviors)
             {
-                if (b is StreamingRawFormatAttribute)
+                if (b is Serialization.RawFormatAttribute)
                 {
-                    var rf = (StreamingRawFormatAttribute)b;
+                    var rf = (Serialization.RawFormatAttribute)b;
                     var formatter = rf.CreateClientFormatter(operationDescription, endpoint, fallbackFormatter);
                     return formatter;
                 }

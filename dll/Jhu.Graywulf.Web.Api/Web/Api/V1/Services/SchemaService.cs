@@ -10,6 +10,7 @@ using System.Security.Permissions;
 using System.ComponentModel;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web.Services;
+using Jhu.Graywulf.Web.Services.Serialization;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
@@ -23,13 +24,13 @@ namespace Jhu.Graywulf.Web.Api.V1
         void HandleHttpOptionsRequest();
 
         [OperationContract]
-        [DynamicFormat(typeof(TextResponseMessageFormatter))]
+        [DynamicFormat(typeof(TextMessageFormatter))]
         [WebGet(UriTemplate = "/datasets")]
         [Description("Returns a list of all available datasets.")]
         DatasetListResponse ListDatasets();
 
         [OperationContract]
-        [DynamicFormat(typeof(TextResponseMessageFormatter))]
+        [DynamicFormat(typeof(TextMessageFormatter))]
         [WebGet(UriTemplate = "/datasets/{datasetName}")]
         [Description("Returns information about a single dataset")]
         Dataset GetDataset(
@@ -37,7 +38,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             string datasetName);
 
         [OperationContract]
-        [DynamicFormat(typeof(TextResponseMessageFormatter))]
+        [DynamicFormat(typeof(TextMessageFormatter))]
         [WebGet(UriTemplate = "/datasets/{datasetName}/tables")]
         [Description("Returns a list of the tables of a dataset.")]
         TableListResponse ListTables(
@@ -45,7 +46,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             string datasetName);
 
         [OperationContract]
-        [DynamicFormat(typeof(TextResponseMessageFormatter))]
+        [DynamicFormat(typeof(TextMessageFormatter))]
         [WebGet(UriTemplate = "/datasets/{datasetName}/tables/{tableName}")]
         [Description("Returns information about a single table.")]
         Table GetTable(
@@ -55,7 +56,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             string tableName);
 
         [OperationContract]
-        [DynamicFormat(typeof(TextResponseMessageFormatter))]
+        [DynamicFormat(typeof(TextMessageFormatter))]
         [WebGet(UriTemplate = "/datasets/{datasetName}/tables/{tableName}/columns")]
         [Description("Returns the list of columns of a table")]
         ColumnListResponse ListTableColumns(
@@ -65,7 +66,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             string tableName);
 
         [OperationContract]
-        [DynamicFormat(typeof(TextResponseMessageFormatter))]
+        [DynamicFormat(typeof(TextMessageFormatter))]
         [WebGet(UriTemplate = "/datasets/{datasetName}/views")]
         [Description("Returns a list of the views of a dataset.")]
         ViewListResponse ListViews(
@@ -73,7 +74,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             string datasetName);
 
         [OperationContract]
-        [DynamicFormat(typeof(TextResponseMessageFormatter))]
+        [DynamicFormat(typeof(TextMessageFormatter))]
         [WebGet(UriTemplate = "/datasets/{datasetName}/views/{viewName}")]
         [Description("Returns information about a single view.")]
         View GetView(
@@ -83,7 +84,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             string viewName);
 
         [OperationContract]
-        [DynamicFormat(typeof(TextResponseMessageFormatter))]
+        [DynamicFormat(typeof(TextMessageFormatter))]
         [WebGet(UriTemplate = "/datasets/{datasetName}/views/{viewName}/columns")]
         [Description("Returns the list of columns of a view")]
         ColumnListResponse ListViewColumns(

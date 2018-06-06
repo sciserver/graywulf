@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Jhu.Graywulf.Web.Services
+namespace Jhu.Graywulf.Web.Services.Serialization
 {
     public class RestBodyFormat
     {

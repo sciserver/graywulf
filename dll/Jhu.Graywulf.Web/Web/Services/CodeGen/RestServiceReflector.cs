@@ -151,8 +151,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         private void ReflectOperationParameters(RestOperationContract operation)
         {
             // See if a formatter attribute is defined on the operation
-            StreamingRawFormatterBase formatter = null;
-            var attr = operation.Method.GetCustomAttribute<StreamingRawFormatAttribute>();
+            Serialization.RawMessageFormatterBase formatter = null;
+            var attr = operation.Method.GetCustomAttribute<Serialization.RawFormatAttribute>();
 
             if (attr != null)
             {
@@ -185,14 +185,15 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             }
         }
 
-        private RestMessageParameter ReflectParameter(RestOperationContract operation, ParameterInfo parameter, StreamingRawFormatterBase formatter)
+        private RestMessageParameter ReflectParameter(RestOperationContract operation, ParameterInfo parameter, Serialization.RawMessageFormatterBase formatter)
         {
             // TODO: it now supports body formatters but what about untyped streams?
 
             var par = new RestMessageParameter(operation, parameter);
+            var type = formatter?.GetFormattedType();
             var israw = formatter != null &&
-                       (formatter.FormattedType == parameter.ParameterType ||
-                        formatter.FormattedType.IsAssignableFrom(parameter.ParameterType));
+                       (type == parameter.ParameterType ||
+                        type.IsAssignableFrom(parameter.ParameterType));
 
             if (israw && (par.IsBodyParameter || par.IsReturnParameter))
             {
@@ -204,7 +205,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 par.DataContract = ReflectType(parameter.ParameterType);
             }
 
-            par.Formats = formatter?.GetSupportedFormats() ?? new List<RestBodyFormat>(){ RestBodyFormats.Json };
+            par.Formats = formatter?.GetSupportedFormats() ?? new List<Serialization.RestBodyFormat>(){ Serialization.RestBodyFormats.Json };
 
             return par;
         }

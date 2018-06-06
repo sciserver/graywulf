@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.ServiceModel;
 using System.ServiceModel.Web;
+using Jhu.Graywulf.Web.Services.Serialization;
 
 namespace Jhu.Graywulf.Web.Services.CodeGen
 {
@@ -18,7 +19,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         private string parameterName;
         private List<RestBodyFormat> formats;
         private bool isRawFormat;
-        private StreamingRawFormatterBase formatter;
+        private RawMessageFormatterBase formatter;
         private bool isReturnParameter;
 
         public RestOperationContract Operation
@@ -55,7 +56,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             internal set { isRawFormat = value; }
         }
 
-        public StreamingRawFormatterBase Formatter
+        public RawMessageFormatterBase Formatter
         {
             get { return formatter; }
             set { formatter = value; }
