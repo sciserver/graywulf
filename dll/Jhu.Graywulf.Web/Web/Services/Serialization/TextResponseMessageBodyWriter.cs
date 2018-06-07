@@ -33,15 +33,20 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             this.value = value;
         }
 
+        public void WriteBodyContents(Stream stream)
+        {
+            OnWriteBodyContents(stream);
+        }
+
         protected override void OnWriteBodyContents(Stream stream)
         {
             if (value != null)
             {
-                var writer = new StreamWriter(stream, encoding);
-
-                WriteBodyContents(writer);
-
-                writer.Flush();
+                using (var writer = new StreamWriter(stream, encoding))
+                {
+                    WriteBodyContents(writer);
+                    writer.Flush();
+                }
             }
         }
 

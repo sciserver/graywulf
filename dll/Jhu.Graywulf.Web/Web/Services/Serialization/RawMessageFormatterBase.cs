@@ -14,7 +14,7 @@ using System.IO;
 
 namespace Jhu.Graywulf.Web.Services.Serialization
 {
-    public abstract class RawMessageFormatterBase : RestMessageFormatter
+    public abstract class RawMessageFormatterBase : RestMessageFormatterBase
     {
         #region Constants
 
@@ -32,6 +32,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
         private Type inParameterType;
         private int inParameterIndex;
         private Type formattedType;
+        private string mimeType;
 
         private Dictionary<int, string> pathMapping;
         private Dictionary<int, KeyValuePair<string, Type>> queryMapping;
@@ -82,6 +83,12 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             get { return formattedType; }
         }
 
+        public string MimeType
+        {
+            get { return mimeType; }
+            set { mimeType = value; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -101,6 +108,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             this.inParameterType = null;
             this.inParameterIndex = 0;
             this.formattedType = null;
+            this.mimeType = null;
         }
 
         public void Initialize()
@@ -108,75 +116,25 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             this.formattedType = GetFormattedType();
         }
 
-        public void Initialize(OperationDescription operationDescription, ServiceEndpoint endpoint, IDispatchMessageFormatter fallbackFormatter)
+        public void Initialize(OperationDescription operationDescription, ServiceEndpoint endpoint)
         {
-            base.Initialize(fallbackFormatter);
             this.operation = operationDescription;
             this.endpoint = endpoint;
 
             ConfigureFormatter();
             CreateOperationUri();
+        }
+
+        public void Initialize(OperationDescription operationDescription, ServiceEndpoint endpoint, IDispatchMessageFormatter fallbackFormatter)
+        {
+            base.Initialize(fallbackFormatter);
+            this.Initialize(operationDescription, endpoint);
         }
 
         public void Initialize(OperationDescription operationDescription, ServiceEndpoint endpoint, IClientMessageFormatter fallbackFormatter)
         {
             base.Initialize(fallbackFormatter);
-            this.operation = operationDescription;
-            this.endpoint = endpoint;
-
-            ConfigureFormatter();
-            CreateOperationUri();
-        }
-
-        #endregion
-
-        #region HTTP header handling
-
-        protected WebHeaderCollection GetRequestHeaders()
-        {
-            var message = OperationContext.Current.RequestContext.RequestMessage;
-            return GetRequestHeaders(message);
-        }
-
-        protected WebHeaderCollection GetRequestHeaders(Message message)
-        {
-            var prop = (HttpRequestMessageProperty)message.Properties[HttpRequestMessageProperty.Name];
-            return prop.Headers;
-        }
-
-        protected WebHeaderCollection GetResponseHeaders(Message message)
-        {
-            var prop = (HttpResponseMessageProperty)message.Properties[HttpResponseMessageProperty.Name];
-            return prop.Headers;
-        }
-
-        internal string GetPostedContentType(WebHeaderCollection headers)
-        {
-            var contentType = headers[HttpRequestHeader.ContentType];
-            return contentType;
-        }
-
-        internal string GetRequestedContentType(WebHeaderCollection headers)
-        {
-            var acceptHeader = headers[HttpRequestHeader.Accept] ??
-                               headers[HttpRequestHeader.ContentType];
-
-            // Parse accept header
-            var accept = WebOperationContext.Current.IncomingRequest.GetAcceptHeaderElements();
-            var formats = GetSupportedFormats();
-
-            for (int i = 0; i < accept.Count; i++)
-            {
-                foreach (var format in formats)
-                {
-                    if (Jhu.Graywulf.Util.MediaTypeComparer.Compare(accept[i].MediaType, format.MimeType))
-                    {
-                        return format.MimeType;
-                    }
-                }
-            }
-
-            return Constants.MimeTypeText;
+            this.Initialize(operationDescription, endpoint);
         }
 
         #endregion
@@ -470,17 +428,23 @@ namespace Jhu.Graywulf.Web.Services.Serialization
 
         public object ReadFromStream(Stream stream, string contentType, Type parameterType)
         {
-            return OnDeserializeRequest(stream, contentType, parameterType);
+            return OnDeserialize(stream, contentType, parameterType);
         }
 
-        protected abstract object OnDeserializeRequest(Stream stream, string contentType, Type parameterType);
+        protected abstract object OnDeserialize(Stream stream, string contentType, Type parameterType);
 
         public void WriteToStream(Stream stream, string contentType, Type parameterType, object value)
         {
-            OnSerializeResponse(stream, contentType, parameterType, value);
+            OnSerialize(stream, contentType, parameterType, value);
         }
 
-        protected abstract void OnSerializeResponse(Stream stream, string contentType, Type parameterType, object value);
+        protected abstract void OnSerialize(Stream stream, string contentType, Type parameterType, object value);
+
+        protected override void OnSetMessageHeaders(HttpRequestMessageProperty http)
+        {
+            base.OnSetMessageHeaders(http);
+            http.Headers[HttpRequestHeader.ContentType] = mimeType;
+        }
 
         #endregion
         #region Server
@@ -492,13 +456,30 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             {
                 DeserializeUrlParameters(message, parameters);
 
+                var headers = GetRequestHeaders(message);
+                var contentType = GetPostedContentType(headers);
+                var buffer = new byte[0x4000];
                 var body = message.GetReaderAtBodyContents();
-                byte[] raw = body.ReadContentAsBase64();
 
-                using (var ms = new MemoryStream(raw))
+                using (var ms = new MemoryStream())
                 {
-                    var headers = GetRequestHeaders(message);
-                    var contentType = GetPostedContentType(headers);
+                    while (true)
+                    {
+                        // TODO: this needs to be made async somehow
+                        var cnt = body.ReadContentAsBase64(buffer, 0, buffer.Length);
+
+                        if (cnt == 0)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            ms.Write(buffer, 0, cnt);
+                        }
+                    }
+
+                    ms.Seek(0, SeekOrigin.Begin);
+
                     parameters[InParameterIndex] = ReadFromStream(ms, contentType, inParameterType);
                 }
             }
@@ -522,6 +503,8 @@ namespace Jhu.Graywulf.Web.Services.Serialization
                     },
                     contentType);
 
+                SetMessageHeaders(message);
+
                 return message;
             }
             else
@@ -538,22 +521,12 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             if ((Direction & RawMessageFormatterDirection.ParameterIn) != 0 &&
                 parameters != null)
             {
-                var format = GetPreferredFormat();
                 var data = parameters[InParameterIndex];
-                var body = new RawBodyWriter(this, format.MimeType, inParameterType, data);
+                var body = new RawBodyWriter(this, mimeType, inParameterType, data);
                 var action = Operation.Messages[0].Action;
                 var message = Message.CreateMessage(messageVersion, action, body);
 
-                if (!message.Properties.ContainsKey(HttpRequestMessageProperty.Name))
-                {
-                    message.Properties.Add(HttpRequestMessageProperty.Name, new HttpRequestMessageProperty());
-                }
-
-                message.Properties.Add(WebBodyFormatMessageProperty.Name, new WebBodyFormatMessageProperty(WebContentFormat.Raw));
-
-                var prop = (HttpRequestMessageProperty)message.Properties[HttpRequestMessageProperty.Name];
-                prop.Headers[HttpRequestHeader.ContentType] = format.MimeType;
-
+                SetMessageHeaders(message);
                 SerializeUrlParameters(message, parameters);
 
                 return message;
@@ -568,6 +541,14 @@ namespace Jhu.Graywulf.Web.Services.Serialization
         {
             if ((Direction & RawMessageFormatterDirection.ReturnValue) != 0 && returnValueType != typeof(void))
             {
+                object bodyFormatProperty;
+                if (!message.Properties.TryGetValue(WebBodyFormatMessageProperty.Name, out bodyFormatProperty) ||
+                    (bodyFormatProperty as WebBodyFormatMessageProperty).Format != WebContentFormat.Raw)
+                {
+                    // **** TODO
+                    throw new InvalidOperationException("Incoming messages must have a body format of Raw. Is a ContentTypeMapper set on the WebHttpBinding?");
+                }
+
                 var body = message.GetReaderAtBodyContents();
                 byte[] raw = body.ReadContentAsBase64();
 

@@ -11,7 +11,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Services
 {
-    public class RestServiceBehavior : Attribute, IServiceBehavior
+    public class RestServiceBehavior : RestBehaviorBase, IServiceBehavior
     {
         public void Validate(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
         {
@@ -45,37 +45,7 @@ namespace Jhu.Graywulf.Web.Services
             // turn on help
             foreach (var ep in endpoints)
             {
-                var whep = (WebHttpEndpoint)ep;
-                whep.AutomaticFormatSelectionEnabled = true;
-
-                if (ep.Binding is WebHttpBinding)
-                {
-                    var whbind = (WebHttpBinding)ep.Binding;
-                    whbind.Security.Transport.ClientCredentialType = HttpClientCredentialType.None;
-                    whbind.TransferMode = TransferMode.Streamed;
-                    whbind.MaxReceivedMessageSize = 0x40000000;     // 1 GB
-                    whbind.ContentTypeMapper = new RestContentTypeMapper();
-                }
-                else if (ep.Binding is CustomBinding)
-                {
-                    var cubind = (CustomBinding)ep.Binding;
-                    var htbe = cubind.Elements.Find<HttpTransportBindingElement>();
-                    htbe.TransferMode = TransferMode.Streamed;
-                    htbe.MaxReceivedMessageSize = 0x40000000;     // 1 GB
-                }
-
-                // Exchange WHB with custom implementation
-                if (ep.EndpointBehaviors.Contains(typeof(WebHttpBehavior)))
-                {
-                    var whb = ep.EndpointBehaviors[typeof(WebHttpBehavior)];
-
-                    var reb = new RestEndpointBehavior();
-                    reb.HelpEnabled = true;
-                    reb.AutomaticFormatSelectionEnabled = true;
-
-                    ep.EndpointBehaviors.Remove(whb);
-                    ep.Behaviors.Add(reb);
-                }
+                ConfigureEndpoint(ep);
             }
         }
 

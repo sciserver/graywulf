@@ -10,6 +10,11 @@ namespace Jhu.Graywulf.Web.Services.Serialization
 {
     public class JsonMessageFormatter : RawMessageFormatterBase
     {
+        public JsonMessageFormatter()
+        {
+            MimeType = Constants.MimeTypeJson;
+        }
+
         protected override Type GetFormattedType()
         {
             return null;
@@ -23,7 +28,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             };
         }
 
-        protected override void OnSerializeResponse(Stream stream, string contentType, Type parameterType, object value)
+        protected override void OnSerialize(Stream stream, string contentType, Type parameterType, object value)
         {
             using (var writer = new StreamWriter(stream))
             {
@@ -32,7 +37,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             }
         }
 
-        protected override object OnDeserializeRequest(Stream stream, string contentType, Type parameterType)
+        protected override object OnDeserialize(Stream stream, string contentType, Type parameterType)
         {
             using (var reader = new StreamReader(stream))
             {

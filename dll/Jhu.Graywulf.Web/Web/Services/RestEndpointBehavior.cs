@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Web.Services
     {
         protected override QueryStringConverter GetQueryStringConverter(OperationDescription operationDescription)
         {
-            return new RestQueryStringConverter();
+            return new Serialization.RestQueryStringConverter();
         }
 
         protected override IDispatchMessageFormatter GetRequestDispatchFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint)
@@ -31,25 +31,8 @@ namespace Jhu.Graywulf.Web.Services
 
         private IDispatchMessageFormatter CreateDispatchFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint, IDispatchMessageFormatter fallbackFormatter)
         {
-            Serialization.RawMessageFormatterBase formatter = null;
-
-            foreach (var b in operationDescription.OperationBehaviors)
-            {
-                if (b is Serialization.RawFormatAttribute)
-                {
-                    var rf = (Serialization.RawFormatAttribute)b;
-                    formatter = rf.CreateFormatter();
-                    break;
-                }
-            }
-
-            if (formatter == null)
-            {
-                // Add customized json formatter
-                formatter = new Serialization.JsonMessageFormatter();
-            }
-            
-            formatter.Initialize(operationDescription, endpoint, fallbackFormatter);
+            var formatter = CreateFormatter(operationDescription, endpoint);
+            formatter.Initialize(fallbackFormatter);
             return formatter;
         }
 
@@ -69,26 +52,59 @@ namespace Jhu.Graywulf.Web.Services
 
         private IClientMessageFormatter CreateClientFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint, IClientMessageFormatter fallbackFormatter)
         {
-            Serialization.RawMessageFormatterBase formatter = null;
+            var formatter = CreateFormatter(operationDescription, endpoint);
+            formatter.Initialize(fallbackFormatter);
+            return formatter;
+        }
+
+        private Serialization.DynamicMessageFormatter CreateFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint)
+        {
+            var dynamicFormatter = new Serialization.DynamicMessageFormatter();
+
+            // Add default formatters
+            var json = new Serialization.JsonMessageFormatter();
+            json.Initialize(operationDescription, endpoint);
+            dynamicFormatter.Formatters.Add(json.MimeType, json);
+            // TODO: XML
 
             foreach (var b in operationDescription.OperationBehaviors)
             {
-                if (b is Serialization.RawFormatAttribute)
+                if (b is Serialization.DynamicFormatAttribute df)
                 {
-                    var rf = (Serialization.RawFormatAttribute)b;
-                    formatter = rf.CreateFormatter();
-                    break;
+                    foreach (var ft in df.FormatterTypes)
+                    {
+                        var ff = (Serialization.RestMessageFormatterBase)Activator.CreateInstance(ft);
+                        var formats = ff.GetSupportedFormats();
+
+                        foreach (var format in formats)
+                        {
+                            ff = (Serialization.RestMessageFormatterBase)Activator.CreateInstance(ft);
+
+                            if (ff is Serialization.RawMessageFormatterBase rf)
+                            {
+                                rf.Initialize(operationDescription, endpoint);
+                                rf.MimeType = format.MimeType;
+                                dynamicFormatter.Formatters.Add(rf.MimeType, rf);
+                            }
+                        }
+                    }
+                }
+                else if (b is Serialization.RawFormatAttribute rf)
+                {
+                    var ff = rf.CreateFormatter();
+                    var formats = ff.GetSupportedFormats();
+
+                    foreach (var format in formats)
+                    {
+                        ff = rf.CreateFormatter();
+                        ff.Initialize(operationDescription, endpoint);
+                        ff.MimeType = format.MimeType;
+                        dynamicFormatter.Formatters.Add(ff.MimeType, ff);
+                    };
                 }
             }
 
-            if (formatter == null)
-            {
-                // Add customized json formatter
-                formatter = new Serialization.JsonMessageFormatter();
-            }
-
-            formatter.Initialize(operationDescription, endpoint, fallbackFormatter);
-            return formatter;
+            return dynamicFormatter;
         }
     }
 }

@@ -9,7 +9,7 @@ using System.ServiceModel.Dispatcher;
 
 namespace Jhu.Graywulf.Web.Services
 {
-    class RestOperationBehavior : Attribute, IOperationBehavior
+    class RestOperationBehavior : RestBehaviorBase, IOperationBehavior
     {
         public void AddBindingParameters(OperationDescription operationDescription, BindingParameterCollection bindingParameters)
         {

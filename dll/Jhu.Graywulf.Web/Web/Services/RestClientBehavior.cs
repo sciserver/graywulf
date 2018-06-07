@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Web.Services
     /// The behavior accepts all cookies and headers to be inspected by
     /// the client.
     /// </remarks>
-    public class RestClientBehavior : IEndpointBehavior, IClientMessageInspector
+    public class RestClientBehavior : RestBehaviorBase, IEndpointBehavior, IClientMessageInspector
     {
         private HashSet<string> acceptedHeaders;
         private NameValueCollection headers;
@@ -73,6 +73,7 @@ namespace Jhu.Graywulf.Web.Services
 
         public void AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
         {
+            ConfigureEndpoint(endpoint);
         }
 
         public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)

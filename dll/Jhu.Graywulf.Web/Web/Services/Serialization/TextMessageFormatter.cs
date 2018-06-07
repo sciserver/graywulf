@@ -9,8 +9,13 @@ using System.IO;
 
 namespace Jhu.Graywulf.Web.Services.Serialization
 {
-    public class TextMessageFormatter : RestMessageFormatter
+    public class TextMessageFormatter : RawMessageFormatterBase
     {
+        protected override Type GetFormattedType()
+        {
+            return null;
+        }
+
         public override List<RestBodyFormat> GetSupportedFormats()
         {
             return new List<RestBodyFormat>()
@@ -19,22 +24,13 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             };
         }
 
-        public override void DeserializeRequest(Message message, object[] parameters)
+        protected override void OnSerialize(Stream stream, string contentType, Type parameterType, object value)
         {
-            throw new NotImplementedException();
+            var writer = new TextResponseMessageBodyWriter(value);
+            writer.WriteBodyContents(stream);
         }
 
-        public override Message SerializeReply(MessageVersion messageVersion, object[] parameters, object result)
-        {
-            return WebOperationContext.Current.CreateStreamResponse(new TextResponseMessageBodyWriter(result), Constants.MimeTypeText);
-        }
-
-        public override Message SerializeRequest(MessageVersion messageVersion, object[] parameters)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override object DeserializeReply(Message message, object[] parameters)
+        protected override object OnDeserialize(Stream stream, string contentType, Type parameterType)
         {
             throw new NotImplementedException();
         }

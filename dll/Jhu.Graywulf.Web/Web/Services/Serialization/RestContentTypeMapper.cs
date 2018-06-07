@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ServiceModel.Channels;
 
-namespace Jhu.Graywulf.Web.Services
+namespace Jhu.Graywulf.Web.Services.Serialization
 {
 
     public class RestContentTypeMapper : WebContentTypeMapper

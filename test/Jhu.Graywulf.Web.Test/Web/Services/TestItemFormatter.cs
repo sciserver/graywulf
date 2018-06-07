@@ -24,12 +24,12 @@ namespace Jhu.Graywulf.Web.Services
             };
         }
 
-        protected override void OnSerializeResponse(Stream stream, string contentType, Type parameterType, object value)
+        protected override void OnSerialize(Stream stream, string contentType, Type parameterType, object value)
         {
             throw new NotImplementedException();
         }
 
-        protected override object OnDeserializeRequest(Stream stream, string contentType, Type parameterType)
+        protected override object OnDeserialize(Stream stream, string contentType, Type parameterType)
         {
             throw new NotImplementedException();
         }

@@ -143,11 +143,11 @@
     <Compile Include="Web\Services\IRestSessionState.cs" />
     <Compile Include="Web\Services\ResourceNotFoundException.cs" />
     <Compile Include="Web\Services\RestAuthenticationModule.cs" />
+    <Compile Include="Web\Services\RestBehaviorBase.cs" />
     <Compile Include="Web\Services\RestClientBehavior.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Web\Services\RestClientSession.cs" />
-    <Compile Include="Web\Services\RestContentTypeMapper.cs" />
     <Compile Include="Web\Services\RestEndpointBehavior.cs" />
     <Compile Include="Web\Services\RestError.cs" />
     <Compile Include="Web\Services\RestErrorHandler.cs" />
@@ -160,13 +160,12 @@
     <Compile Include="Web\Services\RestOperationException.cs" />
     <Compile Include="Web\Services\RestOperationInvoker.cs" />
     <Compile Include="Web\Services\RestCorsMessageInspector.cs" />
-    <Compile Include="Web\Services\RestQueryStringConverter.cs" />
     <Compile Include="Web\Services\RestServiceBase.cs" />
     <Compile Include="Web\Services\RestServiceBehavior.cs" />
     <Compile Include="Web\Services\RestServiceFactory.cs" />
     <Compile Include="Web\Services\Serialization\Constants.cs" />
-    <Compile Include="Web\Services\Serialization\DynamicDispatchMessageFormatter.cs" />
     <Compile Include="Web\Services\Serialization\DynamicFormatAttribute.cs" />
+    <Compile Include="Web\Services\Serialization\DynamicMessageFormatter.cs" />
     <Compile Include="Web\Services\Serialization\JsonMessageFormatter.cs" />
     <Compile Include="Web\Services\Serialization\RawBodyWriter.cs" />
     <Compile Include="Web\Services\Serialization\RawFormatAttribute.cs" />
@@ -174,7 +173,9 @@
     <Compile Include="Web\Services\Serialization\RawMessageFormatterDirection.cs" />
     <Compile Include="Web\Services\Serialization\RestBodyFormat.cs" />
     <Compile Include="Web\Services\Serialization\RestBodyFormats.cs" />
-    <Compile Include="Web\Services\Serialization\RestMessageFormatter.cs" />
+    <Compile Include="Web\Services\Serialization\RestContentTypeMapper.cs" />
+    <Compile Include="Web\Services\Serialization\RestMessageFormatterBase.cs" />
+    <Compile Include="Web\Services\Serialization\RestQueryStringConverter.cs" />
     <Compile Include="Web\Services\Serialization\StreamingListFormatAttribute.cs" />
     <Compile Include="Web\Services\Serialization\StreamingListFormatter.cs" />
     <Compile Include="Web\Services\Serialization\StreamingListJsonMessageBodyWriter.cs" />
@@ -272,7 +273,9 @@
     <Content Include="Web\Services\CodeGen\Templates\ServiceClass.js" />
     <Content Include="Web\Services\CodeGen\Templates\ServiceMethod.js" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Web\Services\Util\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\build\Jhu.Graywulf.Build.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

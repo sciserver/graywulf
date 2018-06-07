@@ -15,11 +15,22 @@ namespace Jhu.Graywulf.Web.Services.Serialization
     /// </summary>
     public class DynamicFormatAttribute : Attribute, IOperationBehavior
     {
-        private Type formatterType;
+        private Type[] formatterTypes;
+
+        public Type[] FormatterTypes
+        {
+            get { return formatterTypes; }
+            set { formatterTypes = value; }
+        }
 
         public DynamicFormatAttribute(Type formatterType)
         {
-            this.formatterType = formatterType;
+            this.formatterTypes = new Type[] { formatterType };
+        }
+
+        public DynamicFormatAttribute(Type[] formatterTypes)
+        {
+            this.formatterTypes = formatterTypes;
         }
 
         public void AddBindingParameters(OperationDescription operationDescription, BindingParameterCollection bindingParameters)
@@ -28,25 +39,39 @@ namespace Jhu.Graywulf.Web.Services.Serialization
 
         public void ApplyClientBehavior(OperationDescription operationDescription, ClientOperation clientOperation)
         {
+            // Intentionally do nothing, just register as a dummy behavior
+            // Formatter will be registered in RestEndpointBehavior.CreateDispatchFormatter
         }
 
         public void ApplyDispatchBehavior(OperationDescription operationDescription, DispatchOperation dispatchOperation)
         {
-            var formatters = new Dictionary<string, IDispatchMessageFormatter>();
-            var formatter = (RestMessageFormatter)Activator.CreateInstance(formatterType);
-            var formats = formatter.GetSupportedFormats();
+            // Intentionally do nothing, just register as a dummy behavior
+            // Formatter will be registered in RestEndpointBehavior.CreateDispatchFormatter
 
-            // Create a separate instance for each supported type
-            foreach (var format in formats)
+            var dynamicFormatter = new DynamicMessageFormatter();
+            dynamicFormatter.Initialize(dispatchOperation.Formatter);
+
+            foreach (var formatterType in formatterTypes)
             {
-                formatter = (RestMessageFormatter)Activator.CreateInstance(formatterType);
-                formatter.MimeType = format.MimeType;
-                formatters.Add(format.MimeType, formatter);
+                var formatter  = (RestMessageFormatterBase)Activator.CreateInstance(formatterType);
+                var formats = formatter.GetSupportedFormats();
+
+                // Create a separate instance for each supported type
+                foreach (var format in formats)
+                {
+                    var ff = (RestMessageFormatterBase)Activator.CreateInstance(formatterType);
+                    ff.Initialize(dispatchOperation.Formatter);
+                    dynamicFormatter.Formatters.Add(format.MimeType, ff);
+
+
+                    if (ff is RawMessageFormatterBase rff)
+                    {
+                        rff.MimeType = format.MimeType;
+                    }
+                }
             }
 
-            dispatchOperation.Formatter = new DynamicDispatchMessageFormatter(
-                dispatchOperation.Formatter,
-                formatters);
+            dispatchOperation.Formatter = dynamicFormatter;
         }
 
         public void Validate(OperationDescription operationDescription)

@@ -15,7 +15,7 @@ using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Web.Services.Serialization
 {
-    class StreamingListFormatter : RestMessageFormatter
+    class StreamingListFormatter : RestMessageFormatterBase
     {
 
         private Type returnType;
@@ -47,6 +47,11 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             {
                 RestBodyFormats.Json,
             };
+        }
+
+        protected override void OnSetMessageHeaders(HttpRequestMessageProperty http)
+        {
+            throw new NotImplementedException();
         }
 
         public override void DeserializeRequest(Message message, object[] parameters)

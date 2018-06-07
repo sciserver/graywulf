@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ServiceModel.Dispatcher;
 
-namespace Jhu.Graywulf.Web.Services
+namespace Jhu.Graywulf.Web.Services.Serialization
 {
     /// <summary>
     /// 
