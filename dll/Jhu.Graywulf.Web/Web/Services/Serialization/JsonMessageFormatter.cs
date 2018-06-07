@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             };
         }
 
-        protected override void OnSerializeResponse(Stream stream, string contentType, Type parametersType, object value)
+        protected override void OnSerializeResponse(Stream stream, string contentType, Type parameterType, object value)
         {
             using (var writer = new StreamWriter(stream))
             {

@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
         private Type returnValueType;
         private Type inParameterType;
         private int inParameterIndex;
-        private Type formattedType;        
+        private Type formattedType;
 
         private Dictionary<int, string> pathMapping;
         private Dictionary<int, KeyValuePair<string, Type>> queryMapping;
@@ -101,6 +101,11 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             this.inParameterType = null;
             this.inParameterIndex = 0;
             this.formattedType = null;
+        }
+
+        public void Initialize()
+        {
+            this.formattedType = GetFormattedType();
         }
 
         public void Initialize(OperationDescription operationDescription, ServiceEndpoint endpoint, IDispatchMessageFormatter fallbackFormatter)
@@ -233,7 +238,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
 
             var parameterTypes = GetParameterTypes(operation);
             var retvalType = GetRetvalType(operation);
-            
+
             if (CanHandleType(retvalType))
             {
                 returnValueType = retvalType;
@@ -505,14 +510,14 @@ namespace Jhu.Graywulf.Web.Services.Serialization
 
         public override Message SerializeReply(MessageVersion messageVersion, object[] parameters, object result)
         {
-            if ((direction & RawMessageFormatterDirection.ReturnValue) != 0)
+            if ((direction & RawMessageFormatterDirection.ReturnValue) != 0 && returnValueType != typeof(void))
             {
                 var headers = GetRequestHeaders();
                 var contentType = GetRequestedContentType(headers);
 
                 var message = WebOperationContext.Current.CreateStreamResponse(
                     stream =>
-                    {                        
+                    {
                         WriteToStream(stream, contentType, returnValueType, result);
                     },
                     contentType);
@@ -561,7 +566,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
 
         public override object DeserializeReply(Message message, object[] parameters)
         {
-            if ((Direction & RawMessageFormatterDirection.ReturnValue) != 0)
+            if ((Direction & RawMessageFormatterDirection.ReturnValue) != 0 && returnValueType != typeof(void))
             {
                 var body = message.GetReaderAtBodyContents();
                 byte[] raw = body.ReadContentAsBase64();

@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
         {
             this.formatter = formatter;
             this.contentType = contentType;
+            this.parameterType = parameterType;
             this.value = value;
         }
 
