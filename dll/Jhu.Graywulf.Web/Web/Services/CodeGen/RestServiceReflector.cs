@@ -157,6 +157,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             if (attr != null)
             {
                 formatter = attr.CreateFormatter();
+                formatter.Initialize();
             }
 
             // Process parameters
@@ -191,7 +192,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
             var par = new RestMessageParameter(operation, parameter);
             var type = formatter?.FormattedType;
-            var israw = formatter != null &&
+            var israw = formatter != null && type != null &&
                        (type == parameter.ParameterType ||
                         type.IsAssignableFrom(parameter.ParameterType));
 
@@ -285,6 +286,26 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             }
         }
 
+        public static bool IsArrayElementType(Type type, out Type elementType)
+        {
+            if (type.IsGenericType &&
+                (type.GetGenericTypeDefinition() == typeof(IEnumerable<>) ||
+                 type.GetGenericTypeDefinition() == typeof(List<>)))
+            {
+                elementType = type.GetGenericArguments()[0];
+            }
+            else if (type.IsArray)
+            {
+                elementType = type.GetElementType();
+            }
+            else
+            {
+                elementType = null;
+            }
+
+            return elementType != null;
+        }
+
         private RestDataContract ReflectType(Type type)
         {
             var attr = type.GetCustomAttribute<DataContractAttribute>(true);
@@ -295,15 +316,8 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 type = type.GetGenericArguments()[0];
             }
 
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-            {
-                elementType = type.GetGenericArguments()[0];
-            }
-            else if (type.IsArray)
-            {
-                elementType = type.GetElementType();
-            }
-
+            IsArrayElementType(type, out elementType);
+            
             if (type == typeof(Stream) || type.IsSubclassOf(typeof(Stream)))
             {
                 // TODO: figure this out
@@ -319,7 +333,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             }
             else if (elementType != null)
             {
-                // This is a valid array or IEnumerable
+                // This is a valid array, IEnumerable or List
                 // Reflect element type as part of the service
 
                 ReflectType(elementType);

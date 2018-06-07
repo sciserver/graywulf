@@ -142,7 +142,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 {
                     consumes.Add(format.MimeType);
                 }
-                
+
                 var par =
                     new JObject(
                         new JProperty("name", parameter.ParameterName),
@@ -275,17 +275,12 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 type = type.GetGenericArguments()[0];
             }
 
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            if (RestServiceReflector.IsArrayElementType(type, out var elementType))
             {
                 array = true;
-                type = type.GetGenericArguments()[0];
+                type = elementType;
             }
-            else if (type.IsArray)
-            {
-                array = true;
-                type = type.GetElementType();
-            }
-
+            
             if (base.Api.DataContracts.ContainsKey(type))
             {
                 if (Api.DataContracts[type].IsEnum)
@@ -314,6 +309,11 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             info.Name = dc.DataContractName;
             info.Enum = Enum.GetNames(type);
             info.Ref = "#/definitions/" + dc.DataContractName;
+
+            for (int i = 0; i < info.Enum.Length; i++)
+            {
+                info.Enum[i] = info.Enum[i].ToLowerInvariant();
+            }
 
             // TODO: test with arrays of enums
 
