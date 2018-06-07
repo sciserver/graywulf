@@ -45,35 +45,18 @@ namespace Jhu.Graywulf.Web.Services.Serialization
         {
         }
 
-        private Type[] GetParameterTypes(OperationDescription operationDescription)
-        {
-            var inmsg = operationDescription.Messages.First(m => m.Direction == MessageDirection.Input);
-            var res = new Type[inmsg.Body.Parts.Count];
-
-            for (int i = 0; i < res.Length; i++)
-            {
-                res[i] = inmsg.Body.Parts[i].Type;
-            }
-
-            return res;
-        }
-
-        private Type GetRetvalType(OperationDescription operationDescription)
-        {
-            var outmsg = operationDescription.Messages.First(m => m.Direction == MessageDirection.Output);
-            return outmsg.Body.ReturnValue.Type;
-        }
-
         public void ApplyClientBehavior(OperationDescription operationDescription, ClientOperation clientOperation)
         {
             // Intentionally do nothing, just register as a dummy behavior
+            // Formatter will be registered in RestEndpointBehavior.CreateDispatchFormatter
         }
 
         public void ApplyDispatchBehavior(OperationDescription operationDescription, DispatchOperation dispatchOperation)
         {
             // Intentionally do nothing, just register as a dummy behavior
+            // Formatter will be registered in RestEndpointBehavior.CreateDispatchFormatter
         }
-        
+
         public void Validate(OperationDescription operationDescription)
         {
         }
@@ -81,43 +64,6 @@ namespace Jhu.Graywulf.Web.Services.Serialization
         public RawMessageFormatterBase CreateFormatter()
         {
             return (RawMessageFormatterBase)Activator.CreateInstance(formatterType);
-        }
-
-        internal RawMessageFormatterBase CreateDispatchFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint, IDispatchMessageFormatter fallbackFormatter)
-        {
-            var formatter = CreateFormatter();
-            formatter.Initialize(operationDescription, endpoint, fallbackFormatter);
-            ConfigureFormatter(formatter, operationDescription);
-            return formatter;
-        }
-
-        internal RawMessageFormatterBase CreateClientFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint, IClientMessageFormatter fallbackFormatter)
-        {
-            var formatter = CreateFormatter();
-            formatter.Initialize(operationDescription, endpoint, fallbackFormatter);
-            ConfigureFormatter(formatter, operationDescription);
-            return formatter;
-        }
-
-        internal void ConfigureFormatter(RawMessageFormatterBase formatter, OperationDescription operationDescription)
-        {
-            var parameterTypes = GetParameterTypes(operationDescription);
-            var retvalType = GetRetvalType(operationDescription);
-            var type = formatter.GetFormattedType();
-
-            if (type == retvalType)
-            {
-                formatter.Direction |= RawMessageFormatterDirection.ReturnValue;
-            }
-
-            for (int i = 0; i < parameterTypes.Length; i++)
-            {
-                if (type == parameterTypes[i])
-                {
-                    formatter.InParameterIndex = i;
-                    formatter.Direction |= RawMessageFormatterDirection.ParameterIn;
-                }
-            }
         }
     }
 }

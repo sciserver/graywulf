@@ -54,6 +54,7 @@ namespace Jhu.Graywulf.Web.Services
                     whbind.Security.Transport.ClientCredentialType = HttpClientCredentialType.None;
                     whbind.TransferMode = TransferMode.Streamed;
                     whbind.MaxReceivedMessageSize = 0x40000000;     // 1 GB
+                    whbind.ContentTypeMapper = new RestContentTypeMapper();
                 }
                 else if (ep.Binding is CustomBinding)
                 {

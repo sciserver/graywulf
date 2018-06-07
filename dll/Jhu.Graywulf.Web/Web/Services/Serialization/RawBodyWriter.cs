@@ -13,9 +13,10 @@ namespace Jhu.Graywulf.Web.Services.Serialization
     {
         private RawMessageFormatterBase formatter;
         private string contentType;
+        private Type parameterType;
         private object value;
 
-        public RawBodyWriter(RawMessageFormatterBase formatter, string contentType, object value)
+        public RawBodyWriter(RawMessageFormatterBase formatter, string contentType, Type parameterType, object value)
             : base(true)
         {
             this.formatter = formatter;
@@ -27,7 +28,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
         {
             using (var ms = new MemoryStream())
             {
-                formatter.WriteToStream(ms, contentType, value);
+                formatter.WriteToStream(ms, contentType, parameterType, value);
                 var bytes = ms.ToArray();
 
                 writer.WriteStartElement("Binary");

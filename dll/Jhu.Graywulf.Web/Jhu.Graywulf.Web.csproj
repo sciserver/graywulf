@@ -147,6 +147,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Web\Services\RestClientSession.cs" />
+    <Compile Include="Web\Services\RestContentTypeMapper.cs" />
     <Compile Include="Web\Services\RestEndpointBehavior.cs" />
     <Compile Include="Web\Services\RestError.cs" />
     <Compile Include="Web\Services\RestErrorHandler.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="Web\Services\Serialization\Constants.cs" />
     <Compile Include="Web\Services\Serialization\DynamicDispatchMessageFormatter.cs" />
     <Compile Include="Web\Services\Serialization\DynamicFormatAttribute.cs" />
+    <Compile Include="Web\Services\Serialization\JsonMessageFormatter.cs" />
     <Compile Include="Web\Services\Serialization\RawBodyWriter.cs" />
     <Compile Include="Web\Services\Serialization\RawFormatAttribute.cs" />
     <Compile Include="Web\Services\Serialization\RawMessageFormatterBase.cs" />
@@ -180,8 +182,8 @@
     <Compile Include="Web\Services\Serialization\StreamingListXmlMessageBodyWriter.cs" />
     <Compile Include="Web\Services\Serialization\StreamingListXmlWriter.cs" />
     <Compile Include="Web\Services\Serialization\TextJsonXmlFormatAttribute.cs" />
+    <Compile Include="Web\Services\Serialization\TextMessageFormatter.cs" />
     <Compile Include="Web\Services\Serialization\TextResponseMessageBodyWriter.cs" />
-    <Compile Include="Web\Services\Serialization\TextResponseMessageFormatter.cs" />
     <Compile Include="Web\Services\ServiceNameAttribute.cs" />
     <Compile Include="Web\UI\AppBase.cs" />
     <Compile Include="Web\UI\ApplicationBase.cs" />

@@ -28,7 +28,10 @@ namespace Jhu.Graywulf.Web.Services.Serialization
         private UriTemplate uriTemplate;
         private ServiceEndpoint endpoint;
         private RawMessageFormatterDirection direction;
+        private Type returnValueType;
+        private Type inParameterType;
         private int inParameterIndex;
+        private Type formattedType;        
 
         private Dictionary<int, string> pathMapping;
         private Dictionary<int, KeyValuePair<string, Type>> queryMapping;
@@ -38,7 +41,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
         #endregion
         #region Properties
 
-        internal OperationDescription Operation
+        protected OperationDescription Operation
         {
             get { return operation; }
         }
@@ -59,10 +62,24 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             set { direction = value; }
         }
 
+        protected Type ReturnValueType
+        {
+            get { return returnValueType; }
+        }
+
+        protected Type InParameterType
+        {
+            get { return inParameterType; }
+        }
+
         internal int InParameterIndex
         {
             get { return inParameterIndex; }
-            set { inParameterIndex = value; }
+        }
+
+        public Type FormattedType
+        {
+            get { return formattedType; }
         }
 
         #endregion
@@ -76,9 +93,14 @@ namespace Jhu.Graywulf.Web.Services.Serialization
         private void InitializeMembers()
         {
             this.operation = null;
+            this.httpMethod = null;
+            this.uriTemplate = null;
             this.endpoint = null;
             this.direction = RawMessageFormatterDirection.None;
+            this.returnValueType = null;
+            this.inParameterType = null;
             this.inParameterIndex = 0;
+            this.formattedType = null;
         }
 
         public void Initialize(OperationDescription operationDescription, ServiceEndpoint endpoint, IDispatchMessageFormatter fallbackFormatter)
@@ -87,6 +109,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             this.operation = operationDescription;
             this.endpoint = endpoint;
 
+            ConfigureFormatter();
             CreateOperationUri();
         }
 
@@ -96,12 +119,11 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             this.operation = operationDescription;
             this.endpoint = endpoint;
 
+            ConfigureFormatter();
             CreateOperationUri();
         }
 
         #endregion
-
-        public abstract Type GetFormattedType();
 
         #region HTTP header handling
 
@@ -150,6 +172,83 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             }
 
             return Constants.MimeTypeText;
+        }
+
+        #endregion
+        #region Parameter handling
+
+        protected abstract Type GetFormattedType();
+
+        private Type[] GetParameterTypes(OperationDescription operationDescription)
+        {
+            var inmsg = operationDescription.Messages.First(m => m.Direction == MessageDirection.Input);
+            var res = new Type[inmsg.Body.Parts.Count];
+
+            for (int i = 0; i < res.Length; i++)
+            {
+                res[i] = inmsg.Body.Parts[i].Type;
+            }
+
+            return res;
+        }
+
+        private Type GetRetvalType(OperationDescription operationDescription)
+        {
+            var outmsg = operationDescription.Messages.First(m => m.Direction == MessageDirection.Output);
+            return outmsg.Body.ReturnValue.Type;
+        }
+
+        private bool CanHandleType(Type parameterType)
+        {
+            if (formattedType == parameterType)
+            {
+                return true;
+            }
+            else if (formattedType == null)
+            {
+                if (parameterType == typeof(Stream) ||
+                    parameterType == typeof(String) ||
+                    parameterType.IsPrimitive)
+                {
+                    return false;
+                }
+                else if (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        internal void ConfigureFormatter()
+        {
+            this.formattedType = GetFormattedType();
+
+            var parameterTypes = GetParameterTypes(operation);
+            var retvalType = GetRetvalType(operation);
+            
+            if (CanHandleType(retvalType))
+            {
+                returnValueType = retvalType;
+                direction |= RawMessageFormatterDirection.ReturnValue;
+            }
+
+            for (int i = 0; i < parameterTypes.Length; i++)
+            {
+                if (CanHandleType(parameterTypes[i]))
+                {
+                    inParameterIndex = i;
+                    inParameterType = parameterTypes[i];
+                    direction |= RawMessageFormatterDirection.ParameterIn;
+                }
+            }
         }
 
         #endregion
@@ -364,31 +463,19 @@ namespace Jhu.Graywulf.Web.Services.Serialization
         #endregion
         #region Read and write functions and hooks
 
-        public object ReadFromStream(WebHeaderCollection headers, Stream stream)
+        public object ReadFromStream(Stream stream, string contentType, Type parameterType)
         {
-            var contentType = GetPostedContentType(headers);
-            return ReadFromStream(stream, contentType);
+            return OnDeserializeRequest(stream, contentType, parameterType);
         }
 
-        public object ReadFromStream(Stream stream, string contentType)
+        protected abstract object OnDeserializeRequest(Stream stream, string contentType, Type parameterType);
+
+        public void WriteToStream(Stream stream, string contentType, Type parameterType, object value)
         {
-            return OnDeserializeRequest(stream, contentType);
+            OnSerializeResponse(stream, contentType, parameterType, value);
         }
 
-        protected abstract object OnDeserializeRequest(Stream stream, string contentType);
-
-        public void WriteToStream(WebHeaderCollection headers, Stream stream, object value)
-        {
-            var contentType = GetRequestedContentType(headers);
-            WriteToStream(stream, contentType, value);
-        }
-
-        public void WriteToStream(Stream stream, string contentType, object value)
-        {
-            OnSerializeResponse(stream, contentType, value);
-        }
-
-        protected abstract void OnSerializeResponse(Stream stream, string contentType, object value);
+        protected abstract void OnSerializeResponse(Stream stream, string contentType, Type parameterType, object value);
 
         #endregion
         #region Server
@@ -396,7 +483,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
         public override void DeserializeRequest(Message message, object[] parameters)
         {
             if (!message.IsEmpty &&
-                (Direction & RawMessageFormatterDirection.ParameterIn) != 0)
+                (direction & RawMessageFormatterDirection.ParameterIn) != 0)
             {
                 DeserializeUrlParameters(message, parameters);
 
@@ -406,7 +493,8 @@ namespace Jhu.Graywulf.Web.Services.Serialization
                 using (var ms = new MemoryStream(raw))
                 {
                     var headers = GetRequestHeaders(message);
-                    parameters[InParameterIndex] = ReadFromStream(headers, ms);
+                    var contentType = GetPostedContentType(headers);
+                    parameters[InParameterIndex] = ReadFromStream(ms, contentType, inParameterType);
                 }
             }
             else
@@ -417,15 +505,15 @@ namespace Jhu.Graywulf.Web.Services.Serialization
 
         public override Message SerializeReply(MessageVersion messageVersion, object[] parameters, object result)
         {
-            if ((Direction & RawMessageFormatterDirection.ReturnValue) != 0)
+            if ((direction & RawMessageFormatterDirection.ReturnValue) != 0)
             {
                 var headers = GetRequestHeaders();
                 var contentType = GetRequestedContentType(headers);
 
                 var message = WebOperationContext.Current.CreateStreamResponse(
                     stream =>
-                    {
-                        WriteToStream(headers, stream, result);
+                    {                        
+                        WriteToStream(stream, contentType, returnValueType, result);
                     },
                     contentType);
 
@@ -447,7 +535,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             {
                 var format = GetPreferredFormat();
                 var data = parameters[InParameterIndex];
-                var body = new RawBodyWriter(this, format.MimeType, data);
+                var body = new RawBodyWriter(this, format.MimeType, inParameterType, data);
                 var action = Operation.Messages[0].Action;
                 var message = Message.CreateMessage(messageVersion, action, body);
 
@@ -481,7 +569,8 @@ namespace Jhu.Graywulf.Web.Services.Serialization
                 using (var ms = new MemoryStream(raw))
                 {
                     var headers = GetResponseHeaders(message);
-                    return ReadFromStream(headers, ms);
+                    var contentType = GetPostedContentType(headers);
+                    return ReadFromStream(ms, contentType, returnValueType);
                 }
             }
             else

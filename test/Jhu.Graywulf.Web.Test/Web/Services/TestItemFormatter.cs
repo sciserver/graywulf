@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Web.Services
 {
     public class TestItemFormatter : RawMessageFormatterBase
     {
-        public override Type GetFormattedType()
+        protected override Type GetFormattedType()
         {
             return typeof(TestItem);
         }
@@ -24,12 +24,12 @@ namespace Jhu.Graywulf.Web.Services
             };
         }
 
-        protected override void OnSerializeResponse(Stream stream, string contentType, object value)
+        protected override void OnSerializeResponse(Stream stream, string contentType, Type parameterType, object value)
         {
             throw new NotImplementedException();
         }
 
-        protected override object OnDeserializeRequest(Stream stream, string contentType)
+        protected override object OnDeserializeRequest(Stream stream, string contentType, Type parameterType)
         {
             throw new NotImplementedException();
         }

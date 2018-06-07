@@ -190,7 +190,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             // TODO: it now supports body formatters but what about untyped streams?
 
             var par = new RestMessageParameter(operation, parameter);
-            var type = formatter?.GetFormattedType();
+            var type = formatter?.FormattedType;
             var israw = formatter != null &&
                        (type == parameter.ParameterType ||
                         type.IsAssignableFrom(parameter.ParameterType));

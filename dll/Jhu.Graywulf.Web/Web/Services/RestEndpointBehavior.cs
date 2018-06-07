@@ -31,17 +31,26 @@ namespace Jhu.Graywulf.Web.Services
 
         private IDispatchMessageFormatter CreateDispatchFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint, IDispatchMessageFormatter fallbackFormatter)
         {
+            Serialization.RawMessageFormatterBase formatter = null;
+
             foreach (var b in operationDescription.OperationBehaviors)
             {
                 if (b is Serialization.RawFormatAttribute)
                 {
                     var rf = (Serialization.RawFormatAttribute)b;
-                    var formatter = rf.CreateDispatchFormatter(operationDescription, endpoint, fallbackFormatter);
-                    return formatter;
+                    formatter = rf.CreateFormatter();
+                    break;
                 }
             }
 
-            return fallbackFormatter;
+            if (formatter == null)
+            {
+                // Add customized json formatter
+                formatter = new Serialization.JsonMessageFormatter();
+            }
+            
+            formatter.Initialize(operationDescription, endpoint, fallbackFormatter);
+            return formatter;
         }
 
         protected override IClientMessageFormatter GetRequestClientFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint)
@@ -60,17 +69,26 @@ namespace Jhu.Graywulf.Web.Services
 
         private IClientMessageFormatter CreateClientFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint, IClientMessageFormatter fallbackFormatter)
         {
+            Serialization.RawMessageFormatterBase formatter = null;
+
             foreach (var b in operationDescription.OperationBehaviors)
             {
                 if (b is Serialization.RawFormatAttribute)
                 {
                     var rf = (Serialization.RawFormatAttribute)b;
-                    var formatter = rf.CreateClientFormatter(operationDescription, endpoint, fallbackFormatter);
-                    return formatter;
+                    formatter = rf.CreateFormatter();
+                    break;
                 }
             }
 
-            return fallbackFormatter;
+            if (formatter == null)
+            {
+                // Add customized json formatter
+                formatter = new Serialization.JsonMessageFormatter();
+            }
+
+            formatter.Initialize(operationDescription, endpoint, fallbackFormatter);
+            return formatter;
         }
     }
 }
