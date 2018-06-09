@@ -61,6 +61,15 @@ namespace Jhu.Graywulf.Web.Services.CodeGen {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collection key must be string: {0}..
+        /// </summary>
+        internal static string CollectionKeyMustBeString {
+            get {
+                return ResourceManager.GetString("CollectionKeyMustBeString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate method {0} with URI template {1}..
         /// </summary>
         internal static string DuplicateMethod {

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.ServiceModel.Web;
@@ -206,7 +208,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 par.DataContract = ReflectType(parameter.ParameterType);
             }
 
-            par.Formats = formatter?.GetSupportedFormats() ?? new List<Serialization.RestBodyFormat>(){ Serialization.RestBodyFormats.Json };
+            par.Formats = formatter?.GetSupportedFormats() ?? new List<Serialization.RestBodyFormat>() { Serialization.RestBodyFormats.Json };
 
             return par;
         }
@@ -220,7 +222,37 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 DataContractName = attr?.Name ?? type.Name,
                 Description = ReflectDescription(type),
                 IsClass = false,
+                IsDictionary = false,
                 IsEnum = true,
+            };
+
+            return dataContract;
+        }
+
+        private RestDataContract ReflectDictionary(Type type, Type keyType, Type elementType)
+        {
+            string name;
+            var dataContractAttr = type.GetCustomAttribute<DataContractAttribute>(true);
+            var collectionAttr = type.GetCustomAttribute<CollectionDataContractAttribute>(true);
+
+            if (type.IsGenericType)
+            {
+                name = elementType.Name + "Dictionary";
+            }
+            else
+            {
+                name = type.Name;
+            }
+
+            name = collectionAttr.Name ?? dataContractAttr?.Name ?? name;
+
+            var dataContract = new RestDataContract(api, type)
+            {
+                DataContractName = name,
+                Description = ReflectDescription(type),
+                IsClass = true,
+                IsDictionary = true,
+                IsEnum = false,
             };
 
             return dataContract;
@@ -228,13 +260,14 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         private RestDataContract ReflectDataContract(Type type)
         {
-            var attr = type.GetCustomAttribute<DataContractAttribute>();
+            var dataContractAttr = type.GetCustomAttribute<DataContractAttribute>(true);
 
             var dataContract = new RestDataContract(api, type)
             {
-                DataContractName = attr?.Name ?? type.Name,
+                DataContractName = dataContractAttr?.Name ?? type.Name,
                 Description = ReflectDescription(type),
                 IsClass = true,
+                IsDictionary = false,
                 IsEnum = false,
             };
 
@@ -286,39 +319,124 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             }
         }
 
-        public static bool IsArrayElementType(Type type, out Type elementType)
+        public static bool IsNullableType(Type type, out Type elementType)
         {
-            if (type.IsGenericType &&
-                (type.GetGenericTypeDefinition() == typeof(IEnumerable<>) ||
-                 type.GetGenericTypeDefinition() == typeof(List<>)))
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 elementType = type.GetGenericArguments()[0];
             }
-            else if (type.IsArray)
+            else
+            {
+                elementType = type;
+            }
+
+            return elementType != type;
+        }
+
+        private static IEnumerable<Type> GetGenericInterfaces(Type type)
+        {
+            if (type.IsInterface && type.IsGenericType)
+            {
+                yield return type;
+            }
+
+            foreach (var iface in type.GetInterfaces())
+            {
+                if (iface.IsGenericType)
+                {
+                    yield return iface;
+                }
+            }
+        }
+
+        public static bool IsArrayType(Type type, out Type elementType)
+        {
+            elementType = null;
+
+            if (type == typeof(string))
+            {
+                return false;
+            }
+
+            if (type.IsArray)
             {
                 elementType = type.GetElementType();
             }
             else
             {
-                elementType = null;
+                foreach (var iface in GetGenericInterfaces(type))
+                {
+                    var gt = iface.GetGenericTypeDefinition();
+
+                    if (gt == typeof(IEnumerable<>) ||
+                        gt == typeof(IList<>) ||
+                        gt == typeof(List<>))
+                    {
+                        elementType = iface.GetGenericArguments()[0];
+                        break;
+                    }
+                }
             }
 
             return elementType != null;
         }
 
-        private RestDataContract ReflectType(Type type)
+        public static bool IsDictionaryType(Type type, out Type keyType, out Type valueType)
         {
-            var attr = type.GetCustomAttribute<DataContractAttribute>(true);
-            Type elementType = null;
+            keyType = null;
+            valueType = null;
 
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            foreach (var iface in GetGenericInterfaces(type))
             {
-                type = type.GetGenericArguments()[0];
+                var gt = iface.GetGenericTypeDefinition();
+
+                if (gt == typeof(IDictionary<,>))
+                {
+                    var args = iface.GetGenericArguments();
+                    keyType = args[0];
+                    valueType = args[1];
+                }
             }
 
-            IsArrayElementType(type, out elementType);
-            
+            if (keyType == null && type == typeof(NameValueCollection) || type.IsSubclassOf(typeof(NameValueCollection)))
+            {
+                keyType = typeof(string);
+                valueType = typeof(string);
+            }
+
+            return keyType != null;
+        }
+
+        private RestDataContract ReflectType(Type type)
+        {
+            Type t;
+            Type keyType = null;
+            Type elementType = null;
+            bool isNullable;
+            bool isArray;
+            bool isDictionary;
+
+            if (isNullable = IsNullableType(type, out t))
+            {
+                elementType = t;
+            }
+
+            if (isArray = IsArrayType(type, out t))
+            {
+                elementType = t;
+            }
+
+            if (isDictionary = IsDictionaryType(type, out keyType, out t))
+            {
+                elementType = t;
+            }
+
             if (type == typeof(Stream) || type.IsSubclassOf(typeof(Stream)))
+            {
+                // TODO: figure this out
+                return null;
+            }
+            else if (type == typeof(System.ServiceModel.Channels.Message) || type.IsSubclassOf(typeof(System.ServiceModel.Channels.Message)))
             {
                 // TODO: figure this out
                 return null;
@@ -327,11 +445,18 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             {
                 return null;
             }
-            else if (elementType != null && (elementType.IsPrimitive || Constants.PrimitiveTypes.Contains(elementType)))
+            else if (keyType != null && elementType != null)
             {
-                return null;
+                if (keyType != typeof(string))
+                {
+                    throw Error.CollectionKeyMustBeString(type);
+                }
+
+                // This is a collection, reflect element type as
+                // part of the service
             }
-            else if (elementType != null)
+            
+            if (elementType != null && !elementType.IsPrimitive && !Constants.PrimitiveTypes.Contains(elementType))
             {
                 // This is a valid array, IEnumerable or List
                 // Reflect element type as part of the service
@@ -339,7 +464,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 ReflectType(elementType);
             }
 
-            if (elementType == null)
+            if (!isNullable && !isArray)
             {
                 if (!api.DataContracts.ContainsKey(type))
                 {
@@ -348,6 +473,10 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                     if (type.IsEnum)
                     {
                         dc = ReflectEnum(type);
+                    }
+                    else if (isDictionary)
+                    {
+                        dc = ReflectDictionary(type, keyType, elementType);
                     }
                     else
                     {

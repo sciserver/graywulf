@@ -92,6 +92,15 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             }
         }
 
+        public bool IsMessage
+        {
+            get
+            {
+                return (parameter.ParameterType == typeof(System.ServiceModel.Channels.Message) ||
+                    parameter.ParameterType.IsSubclassOf(typeof(System.ServiceModel.Channels.Message)));
+            }
+        }
+
         public RestMessageParameter(RestOperationContract operation, ParameterInfo parameter)
         {
             InitializeMembers();

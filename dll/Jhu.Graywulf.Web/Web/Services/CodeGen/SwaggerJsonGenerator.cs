@@ -17,11 +17,12 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         class VariableInfo
         {
             public bool Array { get; set; }
-            public string Type { get; set; }
-            public string[] Enum { get; set; }
-            public string Format { get; set; }
-            public string In { get; set; }
+            public bool Dictionary { get; set; }
             public string Name { get; set; }
+            public string Type { get; set; }
+            public string Format { get; set; }
+            public string[] Enum { get; set; }
+            public string In { get; set; }
             public string Ref { get; set; }
         }
 
@@ -133,7 +134,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             var responses = (JObject)method["responses"];
 
             var info = GetParameterInfo(parameter);
-            var schema = GetTypeRefSchema(info);
+            var schema = GetTypeRefSchema(info, false);
 
             if (parameter.IsBodyParameter && !parameter.IsReturnParameter)
             {
@@ -233,7 +234,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             var dcinfo = GetTypeInfo(member.DataContract.Type);
             var properties = (JObject)definitions[dcinfo.Name]["properties"];
             var info = GetTypeInfo(member.Property.PropertyType);
-            var schema = GetTypeRefSchema(info);
+            var schema = GetTypeRefSchema(info, false);
 
             properties.Add(new JProperty(member.DataMemberName, schema));
         }
@@ -265,50 +266,67 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         private VariableInfo GetTypeInfo(Type type)
         {
+            Type elementType;
             bool array = false;
+            bool dictionary = false;
             bool nullable = false;
             VariableInfo info = null;
 
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (RestServiceReflector.IsNullableType(type, out elementType))
             {
                 nullable = true;
-                type = type.GetGenericArguments()[0];
+                type = elementType;
             }
 
-            if (RestServiceReflector.IsArrayElementType(type, out var elementType))
+            if (RestServiceReflector.IsArrayType(type, out elementType))
             {
                 array = true;
                 type = elementType;
             }
-            
+
+            if (RestServiceReflector.IsDictionaryType(type, out var keyType, out elementType))
+            {
+                dictionary = true;
+            }
+
             if (base.Api.DataContracts.ContainsKey(type))
             {
+                // Reflected complex types
+
                 if (Api.DataContracts[type].IsEnum)
                 {
-                    info = GetTypeInfo_Enum(type, array);
+                    info = GetTypeInfo_Enum(type, array, dictionary);
+                }
+                else if (Api.DataContracts[type].IsDictionary)
+                {
+                    info = GetTypeInfo_Dictionary(type, array, dictionary);
                 }
                 else
                 {
-                    info = GetTypeInfo_DataContract(type, array);
+                    info = GetTypeInfo_DataContract(type, array, dictionary);
                 }
             }
             else
             {
-                info = GetTypeInfo_Swagger(type, nullable, array);
+                // Swagger primitive types
+
+                info = GetTypeInfo_Swagger(type, nullable, array, dictionary);
             }
 
             return info;
         }
 
-        private VariableInfo GetTypeInfo_Enum(Type type, bool array)
+        private VariableInfo GetTypeInfo_Enum(Type type, bool array, bool dictionary)
         {
-            var info = new VariableInfo();
             var dc = base.Api.DataContracts[type];
 
-            info.Array = array;
-            info.Name = dc.DataContractName;
-            info.Enum = Enum.GetNames(type);
-            info.Ref = "#/definitions/" + dc.DataContractName;
+            var info = new VariableInfo()
+            {
+                Array = array,
+                Dictionary = dictionary,
+                Name = dc.DataContractName,
+                Enum = Enum.GetNames(type),
+            };
 
             for (int i = 0; i < info.Enum.Length; i++)
             {
@@ -320,29 +338,56 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             return info;
         }
 
-        private VariableInfo GetTypeInfo_DataContract(Type type, bool array)
+        private VariableInfo GetTypeInfo_Dictionary(Type type, bool array, bool dictionary)
         {
-            var info = new VariableInfo();
+            Type keyType;
+            Type valueType;
+
+            RestServiceReflector.IsDictionaryType(type, out keyType, out valueType);
+
+            var dc = base.Api.DataContracts[type];
+            var einfo = GetTypeInfo(valueType);
+
+            var info = new VariableInfo()
+            {
+                Array = array,
+                Dictionary = dictionary,
+                Name = dc.DataContractName,
+                Ref = einfo.Name,
+                Type = einfo.Type,
+                Format = einfo.Format
+            };
+
+            return info;
+        }
+
+        private VariableInfo GetTypeInfo_DataContract(Type type, bool array, bool dictionary)
+        {
             var dc = base.Api.DataContracts[type];
 
-            info.Array = array;
-            info.Name = dc.DataContractName;
-            info.Ref = "#/definitions/" + dc.DataContractName;
+            var info = new VariableInfo()
+            {
+                Array = array,
+                Dictionary = dictionary,
+                Name = dc.DataContractName,
+            };
 
             // TODO: test with arrays of complex objects
 
             return info;
         }
 
-        private VariableInfo GetTypeInfo_Swagger(Type type, bool nullable, bool array)
+        private VariableInfo GetTypeInfo_Swagger(Type type, bool nullable, bool array, bool dictionary)
         {
-            var info = new VariableInfo();
-
             if (Constants.SwaggerTypes.ContainsKey(type))
             {
-                info.Array = array;
-                info.Type = Constants.SwaggerTypes[type];
-                info.Format = Constants.SwaggerFormats[type];
+                var info = new VariableInfo()
+                {
+                    Array = array,
+                    Dictionary = dictionary,
+                    Type = Constants.SwaggerTypes[type],
+                    Format = Constants.SwaggerFormats[type]
+                };
 
                 return info;
             }
@@ -354,7 +399,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         private VariableInfo GetParameterInfo(RestMessageParameter parameter)
         {
-            if (parameter.IsRawFormat || parameter.IsStream)
+            if (parameter.IsRawFormat || parameter.IsStream || parameter.IsMessage)
             {
                 var res = new VariableInfo()
                 {
@@ -390,7 +435,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             }
         }
 
-        private JObject GetTypeRefSchema(VariableInfo info)
+        private JObject GetTypeRefSchema(VariableInfo info, bool reference)
         {
             JObject schema = new JObject();
             JObject type;
@@ -404,24 +449,34 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
                 type = items;
             }
+            else if (info.Dictionary)
+            {
+                type = schema;
+            }
             else
             {
                 type = schema;
             }
 
-            if (info.Ref != null)
+            if (!reference && info.Name != null)
             {
-                type.Add(new JProperty("$ref", info.Ref));
+                type.Add(new JProperty("$ref", "#/definitions/" + info.Name));
             }
-
-            if (info.Type != null)
+            else if (reference && info.Ref != null)
             {
-                type.Add(new JProperty("type", info.Type));
+                type.Add(new JProperty("$ref", "#/definitions/" + info.Ref));
             }
-
-            if (info.Format != null)
+            else
             {
-                type.Add(new JProperty("format", info.Format));
+                if (info.Type != null)
+                {
+                    type.Add(new JProperty("type", info.Type));
+                }
+
+                if (info.Format != null)
+                {
+                    type.Add(new JProperty("format", info.Format));
+                }
             }
 
             return schema;
@@ -433,7 +488,15 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
             if (info.Array)
             {
-                obj = GetTypeRefSchema(info);
+                obj = GetTypeRefSchema(info, true);
+            }
+            else if (info.Dictionary)
+            {
+                var additionalProperties = GetTypeRefSchema(info, true);
+
+                obj = new JObject(
+                        new JProperty("type", "object"),
+                        new JProperty("additionalProperties", additionalProperties));
             }
             else if (info.Enum != null)
             {

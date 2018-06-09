@@ -28,5 +28,10 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         {
             return new RestProxyGeneratorException(String.Format(ExceptionMessages.DuplicateMethod, method.HttpMethod, method.UriTemplate.Value));
         }
+
+        public static RestProxyGeneratorException CollectionKeyMustBeString(Type type)
+        {
+            return new RestProxyGeneratorException(String.Format(ExceptionMessages.CollectionKeyMustBeString, type.FullName));
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         private Type type;
 
         private bool isClass;
+        private bool isDictionary;
         private bool isEnum;
         private string dataContractName;
 
@@ -34,6 +35,12 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         {
             get { return isClass; }
             internal set { isClass = value; }
+        }
+
+        public bool IsDictionary
+        {
+            get { return isDictionary; }
+            internal set { isDictionary = value; }
         }
 
         public bool IsEnum

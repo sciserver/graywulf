@@ -11,6 +11,40 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
     public class RestServiceReflectorTest
     {
         [TestMethod]
+        public void IsNullableTypeTest()
+        {
+            Type elementType;
+
+            Assert.IsFalse(RestServiceReflector.IsNullableType(typeof(int), out elementType));
+            Assert.IsTrue(RestServiceReflector.IsNullableType(typeof(int?), out elementType));
+        }
+
+        [TestMethod]
+        public void IsArrayTypeTest()
+        {
+            Type elementType;
+
+            Assert.IsFalse(RestServiceReflector.IsArrayType(typeof(int), out elementType));
+            Assert.IsFalse(RestServiceReflector.IsArrayType(typeof(int?), out elementType));
+            Assert.IsTrue(RestServiceReflector.IsArrayType(typeof(int[]), out elementType));
+            Assert.IsFalse(RestServiceReflector.IsArrayType(typeof(string), out elementType));
+            Assert.IsTrue(RestServiceReflector.IsArrayType(typeof(IEnumerable<int>), out elementType));
+            Assert.IsTrue(RestServiceReflector.IsArrayType(typeof(IList<int>), out elementType));
+            Assert.IsTrue(RestServiceReflector.IsArrayType(typeof(List<int>), out elementType));
+        }
+
+        [TestMethod]
+        public void IsCollectionTypeTest()
+        {
+            Type keyType;
+            Type elementType;
+
+            Assert.IsFalse(RestServiceReflector.IsDictionaryType(typeof(int), out keyType, out elementType));
+            Assert.IsFalse(RestServiceReflector.IsDictionaryType(typeof(int[]), out keyType, out elementType));
+            Assert.IsTrue(RestServiceReflector.IsDictionaryType(typeof(Dictionary<string, int>), out keyType, out elementType));
+        }
+
+        [TestMethod]
         public void ReflectServiceTest()
         {
             var r = new RestServiceReflector();
@@ -36,16 +70,5 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             var cg = new SwaggerJsonGenerator(r.Api);
             var code = cg.Execute();
         }
-
-        /*
-        [TestMethod]
-        public void GenerateTest()
-        {
-            var r = new RestServiceReflector();
-            r.ReflectServiceContract(typeof(ITestService), "http://localhost/TestService.svc");
-            var cg = new SwaggerYamlGenerator(r.Api);
-            var code = cg.Execute();
-        }
-        */
     }
 }

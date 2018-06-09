@@ -27,5 +27,9 @@ namespace Jhu.Graywulf.Web.Services
         [DataMember(Name = "moreValues")]
         [Description("More values of the item.")]
         public TestEnum[] MoreValues { get; set; }
+
+        [DataMember(Name = "moreItems")]
+        [Description("More child items of the item.")]
+        public TestItemCollection MoreItems { get; set; }
     }
 }
