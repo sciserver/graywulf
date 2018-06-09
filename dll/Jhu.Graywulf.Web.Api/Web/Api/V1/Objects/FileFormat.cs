@@ -11,7 +11,7 @@ using Jhu.Graywulf.Format;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
-    [DataContract(Name = "fileFormat")]
+    [DataContract]
     [Description("Represents a file format.")]
     public class FileFormat
     {

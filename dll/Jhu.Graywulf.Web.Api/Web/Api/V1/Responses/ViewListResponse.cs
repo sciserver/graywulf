@@ -9,7 +9,7 @@ using System.ComponentModel;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
-    [DataContract(Name="viewList")]
+    [DataContract]
     [Description("Represents a list of views.")]
     public class ViewListResponse
     {

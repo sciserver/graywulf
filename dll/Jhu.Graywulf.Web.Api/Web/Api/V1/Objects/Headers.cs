@@ -9,7 +9,7 @@ using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
-    [CollectionDataContract(Name="headers")]
+    [CollectionDataContract]
     [Description("Represents a collection of headers used for user authentication.")]
     public class Headers : NameValueCollection
     {

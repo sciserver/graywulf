@@ -8,7 +8,7 @@ using System.ComponentModel;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
-    [DataContract(Name = "column")]
+    [DataContract]
     [DataContractFormat]
     [Description("Represents a data table column.")]
     public class Column

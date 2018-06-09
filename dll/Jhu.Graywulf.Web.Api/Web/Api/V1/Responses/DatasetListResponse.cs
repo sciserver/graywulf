@@ -8,7 +8,7 @@ using System.ComponentModel;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
-    [DataContract(Name = "datasetList")]
+    [DataContract]
     [Description("Represents a list of datasets.")]
     public class DatasetListResponse
     {

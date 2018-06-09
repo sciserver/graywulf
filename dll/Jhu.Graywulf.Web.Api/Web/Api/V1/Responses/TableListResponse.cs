@@ -9,7 +9,7 @@ using System.ComponentModel;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
-    [DataContract(Name="tableList")]
+    [DataContract]
     [Description("Represents a list of data tables.")]
     public class TableListResponse
     {

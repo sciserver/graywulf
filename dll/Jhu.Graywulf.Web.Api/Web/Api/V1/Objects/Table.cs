@@ -8,7 +8,7 @@ using System.ComponentModel;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
-    [DataContract(Name="table")]
+    [DataContract]
     [Description("Represents a database table.")]
     public class Table : DatabaseObject
     {

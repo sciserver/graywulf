@@ -8,7 +8,7 @@ using System.ComponentModel;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
-    [DataContract(Name="queue")]
+    [DataContract]
     [Description("Represents a job execution queue.")]
     public class Queue
     {

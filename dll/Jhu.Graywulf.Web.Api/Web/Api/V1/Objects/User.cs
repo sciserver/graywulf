@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
-    [DataContract(Name = "user")]
+    [DataContract]
     [Description("Represents a user.")]
 
     public class User

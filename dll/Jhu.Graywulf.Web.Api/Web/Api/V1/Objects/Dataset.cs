@@ -7,7 +7,7 @@ using System.ComponentModel;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
-    [DataContract(Name = "dataset")]
+    [DataContract]
     [Description("Represents a dataset.")]
     public class Dataset
     {

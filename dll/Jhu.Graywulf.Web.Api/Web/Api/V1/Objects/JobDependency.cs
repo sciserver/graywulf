@@ -9,7 +9,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
-    [DataContract(Name = "jobDependency")]
+    [DataContract]
     [Description("Represents a dependency between to jobs")]
     public class JobDependency : ICloneable
     {

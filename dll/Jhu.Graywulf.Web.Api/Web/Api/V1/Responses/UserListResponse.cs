@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace Jhu.Graywulf.Web.Api.V1.Responses
 {
-    [DataContract(Name = "userList")]
+    [DataContract]
     [Description("Represents a list of users.")]
     public class UserListResponse
     {

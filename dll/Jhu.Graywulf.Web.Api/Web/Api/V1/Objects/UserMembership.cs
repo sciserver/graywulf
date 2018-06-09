@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
-    [DataContract(Name = "role")]
+    [DataContract]
     [Description("Role of a user within a group.")]
     public class UserMembership
     {

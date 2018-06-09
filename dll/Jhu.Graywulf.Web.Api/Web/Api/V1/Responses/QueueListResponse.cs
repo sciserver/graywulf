@@ -9,7 +9,7 @@ using System.ComponentModel;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
-    [DataContract(Name="queues")]
+    [DataContract]
     [Description("Represents a list of job queues.")]
     public class QueueListResponse
     {
