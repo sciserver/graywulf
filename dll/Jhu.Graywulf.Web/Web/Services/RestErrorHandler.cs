@@ -95,28 +95,38 @@ namespace Jhu.Graywulf.Web.Services
             return WebOperationContext.Current.CreateXmlResponse<RestError>(ex);
         }
 
-        private void SetHttpResponseStatus(Exception ex)
+        internal static void SetHttpResponseStatus(Exception ex)
         {
             var response = WebOperationContext.Current.OutgoingResponse;
 
             HttpStatusCode statusCode;
-            
-            if (ex is System.Security.SecurityException ||
-                ex is Jhu.Graywulf.AccessControl.AccessDeniedException)
-            {
-                statusCode = HttpStatusCode.Forbidden;
-            }
-            else if (ex is KeyNotFoundException ||
-                ex is ResourceNotFoundException ||
-                ex is Jhu.Graywulf.Entities.NoResultsException)
-            {
-                statusCode = HttpStatusCode.NotFound;
-            }
-            else
-            {
-                statusCode = HttpStatusCode.InternalServerError;
-            }
 
+            switch (ex)
+            {
+                case System.Security.SecurityException secex:
+                case Jhu.Graywulf.AccessControl.AccessDeniedException adex:
+                    statusCode = HttpStatusCode.Forbidden;
+                    break;
+                case System.ServiceModel.FaultException fex:
+                    if (StringComparer.InvariantCultureIgnoreCase.Compare(fex.Code.SubCode.Name, "FailedAuthentication") == 0)
+                    {
+                        statusCode = HttpStatusCode.Forbidden;
+                    }
+                    else
+                    {
+                        statusCode = HttpStatusCode.InternalServerError;
+                    }
+                    break;
+                case KeyNotFoundException knfex:
+                case ResourceNotFoundException rnfex:
+                case Jhu.Graywulf.Entities.NoResultsException nrex:
+                    statusCode = HttpStatusCode.NotFound;
+                    break;
+                default:
+                    statusCode = HttpStatusCode.InternalServerError;
+                    break;
+            }
+            
             response.SuppressEntityBody = false;
             response.StatusCode = statusCode;
             response.StatusDescription = ex.Message;

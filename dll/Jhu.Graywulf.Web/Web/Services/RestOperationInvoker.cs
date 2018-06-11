@@ -62,6 +62,14 @@ namespace Jhu.Graywulf.Web.Services
                     }
 #endif
 
+                    // WCF automatically wraps SecurityException into a fault and
+                    // doesn't call IErrorHandler.ProvideFault, so handle this situation
+                    // here
+                    if (ex is FaultException fex)
+                    {
+                        RestErrorHandler.SetHttpResponseStatus(fex);
+                    }
+
                     var e = LogError(ex);
 
                     // TODO: this won't catch exceptions from IEnumerator that occur
