@@ -493,8 +493,18 @@ namespace Jhu.Graywulf.Web.Services.Serialization
         {
             if ((direction & RawMessageFormatterDirection.ReturnValue) != 0 && returnValueType != typeof(void))
             {
-                var headers = GetRequestHeaders();
-                var contentType = GetRequestedContentType(headers);
+                string contentType;
+
+                if (this.mimeType != null)
+                {
+                    // Mime type is explicitly set (by DynamicMessageFormatter)
+                    contentType = mimeType;
+                }
+                else
+                {
+                    var headers = GetRequestHeaders();
+                    contentType = GetRequestedContentType(headers, GetSupportedFormats().Select(f => f.MimeType));
+                }
 
                 var message = WebOperationContext.Current.CreateStreamResponse(
                     stream =>

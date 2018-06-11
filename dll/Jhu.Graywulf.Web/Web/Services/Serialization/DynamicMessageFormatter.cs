@@ -107,7 +107,7 @@ namespace Jhu.Graywulf.Web.Services.Serialization
         {
             IDispatchMessageFormatter formatter = null;
             var headers = GetRequestHeaders();
-            var accept = GetRequestedContentType(headers);
+            var accept = GetRequestedContentType(headers, formatters.Keys);
 
             if (formatters.ContainsKey(accept))
             {

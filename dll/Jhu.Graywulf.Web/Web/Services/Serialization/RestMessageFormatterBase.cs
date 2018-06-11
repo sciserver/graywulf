@@ -142,22 +142,21 @@ namespace Jhu.Graywulf.Web.Services.Serialization
             return contentType;
         }
 
-        internal string GetRequestedContentType(WebHeaderCollection headers)
+        internal string GetRequestedContentType(WebHeaderCollection headers, IEnumerable<string> supportedFormats)
         {
             var acceptHeader = headers[HttpRequestHeader.Accept] ??
                                headers[HttpRequestHeader.ContentType];
 
             // Parse accept header
             var accept = WebOperationContext.Current.IncomingRequest.GetAcceptHeaderElements();
-            var formats = GetSupportedFormats();
 
             for (int i = 0; i < accept.Count; i++)
             {
-                foreach (var format in formats)
+                foreach (var format in supportedFormats)
                 {
-                    if (Jhu.Graywulf.Util.MediaTypeComparer.Compare(accept[i].MediaType, format.MimeType))
+                    if (Jhu.Graywulf.Util.MediaTypeComparer.Compare(accept[i].MediaType, format))
                     {
-                        return format.MimeType;
+                        return format;
                     }
                 }
             }
