@@ -208,7 +208,18 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 par.DataContract = ReflectType(parameter.ParameterType);
             }
 
-            par.Formats = formatter?.GetSupportedFormats() ?? new List<Serialization.RestBodyFormat>() { Serialization.RestBodyFormats.Json };
+            if (israw && (par.IsBodyParameter || par.IsReturnParameter))
+            {
+                par.Formats = formatter?.GetSupportedFormats() ?? new List<Serialization.RestBodyFormat>() { Serialization.RestBodyFormats.Json };
+            }
+            else if (par.IsBodyParameter || par.IsReturnParameter)
+            {
+                par.Formats = new List<Serialization.RestBodyFormat>()
+                {
+                    Serialization.RestBodyFormats.Json,
+                    Serialization.RestBodyFormats.Xml
+                };
+            }
 
             return par;
         }
@@ -455,7 +466,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 // This is a collection, reflect element type as
                 // part of the service
             }
-            
+
             if (elementType != null && !elementType.IsPrimitive && !Constants.PrimitiveTypes.Contains(elementType))
             {
                 // This is a valid array, IEnumerable or List

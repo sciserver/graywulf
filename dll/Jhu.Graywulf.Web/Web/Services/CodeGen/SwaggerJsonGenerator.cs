@@ -67,9 +67,13 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                         new JProperty("title", api.Description))),
                 new JProperty("host", api.HostName),
                 new JProperty("basePath", api.BasePath),
-                new JProperty("schemes", new JArray("http", "https")),
-                new JProperty("consumes", new JArray("application/json")),
-                new JProperty("produces", new JArray("application/json")));
+                new JProperty("schemes", new JArray("http", "https"))
+
+                // Do not specify service-wide defaults because this prevents
+                // Content-Type and Accept header overrides in python client
+                /*new JProperty("consumes", new JArray("application/json")),
+                new JProperty("produces", new JArray("application/json"))*/
+            );
         }
 
         protected override void WriteServiceContractsFooter(TextWriter writer, RestApi api)
@@ -139,10 +143,29 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             if (parameter.IsBodyParameter && !parameter.IsReturnParameter)
             {
                 // Input body parameter
-                foreach (var format in parameter.Formats)
+                if (!parameter.IsRawFormat && !parameter.IsStream)
                 {
-                    consumes.Add(format.MimeType);
+                    foreach (var format in parameter.Formats)
+                    {
+                        consumes.Add(format.MimeType);
+                    }
                 }
+                else
+                {
+                    var hpar =
+                        new JObject(
+                            new JProperty("name", "Content-Type"),
+                            new JProperty("in", "header"),
+                            new JProperty("description", "File format mime type."),
+                            new JProperty("default", parameter.Formats[0].MimeType),
+                            new JProperty("required", true),
+                            new JProperty("schema", new JObject(
+                                new JProperty("type", "string"),
+                                new JProperty("format", "string"))));
+
+                    parameters.Add(hpar);
+                }
+
 
                 var par =
                     new JObject(
@@ -153,47 +176,32 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                         new JProperty("schema", schema));
 
                 parameters.Add(par);
-
-                /*
-                 * This would add a header parameter but it's currently overwrintten
-                 * by the python client. Have to check with newer swagger versions later
-                if (parameter.IsRawFormat)
-                {
-                    par =
-                        new JObject(
-                            new JProperty("name", "Content-Type"),
-                            new JProperty("in", "header"),
-                            new JProperty("description", "File format mime type."),
-                            new JProperty("default", parameter.Formats[0].MimeType),
-                            new JProperty("schema", new JObject(
-                                new JProperty("type", "string"),
-                                new JProperty("format", "string"))));
-
-                    parameters.Add(par);
-                }
-                */
             }
             else if (parameter.IsReturnParameter)
             {
                 // Return value
-                foreach (var format in parameter.Formats)
+                // Do not set format if returning raw to allow client specify format
+                if (!parameter.IsRawFormat && !parameter.IsStream)
                 {
-                    produces.Add(format.MimeType);
+                    foreach (var format in parameter.Formats)
+                    {
+                        produces.Add(format.MimeType);
+                    }
                 }
-
-                if (parameter.IsBodyParameter && parameter.IsRawFormat)
+                else
                 {
-                    var par =
+                    var hpar =
                         new JObject(
                             new JProperty("name", "Accept"),
                             new JProperty("in", "header"),
                             new JProperty("description", "File format mime type."),
                             new JProperty("default", parameter.Formats[0].MimeType),
+                            new JProperty("required", true),
                             new JProperty("schema", new JObject(
                                 new JProperty("type", "string"),
                                 new JProperty("format", "string"))));
 
-                    parameters.Add(par);
+                    parameters.Add(hpar);
                 }
 
                 var response =
