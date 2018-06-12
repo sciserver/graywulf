@@ -184,7 +184,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             {
                 // Return value
                 // Do not set format if returning raw to allow client specify format
-                if (!parameter.IsRawFormat && !parameter.IsStream)
+                if (!parameter.IsRawFormat && !parameter.IsStream && !parameter.IsMessage)
                 {
                     var produces = new JArray();
 
