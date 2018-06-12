@@ -28,14 +28,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.Api
             foreach (var service in application.Services)
             {
                 var snattr = (ServiceNameAttribute)service.GetCustomAttributes(typeof(ServiceNameAttribute), false)[0];
-                var url = String.Format("{0}/{1}.svc", snattr.Version, snattr.Name);
+                var url = String.Format("/{0}/{1}.svc", snattr.Version, snattr.Name);
 
                 reflector.ReflectServiceContract(service, url);
             }
 
             // Figure out API base URL
 
-            reflector.Api.BasePath = context.Request.ApplicationPath + "/Api/";
+            reflector.Api.BasePath = context.Request.ApplicationPath + "/Api";
 
             // Figure out which code generator to use
             // TODO: this could be made more generic with a factory class
