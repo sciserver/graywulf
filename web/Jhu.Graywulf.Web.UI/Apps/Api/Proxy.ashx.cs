@@ -36,6 +36,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Api
             // Figure out API base URL
 
             reflector.Api.BasePath = context.Request.ApplicationPath + "/Api";
+            reflector.Api.Version = "1.0";      // TODO
+            reflector.Api.Title = application.Application[Jhu.Graywulf.Web.UI.Constants.ApplicationShortTitle] + " REST API";
 
             // Figure out which code generator to use
             // TODO: this could be made more generic with a factory class

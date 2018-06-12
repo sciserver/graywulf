@@ -14,6 +14,11 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 {
     public class SwaggerJsonGenerator : RestProxyGeneratorBase
     {
+        // NOTE: This is not fully compatible with OpenAPI 2.0, namely:
+        // - A 'type: file' is added to response to indicate that the function is a file download
+        // - no produces or consumes are added to operations because this would break Accept and Content-Type overrides
+        // - enums are added with $ref to parameters which is not supported by codegen
+
         class VariableInfo
         {
             public bool Array { get; set; }
@@ -64,15 +69,15 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 new JProperty("info",
                     new JObject(
                         new JProperty("version", api.Version),
-                        new JProperty("title", api.Description))),
+                        new JProperty("title", api.Title))),
                 new JProperty("host", api.HostName),
                 new JProperty("basePath", api.BasePath),
                 new JProperty("schemes", new JArray("http", "https"))
 
-                // Do not specify service-wide defaults because this prevents
-                // Content-Type and Accept header overrides in python client
-                /*new JProperty("consumes", new JArray("application/json")),
-                new JProperty("produces", new JArray("application/json"))*/
+            // Do not specify service-wide defaults because this prevents
+            // Content-Type and Accept header overrides in python client
+            /*new JProperty("consumes", new JArray("application/json")),
+            new JProperty("produces", new JArray("application/json"))*/
             );
         }
 
@@ -121,8 +126,6 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 new JProperty("summary", operation.Description),
                 new JProperty("operationId", operationId),
                 new JProperty("tags", new JArray(operation.Service.ServiceName)),
-                new JProperty("consumes", new JArray()),
-                new JProperty("produces", new JArray()),
                 new JProperty("parameters", new JArray()),
                 new JProperty("responses", responses));
 
@@ -131,49 +134,49 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
 
         protected override void WriteMessageParameter(TextWriter writer, RestMessageParameter parameter)
         {
-            var method = paths[GetOperationPath(parameter.Operation)][GetOperationMethod(parameter.Operation)];
-            var consumes = (JArray)method["consumes"];
-            var produces = (JArray)method["produces"];
+            var method = (JObject)paths[GetOperationPath(parameter.Operation)][GetOperationMethod(parameter.Operation)];
             var parameters = (JArray)method["parameters"];
             var responses = (JObject)method["responses"];
 
             var info = GetParameterInfo(parameter);
-            var schema = GetTypeRefSchema(info, false);
 
             if (parameter.IsBodyParameter && !parameter.IsReturnParameter)
             {
                 // Input body parameter
                 if (!parameter.IsRawFormat && !parameter.IsStream)
                 {
+                    var consumes = new JArray();
+
                     foreach (var format in parameter.Formats)
                     {
                         consumes.Add(format.MimeType);
                     }
+
+                    method.Add(new JProperty("consumes", consumes));
                 }
                 else
                 {
                     var hpar =
                         new JObject(
-                            new JProperty("name", "Content-Type"),
                             new JProperty("in", "header"),
+                            new JProperty("name", "Content-Type"),
                             new JProperty("description", "File format mime type."),
                             new JProperty("default", parameter.Formats[0].MimeType),
                             new JProperty("required", true),
-                            new JProperty("schema", new JObject(
-                                new JProperty("type", "string"),
-                                new JProperty("format", "string"))));
+                            new JProperty("type", "string"),
+                            new JProperty("format", "string"));
 
                     parameters.Add(hpar);
                 }
 
-
                 var par =
                     new JObject(
-                        new JProperty("name", parameter.ParameterName),
                         new JProperty("in", info.In),
-                        new JProperty("description", parameter.Description),
-                        new JProperty("required", true),
-                        new JProperty("schema", schema));
+                        new JProperty("name", parameter.ParameterName),
+                        new JProperty("description", parameter.Description ?? ""),
+                        new JProperty("required", true));
+
+                AddTypeRefSchema(par, info, true, false);
 
                 parameters.Add(par);
             }
@@ -183,35 +186,36 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 // Do not set format if returning raw to allow client specify format
                 if (!parameter.IsRawFormat && !parameter.IsStream)
                 {
+                    var produces = new JArray();
+
                     foreach (var format in parameter.Formats)
                     {
                         produces.Add(format.MimeType);
                     }
+
+                    method.Add(new JProperty("produces", produces));
                 }
                 else
                 {
                     var hpar =
                         new JObject(
-                            new JProperty("name", "Accept"),
                             new JProperty("in", "header"),
+                            new JProperty("name", "Accept"),
                             new JProperty("description", "File format mime type."),
-                            new JProperty("default", parameter.Formats[0].MimeType),
                             new JProperty("required", true),
-                            new JProperty("schema", new JObject(
-                                new JProperty("type", "string"),
-                                new JProperty("format", "string"))));
+                            new JProperty("type", "string"),
+                            new JProperty("format", "string"),
+                            new JProperty("default", parameter.Formats[0].MimeType));
 
                     parameters.Add(hpar);
                 }
 
-                var response =
-                        new JProperty("200",
-                            new JObject(
-                                new JProperty("description", ""),
-                                new JProperty("schema", schema)));
+                var response = new JObject(new JProperty("description", ""));
+                responses.Add(new JProperty("200", response));
+                AddTypeRefSchema(response, info, true, false);
 
                 // TODO: consider adding per mime type schema entries
-                responses.Add(response);
+
             }
             else
             {
@@ -220,10 +224,10 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                     new JObject(
                         new JProperty("name", parameter.ParameterName),
                         new JProperty("in", info.In),
-                        new JProperty("description", parameter.Description),
-                        new JProperty("required", parameter.IsPathParameter),
-                        new JProperty("schema", schema));
+                        new JProperty("description", parameter.Description ?? ""),
+                        new JProperty("required", parameter.IsPathParameter));
 
+                AddTypeRefSchema(par, info, true, false);
                 parameters.Add(par);
             }
         }
@@ -231,8 +235,10 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         protected override void WriteDataContractHeader(TextWriter writer, RestDataContract contract)
         {
             var info = GetTypeInfo(contract.Type);
-            var obj = GetTypeDefSchema(info);
+            var obj = new JObject();
             var definition = new JProperty(info.Name, obj);
+
+            AddTypeDefSchema(obj, info);
 
             definitions.Add(definition);
         }
@@ -242,9 +248,10 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             var dcinfo = GetTypeInfo(member.DataContract.Type);
             var properties = (JObject)definitions[dcinfo.Name]["properties"];
             var info = GetTypeInfo(member.Property.PropertyType);
-            var schema = GetTypeRefSchema(info, false);
+            var type = new JObject();
 
-            properties.Add(new JProperty(member.DataMemberName, schema));
+            properties.Add(new JProperty(member.DataMemberName, type));
+            AddTypeRefSchema(type, info, false, false);
         }
 
         protected override void WriteDataContractsFooter(TextWriter writer, RestApi api)
@@ -412,7 +419,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 var res = new VariableInfo()
                 {
                     In = "body",
-                    Type = "file"
+                    //  Type = "file"       // TODO: will be supported in OpenAPI 3.0
                 };
 
                 return res;
@@ -421,6 +428,17 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             {
                 var t = parameter.Parameter.ParameterType;
                 var res = GetTypeInfo(t);
+
+                // TODO This is now a workaround to suppoer OpenAPI 2.0 which doesn't allow
+                // referencing enums yet
+                if (res.Enum != null)
+                {
+                    res.Enum = null;
+                    res.Type = "string";
+                    res.Format = "string";
+                    res.Name = null;
+                    res.Ref = null;
+                }
 
                 if (parameter.IsQueryParameter)
                 {
@@ -444,7 +462,7 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         }
 
         /// <summary>
-        /// Creates a schema object for a given variable type.
+        /// Adds type info or schema object for a given variable type.
         /// </summary>
         /// <param name="info"></param>
         /// <param name="useReference"></param>
@@ -454,41 +472,57 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         /// $ref field. In case of arrays of complex objects, however, often
         /// the element type needs to be referenced
         /// </remarks>
-        private JObject GetTypeRefSchema(VariableInfo info, bool useReference)
+        private void AddTypeRefSchema(JObject variable, VariableInfo info, bool wrapInSchema, bool useReference)
         {
-            // TODO: by passing true to useReference, this function now can handle
-            // arrays of complex objects. In general, this could be taken further and
-            // create arrays of array, lists of arrays etc., so the two-level hierarchy
-            // would become multi-level. This is currently not supported.
+            // TODO: wrapInSchema won't be necessary with OpenAPI 3.0
 
-            JObject schema = new JObject();
             JObject type;
+            JProperty reference = null;
 
             if (info.Array)
             {
-                var items = new JObject();
+                if (wrapInSchema)
+                {
+                    var array = new JObject();
+                    variable.Add(new JProperty("schema", array));
+                    variable = array;
+                }
 
-                schema.Add(new JProperty("type", "array"));
-                schema.Add(new JProperty("items", items));
+                var items = new JObject();
+                variable.Add(new JProperty("type", "array"));
+                variable.Add(new JProperty("items", items));
 
                 type = items;
             }
             else if (info.Dictionary)
             {
-                type = schema;
+                type = variable;
             }
             else
             {
-                type = schema;
+                type = variable;
             }
 
+            // Work around array element issue
             if (!useReference && info.Name != null)
             {
-                type.Add(new JProperty("$ref", "#/definitions/" + info.Name));
+                reference = new JProperty("$ref", "#/definitions/" + info.Name);
             }
             else if (useReference && info.Ref != null)
             {
-                type.Add(new JProperty("$ref", "#/definitions/" + info.Ref));
+                reference = new JProperty("$ref", "#/definitions/" + info.Ref);
+            }
+
+            if (reference != null)
+            {
+                if (!info.Array && wrapInSchema)
+                {
+                    type.Add(new JProperty("schema", new JObject(reference)));
+                }
+                else
+                {
+                    type.Add(reference);
+                }
             }
             else
             {
@@ -502,45 +536,32 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                     type.Add(new JProperty("format", info.Format));
                 }
             }
-
-            return schema;
         }
 
-        /// <summary>
-        /// Returns the schema definition for complex objects
-        /// </summary>
-        /// <param name="info"></param>
-        /// <returns></returns>
-        private JObject GetTypeDefSchema(VariableInfo info)
+        private void AddTypeDefSchema(JObject obj, VariableInfo info)
         {
-            JObject obj;
-
             if (info.Array)
             {
-                obj = GetTypeRefSchema(info, true);
+                AddTypeRefSchema(obj, info, true, true);
             }
             else if (info.Dictionary)
             {
-                var additionalProperties = GetTypeRefSchema(info, true);
+                var additionalProperties = new JObject();
+                AddTypeRefSchema(additionalProperties, info, true, true);
 
-                obj = new JObject(
-                        new JProperty("type", "object"),
-                        new JProperty("additionalProperties", additionalProperties));
+                obj.Add(new JProperty("type", "object"));
+                obj.Add(new JProperty("additionalProperties", additionalProperties));
             }
             else if (info.Enum != null)
             {
-                obj = new JObject(
-                        new JProperty("type", "string"),
-                        new JProperty("enum", new JArray(info.Enum)));
+                obj.Add(new JProperty("type", "string"));
+                obj.Add(new JProperty("enum", new JArray(info.Enum)));
             }
             else
             {
-                obj = new JObject(
-                        //new JProperty("required", new JArray()),
-                        new JProperty("properties", new JObject()));
+                //obj.Add(new JProperty("required", new JArray()));
+                obj.Add(new JProperty("properties", new JObject()));
             }
-
-            return obj;
         }
     }
 }

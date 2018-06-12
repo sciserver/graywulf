@@ -31,13 +31,13 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
         public string Title
         {
             get { return title; }
-            internal set { title = value; }
+            set { title = value; }
         }
         
         public string Version
         {
             get { return version; }
-            internal set { version = value; }
+            set { version = value; }
         }
 
         public Dictionary<Type, RestServiceContract> ServiceContracts
