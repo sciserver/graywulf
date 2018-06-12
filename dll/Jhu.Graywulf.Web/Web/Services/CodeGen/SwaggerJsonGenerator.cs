@@ -443,8 +443,24 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             }
         }
 
-        private JObject GetTypeRefSchema(VariableInfo info, bool reference)
+        /// <summary>
+        /// Creates a schema object for a given variable type.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="useReference"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// By default, the Name field of the class is used to render the
+        /// $ref field. In case of arrays of complex objects, however, often
+        /// the element type needs to be referenced
+        /// </remarks>
+        private JObject GetTypeRefSchema(VariableInfo info, bool useReference)
         {
+            // TODO: by passing true to useReference, this function now can handle
+            // arrays of complex objects. In general, this could be taken further and
+            // create arrays of array, lists of arrays etc., so the two-level hierarchy
+            // would become multi-level. This is currently not supported.
+
             JObject schema = new JObject();
             JObject type;
 
@@ -466,11 +482,11 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
                 type = schema;
             }
 
-            if (!reference && info.Name != null)
+            if (!useReference && info.Name != null)
             {
                 type.Add(new JProperty("$ref", "#/definitions/" + info.Name));
             }
-            else if (reference && info.Ref != null)
+            else if (useReference && info.Ref != null)
             {
                 type.Add(new JProperty("$ref", "#/definitions/" + info.Ref));
             }
@@ -490,6 +506,11 @@ namespace Jhu.Graywulf.Web.Services.CodeGen
             return schema;
         }
 
+        /// <summary>
+        /// Returns the schema definition for complex objects
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
         private JObject GetTypeDefSchema(VariableInfo info)
         {
             JObject obj;
