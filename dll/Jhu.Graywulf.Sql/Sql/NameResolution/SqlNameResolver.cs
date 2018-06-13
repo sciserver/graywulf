@@ -413,7 +413,28 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveDeleteStatement(DeleteStatement statement)
         {
-            throw new NotImplementedException();
+            var cte = statement.FindDescendant<CommonTableExpression>();
+
+            if (cte != null)
+            {
+                ResolveCommonTableExpression(cte);
+            }
+
+            var target = statement.TargetTable;
+            var from = statement.FromClause;
+            var where = statement.WhereClause;
+
+            ResolveTargetTable(cte, statement, target);
+            
+            if (from != null)
+            {
+                ResolveTableAndColumnReferences(cte, statement, from, from, 0, QueryContext.DeleteStatement);
+            }
+
+            if (where != null)
+            {
+                ResolveTableAndColumnReferences(cte, statement, where, where, 0, QueryContext.DeleteStatement);
+            }
         }
 
         #endregion
@@ -439,7 +460,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// <param name="cte"></param>
         /// <param name="node"></param>
         /// <param name="context"></param>
-        private void ResolveExpressionReferences(CommonTableExpression cte, QuerySpecification qs, ColumnContext context, Node node)
+        private void ResolveExpressionReferences(CommonTableExpression cte, ITableSourceCollector sourceTables, ColumnContext context, Node node)
         {
             context = GetColumnContext(node, context);
 
@@ -452,7 +473,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (n is Node)
                 {
-                    ResolveExpressionReferences(cte, qs, context, (Node)n);   // Recursive call
+                    ResolveExpressionReferences(cte, sourceTables, context, (Node)n);   // Recursive call
 
                     if (n is IFunctionReference)
                     {
@@ -464,7 +485,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     }
                     else if (n is IColumnReference)
                     {
-                        ResolveColumnReference(cte, qs, context, (IColumnReference)n);
+                        ResolveColumnReference(cte, sourceTables, context, (IColumnReference)n);
                     }
                 }
             }
@@ -516,7 +537,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     details.FunctionReferences.Add(uniqueKey, new List<FunctionReference>());
                 }
-                
+
                 details.FunctionReferences[uniqueKey].Add(node.FunctionReference);
             }
         }
@@ -549,7 +570,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        private void ResolveColumnReference(CommonTableExpression cte, QuerySpecification qs, ColumnContext context, IColumnReference cr)
+        private void ResolveColumnReference(CommonTableExpression cte, ITableSourceCollector sourceTables, ColumnContext context, IColumnReference cr)
         {
             // Star columns cannot be resolved, treat them separately
             if (!cr.ColumnReference.IsResolved && !cr.ColumnReference.IsStar && !cr.ColumnReference.IsComplexExpression)
@@ -561,7 +582,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     // This has an empty table reference (only column name specified)
                     // Look for a match based on column name only
-                    foreach (var tr in qs.SourceTableReferences.Values)
+                    foreach (var tr in sourceTables.SourceTableReferences.Values)
                     {
                         foreach (var ccr in tr.ColumnReferences)
                         {
@@ -728,24 +749,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // of these references have happened yet. After the cross-idenfication
             // routine, the same tables and columns will be tagged by the
             // same TableReference and ColumnReference instances.
-
-            // First of all, call everything recursively for subqueries. Subqueries
-            // can appear within the table sources and in the where clause semi-join
-            // expressions
-            ResolveSubqueries(cte, depth + 1, queryContext | QueryContext.Subquery, qs);
-
-            SubstituteSourceTableDefaults(cte, qs);
-            CollectSourceTableReferences(cte, qs);
-
-            // Column identifiers can contain table names, aliases or nothing,
-            // resolve them now
-            ResolveTableReferences(cte, qs);
-
-            // Substitute SELECT * expressions
-            SubstituteStars(qs);
-
-            // Resolve variables and column references of each occurance
-            ResolveExpressionReferences(cte, qs, ColumnContext.None, qs);
+            ResolveTableAndColumnReferences(cte, qs, qs, qs, depth, queryContext);
 
             // Copy resultset columns to the appropriate collection
             CopyResultsColumns(qs);
@@ -754,7 +758,33 @@ namespace Jhu.Graywulf.Sql.NameResolution
             AssignDefaultColumnAliases(qs, depth != 0, (queryContext & QueryContext.SemiJoin) != 0);
         }
 
+        protected void ResolveTableAndColumnReferences(CommonTableExpression cte, ITableSourceCollector collector, ITableSourceProvider sourceTables, Node node, int depth, QueryContext queryContext)
+        {
+            // First of all, call everything recursively for subqueries. Subqueries
+            // can appear within the table sources and in the where clause semi-join
+            // expressions
+            ResolveSubqueries(cte, depth + 1, queryContext | QueryContext.Subquery, node);
 
+            SubstituteSourceTableDefaults(cte, sourceTables);
+            CollectSourceTableReferences(cte, collector, sourceTables);
+
+            // Column identifiers can contain table names, aliases or nothing,
+            // resolve them now
+            ResolveTableReferences(cte, collector, TableContext.None, ColumnContext.None, node);
+
+            // Substitute SELECT * expressions
+            SubstituteStars(node);
+
+            // Resolve variables and column references of each occurance
+            ResolveExpressionReferences(cte, collector, ColumnContext.None, node);
+        }
+
+        protected void ResolveTargetTable(CommonTableExpression cte, ITableSourceCollector collector, TargetTableSpecification target)
+        {
+            SubstituteSourceTableDefaults(cte, target.TableReference);
+            ResolveSourceTableReference(cte, target.TableReference);
+            ResolveTableReference(null, collector, target, TableContext.Target, ColumnContext.None);
+        }
 
         protected void ResolveOrderByClause(CommonTableExpression cte, OrderByClause orderBy, QuerySpecification firstqs, QueryContext queryContext)
         {
@@ -773,40 +803,46 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// or table name.
         /// </remarks>
         /// <param name="qs"></param>
-        private void CollectSourceTableReferences(CommonTableExpression cte, QuerySpecification qs)
+        private void CollectSourceTableReferences(CommonTableExpression cte, ITableSourceCollector collector, ITableSourceProvider sourceTables)
         {
             // Collect column references from subqueries or load from the database schema
 
-            foreach (var ts in qs.EnumerateSourceTables(false))
+            foreach (var ts in sourceTables.EnumerateSourceTables(false))
             {
-                var tr = ts.TableReference;
-                var exportedName = tr.ExportedName;
+                CollectSourceTableReference(cte, collector, ts);
+            }
+        }
 
-                // Make sure that table key is used only once
-                if (qs.SourceTableReferences.ContainsKey(exportedName))
+        private void CollectSourceTableReference(CommonTableExpression cte, ITableSourceCollector collector, ITableSource ts)
+        {
+            var tr = ts.TableReference;
+            var exportedName = tr.ExportedName;
+
+            // Make sure that table key is used only once
+            if (collector.SourceTableReferences.ContainsKey(exportedName))
+            {
+                throw NameResolutionError.DuplicateTableAlias(exportedName, tr.Node);
+            }
+            else
+            {
+
+                var ntr = ResolveSourceTableReference(cte, tr);
+
+                // Save the table in the query specification
+                collector.SourceTableReferences.Add(exportedName, ntr);
+
+                // Collect in the global store
+                if (ntr.Type == TableReferenceType.TableOrView)
                 {
-                    throw NameResolutionError.DuplicateTableAlias(exportedName, tr.Node);
-                }
-                else
-                {
-                    var ntr = ResolveSourceTableReference(cte, tr);
+                    var uniqueKey = ntr.DatabaseObject.UniqueKey;
 
-                    // Save the table in the query specification
-                    qs.SourceTableReferences.Add(exportedName, ntr);
-
-                    // Collect in the global store
-                    if (ntr.Type == TableReferenceType.TableOrView)
+                    if (!details.SourceTableReferences.ContainsKey(uniqueKey))
                     {
-                        var uniqueKey = ntr.DatabaseObject.UniqueKey;
-
-                        if (!details.SourceTableReferences.ContainsKey(uniqueKey))
-                        {
-                            details.SourceTableReferences.Add(uniqueKey, new List<TableReference>());
-                        }
-
-                        details.SourceTableReferences[uniqueKey].Add(ntr);
-                        ts.UniqueKey = String.Format("{0}_{1}_{2}", uniqueKey, ntr.Alias, details.SourceTableReferences[uniqueKey].Count - 1);
+                        details.SourceTableReferences.Add(uniqueKey, new List<TableReference>());
                     }
+
+                    details.SourceTableReferences[uniqueKey].Add(ntr);
+                    ts.UniqueKey = String.Format("{0}_{1}_{2}", uniqueKey, ntr.Alias, details.SourceTableReferences[uniqueKey].Count - 1);
                 }
             }
         }
@@ -864,7 +900,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private TableReference ResolveOutputTableReference(QuerySpecification qs)
         {
             var into = qs.IntoClause;
-            var tr = into?.TableName.TableReference;
+            var tr = into?.TargetTable.TableName.TableReference;
 
             if (tr != null)
             {
@@ -911,7 +947,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 else
                 {
-                    throw NameResolutionError.DuplicateOutputTable(into.TableName);
+                    throw NameResolutionError.DuplicateOutputTable(into.TargetTable.TableName);
                 }
 
                 details.OutputTableReferences[uniqueKey].Add(tr);
@@ -925,27 +961,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         /// <summary>
-        /// Resolves the table references of all nodes below a query specification
-        /// not descending into subqueries
-        /// </summary>
-        /// <param name="qs"></param>
-        private void ResolveTableReferences(CommonTableExpression cte, QuerySpecification qs)
-        {
-            ResolveTableReferences(cte, qs, TableContext.None, ColumnContext.None, (Node)qs);
-        }
-
-        public void ResolveTableReferences(CommonTableExpression cte, TableContext tableContext, ColumnContext columnContext, Node n)
-        {
-            ResolveTableReferences(cte, null, tableContext, columnContext, n);
-        }
-
-        /// <summary>
         /// Resolves all table references of all nodes below a node,
         /// not descending into subqueries
         /// </summary>
         /// <param name="qs"></param>
         /// <param name="n"></param>
-        private void ResolveTableReferences(CommonTableExpression cte, QuerySpecification qs, TableContext tableContext, ColumnContext columnContext, Node n)
+        private void ResolveTableReferences(CommonTableExpression cte, ITableSourceCollector collector, TableContext tableContext, ColumnContext columnContext, Node n)
         {
             tableContext = GetTableContext(n, tableContext);
             columnContext = GetColumnContext(n, columnContext);
@@ -955,13 +976,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // Skip the into and clause and subqueries
                 if (o is Node && !(o is IntoClause) && !(o is SubqueryTableSource))
                 {
-                    ResolveTableReferences(cte, qs, tableContext, columnContext, (Node)o);   // Recursive call
+                    ResolveTableReferences(cte, collector, tableContext, columnContext, (Node)o);   // Recursive call
                 }
             }
 
             if (n is ITableReference)
             {
-                ResolveTableReference(cte, qs, (ITableReference)n, tableContext, columnContext);
+                ResolveTableReference(cte, collector, (ITableReference)n, tableContext, columnContext);
             }
         }
 
@@ -970,7 +991,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         /// <param name="qs"></param>
         /// <param name="tr"></param>
-        private void ResolveTableReference(CommonTableExpression cte, QuerySpecification qs, ITableReference node, TableContext tableContext, ColumnContext columnContext)
+        private void ResolveTableReference(CommonTableExpression cte, ITableSourceCollector collector, ITableReference node, TableContext tableContext, ColumnContext columnContext)
         {
             // Try to resolve the table alias part of a table reference
             // If and alias or table name is specified, this can be done based on
@@ -995,7 +1016,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                         node.TableReference.DatabaseName == null &&
                         node.TableReference.SchemaName == null &&
                         node.TableReference.DatabaseObjectName != null &&
-                        qs.SourceTableReferences.ContainsKey(node.TableReference.DatabaseObjectName))
+                        collector.SourceTableReferences.ContainsKey(node.TableReference.DatabaseObjectName))
                 {
                     // if only table name found and that's an alias
                     alias = node.TableReference.DatabaseObjectName;
@@ -1003,7 +1024,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (alias != null)
                 {
-                    ntr = qs.SourceTableReferences[alias];
+                    ntr = collector.SourceTableReferences[alias];
                 }
                 else
                 {
@@ -1018,7 +1039,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                     // if only a table name found and that's not an alias -> must be a table
                     int q = 0;
-                    foreach (var tr in qs.SourceTableReferences.Values)
+                    foreach (var tr in collector.SourceTableReferences.Values)
                     {
                         if (tr.Compare(node.TableReference))
                         {
@@ -1110,17 +1131,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             return context;
         }
-
+        
         /// <summary>
         /// Replace SELECT * and SELECT alias.* with explicit column lists
         /// </summary>
-        /// <param name="qs"></param>
-        private void SubstituteStars(QuerySpecification qs)
-        {
-            SubstituteStars(qs, qs);
-        }
-
-        private void SubstituteStars(QuerySpecification qs, Node node)
+        private void SubstituteStars(Node node)
         {
             if (node != null)
             {
@@ -1144,29 +1159,34 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// Substitutes dataset and schema defaults into table source table references
         /// </summary>
         /// <param name="qs"></param>
-        protected void SubstituteSourceTableDefaults(CommonTableExpression cte, QuerySpecification qs)
+        protected void SubstituteSourceTableDefaults(CommonTableExpression cte, ITableSourceProvider sourceTables)
         {
-            foreach (var tr in qs.EnumerateSourceTableReferences(false))
+            foreach (var tr in sourceTables.EnumerateSourceTableReferences(false))
             {
-                try
+                SubstituteSourceTableDefaults(cte, tr);
+            }
+        }
+
+        protected void SubstituteSourceTableDefaults(CommonTableExpression cte, TableReference tr)
+        {
+            try
+            {
+                if (cte != null && tr.IsPossiblyAlias && cte.CommonTableReferences.ContainsKey(tr.DatabaseObjectName))
                 {
-                    if (cte != null && tr.IsPossiblyAlias && cte.CommonTableReferences.ContainsKey(tr.DatabaseObjectName))
-                    {
-                        // Don't do any substitution if referencing a common table
-                    }
-                    else if (tr.Type == TableReferenceType.TableOrView)
-                    {
-                        tr.SubstituteDefaults(SchemaManager, defaultTableDatasetName);
-                    }
-                    else if (tr.Type == TableReferenceType.UserDefinedFunction)
-                    {
-                        tr.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
-                    }
+                    // Don't do any substitution if referencing a common table
                 }
-                catch (KeyNotFoundException ex)
+                else if (tr.Type == TableReferenceType.TableOrView)
                 {
-                    throw NameResolutionError.UnresolvableDatasetReference(ex, tr);
+                    tr.SubstituteDefaults(SchemaManager, defaultTableDatasetName);
                 }
+                else if (tr.Type == TableReferenceType.UserDefinedFunction)
+                {
+                    tr.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
+                }
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw NameResolutionError.UnresolvableDatasetReference(ex, tr);
             }
         }
 
@@ -1174,7 +1194,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             // TODO: what to do with table variables?
 
-            var tr = qs.IntoClause?.TableName?.TableReference;
+            var tr = qs.IntoClause?.TargetTable.TableName?.TableReference;
 
             if (tr != null)
             {

@@ -1017,7 +1017,7 @@ FOR select_statement
             (
                 Keyword("TOP"),
                 May(CommentOrWhitespace),
-                Expression,
+                Must(Number, ExpressionBrackets),
                 May(Sequence(CommentOrWhitespace, Keyword("PERCENT"))),
                 May(Sequence(CommentOrWhitespace, Keyword("WITH"), CommentOrWhitespace, Keyword("TIES")))
             );
@@ -1340,7 +1340,6 @@ FOR select_statement
             (
                 May(Sequence(CommonTableExpression, May(CommentOrWhitespace))),
                 Keyword("INSERT"),
-                May(Sequence(CommentOrWhitespace, TopExpression)),
                 May(CommentOrWhitespace),
                 Must
                 (
@@ -1436,7 +1435,6 @@ FOR select_statement
             (
                 May(Sequence(CommonTableExpression, May(CommentOrWhitespace))),
                 Keyword("UPDATE"),
-                May(Sequence(CommentOrWhitespace, TopExpression)),
                 May(CommentOrWhitespace),
                 TargetTableSpecification,
                 May(CommentOrWhitespace),
@@ -1496,9 +1494,7 @@ FOR select_statement
             (
                 May(Sequence(CommonTableExpression, May(CommentOrWhitespace))),
                 Keyword("DELETE"),
-                May(Sequence(CommentOrWhitespace, TopExpression)),
-                May(CommentOrWhitespace),
-                May(Keyword("FROM")),
+                May(Sequence(CommentOrWhitespace, Keyword("FROM"))),
                 May(CommentOrWhitespace),
                 TargetTableSpecification,
                 // TODO: OUTPUT clause

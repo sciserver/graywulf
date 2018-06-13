@@ -8,7 +8,7 @@ using Jhu.Graywulf.Sql.Parsing;
 namespace Jhu.Graywulf.Sql.NameResolution
 {
     [TestClass]
-    public class SqlNameResolverTest : SqlNameResolverTestBase
+    public class SelectStatementTest : SqlNameResolverTestBase
     {
         [TestMethod]
         public void SimpleQueryTest()

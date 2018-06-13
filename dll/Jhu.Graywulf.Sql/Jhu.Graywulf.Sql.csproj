@@ -231,6 +231,8 @@
     <Compile Include="Sql\NameResolution\DataTypeReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\FunctionReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\IDatabaseObjectReference.cs" />
+    <Compile Include="Sql\NameResolution\ITableSourceCollector.cs" />
+    <Compile Include="Sql\NameResolution\ITableSourceProvider.cs" />
     <Compile Include="Sql\NameResolution\NameResolutionError.cs" />
     <Compile Include="Sql\NameResolution\QueryDetails.cs" />
     <Compile Include="Sql\NameResolution\TableReferenceEqualityComparer.cs" />
@@ -265,6 +267,7 @@
     <Compile Include="Sql\Parsing\StatementType.cs" />
     <Compile Include="Sql\Parsing\SystemVariable.cs" />
     <Compile Include="Sql\Parsing\TableVariable.cs" />
+    <Compile Include="Sql\Parsing\TargetTableSpecification.cs" />
     <Compile Include="Sql\Parsing\UserVariable.cs" />
     <Compile Include="Sql\Parsing\DropIndexStatement.cs" />
     <Compile Include="Sql\Parsing\CreateIndexStatement.cs" />

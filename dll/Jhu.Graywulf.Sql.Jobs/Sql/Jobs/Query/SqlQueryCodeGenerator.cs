@@ -190,7 +190,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             if (into != null)
             {
                 var parent = selectStatement.FindAscendant<StatementBlock>();
-                var tr = MapTableReference(into.TableName.TableReference);
+                var tr = MapTableReference(into.TargetTable.TableName.TableReference);
 
                 into.Parent.Stack.Remove(into);
 

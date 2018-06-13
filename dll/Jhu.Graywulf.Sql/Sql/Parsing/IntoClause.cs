@@ -9,14 +9,9 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class IntoClause
     {
-        public TableOrViewName TableName
+        public TargetTableSpecification TargetTable
         {
-            get { return FindDescendantRecursive<TableOrViewName>(); }
-        }
-
-        public UserVariable Variable
-        {
-            get { return FindDescendantRecursive<UserVariable>(); }
+            get { return FindDescendant<TargetTableSpecification>(); }
         }
     }
 }

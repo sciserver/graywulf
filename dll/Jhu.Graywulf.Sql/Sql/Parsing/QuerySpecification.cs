@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class QuerySpecification
+    public partial class QuerySpecification : ITableSourceProvider, ITableSourceCollector
     {
         #region Private member variables
 
@@ -101,69 +101,24 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             // Start from the FROM clause, if specified, otherwise no
             // table sources in the query
-            var from = FindDescendant<FromClause>();
-            var where = FindDescendant<WhereClause>();
+            var from = FromClause;
+            var where = WhereClause;
 
-            return EnumerateSourceTables(from, where, recursive);
-        }
-
-        protected IEnumerable<ITableSource> EnumerateSourceTables(FromClause from, WhereClause where, bool recursive)
-        {
             if (from != null)
             {
-                var node = (Node)from.FindDescendant<TableSourceExpression>();
-
-                while (node != null)
+                foreach (var ts in from.EnumerateSourceTables(recursive))
                 {
-                    var ts = node.FindDescendant<TableSource>();
-                    yield return ts.SpecificTableSource;
-
-                    // Enumerate recursively, if necessary
-                    if (recursive && ts.SpecificTableSource.IsSubquery)
-                    {
-                        foreach (var tts in ts.SpecificTableSource.EnumerateSubqueryTableSources(recursive))
-                        {
-                            yield return tts;
-                        }
-                    }
-
-                    // Certain table sources might return additional table sources
-                    // This is not standard SQL, it is used with special extensions
-                    // such as the XMATCH syntax
-                    if (ts.SpecificTableSource.IsMultiTable)
-                    {
-                        foreach (var mts in ts.SpecificTableSource.EnumerateMultiTableSources())
-                        {
-                            yield return mts;
-
-                            // Enumerate recursively, if necessary
-                            if (recursive && mts.IsSubquery)
-                            {
-                                foreach (var tts in mts.EnumerateSubqueryTableSources(recursive))
-                                {
-                                    yield return tts;
-                                }
-                            }
-                        }
-                    }
-
-                    node = node.FindDescendant<JoinedTable>();
+                    yield return ts;
                 }
             }
 
             if (where != null)
             {
-                foreach (var sq in where.EnumerateDescendantsRecursive<Subquery>(typeof(Subquery)))
+                foreach (var ts in where.EnumerateSourceTables(recursive))
                 {
-                    foreach (var ts in sq.EnumerateSourceTables(recursive))
-                    {
-                        yield return ts;
-                    }
+                    yield return ts;
                 }
             }
-
-            // TODO: add functionality to handle semi-join constructs
-            // verify this, because might be covered by the where clause above
         }
 
         /// <summary>
@@ -172,7 +127,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         /// </summary>
         /// <param name="recursive"></param>
         /// <returns></returns>
-        public virtual IEnumerable<TableReference> EnumerateSourceTableReferences(bool recursive)
+        public IEnumerable<TableReference> EnumerateSourceTableReferences(bool recursive)
         {
             return EnumerateSourceTables(recursive).Select(ts => ts.TableReference);
         }

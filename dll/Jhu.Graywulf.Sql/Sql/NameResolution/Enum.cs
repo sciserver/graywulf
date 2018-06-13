@@ -38,16 +38,20 @@ namespace Jhu.Graywulf.Sql.NameResolution
         From = 1,
         Subquery = 2,
         Into = 4,
-        CreateTable = 8,
+        Target = 8,
+        CreateTable = 16,
     }
 
     [Flags]
     public enum QueryContext : long
     {
-        None,                       // Node is not part of a query
-        SelectStatement,            // Main select
-        CommonTableExpression,      // CTE definition part
-        Subquery,                   // Subquery in FROM
-        SemiJoin                    // Subquery in EXISTS, ALL, SOME and ANY, etc.
+        None = 0,                       // Node is not part of a query
+        SelectStatement = 1,            // Main select
+        DeleteStatement = 2,
+        UpdateStatement = 4,
+        InsertStatement = 8,
+        CommonTableExpression = 16,      // CTE definition part
+        Subquery = 32,                   // Subquery in FROM
+        SemiJoin = 64                    // Subquery in EXISTS, ALL, SOME and ANY, etc.
     }
 }

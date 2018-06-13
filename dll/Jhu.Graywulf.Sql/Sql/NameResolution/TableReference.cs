@@ -251,6 +251,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.Node = tvf;
         }
 
+        public TableReference(UserVariable v)
+            :this()
+        {
+            InterpretUserVariable(v);
+
+            this.Node = v;
+        }
+
         private void InitializeMembers()
         {
             this.alias = null;
@@ -367,6 +375,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 throw new NameResolverException(ExceptionMessages.FunctionCallNotAllowed);
             }
+        }
+
+        private void InterpretUserVariable(UserVariable v)
+        {
+            // TODO: add variable name?
+            type = TableReferenceType.Variable;
         }
 
         private void InterpretSubquery()

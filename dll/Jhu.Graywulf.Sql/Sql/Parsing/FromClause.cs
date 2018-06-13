@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Parsing;
+using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class FromClause
+    public partial class FromClause : ITableSourceProvider
     {
         public static FromClause Create(TableSourceExpression tse)
         {
@@ -19,6 +20,62 @@ namespace Jhu.Graywulf.Sql.Parsing
             return from;
         }
 
+        #region Source table functions
+
+        public IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
+        {
+            var node = (Node)FindDescendant<TableSourceExpression>();
+
+            while (node != null)
+            {
+                var ts = node.FindDescendant<TableSource>();
+                yield return ts.SpecificTableSource;
+
+                // Enumerate recursively, if necessary
+                if (recursive && ts.SpecificTableSource.IsSubquery)
+                {
+                    foreach (var tts in ts.SpecificTableSource.EnumerateSubqueryTableSources(recursive))
+                    {
+                        yield return tts;
+                    }
+                }
+
+                // Certain table sources might return additional table sources
+                // This is not standard SQL, it is used with special extensions
+                // such as the XMATCH syntax
+                if (ts.SpecificTableSource.IsMultiTable)
+                {
+                    foreach (var mts in ts.SpecificTableSource.EnumerateMultiTableSources())
+                    {
+                        yield return mts;
+
+                        // Enumerate recursively, if necessary
+                        if (recursive && mts.IsSubquery)
+                        {
+                            foreach (var tts in mts.EnumerateSubqueryTableSources(recursive))
+                            {
+                                yield return tts;
+                            }
+                        }
+                    }
+                }
+
+                node = node.FindDescendant<JoinedTable>();
+            }
+        }
+
+        /// <summary>
+        /// Enumerates through all table sources and returns every TableReference
+        /// associated with the table source
+        /// </summary>
+        /// <param name="recursive"></param>
+        /// <returns></returns>
+        public IEnumerable<TableReference> EnumerateSourceTableReferences(bool recursive)
+        {
+            return EnumerateSourceTables(recursive).Select(ts => ts.TableReference);
+        }
+
+        #endregion
         #region Query construction functions
 
         public void AppendJoinedTable(JoinedTable joinedTable)
