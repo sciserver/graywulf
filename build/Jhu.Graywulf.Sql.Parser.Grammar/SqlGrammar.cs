@@ -1016,7 +1016,7 @@ FOR select_statement
             Sequence
             (
                 Keyword("TOP"),
-                CommentOrWhitespace,
+                May(CommentOrWhitespace),
                 Expression,
                 May(Sequence(CommentOrWhitespace, Keyword("PERCENT"))),
                 May(Sequence(CommentOrWhitespace, Keyword("WITH"), CommentOrWhitespace, Keyword("TIES")))
@@ -1340,6 +1340,7 @@ FOR select_statement
             (
                 May(Sequence(CommonTableExpression, May(CommentOrWhitespace))),
                 Keyword("INSERT"),
+                May(Sequence(CommentOrWhitespace, TopExpression)),
                 May(CommentOrWhitespace),
                 Must
                 (
@@ -1347,6 +1348,7 @@ FOR select_statement
                     IntoClause,
                     TargetTableSpecification
                 ),
+                // Column list
                 May(
                     Sequence
                     (
@@ -1360,15 +1362,15 @@ FOR select_statement
                 (
                     ValuesClause,
                     Sequence(Keyword("DEFAULT"), CommentOrWhitespace, Keyword("VALUES")),
-                    // ExecuteStatement  TODO
-
+                    // TODO: ExecuteStatement
+                    // Select
                     Sequence
                     (
                         QueryExpression,
-                        May(Sequence(May(CommentOrWhitespace), OrderByClause))
+                        May(Sequence(May(CommentOrWhitespace), OrderByClause)),
+                        May(Sequence(May(CommentOrWhitespace), QueryHintClause))
                     )
-                ),
-                May(Sequence(May(CommentOrWhitespace), QueryHintClause))
+                )
             );
 
         public static Expression<Rule> ColumnListBrackets = () =>
@@ -1434,6 +1436,7 @@ FOR select_statement
             (
                 May(Sequence(CommonTableExpression, May(CommentOrWhitespace))),
                 Keyword("UPDATE"),
+                May(Sequence(CommentOrWhitespace, TopExpression)),
                 May(CommentOrWhitespace),
                 TargetTableSpecification,
                 May(CommentOrWhitespace),
@@ -1443,6 +1446,7 @@ FOR select_statement
                 // TODO: OUTPUT clause
                 May(Sequence(May(CommentOrWhitespace), FromClause)),
                 May(Sequence(May(CommentOrWhitespace), WhereClause)),
+                // TODO: add support for cursor updates
                 May(Sequence(May(CommentOrWhitespace), QueryHintClause))
             );
 
@@ -1471,6 +1475,7 @@ FOR select_statement
                         UserVariable,
                         ColumnName
                     )
+                    // TODO: add support for UDT fields
                 ),
                 May(CommentOrWhitespace),
                 ValueAssignmentOperator,
@@ -1486,13 +1491,12 @@ FOR select_statement
 
         #region DELETE statement
 
-        public static Expression<Rule> DeleteStatement = () => DeleteSpecification;
-
-        public static Expression<Rule> DeleteSpecification = () =>
+        public static Expression<Rule> DeleteStatement = () =>
             Sequence
             (
                 May(Sequence(CommonTableExpression, May(CommentOrWhitespace))),
                 Keyword("DELETE"),
+                May(Sequence(CommentOrWhitespace, TopExpression)),
                 May(CommentOrWhitespace),
                 May(Keyword("FROM")),
                 May(CommentOrWhitespace),
@@ -1502,6 +1506,12 @@ FOR select_statement
                 May(Sequence(May(CommentOrWhitespace), WhereClause)),
                 May(Sequence(May(CommentOrWhitespace), QueryHintClause))
             );
+
+        #endregion
+
+        #region MERGE statement
+
+        // TODO
 
         #endregion
 

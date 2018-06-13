@@ -80,5 +80,32 @@ FROM test CROSS JOIN test2
 WHERE ID = 12";
             new SqlParser().Execute<UpdateStatement>(sql);
         }
+
+        [TestMethod]
+        public void TopClauseTest()
+        {
+            var sql =
+@"UPDATE TOP 10
+test
+SET Data = 12
+WHERE ID = 12";
+            new SqlParser().Execute<UpdateStatement>(sql);
+        }
+
+        [TestMethod]
+        public void CteTest()
+        {
+            var sql =
+@"WITH q AS
+(
+    SELECT * FROM table1
+)
+UPDATE z
+SET Data += 1
+FROM table1 z
+INNER JOIN q ON z.ID = q.ID";
+
+            new SqlParser().Execute<UpdateStatement>(sql);
+        }
     }
 }

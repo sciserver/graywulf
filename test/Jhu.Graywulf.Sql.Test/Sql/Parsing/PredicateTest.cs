@@ -10,12 +10,11 @@ using Jhu.Graywulf.Sql.NameResolution;
 namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
-    public class PredicateTest
+    public class PredicateTest : ParsingTestBase
     {
         private void GetSearchCondition(string query, out SelectStatement select, out BooleanExpression where)
         {
-            var p = new SqlParser();
-            select = (SelectStatement)p.Execute(new SelectStatement(), query);
+            select = CreateSelect(query);
             where = select.FindDescendantRecursive<WhereClause>().FindDescendant<BooleanExpression>();
         }
 
@@ -43,7 +42,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             // Predicate that references multiple tables
 
-            sql = "SELECT ID FROM Book, Author WHERE Book.ID = Author.ID";
+            sql = "SELECT Book.ID FROM Book, Author WHERE Book.ID = Author.ID";
             GetSearchCondition(sql, out select, out where);
 
             table = select.QueryExpression.EnumerateSourceTableReferences(false).First();

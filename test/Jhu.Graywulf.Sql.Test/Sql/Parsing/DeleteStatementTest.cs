@@ -45,10 +45,33 @@ FROM test INNER JOIN test3 ON test.id = test3.id";
 FROM test";
             new SqlParser().Execute<DeleteStatement>(sql);
 
+            // Yes, DELETE can have two FROMs!
             sql =
 @"DELETE FROM test
 FROM test INNER JOIN test3 ON test.id = test3.id
 WHERE id = 12";
+            new SqlParser().Execute<DeleteStatement>(sql);
+        }
+
+        [TestMethod]
+        public void TopExpressionTest()
+        {
+            var sql = @"DELETE TOP 10 FROM table1";
+            new SqlParser().Execute<DeleteStatement>(sql);
+        }
+
+        [TestMethod]
+        public void CteTest()
+        {
+            var sql =
+@"WITH q AS
+(
+    SELECT * FROM test
+)
+DELETE table1
+FROM table1
+INNER JOIN q ON q.ID = table1.ID";
+
             new SqlParser().Execute<DeleteStatement>(sql);
         }
     }

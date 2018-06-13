@@ -86,6 +86,37 @@ UNION SELECT * FROM test4";
         }
 
         [TestMethod]
+        public void InsertWithTopExpressionTest()
+        {
+            var sql =
+@"INSERT TOP 100
+INTO test
+SELECT ID FROM test2";
+            new SqlParser().Execute<InsertStatement>(sql);
+        }
+
+        [TestMethod]
+        public void InsertWithTopExpression2Test()
+        {
+            var sql =
+@"INSERT
+INTO test
+SELECT TOP 100 ID FROM test2 ORDER BY ID";
+            new SqlParser().Execute<InsertStatement>(sql);
+        }
+
+        [TestMethod]
+        public void InsertWithQueryHintTest()
+        {
+            var sql =
+@"INSERT
+INTO test
+SELECT TOP 100 ID FROM test2 ORDER BY ID
+OPTION (TEST)";
+            new SqlParser().Execute<InsertStatement>(sql);
+        }
+
+        [TestMethod]
         public void TableHintTest()
         {
             var sql = @"INSERT test WITH(TABLOCKX) SELECT ID FROM test2";
@@ -95,6 +126,20 @@ UNION SELECT * FROM test4";
             new SqlParser().Execute<InsertStatement>(sql);
 
             sql = @"INSERT test WITH(NOLOCK,TABLOCKX)SELECT ID FROM test2";
+            new SqlParser().Execute<InsertStatement>(sql);
+        }
+
+        [TestMethod]
+        public void CteTest()
+        {
+            var sql = 
+@"WITH q AS
+(
+    SELECT * FROM Table1
+)
+INSERT test
+SELECT * FROM q";
+
             new SqlParser().Execute<InsertStatement>(sql);
         }
     }
