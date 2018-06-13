@@ -109,11 +109,5 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             dataTypeReference = vd.DataType.DataTypeReference;
         }
-
-        public void InterpretTableDeclaration(Parsing.TableDeclaration td)
-        {
-            // TODO: implement
-            throw new NotImplementedException();
-        }
     }
 }

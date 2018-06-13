@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         public override void Interpret()
         {
             base.Interpret();
-            Variable.VariableReference.InterpretTableDeclaration(this);
+            Variable.VariableReference.InterpretTableVariable(Variable);
         }
     }
 }
