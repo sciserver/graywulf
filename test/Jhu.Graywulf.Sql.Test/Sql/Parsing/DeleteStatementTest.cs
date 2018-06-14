@@ -52,14 +52,7 @@ FROM test INNER JOIN test3 ON test.id = test3.id
 WHERE id = 12";
             new SqlParser().Execute<DeleteStatement>(sql);
         }
-
-        [TestMethod]
-        public void TopExpressionTest()
-        {
-            var sql = @"DELETE TOP 10 FROM table1";
-            new SqlParser().Execute<DeleteStatement>(sql);
-        }
-
+        
         [TestMethod]
         public void CteTest()
         {

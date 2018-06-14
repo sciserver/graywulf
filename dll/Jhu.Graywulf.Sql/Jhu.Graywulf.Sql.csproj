@@ -292,6 +292,8 @@
     <Compile Include="Sql\Parsing\ContinueStatement.cs" />
     <Compile Include="Sql\Parsing\BreakStatement.cs" />
     <Compile Include="Sql\Parsing\TableDeclaration.cs" />
+    <Compile Include="Sql\Parsing\ValueGroup.cs" />
+    <Compile Include="Sql\Parsing\ValuesClause.cs" />
     <Compile Include="Sql\Parsing\VariableDeclaration.cs" />
     <Compile Include="Sql\Parsing\WhileStatement.cs" />
     <Compile Include="Sql\Parsing\BooleanExpression.cs" />

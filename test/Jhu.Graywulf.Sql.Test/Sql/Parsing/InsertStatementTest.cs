@@ -40,6 +40,9 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             sql = @"INSERT INTO[test]VALUES (1, NULL)";
             new SqlParser().Execute<InsertStatement>(sql);
+
+            sql = @"INSERT INTO[test]VALUES (1, NULL,(SELECT 2))";
+            new SqlParser().Execute<InsertStatement>(sql);
         }
 
         [TestMethod]
@@ -52,6 +55,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             new SqlParser().Execute<InsertStatement>(sql);
 
             sql = @"INSERT[test](a,b)VALUES(1,DEFAULT)";
+            new SqlParser().Execute<InsertStatement>(sql);
+
+            sql = @"INSERT[test](a,b)VALUES(1,DEFAULT,(SELECT 1))";
             new SqlParser().Execute<InsertStatement>(sql);
         }
         
@@ -84,17 +90,7 @@ CROSS JOIN test3
 UNION SELECT * FROM test4";
             new SqlParser().Execute<InsertStatement>(sql);
         }
-
-        [TestMethod]
-        public void InsertWithTopExpressionTest()
-        {
-            var sql =
-@"INSERT TOP 100
-INTO test
-SELECT ID FROM test2";
-            new SqlParser().Execute<InsertStatement>(sql);
-        }
-
+        
         [TestMethod]
         public void InsertWithTopExpression2Test()
         {

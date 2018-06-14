@@ -1348,6 +1348,8 @@ FOR select_statement
                     TargetTableSpecification
                 ),
                 // Column list
+                // NOTE: SQL Server allows four-part column identifiers here but uses the very last part
+                // (i.e. the column name), thus invalid and gibberish table, schema etc. is allowed
                 May(
                     Sequence
                     (
@@ -1385,7 +1387,7 @@ FOR select_statement
         public static Expression<Rule> ColumnList = () =>
             Sequence
             (
-                ColumnName,
+                ColumnIdentifier,
                 May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ColumnList))
             );
 
@@ -1394,28 +1396,28 @@ FOR select_statement
             (
                 Keyword("VALUES"),
                 May(CommentOrWhitespace),
-                ValuesGroupList,
+                ValueGroupList,
                 May(CommentOrWhitespace)
             );
 
-        public static Expression<Rule> ValuesGroupList = () =>
+        public static Expression<Rule> ValueGroupList = () =>
             Sequence
             (
-                ValuesGroup,
-                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ValuesGroupList))
+                ValueGroup,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ValueGroupList))
             );
 
-        public static Expression<Rule> ValuesGroup = () =>
+        public static Expression<Rule> ValueGroup = () =>
             Sequence
             (
                 BracketOpen,
                 May(CommentOrWhitespace),
-                ValuesList,
+                ValueList,
                 May(CommentOrWhitespace),
                 BracketClose
             );
 
-        public static Expression<Rule> ValuesList = () =>
+        public static Expression<Rule> ValueList = () =>
             Sequence
             (
                 Must
@@ -1423,7 +1425,7 @@ FOR select_statement
                     Keyword("DEFAULT"),
                     Expression
                 ),
-                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ValuesList))
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ValueList))
             );
 
         #endregion

@@ -403,7 +403,67 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveInsertStatement(InsertStatement statement)
         {
-            throw new NotImplementedException();
+            // Resolve CTE
+            var cte = statement.FindDescendant<CommonTableExpression>();
+
+            if (cte != null)
+            {
+                ResolveCommonTableExpression(cte);
+            }
+
+            // Resolve target table
+            var target = statement.TargetTable;
+            ResolveTargetTable(cte, statement, target);
+
+            // Resolve column list
+            var columnList = statement.ColumnList;
+            if (columnList != null)
+            {
+                foreach (var column in columnList.EnumerateDescendants<ColumnIdentifier>())
+                {
+                    // Resolve column name and make sure it belongs to the target table
+                    ResolveColumnReference(null, new[] { target.TableReference }, ColumnContext.Insert, column);
+
+                    // Make sure column belongs to the target table
+                    if (!column.ColumnReference.TableReference.Compare(target.TableReference))
+                    {
+                        throw NameResolutionError.ColumnNotPartOfTargetTable(column);
+                    }
+                }
+            }
+
+            // Resolve values list (incl. subqueries)
+            var values = statement.ValuesClause;
+            if (values != null)
+            {
+                foreach (var group in values.EnumerateValueGroups())
+                {
+                    foreach (var val in group.EnumerateValues())
+                    {
+                        // It can be an Expression or DEFAULT, we ignore the latter
+                        if (val is Expression exp)
+                        {
+                            ResolveSubqueries(cte, 0, QueryContext.InsertStatement, exp);
+                            ResolveExpressionReferences(cte, statement, ColumnContext.None, exp);
+                        }
+                    }
+                }
+            }
+
+            // Resolve select part
+            var query = statement.QueryExpression;
+            if (query != null)
+            {
+                ResolveQueryExpression(cte, query, 0, QueryContext.InsertStatement | QueryContext.SelectStatement);
+
+                // Resolve order by
+                var orderBy = statement.OrderByClause;
+                if (orderBy != null)
+                {
+                    var qs = query.EnumerateQuerySpecifications().FirstOrDefault();
+                    ResolveOrderByClause(cte, orderBy, qs, QueryContext.InsertStatement | QueryContext.SelectStatement);
+                }
+            }
         }
 
         private void ResolveUpdateStatement(UpdateStatement statement)
@@ -421,16 +481,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
 
             var target = statement.TargetTable;
-            var from = statement.FromClause;
-            var where = statement.WhereClause;
-
             ResolveTargetTable(cte, statement, target);
-            
+
+            var from = statement.FromClause;
             if (from != null)
             {
                 ResolveTableAndColumnReferences(cte, statement, from, from, 0, QueryContext.DeleteStatement);
             }
 
+            var where = statement.WhereClause;
             if (where != null)
             {
                 ResolveTableAndColumnReferences(cte, statement, where, where, 0, QueryContext.DeleteStatement);
@@ -485,7 +544,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     }
                     else if (n is IColumnReference)
                     {
-                        ResolveColumnReference(cte, sourceTables, context, (IColumnReference)n);
+                        ResolveColumnReference(cte, sourceTables.SourceTableReferences.Values, context, (IColumnReference)n);
                     }
                 }
             }
@@ -570,7 +629,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        private void ResolveColumnReference(CommonTableExpression cte, ITableSourceCollector sourceTables, ColumnContext context, IColumnReference cr)
+        private void ResolveColumnReference(CommonTableExpression cte, IEnumerable<TableReference> sourceTables, ColumnContext context, IColumnReference cr)
         {
             // Star columns cannot be resolved, treat them separately
             if (!cr.ColumnReference.IsResolved && !cr.ColumnReference.IsStar && !cr.ColumnReference.IsComplexExpression)
@@ -582,7 +641,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     // This has an empty table reference (only column name specified)
                     // Look for a match based on column name only
-                    foreach (var tr in sourceTables.SourceTableReferences.Values)
+                    foreach (var tr in sourceTables)
                     {
                         foreach (var ccr in tr.ColumnReferences)
                         {
@@ -623,26 +682,31 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     throw NameResolutionError.UnresolvableColumnReference(cr);
                 }
 
-                // Update column context of the referenced column
-                ncr.ColumnContext |= context;
-
-                // Make copy here
-                ncr = new ColumnReference(ncr);
-                ncr.IsResolved = true;
-
-                if (ncr.ColumnAlias != null)
-                {
-                    // If it is an aliased subquery column, make sure it remains referenced
-                    // by alias and re-aliasing remains
-                    ncr.ColumnName = ncr.ColumnAlias;
-                }
-
-                // Preserve column alias of referencing column
-                ncr.ColumnAlias = cr.ColumnReference.ColumnAlias;
-
-                // Associate column with the resolved reference
-                cr.ColumnReference = ncr;
+                UpdateColumnReference(cr, ncr, context);
             }
+        }
+        
+        private void UpdateColumnReference(IColumnReference cr, ColumnReference ncr, ColumnContext context)
+        {
+            // Update column context of the referenced column
+            ncr.ColumnContext |= context;
+
+            // Make copy here
+            ncr = new ColumnReference(ncr);
+            ncr.IsResolved = true;
+
+            if (ncr.ColumnAlias != null)
+            {
+                // If it is an aliased subquery column, make sure it remains referenced
+                // by alias and re-aliasing remains
+                ncr.ColumnName = ncr.ColumnAlias;
+            }
+
+            // Preserve column alias of referencing column
+            ncr.ColumnAlias = cr.ColumnReference.ColumnAlias;
+
+            // Associate column with the resolved reference
+            cr.ColumnReference = ncr;
         }
 
         #endregion
@@ -1274,6 +1338,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void AssignDefaultColumnAliases(QuerySpecification qs, bool subquery, bool singleColumnSubquery)
         {
             var aliases = new HashSet<string>(SchemaManager.Comparer);
+            
+            var cnt = qs.EnumerateSelectListColumnExpressions().Count();
+
             int q = 0;
             foreach (var ce in qs.EnumerateSelectListColumnExpressions())
             {
@@ -1289,7 +1356,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     if (cr.ColumnName == null)
                     {
-                        if (subquery && !singleColumnSubquery)
+                        if (subquery && !singleColumnSubquery && cnt > 1)
                         {
                             throw NameResolutionError.MissingColumnAlias(ce);
                         }

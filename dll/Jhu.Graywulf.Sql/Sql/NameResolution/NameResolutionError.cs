@@ -132,5 +132,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             return CreateException(ExceptionMessages.SingleColumnSubqueryRequired, null, null, node);
         }
+
+        public static NameResolverException ColumnNotPartOfTargetTable(Node node)
+        {
+            return CreateException(ExceptionMessages.ColumnNotPartOfTargetTable, null, null, node);
+        }
     }
 }

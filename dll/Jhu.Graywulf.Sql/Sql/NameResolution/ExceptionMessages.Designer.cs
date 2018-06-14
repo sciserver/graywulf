@@ -79,6 +79,15 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The referenced column &apos;{0}&apos; found at ({1},{2}) is not part of the target table..
+        /// </summary>
+        internal static string ColumnNotPartOfTargetTable {
+            get {
+                return ResourceManager.GetString("ColumnNotPartOfTargetTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Database name &apos;{0}&apos; illegally specified at ({1},{2})..
         /// </summary>
         internal static string DatabaseNameNotAllowed {

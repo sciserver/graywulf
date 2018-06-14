@@ -96,6 +96,7 @@
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerColumnListGeneratorTest.cs" />
     <Compile Include="Sql\LogicalExpressions\SearchConditionNormalizerTest.cs" />
     <Compile Include="Sql\NameResolution\CommonTableExpressionTest.cs" />
+    <Compile Include="Sql\NameResolution\InsertStatementTest.cs" />
     <Compile Include="Sql\NameResolution\DeleteStatementTest.cs" />
     <Compile Include="Sql\NameResolution\SourceTableReferenceTest.cs" />
     <Compile Include="Sql\NameResolution\StatementBlockTest.cs" />

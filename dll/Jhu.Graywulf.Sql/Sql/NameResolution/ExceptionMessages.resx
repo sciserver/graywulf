@@ -123,6 +123,9 @@
   <data name="AmbigousTableReference" xml:space="preserve">
     <value>Ambigous table reference '{0}' found at ({1},{2}).</value>
   </data>
+  <data name="ColumnNotPartOfTargetTable" xml:space="preserve">
+    <value>The referenced column '{0}' found at ({1},{2}) is not part of the target table.</value>
+  </data>
   <data name="DatabaseNameNotAllowed" xml:space="preserve">
     <value>Database name '{0}' illegally specified at ({1},{2}).</value>
   </data>

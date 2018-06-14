@@ -8,27 +8,31 @@ namespace Jhu.Graywulf.Sql.NameResolution
     [Flags]
     public enum ColumnContext : long
     {
-        None = 0,
-        NonReferenced = 1,
+        None = 0x00000000,
+        NonReferenced = 0x00000001,
 
-        SelectList = 2,
-        From = 4,
-        Where = 8,
-        GroupBy = 16,
-        Having = 32,
-        OrderBy = 64,
-
+        SelectList = 0x00000002,
+        From = 0x00000004,
+        Where = 0x00000008,
+        GroupBy = 0x00000010,
+        Having = 0x00000020,
+        OrderBy = 0x00000040,
+        
         Default = SelectList | From | Where | GroupBy | Having | OrderBy,
 
-        Hint = 128,
-        Special = 1024,
-        Key = 4096,             // Columns marked as 'Key' in schema description (usually taken from a data reader's schema table)
-        PrimaryKey = 2048,      // Columns of the primary key index
-        Identity = 8192,        // Column is an identity column
+        Insert = 0x00010000,
 
-        AllReferenced = Default | Hint | Special | PrimaryKey,
+        Update = 0x00020000,
 
-        All = NonReferenced | AllReferenced
+        Hint = 0x00100001,
+        Special = 0x00100002,
+        Key = 0x00100004,             // Columns marked as 'Key' in schema description (usually taken from a data reader's schema table)
+        PrimaryKey = 0x00100008,      // Columns of the primary key index
+        Identity = 0x00100010,        // Column is an identity column
+
+        AllReferenced = Default | Insert | Update | Hint | Special | PrimaryKey,
+
+        All = 0x7FFFFFFF
     }
 
     [Flags]

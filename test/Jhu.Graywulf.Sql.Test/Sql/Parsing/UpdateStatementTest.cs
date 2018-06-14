@@ -49,6 +49,7 @@ SET ID = 1,Data=2 , Data2 = 3 + 4";
 SET ID = 1,
     @var = 1 + 2,
     col += 12,
+    col = (SELECT 1),
     @var = col = 8,
     @var = col -= 12";
             new SqlParser().Execute<UpdateStatement>(sql);
@@ -80,18 +81,7 @@ FROM test CROSS JOIN test2
 WHERE ID = 12";
             new SqlParser().Execute<UpdateStatement>(sql);
         }
-
-        [TestMethod]
-        public void TopClauseTest()
-        {
-            var sql =
-@"UPDATE TOP 10
-test
-SET Data = 12
-WHERE ID = 12";
-            new SqlParser().Execute<UpdateStatement>(sql);
-        }
-
+        
         [TestMethod]
         public void CteTest()
         {
