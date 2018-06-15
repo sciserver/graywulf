@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public interface ITableSourceCollector
+    public interface ITargetTableProvider
     {
-        Dictionary<string, TableReference> SourceTableReferences { get; }
+        TableReference TargetTableReference { get; }
     }
 }

@@ -123,9 +123,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return CreateException(ExceptionMessages.TargetDatasetReadOnly, null, node.TableReference.DatasetName, (Node)node);
         }
 
-        public static NameResolverException DuplicateOutputTable(ITableReference node)
+        public static NameResolverException DuplicateOutputTable(TableReference tr)
         {
-            return CreateException(ExceptionMessages.DuplicateOutputTable, null, node.TableReference.DatabaseObjectName, (Node)node);
+            return CreateException(ExceptionMessages.DuplicateOutputTable, null, tr.DatabaseObjectName, tr.Node);
         }
 
         public static NameResolverException SingleColumnSubqueryRequired(Node node)

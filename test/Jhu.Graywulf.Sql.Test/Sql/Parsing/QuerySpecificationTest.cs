@@ -98,9 +98,9 @@ INNER JOIN Author ON Author.ID = BookAuthor.AuthorID";
             tables = EnumerateTableSourcesTestHelper(sql, true);
             Assert.AreEqual(2, tables.Length);
             Assert.AreEqual("a", tables[0].TableReference.Alias);
-            Assert.AreEqual(NameResolution.TableReferenceType.Subquery, tables[0].TableReference.Type);
+            Assert.IsTrue(tables[0].TableReference.TableContext.HasFlag(NameResolution.TableContext.Subquery));
             Assert.AreEqual("table1", tables[1].TableReference.DatabaseObjectName);
-            Assert.AreEqual(NameResolution.TableReferenceType.TableOrView, tables[1].TableReference.Type);
+            Assert.IsTrue(tables[1].TableReference.TableContext.HasFlag(NameResolution.TableContext.TableOrView));
         }
 
         [TestMethod]
@@ -113,9 +113,9 @@ INNER JOIN Author ON Author.ID = BookAuthor.AuthorID";
             tables = EnumerateTableSourcesTestHelper(sql, true);
             Assert.AreEqual(2, tables.Length);
             Assert.AreEqual("table1", tables[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(NameResolution.TableReferenceType.TableOrView, tables[0].TableReference.Type);
+            Assert.IsTrue(tables[0].TableReference.TableContext.HasFlag(NameResolution.TableContext.TableOrView));
             Assert.AreEqual("table2", tables[1].TableReference.DatabaseObjectName);
-            Assert.AreEqual(NameResolution.TableReferenceType.TableOrView, tables[1].TableReference.Type);
+            Assert.IsTrue(tables[1].TableReference.TableContext.HasFlag(NameResolution.TableContext.TableOrView));
         }
 
     }

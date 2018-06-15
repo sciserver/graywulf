@@ -17,18 +17,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
         GroupBy = 0x00000010,
         Having = 0x00000020,
         OrderBy = 0x00000040,
-        
+
         Default = SelectList | From | Where | GroupBy | Having | OrderBy,
 
         Insert = 0x00010000,
 
         Update = 0x00020000,
 
-        Hint = 0x00100001,
-        Special = 0x00100002,
-        Key = 0x00100004,             // Columns marked as 'Key' in schema description (usually taken from a data reader's schema table)
-        PrimaryKey = 0x00100008,      // Columns of the primary key index
-        Identity = 0x00100010,        // Column is an identity column
+        Hint = 0x01000000,
+        Special = 0x02000000,
+        Key = 0x04000000,             // Columns marked as 'Key' in schema description (usually taken from a data reader's schema table)
+        PrimaryKey = 0x08000000,      // Columns of the primary key index
+        Identity = 0x10000000,        // Column is an identity column
 
         AllReferenced = Default | Insert | Update | Hint | Special | PrimaryKey,
 
@@ -38,12 +38,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
     [Flags]
     public enum TableContext : long
     {
-        None = 0,
-        From = 1,
-        Subquery = 2,
-        Into = 4,
-        Target = 8,
-        CreateTable = 16,
+        None = 0x00000000,
+
+        TableOrView = 0x00000001,
+        Subquery = 0x00000002,
+        Variable = 0x00000004,
+        UserDefinedFunction = 0x00000008,
+
+        CommonTable = 0x00010000,
+        From = 0x00020000,
+        Into = 0x00040000,                   // SELECT INTO
+        Target = 0x00080000,                 // INSERT, UPDATE, DELETE
+        CreateTable = 0x00100000,
+        AlterTable = 0x00200000,
     }
 
     [Flags]

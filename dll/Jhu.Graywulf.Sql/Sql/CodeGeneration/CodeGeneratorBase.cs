@@ -210,8 +210,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public string GenerateEscapedUniqueName(TableReference table)
         {
-            if (table.Type == TableReferenceType.Subquery ||
-                table.Type == TableReferenceType.CommonTable ||
+            if (table.TableContext.HasFlag(TableContext.Subquery) ||
+                table.TableContext.HasFlag(TableContext.CommonTable) ||
                 table.IsComputed)
             {
                 // We consider a table alias unique within a query, although this is
@@ -263,8 +263,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         {
             table = MapTableReference(table);
 
-            if (table.Type == TableReferenceType.Subquery ||
-                table.Type == TableReferenceType.CommonTable ||
+            if (table.TableContext.HasFlag(TableContext.Subquery) ||
+                table.TableContext.HasFlag(TableContext.CommonTable) ||
                 table.IsComputed)
             {
                 return GetQuotedIdentifier(table.Alias);
@@ -288,8 +288,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         {
             table = MapTableReference(table);
 
-            if (table.Type == TableReferenceType.Subquery ||
-                table.Type == TableReferenceType.CommonTable ||
+            if (table.TableContext.HasFlag(TableContext.Subquery) ||
+                table.TableContext.HasFlag(TableContext.CommonTable) ||
                 table.IsComputed)
             {
                 return GetQuotedIdentifier(table.Alias);
@@ -324,8 +324,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         {
             table = MapTableReference(table);
 
-            if (table.Type == TableReferenceType.Subquery ||
-                table.Type == TableReferenceType.CommonTable ||
+            if (table.TableContext.HasFlag(TableContext.Subquery) ||
+                table.TableContext.HasFlag(TableContext.CommonTable) ||
                 table.IsComputed ||
                 !String.IsNullOrWhiteSpace(table.Alias))
             {

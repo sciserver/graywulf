@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Sql.Parsing
     /// <summary>
     /// Implements a SELECT statement including the ORDER BY clause
     /// </summary>
-    public partial class SelectStatement : IStatement, ISelect
+    public partial class SelectStatement : IStatement, ISelect, IOutputTableProvider
     {
         #region Private member variables
 
@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return StatementType.Query; }
         }
-        
+
         public CommonTableExpression CommonTableExpression
         {
             get { return FindDescendant<CommonTableExpression>(); }
@@ -68,8 +68,29 @@ namespace Jhu.Graywulf.Sql.Parsing
         /// </summary>
         public TableReference OutputTableReference
         {
-            get { return outputTableReference; }
-            set { outputTableReference = value; }
+            get
+            {
+                return QueryExpression?.FirstQuerySpecification?.IntoClause?.TargetTable?.TableReference;
+            }
+        }
+
+        #endregion
+        #region Constructors and initializers
+
+        protected override void OnInitializeMembers()
+        {
+            base.OnInitializeMembers();
+
+            this.outputTableReference = null;
+        }
+
+        protected override void OnCopyMembers(object other)
+        {
+            base.OnCopyMembers(other);
+
+            var old = (SelectStatement)other;
+
+            this.outputTableReference = new TableReference(old.outputTableReference);
         }
 
         #endregion

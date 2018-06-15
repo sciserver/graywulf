@@ -176,7 +176,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     {
                         // TODO: Add support for insert and create table
 
-                        if (tr.Type == TableReferenceType.SelectInto &&
+                        if (tr.TableContext.HasFlag(TableContext.Into) &&
                             IsRemoteDataset(tr.DatabaseObject.Dataset))
                         {
                             if (rot == null)
@@ -235,7 +235,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                     foreach (var tr in QueryDetails.SourceTableReferences[key])
                     {
-                        if (tr.Type == TableReferenceType.TableOrView && tr.IsCachable && IsRemoteDataset(tr.DatabaseObject.Dataset))
+                        if (tr.TableContext.HasFlag(TableContext.TableOrView) && 
+                            tr.IsCachable && IsRemoteDataset(tr.DatabaseObject.Dataset))
                         {
                             if (rst == null)
                             {

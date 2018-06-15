@@ -231,12 +231,13 @@
     <Compile Include="Sql\NameResolution\DataTypeReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\FunctionReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\IDatabaseObjectReference.cs" />
-    <Compile Include="Sql\NameResolution\ITableSourceCollector.cs" />
-    <Compile Include="Sql\NameResolution\ITableSourceProvider.cs" />
+    <Compile Include="Sql\NameResolution\IOutputTableProvider.cs" />
+    <Compile Include="Sql\NameResolution\ISourceTableCollection.cs" />
+    <Compile Include="Sql\NameResolution\ISourceTableConsumer.cs" />
+    <Compile Include="Sql\NameResolution\ITargetTableProvider.cs" />
     <Compile Include="Sql\NameResolution\NameResolutionError.cs" />
     <Compile Include="Sql\NameResolution\QueryDetails.cs" />
     <Compile Include="Sql\NameResolution\TableReferenceEqualityComparer.cs" />
-    <Compile Include="Sql\NameResolution\TableReferenceType.cs" />
     <Compile Include="Sql\NameResolution\VariableReference.cs" />
     <Compile Include="Sql\NameResolution\DataTypeReference.cs" />
     <Compile Include="Sql\NameResolution\Enum.cs" />

@@ -7,11 +7,12 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class InsertStatement : IStatement, ITableSourceCollector, ITableSourceProvider
+    public partial class InsertStatement : IStatement, ISourceTableCollection, ITargetTableProvider
     {
         #region Private member variables
 
         private Dictionary<string, TableReference> sourceTableReferences;
+        private TableReference targetTableReference;
 
         #endregion
 
@@ -23,11 +24,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         public StatementType StatementType
         {
             get { return StatementType.Modify; }
-        }
-
-        public Dictionary<string, TableReference> SourceTableReferences
-        {
-            get { return sourceTableReferences; }
         }
 
         public CommonTableExpression CommonTableExpression
@@ -64,26 +60,28 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public QueryExpression QueryExpression
         {
-            get
-            {
-                return FindDescendant<QueryExpression>();
-            }
+            get { return FindDescendant<QueryExpression>(); }
         }
 
         public OrderByClause OrderByClause
         {
-            get
-            {
-                return FindDescendant<OrderByClause>();
-            }
+            get { return FindDescendant<OrderByClause>(); }
         }
 
         public QueryHintClause QueryHintClause
         {
-            get
-            {
-                return FindDescendant<QueryHintClause>();
-            }
+            get { return FindDescendant<QueryHintClause>(); }
+        }
+
+        public Dictionary<string, TableReference> ResolvedSourceTableReferences
+        {
+            get { return sourceTableReferences; }
+        }
+
+        public TableReference TargetTableReference
+        {
+            get { return targetTableReference; }
+            set { targetTableReference = value; }
         }
 
         #region Constructors and initializers
@@ -93,6 +91,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             base.OnInitializeMembers();
 
             this.sourceTableReferences = new Dictionary<string, TableReference>(Schema.SchemaManager.Comparer);
+            this.targetTableReference = null;
         }
 
         protected override void OnCopyMembers(object other)
@@ -102,6 +101,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var old = (InsertStatement)other;
 
             this.sourceTableReferences = new Dictionary<string, TableReference>(old.sourceTableReferences);
+            this.targetTableReference = new TableReference(old.targetTableReference);
         }
 
         #endregion
@@ -113,6 +113,11 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
         {
+            // TODO: check where this function is called from
+            // it should return ALL source tables referenced by the query
+            // and should never be used for name resolution because certain tables might
+            // be outside the scope of the referee
+
             yield return TargetTable;
 
             // TODO: SELECT part and VALUES part expression subqueries

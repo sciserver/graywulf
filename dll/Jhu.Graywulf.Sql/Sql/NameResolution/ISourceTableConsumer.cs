@@ -7,9 +7,12 @@ using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public interface ITableSourceProvider
+    /// <summary>
+    /// When implemented, this interface provides functions to enumerate all source table of
+    /// a given query.
+    /// </summary>
+    public interface ISourceTableConsumer
     {
         IEnumerable<ITableSource> EnumerateSourceTables(bool recursive);
-        IEnumerable<TableReference> EnumerateSourceTableReferences(bool recursive);
     }
 }

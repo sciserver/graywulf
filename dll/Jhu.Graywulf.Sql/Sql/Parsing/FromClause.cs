@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class FromClause : ITableSourceProvider
+    public partial class FromClause : ISourceTableConsumer
     {
         public static FromClause Create(TableSourceExpression tse)
         {
@@ -62,17 +62,6 @@ namespace Jhu.Graywulf.Sql.Parsing
 
                 node = node.FindDescendant<JoinedTable>();
             }
-        }
-
-        /// <summary>
-        /// Enumerates through all table sources and returns every TableReference
-        /// associated with the table source
-        /// </summary>
-        /// <param name="recursive"></param>
-        /// <returns></returns>
-        public IEnumerable<TableReference> EnumerateSourceTableReferences(bool recursive)
-        {
-            return EnumerateSourceTables(recursive).Select(ts => ts.TableReference);
         }
 
         #endregion

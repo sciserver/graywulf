@@ -20,10 +20,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var res = GenerateCode(ds);
             Assert.AreEqual("DELETE [Graywulf_Schema_Test].[dbo].[Author]", res);
 
-            var ts = ds.EnumerateSourceTableReferences(false).ToArray();
+            var ts = ds.EnumerateSourceTables(false).ToArray();
 
-            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].Alias);
+            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].TableReference.Alias);
         }
 
         [TestMethod]
@@ -42,11 +42,11 @@ FROM [Graywulf_Schema_Test].[dbo].[Author]";
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTableReferences(false).ToArray();
+            var ts = ds.EnumerateSourceTables(false).ToArray();
 
             Assert.AreEqual(2, ts.Length);
-            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].Alias);
+            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].TableReference.Alias);
         }
 
         [TestMethod]
@@ -67,11 +67,11 @@ INNER JOIN [Graywulf_Schema_Test].[dbo].[Book] ON [Graywulf_Schema_Test].[dbo].[
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTableReferences(false).ToArray();
+            var ts = ds.EnumerateSourceTables(false).ToArray();
 
             Assert.AreEqual(3, ts.Length);
-            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].Alias);
+            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].TableReference.Alias);
         }
 
         [TestMethod]
@@ -90,13 +90,13 @@ WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] IN (SELECT [Graywulf_Schema_Test]
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTableReferences(false).ToArray();
+            var ts = ds.EnumerateSourceTables(false).ToArray();
 
             Assert.AreEqual(2, ts.Length);
-            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].Alias);
-            Assert.AreEqual("Book", ts[1].DatabaseObjectName);
-            Assert.AreEqual(null, ts[1].Alias);
+            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].TableReference.Alias);
+            Assert.AreEqual("Book", ts[1].TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ts[1].TableReference.Alias);
         }
     }
 }

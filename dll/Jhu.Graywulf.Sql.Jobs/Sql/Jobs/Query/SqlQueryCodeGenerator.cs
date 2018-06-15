@@ -360,8 +360,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         private TableReference GetServerSpecificDatabaseMapping(TableReference tr, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
         {
-            if (tr.Type != TableReferenceType.Subquery &&
-                tr.Type != TableReferenceType.CommonTable &&
+            if (!tr.TableContext.HasFlag(TableContext.Subquery) &&
+                !tr.TableContext.HasFlag(TableContext.CommonTable) &&
                 !tr.IsComputed &&
                 tr.DatasetName != null)
             {

@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #region Property storage variables
 
         private string alias;
-        private TableReferenceType type;
+        private TableContext tableContext;
         private bool isComputed;
         private bool isResolved;
 
@@ -31,10 +31,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             set { alias = value; }
         }
 
-        public TableReferenceType Type
+        public TableContext TableContext
         {
-            get { return type; }
-            set { type = value; }
+            get { return tableContext; }
+            set { tableContext = value; }
         }
 
         public TableOrView TableOrView
@@ -67,11 +67,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             get
             {
                 return
-                  type != TableReferenceType.Subquery &&
-                  type != TableReferenceType.CommonTable &&
-                  type != TableReferenceType.UserDefinedFunction &&
-                  type != TableReferenceType.CreateTable &&
-                  type != TableReferenceType.SelectInto &&
+                  !tableContext.HasFlag(TableContext.Subquery) &&
+                  !tableContext.HasFlag(TableContext.CommonTable) &&
+                  !tableContext.HasFlag(TableContext.UserDefinedFunction) &&
+                  !tableContext.HasFlag(TableContext.CreateTable) &&
+                  !tableContext.HasFlag(TableContext.Target) &&             // TODO: review this
                   !IsComputed;
             }
         }
@@ -126,9 +126,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get
             {
-                if (type == TableReferenceType.Subquery ||
-                    type == TableReferenceType.CommonTable ||
-                    type == TableReferenceType.UserDefinedFunction ||
+                if (tableContext.HasFlag(TableContext.Subquery) ||
+                    tableContext.HasFlag(TableContext.CommonTable) ||
+                    tableContext.HasFlag(TableContext.UserDefinedFunction) ||
                     isComputed ||
                     alias != null)
                 {
@@ -166,7 +166,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public TableReference(string alias)
         {
             this.alias = alias;
-            this.type = TableReferenceType.Unknown;
+            this.tableContext = TableContext.None;
             this.isComputed = false;
             this.isResolved = false;
         }
@@ -175,7 +175,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             : base(table)
         {
             this.alias = alias;
-            this.type = TableReferenceType.Unknown;
+            this.tableContext = TableContext.None;
             this.isComputed = false;
             this.isResolved = true;
 
@@ -262,7 +262,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void InitializeMembers()
         {
             this.alias = null;
-            this.type = TableReferenceType.Unknown;
+            this.tableContext = TableContext.None;
             this.isComputed = false;
             this.isResolved = false;
 
@@ -272,7 +272,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void CopyMembers(TableReference old)
         {
             this.alias = old.alias;
-            this.type = old.type;
+            this.tableContext = old.tableContext;
             this.isComputed = old.isComputed;
             this.isResolved = old.isResolved;
 
@@ -346,7 +346,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var tn = ti.FindDescendant<TableName>();
             DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
 
-            this.type = TableReferenceType.TableOrView;
+            this.tableContext |= TableContext.TableOrView;
         }
 
         private void InterpretTableValuedFunctionCall(TableValuedFunctionCall tvf)
@@ -369,7 +369,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 var tn = udfi.FindDescendant<FunctionName>();
                 DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
 
-                type = TableReferenceType.UserDefinedFunction;
+                tableContext |= TableContext.UserDefinedFunction;
             }
             else
             {
@@ -380,12 +380,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void InterpretUserVariable(UserVariable v)
         {
             // TODO: add variable name?
-            type = TableReferenceType.Variable;
+            tableContext |= TableContext.Variable;
         }
 
         private void InterpretSubquery()
         {
-            this.type = TableReferenceType.Subquery;
+            this.tableContext |= TableContext.Subquery;
             this.isComputed = false;
         }
 
@@ -393,19 +393,22 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             this.columnReferences.Clear();
 
-            switch (type)
+            if (tableContext.HasFlag(TableContext.CommonTable) ||
+                tableContext.HasFlag(TableContext.Subquery))
             {
-                case TableReferenceType.CommonTable:
-                case TableReferenceType.Subquery:
-                    throw new InvalidOperationException();
-                case TableReferenceType.UserDefinedFunction:
-                    LoadUdfColumnReferences(schemaManager);
-                    break;
-                case TableReferenceType.TableOrView:
-                    LoadTableOrViewColumnReferences(schemaManager);
-                    break;
-                default:
-                    throw new NotImplementedException();
+                throw new InvalidOperationException();
+            }
+            else if (tableContext.HasFlag(TableContext.UserDefinedFunction))
+            {
+                LoadUdfColumnReferences(schemaManager);
+            }
+            else if (tableContext.HasFlag(TableContext.TableOrView))
+            {
+                LoadTableOrViewColumnReferences(schemaManager);
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
         }
 
