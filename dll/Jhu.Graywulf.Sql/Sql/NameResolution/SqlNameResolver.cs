@@ -359,6 +359,51 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveCreateTableStatement(CreateTableStatement statement)
         {
+            SubstituteOutputTableDefaults(null, statement.TargetTable.TableReference, TableContext.CreateTable);
+
+            var tr = statement.TargetTable.TableReference;
+            tr.InterpretTableDefinition(statement.TableDefinition);
+            
+            var table = CreateTable(tr);
+            if (!table.Dataset.Tables.TryAdd(table.UniqueKey, table))
+            {
+                throw NameResolutionError.TableAlreadyExists(statement.TargetTable);
+            }
+        }
+
+        private Table CreateTable(TableReference tr)
+        {
+            var ds = SchemaManager.Datasets[tr.DatasetName];
+
+            var table = new Schema.Table(ds)
+            {
+                DatabaseName = tr.DatabaseName,
+                SchemaName = tr.SchemaName,
+                TableName = tr.DatabaseObjectName
+            };
+
+            foreach (var cr in tr.ColumnReferences)
+            {
+                var col = CreateColumn(cr);
+                table.Columns.TryAdd(col.ColumnName, col);
+            }
+
+            // TODO:
+            // indexes
+            // primary key
+            // metadata
+
+            return table;
+        }
+
+        private Column CreateColumn(ColumnReference cr)
+        {
+            var column = new Column(cr.ColumnName, cr.DataType);
+            return column;
+        }
+
+        private Table AlterTable(TableReference tr)
+        {
             throw new NotImplementedException();
         }
 

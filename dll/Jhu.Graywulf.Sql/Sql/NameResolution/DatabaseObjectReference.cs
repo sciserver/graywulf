@@ -183,6 +183,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 this.datasetName = defaultDataSetName;
             }
 
+            if (this.databaseName == null)
+            {
+                this.databaseName = schemaManager.Datasets[this.datasetName].DatabaseName;
+            }
+
             if (this.schemaName == null)
             {
                 this.schemaName = schemaManager.Datasets[this.datasetName].DefaultSchemaName;

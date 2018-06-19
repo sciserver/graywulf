@@ -159,6 +159,9 @@
   <data name="StarColumnNotAllowed" xml:space="preserve">
     <value>Stars (*) in column expressions are not allowed but found at ({1},{2}).</value>
   </data>
+  <data name="TableAlreadyExists" xml:space="preserve">
+    <value>Table with name '{0}' found at ({1},{2}) already exists.</value>
+  </data>
   <data name="TargetDatasetReadOnly" xml:space="preserve">
     <value>The target dataset '{0}' specified at ({1},{2}) is read only.</value>
   </data>

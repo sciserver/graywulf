@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         private AliasRendering tableAliasRendering;
         private NameRendering columnNameRendering;
         private AliasRendering columnAliasRendering;
+        private NameRendering dataTypeNameRendering;
         private NameRendering functionNameRendering;
 
         private Lazy<Dictionary<DatasetBase, DatasetBase>> datasetMap;
@@ -64,6 +65,12 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         {
             get { return columnAliasRendering; }
             set { columnAliasRendering = value; }
+        }
+
+        public NameRendering DataTypeNameRendering
+        {
+            get { return dataTypeNameRendering; }
+            set { dataTypeNameRendering = value; }
         }
 
         public NameRendering FunctionNameRendering
@@ -118,6 +125,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             this.tableAliasRendering = AliasRendering.Default;
             this.columnNameRendering = NameRendering.Default;
             this.columnAliasRendering = AliasRendering.Default;
+            this.dataTypeNameRendering = NameRendering.Default;
             this.functionNameRendering = NameRendering.Default;
 
             // TODO: how to compare datasets?
@@ -436,6 +444,43 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             return res;
         }
 
+        protected DataTypeReference MapDataTypeReference(DataTypeReference dataType)
+        {
+            if (dataTypeReferenceMap.IsValueCreated && dataTypeReferenceMap.Value.ContainsKey(dataType))
+            {
+                return dataTypeReferenceMap.Value[dataType];
+            }
+            else
+            {
+                return dataType;
+            }
+        }
+
+        private string GetResolvedDataTypeName(DataTypeReference dataType)
+        {
+            dataType = MapDataTypeReference(dataType);
+
+            if (dataType.IsSystem)
+            {
+                // This is a built-in function
+                return GetResolvedDataTypeName(dataType.DataType);
+            }
+            else if (dataType.DatabaseObject != null)
+            {
+                // If it is linked up to the schema already
+                return GetResolvedDataTypeName(dataType.DatabaseObject.DatabaseName, dataType.DatabaseObject.SchemaName, dataType.DatabaseObject.ObjectName);
+            }
+            else
+            {
+                // If it's not resolved yet against the schema
+                return GetResolvedDataTypeName(dataType.DatabaseName, dataType.SchemaName, dataType.DatabaseObjectName);
+            }
+        }
+
+        protected abstract string GetResolvedDataTypeName(DataType dataType);
+
+        protected abstract string GetResolvedDataTypeName(string databaseName, string schemaName, string functionName);
+
         protected FunctionReference MapFunctionReference(FunctionReference function)
         {
             if (functionReferenceMap.IsValueCreated && functionReferenceMap.Value.ContainsKey(function))
@@ -495,6 +540,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                 case TableOrViewName t:
                     WriteTableOrViewName(t);
                     break;
+                case ColumnDefinitionName cd:
+                    WriteColumnDefinitionName(cd);
+                    break;
                 case ColumnIdentifier ci:
                     WriteColumnIdentifier(ci);
                     break;
@@ -511,6 +559,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                 */
                 case ColumnExpression ce:
                     WriteColumnExpression(ce);
+                    break;
+                case DataTypeIdentifier dt:
+                    WriteDataTypeIdentifier(dt);
                     break;
                 default:
                     base.WriteNode(token);
@@ -595,6 +646,20 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             }
         }
 
+        public void WriteColumnDefinitionName(ColumnDefinitionName node)
+        {
+            switch (columnNameRendering)
+            {
+                case NameRendering.FullyQualified:
+                case NameRendering.IdentifierOnly:
+                    Writer.Write(GetQuotedIdentifier(node.ColumnReference.ColumnName));
+                    break;
+                default:
+                    base.WriteNode(node);
+                    break;
+            }
+        }
+
         /// <summary>
         /// Writes a column expression
         /// </summary>
@@ -641,6 +706,34 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             {
                 // Fall back to original behavior
                 base.WriteNode(node);
+            }
+        }
+
+        public virtual void WriteDataTypeIdentifier(DataTypeIdentifier node)
+        {
+            foreach (var n in node.Stack)
+            {
+                switch (n)
+                {
+                    case SystemDataTypeIdentifier di:
+                    case UdtIdentifier udt:
+                        switch (dataTypeNameRendering)
+                        {
+                            case NameRendering.FullyQualified:
+                                Writer.Write(GetResolvedDataTypeName(node.DataTypeReference));
+                                break;
+                            case NameRendering.IdentifierOnly:
+                                // No point doing this because it would break the query
+                                throw new InvalidOperationException();
+                            default:
+                                base.WriteNode(node);
+                                break;
+                        }
+                        break;
+                    default:
+                        base.WriteNode(node);
+                        break;
+                }
             }
         }
 

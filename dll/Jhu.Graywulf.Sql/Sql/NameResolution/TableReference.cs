@@ -383,6 +383,28 @@ namespace Jhu.Graywulf.Sql.NameResolution
             tableContext |= TableContext.Variable;
         }
 
+        public void InterpretTableDefinition(TableDefinitionList tableDefinition)
+        {
+            foreach (var item in tableDefinition.EnumerateTableDefinitionItems())
+            {
+                var cd = item.ColumnDefinition;
+                var tc = item.TableConstraint;
+
+                if (cd != null)
+                {
+                    var cr = cd.ColumnName.ColumnReference;
+                    cr.TableReference = this;
+                    this.ColumnReferences.Add(cr);
+                }
+
+                if (item.TableConstraint != null)
+                {
+                    // TODO
+                    throw new NotImplementedException();
+                }
+            }
+        }
+
         private void InterpretSubquery()
         {
             this.tableContext |= TableContext.Subquery;

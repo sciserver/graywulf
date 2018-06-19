@@ -11,10 +11,10 @@ namespace Jhu.Graywulf.Sql.Parsing
     [TestClass]
     public class DataTypeTest
     {
-        private DataType Parse(string query)
+        private DataTypeIdentifier Parse(string query)
         {
             var p = new SqlParser();
-            return (DataType)p.Execute(new DataType(), query);
+            return (DataTypeIdentifier)p.Execute(new DataTypeIdentifier(), query);
         }
 
         [TestMethod]

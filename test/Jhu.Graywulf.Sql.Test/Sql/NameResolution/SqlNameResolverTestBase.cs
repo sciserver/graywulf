@@ -99,6 +99,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             cg.TableNameRendering = CodeGeneration.NameRendering.FullyQualified;
             cg.ColumnNameRendering = CodeGeneration.NameRendering.FullyQualified;
             cg.ColumnAliasRendering = CodeGeneration.AliasRendering.Always;
+            cg.DataTypeNameRendering = CodeGeneration.NameRendering.FullyQualified;
             cg.FunctionNameRendering = CodeGeneration.NameRendering.FullyQualified;
 
             var sw = new StringWriter();

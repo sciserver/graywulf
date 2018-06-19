@@ -13,6 +13,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private ColumnExpression columnExpression;
         private ColumnIdentifier columnIdentifier;
+        private ColumnDefinitionName columnDefinitionName;
         private TableReference tableReference;
 
         private string columnName;
@@ -146,6 +147,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             this.columnExpression = null;
             this.columnIdentifier = null;
+            this.columnDefinitionName = null;
             this.tableReference = null;
 
             this.columnName = null;
@@ -164,6 +166,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             this.columnExpression = old.columnExpression;
             this.columnIdentifier = old.columnIdentifier;
+            this.columnDefinitionName = old.columnDefinitionName;
             this.tableReference = old.tableReference;
 
             this.columnName = old.columnName;
@@ -220,6 +223,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
 
             cr.isComplexExpression = false;
+
+            return cr;
+        }
+
+        public static ColumnReference Interpret(ColumnDefinitionName cd)
+        {
+            var cr = new ColumnReference();
+
+            cr.columnDefinitionName = new ColumnDefinitionName();
+            cr.tableReference = new TableReference();
+            cr.isStar = false;
+            cr.isComplexExpression = false;
+            cr.columnName = Util.RemoveIdentifierQuotes(cd.FindDescendant<ColumnName>().Value);
 
             return cr;
         }

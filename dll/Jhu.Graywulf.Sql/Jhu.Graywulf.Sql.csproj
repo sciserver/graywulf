@@ -260,13 +260,18 @@
     <Compile Include="Sql\NameResolution\VariableReferenceType.cs" />
     <Compile Include="Sql\Parsing\Argument.cs" />
     <Compile Include="Sql\Parsing\ArgumentList.cs" />
+    <Compile Include="Sql\Parsing\ColumnDefinition.cs" />
+    <Compile Include="Sql\Parsing\ColumnDefinitionName.cs" />
     <Compile Include="Sql\Parsing\CommonTableExpression.cs" />
     <Compile Include="Sql\Parsing\CommonTableSpecification.cs" />
-    <Compile Include="Sql\Parsing\DataType.cs" />
+    <Compile Include="Sql\Parsing\DataTypeIdentifier.cs" />
     <Compile Include="Sql\Parsing\PrintStatement.cs" />
     <Compile Include="Sql\Parsing\StatementSeparator.cs" />
     <Compile Include="Sql\Parsing\StatementType.cs" />
+    <Compile Include="Sql\Parsing\SystemDataTypeIdentifier.cs" />
     <Compile Include="Sql\Parsing\SystemVariable.cs" />
+    <Compile Include="Sql\Parsing\TableDefinitionItem.cs" />
+    <Compile Include="Sql\Parsing\TableDefinitionList.cs" />
     <Compile Include="Sql\Parsing\TableVariable.cs" />
     <Compile Include="Sql\Parsing\TargetTableSpecification.cs" />
     <Compile Include="Sql\Parsing\UpdateSetColumn.cs" />
@@ -296,7 +301,6 @@
     <Compile Include="Sql\Parsing\ReturnStatement.cs" />
     <Compile Include="Sql\Parsing\ContinueStatement.cs" />
     <Compile Include="Sql\Parsing\BreakStatement.cs" />
-    <Compile Include="Sql\Parsing\TableDeclaration.cs" />
     <Compile Include="Sql\Parsing\ValueGroup.cs" />
     <Compile Include="Sql\Parsing\ValuesClause.cs" />
     <Compile Include="Sql\Parsing\VariableDeclaration.cs" />

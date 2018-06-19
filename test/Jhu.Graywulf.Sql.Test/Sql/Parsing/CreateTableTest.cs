@@ -20,6 +20,9 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             sql = @"CREATE TABLE test1 ( ID int )";
             new SqlParser().Execute<CreateTableStatement>(sql);
+
+            sql = @"CREATE TABLE[test1](ID[int])";
+            new SqlParser().Execute<CreateTableStatement>(sql);
         }
 
         [TestMethod]

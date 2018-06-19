@@ -13,7 +13,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #region Property storage variables
 
         private string systemFunctionName;
-
         private bool isUdf;
 
         #endregion

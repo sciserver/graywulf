@@ -8,9 +8,9 @@ using Jhu.Graywulf.Parsing.Generator;
 namespace Jhu.Graywulf.Sql.Parser.Grammar
 {
     [Grammar(
-        Namespace = "Jhu.Graywulf.Sql.Parsing", 
+        Namespace = "Jhu.Graywulf.Sql.Parsing",
         ParserName = "SqlParser",
-        Comparer = "StringComparer.InvariantCultureIgnoreCase", 
+        Comparer = "StringComparer.InvariantCultureIgnoreCase",
         RootToken = "StatementBlock")]
     public class SqlGrammar : Jhu.Graywulf.Parsing.Generator.Grammar
     {
@@ -102,7 +102,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> TableName = () => Identifier;
         public static Expression<Rule> ConstraintName = () => Identifier;
         public static Expression<Rule> IndexName = () => Identifier;
-        public static Expression<Rule> TypeName = () => Identifier;
+        public static Expression<Rule> DataTypeName = () => Identifier;
         public static Expression<Rule> DerivedTable = () => Identifier;
         public static Expression<Rule> TableAlias = () => Identifier;
         public static Expression<Rule> FunctionName = () => Identifier;
@@ -164,8 +164,8 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> AnyVariable = () =>
             Must
             (
-                ColumnIdentifier, 
-                SystemVariable, 
+                ColumnIdentifier,
+                SystemVariable,
                 UserVariable
             );
 
@@ -414,11 +414,17 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         #endregion
         #region Data types
 
-        public static Expression<Rule> DataType = () =>
+        public static Expression<Rule> DataTypeIdentifier = () =>
             Sequence
             (
-                // TODO: add support for UDTs
-                TypeName,
+                Must(SystemDataTypeIdentifier, UdtIdentifier),
+                May(Sequence(May(CommentOrWhitespace), May(Sequence(Keyword("NOT"), CommentOrWhitespace)), Keyword("NULL")))
+            );
+
+        public static Expression<Rule> SystemDataTypeIdentifier = () =>
+            Sequence
+            (
+                DataTypeName,
                 May
                 (
                     Sequence
@@ -430,8 +436,18 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                             DataTypeSize
                         )
                     )
-                ),
-                May(Sequence(May(CommentOrWhitespace), May(Sequence(Keyword("NOT"), CommentOrWhitespace)), Keyword("NULL")))
+                )
+            );
+
+        public static Expression<Rule> UdtIdentifier = () =>
+            Sequence
+            (
+                May(Sequence(DatasetName, May(CommentOrWhitespace), Colon, May(CommentOrWhitespace))),
+                Must
+                (
+                    Sequence(DatabaseName, May(CommentOrWhitespace), Dot, May(Sequence(May(CommentOrWhitespace), SchemaName)), May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), DataTypeName),
+                    Sequence(SchemaName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), DataTypeName)
+                )
             );
 
         public static Expression<Rule> DataTypeSize = () =>
@@ -766,7 +782,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 Must(
                     Keyword("CURSOR"),
                     Sequence(
-                        DataType,
+                        DataTypeIdentifier,
                         May(
                             Sequence
                             (
@@ -900,15 +916,9 @@ FOR select_statement
             Sequence
             (
                 Keyword("DECLARE"),
-                CommentOrWhitespace,
-                TableDeclaration
-            );
-
-        public static Expression<Rule> TableDeclaration = () =>
-            Sequence
-            (
+                May(CommentOrWhitespace),
                 TableVariable,
-                CommentOrWhitespace,
+                May(CommentOrWhitespace),
                 Keyword("TABLE"),
                 May(CommentOrWhitespace),
                 BracketOpen,
@@ -917,7 +927,7 @@ FOR select_statement
                 May(CommentOrWhitespace),
                 BracketClose
             );
-
+        
         #endregion
 
         #region Common table expressions
@@ -1526,7 +1536,7 @@ FOR select_statement
                 Keyword("CREATE"),
                 CommentOrWhitespace,
                 Keyword("TABLE"),
-                CommentOrWhitespace,
+                May(CommentOrWhitespace),
                 TableOrViewName,
                 May(CommentOrWhitespace),
                 BracketOpen,
@@ -1539,22 +1549,25 @@ FOR select_statement
         // TODO: create table could be extended with options and file group part
 
         public static Expression<Rule> TableDefinitionList = () =>
-        Sequence
-        (
+            Sequence
+            (
+                TableDefinitionItem,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), TableDefinitionList))
+            );
+
+        public static Expression<Rule> TableDefinitionItem = () =>
             Must
             (
                 ColumnDefinition,
                 TableConstraint
-            ),
-            May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), TableDefinitionList))
-        );
+            );
 
         public static Expression<Rule> ColumnDefinition = () =>
             Sequence
             (
-                ColumnName,
-                CommentOrWhitespace,
-                DataType,
+                ColumnDefinitionName,
+                May(CommentOrWhitespace),
+                DataTypeIdentifier,
                 May
                 (
                     Sequence
@@ -1576,6 +1589,8 @@ FOR select_statement
                     )
                 )
             );
+
+        public static Expression<Rule> ColumnDefinitionName = () => ColumnName;
 
         // TODO: add computed columns
 
