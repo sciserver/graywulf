@@ -1460,31 +1460,36 @@ FOR select_statement
         public static Expression<Rule> UpdateSetColumn = () =>
             Sequence
             (
-                Must
-                (
-                    Sequence
-                    (
-                        UserVariable,
-                        May(CommentOrWhitespace),
-                        Equals1,
-                        May(CommentOrWhitespace),
-                        ColumnName
-                    ),
-                    Must
-                    (
-                        UserVariable,
-                        ColumnName
-                    )
-                    // TODO: add support for UDT fields
-                ),
+                UpdateSetLeftHandSide,
+                // TODO: add support for WRITE
                 May(CommentOrWhitespace),
                 ValueAssignmentOperator,
                 May(CommentOrWhitespace),
-                Must
+                UpdateSetRightHandSide
+            );
+
+        public static Expression<Rule> UpdateSetLeftHandSide = () =>
+            Must
+            (
+                Sequence
                 (
-                    Keyword("DEFAULT"),
-                    Expression
-                )
+                    UserVariable,
+                    May(CommentOrWhitespace),
+                    Equals1,
+                    May(CommentOrWhitespace),
+                    ColumnIdentifier
+                ),
+                UserVariable,
+                ColumnIdentifier
+
+            // TODO: add support for UDT fields
+            );
+
+        public static Expression<Rule> UpdateSetRightHandSide = () =>
+            Must
+            (
+                Keyword("DEFAULT"),
+                Expression
             );
 
         #endregion

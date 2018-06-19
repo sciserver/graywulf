@@ -36,6 +36,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<TargetTableSpecification>(); }
         }
 
+        public UpdateSetList UpdateSetList
+        {
+            get { return FindDescendant<UpdateSetList>(); }
+        }
+
         public FromClause FromClause
         {
             get { return FindDescendant<FromClause>(); }
@@ -87,6 +92,26 @@ namespace Jhu.Graywulf.Sql.Parsing
         public IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
         {
             yield return TargetTable;
+
+            // Tables referenced in SET part subqueries
+            var sets = UpdateSetList;
+            if (sets != null)
+            {
+                foreach (var set in sets.EnumerateSetColumns())
+                {
+                    var exp = set.RightHandSide?.Expression;
+                    if (exp != null)
+                    {
+                        foreach (var sq in exp.EnumerateDescendantsRecursive<Subquery>())
+                        {
+                            foreach (var ts in sq.EnumerateSourceTables(recursive))
+                            {
+                                yield return ts;
+                            }
+                        }
+                    }
+                }
+            }
 
             // Start from the FROM clause, if specified, otherwise no
             // table sources in the query

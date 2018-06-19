@@ -8,17 +8,22 @@ using Jhu.Graywulf.Sql.Parsing;
 namespace Jhu.Graywulf.Sql.NameResolution
 {
     [TestClass]
-    public class DeleteStatementTest : SqlNameResolverTestBase
+    public class UpdateStatementTest : SqlNameResolverTestBase
     {
-        [TestMethod]
-        public void SimpleDeleteTest()
-        {
-            var sql = "DELETE Author";
+        // TODO: 
+        // -- update table variable
+        // -- update CTE?
+        // -- UPDATE a SET ... FROM table AS a
 
-            var ds = Parse<DeleteStatement>(sql);
+        [TestMethod]
+        public void SimplUpdateTest()
+        {
+            var sql = "UPDATE Author SET Name = 'new_name'";
+
+            var ds = Parse<UpdateStatement>(sql);
 
             var res = GenerateCode(ds);
-            Assert.AreEqual("DELETE [Graywulf_Schema_Test].[dbo].[Author]", res);
+            Assert.AreEqual("UPDATE [Graywulf_Schema_Test].[dbo].[Author] SET [Graywulf_Schema_Test].[dbo].[Author].[Name] = 'new_name'", res);
 
             var ts = ds.EnumerateSourceTables(false).ToArray();
             Assert.AreEqual(1, ts.Length);
@@ -27,17 +32,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         [TestMethod]
-        public void DeleteWithFromTest()
+        public void UpdateWithFromTest()
         {
             var sql = 
-@"DELETE Author
+@"UPDATE Author
+SET Name = 'new_name'
 FROM Author";
 
             var gt =
-@"DELETE [Graywulf_Schema_Test].[dbo].[Author]
+@"UPDATE [Graywulf_Schema_Test].[dbo].[Author]
+SET [Graywulf_Schema_Test].[dbo].[Author].[Name] = 'new_name'
 FROM [Graywulf_Schema_Test].[dbo].[Author]";
 
-            var ds = Parse<DeleteStatement>(sql);
+            var ds = Parse<UpdateStatement>(sql);
 
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
@@ -48,6 +55,57 @@ FROM [Graywulf_Schema_Test].[dbo].[Author]";
             Assert.AreEqual(null, ts[0].TableReference.Alias);
         }
 
+        [TestMethod]
+        public void UpdateWithTableAliasTest()
+        {
+            var sql =
+@"UPDATE a
+SET Name = 'new_name'
+FROM Author AS a";
+
+            var gt =
+@"UPDATE [a]
+SET [a].[Name] = 'new_name'
+FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]";
+
+            var ds = Parse<UpdateStatement>(sql);
+
+            var res = GenerateCode(ds);
+            Assert.AreEqual(gt, res);
+
+            var ts = ds.EnumerateSourceTables(false).ToArray();
+            Assert.AreEqual(2, ts.Length);
+            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
+            Assert.AreEqual("a", ts[0].TableReference.Alias);
+        }
+
+        [TestMethod]
+        public void UpdateWithNoTableAliasTest()
+        {
+            var sql =
+@"UPDATE Author
+SET Name = 'new_name'
+FROM Author AS a";
+
+            var gt =
+@"UPDATE [Graywulf_Schema_Test].[dbo].[Author]
+SET [Graywulf_Schema_Test].[dbo].[Author].[Name] = 'new_name'
+FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]";
+
+            var ds = Parse<UpdateStatement>(sql);
+
+            var res = GenerateCode(ds);
+            Assert.AreEqual(gt, res);
+
+            var ts = ds.EnumerateSourceTables(false).ToArray();
+            Assert.AreEqual(2, ts.Length);
+            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].TableReference.Alias);
+            Assert.AreEqual("Author", ts[1].TableReference.DatabaseObjectName);
+            Assert.AreEqual("a", ts[1].TableReference.Alias);
+        }
+
+        /*
         [TestMethod]
         public void DeleteWithJoinTest()
         {
@@ -96,5 +154,6 @@ WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] IN (SELECT [Graywulf_Schema_Test]
             Assert.AreEqual("Book", ts[1].TableReference.DatabaseObjectName);
             Assert.AreEqual(null, ts[1].TableReference.Alias);
         }
+        */
     }
 }

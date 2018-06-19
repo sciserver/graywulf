@@ -10,10 +10,11 @@ namespace Jhu.Graywulf.Sql.Parsing
     /// <summary>
     /// Implements a SELECT statement including the ORDER BY clause
     /// </summary>
-    public partial class SelectStatement : IStatement, ISelect, IOutputTableProvider
+    public partial class SelectStatement : IStatement, ISelect, ISourceTableCollection, ISourceTableConsumer, IOutputTableProvider
     {
         #region Private member variables
 
+        private Dictionary<string, TableReference> sourceTableReferences;
         private TableReference outputTableReference;
 
         #endregion
@@ -62,6 +63,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
         }
 
+        public Dictionary<string, TableReference> ResolvedSourceTableReferences
+        {
+            get { return sourceTableReferences; }
+        }
+
         /// <summary>
         /// Gets the reference to the table that represents
         /// the resultset of the query
@@ -81,6 +87,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             base.OnInitializeMembers();
 
+            this.sourceTableReferences = new Dictionary<string, TableReference>(Schema.SchemaManager.Comparer);
             this.outputTableReference = null;
         }
 
@@ -90,6 +97,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             var old = (SelectStatement)other;
 
+            this.sourceTableReferences = new Dictionary<string, TableReference>(old.sourceTableReferences);
             this.outputTableReference = new TableReference(old.outputTableReference);
         }
 
@@ -114,6 +122,11 @@ namespace Jhu.Graywulf.Sql.Parsing
         public IEnumerable<Statement> EnumerateSubStatements()
         {
             yield break;
+        }
+
+        public IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
+        {
+            throw new NotImplementedException();
         }
     }
 }

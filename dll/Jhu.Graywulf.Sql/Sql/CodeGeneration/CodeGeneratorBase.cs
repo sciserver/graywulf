@@ -486,6 +486,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         {
             switch (token)
             {
+                case TargetTableSpecification tts:
+                    WriteTargetTableSpecification(tts);
+                    break;
                 case TableAlias ta:
                     WriteTableAlias(ta);
                     break;
@@ -512,6 +515,20 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                 default:
                     base.WriteNode(token);
                     break;
+            }
+        }
+
+        public void WriteTargetTableSpecification(TargetTableSpecification tts)
+        {
+            if (tts.TableReference.TableContext.HasFlag(TableContext.Target) &&
+                !String.IsNullOrEmpty(tts.TableReference.Alias))
+            {
+                // Always render target tables with alias, when defined
+                Writer.Write(GetQuotedIdentifier(tts.TableReference.Alias));
+            }
+            else
+            {
+                base.WriteNode(tts);
             }
         }
 

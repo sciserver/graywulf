@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class InsertStatement : IStatement, ISourceTableCollection, ITargetTableProvider
+    public partial class InsertStatement : IStatement, ISelect, ISourceTableCollection, ITargetTableProvider
     {
         #region Private member variables
 
@@ -113,20 +113,40 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
         {
-            // TODO: check where this function is called from
-            // it should return ALL source tables referenced by the query
-            // and should never be used for name resolution because certain tables might
-            // be outside the scope of the referee
-
+            // Target table
             yield return TargetTable;
 
-            // TODO: SELECT part and VALUES part expression subqueries
-            throw new NotImplementedException();
-        }
+            // Tables referenced in VALUES part subqueries
+            var values = ValuesClause;
+            if (values != null)
+            {
+                foreach (var group in values.EnumerateValueGroups())
+                {
+                    foreach (var value in group.EnumerateValues())
+                    {
+                        if (value is Expression exp)
+                        {
+                            foreach (var sq in exp.EnumerateDescendantsRecursive<Subquery>())
+                            {
+                                foreach (var ts in sq.EnumerateSourceTables(recursive))
+                                {
+                                    yield return ts;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
-        public IEnumerable<TableReference> EnumerateSourceTableReferences(bool recursive)
-        {
-            return EnumerateSourceTables(recursive).Select(ts => ts.TableReference);
+            // Tables referenced by the SELECT part and its subqueries
+            var query = QueryExpression;
+            if (query != null)
+            {
+                foreach (var ts in query.EnumerateSourceTables(recursive))
+                {
+                    yield return ts;
+                }
+            }
         }
     }
 }
