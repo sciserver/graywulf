@@ -1289,7 +1289,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             foreach (var ts in sourceTables.EnumerateSourceTables(false))
             {
                 // TODO: any other exclusions?
-                if (!ts.IsSubquery)
+                if (!ts.IsSubquery && !ts.TableReference.IsComputed)
                 {
                     SubstituteSourceTableDefaults(cte, resolvedSourceTables, ts.TableReference);
                 }
