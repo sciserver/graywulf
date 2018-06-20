@@ -376,6 +376,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 var cd = item.ColumnDefinition;
                 var tc = item.TableConstraint;
+                var ti = item.TableIndex;
 
                 // Column defults contain an expression
                 if (cd != null)

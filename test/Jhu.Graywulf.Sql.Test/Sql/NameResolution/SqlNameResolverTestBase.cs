@@ -89,7 +89,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             ResolveNames(script);
 
-            return script.FindDescendantRecursive<T>();
+            if (script is T)
+            {
+                return (T)(Jhu.Graywulf.Parsing.Node)script;
+            }
+            else
+            {
+                return script.FindDescendantRecursive<T>();
+            }
         }
 
         protected string GenerateCode(Jhu.Graywulf.Parsing.Node node)

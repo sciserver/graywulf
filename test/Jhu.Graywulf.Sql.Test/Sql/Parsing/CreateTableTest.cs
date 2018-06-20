@@ -124,6 +124,28 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         [TestMethod]
+        public void TableIndexTest()
+        {
+            var sql = @"CREATE TABLE test(ID int, INDEX IX_test (ID))";
+            new SqlParser().Execute<CreateTableStatement>(sql);
+
+            sql = @"CREATE TABLE test(ID int, INDEX IX_test CLUSTERED (ID))";
+            new SqlParser().Execute<CreateTableStatement>(sql);
+
+            sql = @"CREATE TABLE test(ID int, INDEX IX_test NONCLUSTERED (ID))";
+            new SqlParser().Execute<CreateTableStatement>(sql);
+
+            sql = @"CREATE TABLE test(ID int, INDEX[IX_test](ID))";
+            new SqlParser().Execute<CreateTableStatement>(sql);
+
+            sql = @"CREATE TABLE test(ID int, INDEX[IX_test]CLUSTERED(ID))";
+            new SqlParser().Execute<CreateTableStatement>(sql);
+
+            sql = @"CREATE TABLE test(ID int, INDEX[IX_test]NONCLUSTERED(ID))";
+            new SqlParser().Execute<CreateTableStatement>(sql);
+        }
+
+        [TestMethod]
         public void DropTableTest()
         {
             var sql = "DROP TABLE test";

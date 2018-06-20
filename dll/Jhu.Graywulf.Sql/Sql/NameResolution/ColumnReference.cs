@@ -14,6 +14,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private ColumnExpression columnExpression;
         private ColumnIdentifier columnIdentifier;
         private ColumnDefinition columnDefinition;
+        private IndexColumnDefinition indexColumnDefinition;
 
         private TableReference tableReference;
         private DataTypeReference dataTypeReference;
@@ -235,6 +236,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 isStar = false,
                 isComplexExpression = false,
                 columnName = Util.RemoveIdentifierQuotes(cd.ColumnName.Value)
+            };
+
+            return cr;
+        }
+
+        public static ColumnReference Interpret(IndexColumnDefinition ic)
+        {
+            var cr = new ColumnReference()
+            {
+                indexColumnDefinition = ic,
+                isStar = false,
+                isComplexExpression = false,
+                columnName = Util.RemoveIdentifierQuotes(ic.ColumnName.Value)
             };
 
             return cr;

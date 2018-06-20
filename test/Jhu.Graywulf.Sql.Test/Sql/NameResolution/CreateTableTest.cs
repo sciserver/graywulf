@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
     public class CreateTableTest : SqlNameResolverTestBase
     {
         [TestMethod]
-        public void SimpleCreateTableTestTest()
+        public void SimpleCreateTableTest()
         {
             var sql =
 @"CREATE TABLE test
@@ -67,6 +67,66 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             Assert.AreEqual("ID", t.Columns["ID"].ColumnName);
             Assert.AreEqual("bigint", t.Columns["ID"].DataType.TypeName);
+        }
+
+        [TestMethod]
+        public void CreateTableWithConstraintsTest()
+        {
+            var sql =
+@"CREATE TABLE test
+(
+    ID bigint,
+    Data nvarchar(50),
+    CONSTRAINT PK_test PRIMARY KEY (ID),
+    INDEX IX_text (ID, Data)
+)";
+
+            var gt =
+@"CREATE TABLE [Graywulf_Schema_Test].[dbo].[test]
+(
+    [ID] [bigint],
+    [Data] [nvarchar](50),
+    CONSTRAINT PK_test PRIMARY KEY ([ID]),
+    INDEX IX_text ([ID], [Data])
+)";
+
+            var ss = Parse<CreateTableStatement>(sql);
+
+            var res = GenerateCode(ss);
+            Assert.AreEqual(gt, res);
+
+            var t = (Schema.Table)ss.DatabaseObjectReference.DatabaseObject;
+            Assert.AreEqual("test", t.TableName);
+            Assert.AreEqual(2, t.Columns.Count);
+        }
+
+        [TestMethod]
+        public void CreateAndResolveTableTest()
+        {
+            var sql =
+@"CREATE TABLE test
+(
+    ID bigint IDENTITY,
+    Data float
+)
+
+SELECT * FROM test
+";
+
+            var gt =
+@"CREATE TABLE [Graywulf_Schema_Test].[dbo].[test]
+(
+    [ID] [bigint] IDENTITY,
+    [Data] [float]
+)
+
+SELECT [Graywulf_Schema_Test].[dbo].[test].[Data] AS [Data], [Graywulf_Schema_Test].[dbo].[test].[ID] AS [ID] FROM [Graywulf_Schema_Test].[dbo].[test]
+";
+
+            var ss = Parse<StatementBlock>(sql);
+
+            var res = GenerateCode(ss);
+            Assert.AreEqual(gt, res);
         }
     }
 }

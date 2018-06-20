@@ -1559,7 +1559,8 @@ FOR select_statement
             Must
             (
                 ColumnDefinition,
-                TableConstraint
+                TableConstraint,
+                TableIndex
             );
 
         public static Expression<Rule> ColumnDefinition = () =>
@@ -1595,14 +1596,14 @@ FOR select_statement
         public static Expression<Rule> ColumnDefaultDefinition = () =>
             Sequence
             (
-                May(ConstraintNameSpecification),
+                May(Sequence(ConstraintNameSpecification, May(CommentOrWhitespace))),
                 Keyword("DEFAULT"),
                 May(CommentOrWhitespace),
                 Expression
             );
 
         public static Expression<Rule> ConstraintNameSpecification = () =>
-            Sequence(Keyword("CONSTRAINT"), May(CommentOrWhitespace), ConstraintName, May(CommentOrWhitespace));
+            Sequence(Keyword("CONSTRAINT"), May(CommentOrWhitespace), ConstraintName);
 
         public static Expression<Rule> ColumnIdentityDefinition = () =>
             Sequence
@@ -1629,19 +1630,19 @@ FOR select_statement
         public static Expression<Rule> ColumnConstraint = () =>
             Sequence
             (
-                May(ConstraintNameSpecification),
+                May(Sequence(ConstraintNameSpecification, May(CommentOrWhitespace))),
                 ConstraintSpecification
             );
 
         public static Expression<Rule> TableConstraint = () =>
             Sequence
             (
-                May(ConstraintNameSpecification),
+                May(Sequence(ConstraintNameSpecification, May(CommentOrWhitespace))),
                 ConstraintSpecification,
                 May(CommentOrWhitespace),
                 BracketOpen,
                 May(CommentOrWhitespace),
-                IndexColumnList,
+                IndexColumnDefinitionList,
                 May(CommentOrWhitespace),
                 BracketClose
             );
@@ -1659,10 +1660,28 @@ FOR select_statement
                     Sequence
                     (
                         CommentOrWhitespace,
-                        Must(Keyword("CLUSTERED"), Keyword("NONCLUSTERED"))
+                        IndexType
                     )
                 )
             );
+
+        public static Expression<Rule> TableIndex = () =>
+            Sequence
+            (
+                Keyword("INDEX"),
+                May(CommentOrWhitespace),
+                IndexName,
+                May(Sequence(May(CommentOrWhitespace), IndexType)),
+                May(CommentOrWhitespace),
+                BracketOpen,
+                May(CommentOrWhitespace),
+                IndexColumnDefinitionList,
+                May(CommentOrWhitespace),
+                BracketClose
+                // TODO: WITH, ON etc.
+            );
+
+        public static Expression<Rule> IndexType = () => Must(Keyword("CLUSTERED"), Keyword("NONCLUSTERED"));
 
         // TODO: any other constraints?
 
@@ -1707,7 +1726,7 @@ FOR select_statement
                 May(CommentOrWhitespace),
                 BracketOpen,
                 May(CommentOrWhitespace),
-                IndexColumnList,
+                IndexColumnDefinitionList,
                 May(CommentOrWhitespace),
                 BracketClose,
                 May
@@ -1726,14 +1745,14 @@ FOR select_statement
                 )
             );
 
-        public static Expression<Rule> IndexColumnList = () =>
+        public static Expression<Rule> IndexColumnDefinitionList = () =>
             Sequence
             (
-                IndexColumn,
-                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), IndexColumnList))
+                IndexColumnDefinition,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), IndexColumnDefinitionList))
             );
 
-        public static Expression<Rule> IndexColumn = () =>
+        public static Expression<Rule> IndexColumnDefinition = () =>
             Sequence
             (
                 ColumnName,

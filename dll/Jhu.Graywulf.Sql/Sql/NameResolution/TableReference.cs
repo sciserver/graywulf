@@ -399,8 +399,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (item.TableConstraint != null)
                 {
-                    // TODO
-                    throw new NotImplementedException();
+                    // TODO: implement, if index name resolution is required
                 }
             }
         }

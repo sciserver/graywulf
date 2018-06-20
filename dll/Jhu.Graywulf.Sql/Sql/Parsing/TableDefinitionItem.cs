@@ -17,5 +17,10 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return FindDescendant<TableConstraint>(); }
         }
+
+        public TableIndex TableIndex
+        {
+            get { return FindDescendant<TableIndex>(); }
+        }
     }
 }

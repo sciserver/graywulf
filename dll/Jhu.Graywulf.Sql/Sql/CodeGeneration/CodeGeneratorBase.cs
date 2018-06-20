@@ -546,6 +546,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                 case ColumnIdentifier ci:
                     WriteColumnIdentifier(ci);
                     break;
+                case IndexColumnDefinition cd:
+                    WriteIndexColumnDefinition(cd);
+                    break;
                 case FunctionIdentifier fi:
                     WriteFunctionIdentifier(fi);
                     break;
@@ -652,21 +655,41 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             {
                 if (n is ColumnName)
                 {
-                    switch (columnNameRendering)
-                    {
-                        case NameRendering.FullyQualified:
-                        case NameRendering.IdentifierOnly:
-                            Writer.Write(GetQuotedIdentifier(node.ColumnReference.ColumnName));
-                            break;
-                        default:
-                            base.WriteNode(node);
-                            break;
-                    }
+                    WriteColumnName(node);
                 }
                 else
                 {
                     WriteNode(n);
                 }
+            }
+        }
+
+        public void WriteIndexColumnDefinition(IndexColumnDefinition node)
+        {
+            foreach (var n in node.Stack)
+            {
+                if (n is ColumnName)
+                {
+                    WriteColumnName(node);
+                }
+                else
+                {
+                    WriteNode(n);
+                }
+            }
+        }
+
+        private void WriteColumnName(IColumnReference node)
+        {
+            switch (columnNameRendering)
+            {
+                case NameRendering.FullyQualified:
+                case NameRendering.IdentifierOnly:
+                    Writer.Write(GetQuotedIdentifier(node.ColumnReference.ColumnName));
+                    break;
+                default:
+                    base.WriteNode((Node)node);
+                    break;
             }
         }
 
