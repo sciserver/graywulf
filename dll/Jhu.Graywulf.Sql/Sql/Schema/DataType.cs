@@ -291,9 +291,6 @@ namespace Jhu.Graywulf.Sql.Schema
         private bool isNullable;
 
         [NonSerialized]
-        private bool isUserDefined;
-
-        [NonSerialized]
         private bool isTableType;
 
         [NonSerialized]
@@ -532,14 +529,7 @@ namespace Jhu.Graywulf.Sql.Schema
                     byteSize == 2;
             }
         }
-
-        [DataMember]
-        public bool IsUserDefined
-        {
-            get { return isUserDefined; }
-            set { isUserDefined = value; }
-        }
-
+        
         [DataMember]
         public bool IsTableType
         {
@@ -587,7 +577,7 @@ namespace Jhu.Graywulf.Sql.Schema
         {
             get
             {
-                return isUserDefined && !isTableType && !isAssemblyType;
+                return IsUserDefined && !isTableType && !isAssemblyType;
             }
         }
 
@@ -608,7 +598,7 @@ namespace Jhu.Graywulf.Sql.Schema
         {
             get
             {
-                if (isUserDefined)
+                if (IsUserDefined)
                 {
                     return false;
                 }
@@ -835,7 +825,6 @@ namespace Jhu.Graywulf.Sql.Schema
             this.arrayLength = 0;
             this.isVarArrayLength = false;
             this.isNullable = false;
-            this.isUserDefined = false;
             this.isTableType = false;
             this.columns = new LazyProperty<ConcurrentDictionary<string, Column>>(LoadColumns);
             this.quantities = new LazyProperty<QuantityIndex>(LoadQuantities);
@@ -858,7 +847,6 @@ namespace Jhu.Graywulf.Sql.Schema
             this.arrayLength = old.arrayLength;
             this.isVarArrayLength = old.isVarArrayLength;
             this.isNullable = old.isNullable;
-            this.isUserDefined = old.isUserDefined;
             this.isTableType = old.IsTableType;
             this.columns = new LazyProperty<ConcurrentDictionary<string, Column>>(LoadColumns);
             this.quantities = new LazyProperty<QuantityIndex>(LoadQuantities);
@@ -922,7 +910,7 @@ namespace Jhu.Graywulf.Sql.Schema
             res &= this.precision == other.precision;
             res &= !this.HasLength || (this.IsMaxLength && other.IsMaxLength) || (this.length == other.length);
             res &= this.isNullable == other.isNullable;
-            res &= this.isUserDefined == other.isUserDefined;
+            res &= this.IsUserDefined == other.IsUserDefined;
             res &= this.isTableType == other.isTableType;
             res &= this.isAssemblyType == other.isAssemblyType;
 

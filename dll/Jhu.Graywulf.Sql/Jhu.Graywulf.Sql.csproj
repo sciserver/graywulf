@@ -260,8 +260,8 @@
     <Compile Include="Sql\NameResolution\VariableReferenceType.cs" />
     <Compile Include="Sql\Parsing\Argument.cs" />
     <Compile Include="Sql\Parsing\ArgumentList.cs" />
+    <Compile Include="Sql\Parsing\ColumnDefaultDefinition.cs" />
     <Compile Include="Sql\Parsing\ColumnDefinition.cs" />
-    <Compile Include="Sql\Parsing\ColumnDefinitionName.cs" />
     <Compile Include="Sql\Parsing\CommonTableExpression.cs" />
     <Compile Include="Sql\Parsing\CommonTableSpecification.cs" />
     <Compile Include="Sql\Parsing\DataTypeIdentifier.cs" />

@@ -363,12 +363,35 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var tr = statement.TargetTable.TableReference;
             tr.InterpretTableDefinition(statement.TableDefinition);
-            
+
             var table = CreateTable(tr);
             if (!table.Dataset.Tables.TryAdd(table.UniqueKey, table))
             {
                 throw NameResolutionError.TableAlreadyExists(statement.TargetTable);
             }
+
+            tr.DatabaseObject = table;
+
+            foreach (var item in statement.TableDefinition.EnumerateTableDefinitionItems())
+            {
+                var cd = item.ColumnDefinition;
+                var tc = item.TableConstraint;
+
+                // Column defults contain an expression
+                if (cd != null)
+                {
+                    var dd = cd.DefaultDefinition;
+
+                    if (dd != null)
+                    {
+                        var exp = dd.Expression;
+
+                        ResolveSubtree(QueryContext.None, exp);
+                    }
+                }
+            }
+
+            
         }
 
         private Table CreateTable(TableReference tr)
@@ -398,7 +421,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private Column CreateColumn(ColumnReference cr)
         {
-            var column = new Column(cr.ColumnName, cr.DataType);
+            var column = new Column(cr.ColumnName, cr.DataTypeReference.DataType);
             return column;
         }
 
@@ -1345,7 +1368,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             try
             {
-                if (tr.IsPossiblyAlias && 
+                if (tr.IsPossiblyAlias &&
                     (cte != null && cte.CommonTableReferences.ContainsKey(tr.DatabaseObjectName) ||
                      resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(tr.DatabaseObjectName)))
                 {

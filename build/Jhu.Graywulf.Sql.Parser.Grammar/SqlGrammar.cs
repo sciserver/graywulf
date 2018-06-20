@@ -1565,7 +1565,7 @@ FOR select_statement
         public static Expression<Rule> ColumnDefinition = () =>
             Sequence
             (
-                ColumnDefinitionName,
+                ColumnName,
                 May(CommentOrWhitespace),
                 DataTypeIdentifier,
                 May
@@ -1590,8 +1590,6 @@ FOR select_statement
                 )
             );
 
-        public static Expression<Rule> ColumnDefinitionName = () => ColumnName;
-
         // TODO: add computed columns
 
         public static Expression<Rule> ColumnDefaultDefinition = () =>
@@ -1610,7 +1608,22 @@ FOR select_statement
             Sequence
             (
                 Keyword("IDENTITY"),
-                May(Sequence(May(CommentOrWhitespace), FunctionArguments))
+                May
+                (
+                    Sequence
+                    (
+                        May(CommentOrWhitespace), 
+                        BracketOpen,
+                        May(CommentOrWhitespace),
+                        Number,
+                        May(CommentOrWhitespace),
+                        Comma,
+                        May(CommentOrWhitespace),
+                        Number,
+                        May(CommentOrWhitespace),
+                        BracketClose
+                    )
+                )
             );
 
         public static Expression<Rule> ColumnConstraint = () =>

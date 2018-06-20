@@ -185,7 +185,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 foreach (var c in table.Columns.Values)
                 {
-                    columnReferences.Add(new ColumnReference(this, c));
+                    columnReferences.Add(new ColumnReference(c, this, new DataTypeReference(c.DataType)));
                 }
             }
         }
@@ -392,7 +392,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (cd != null)
                 {
-                    var cr = cd.ColumnName.ColumnReference;
+                    var cr = cd.ColumnReference;
                     cr.TableReference = this;
                     this.ColumnReferences.Add(cr);
                 }
@@ -469,7 +469,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             foreach (var cd in tvf.Columns.Values)
             {
-                var cr = new ColumnReference(this, cd);
+                var cr = new ColumnReference(cd, this, new DataTypeReference(cd.DataType));
 
                 // if column alias list is present, use the alias instead of the original name
                 if (calist != null)
@@ -511,7 +511,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
 
             // Copy columns to the table reference in appropriate order
-            this.columnReferences.AddRange(td.Columns.Values.OrderBy(c => c.ID).Select(c => new ColumnReference(this, c)));
+            this.columnReferences.AddRange(td.Columns.Values.OrderBy(c => c.ID).Select(c => new ColumnReference(c, this, new DataTypeReference(c.DataType))));
         }
 
         /// <summary>
@@ -571,7 +571,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     if (!res.ContainsKey(cd.ColumnName))
                     {
-                        res.Add(cd.ColumnName, new ColumnReference(this, cd));
+                        res.Add(cd.ColumnName, new ColumnReference(cd, this, new DataTypeReference(cd.DataType)));
                     }
                 }
             }
@@ -583,7 +583,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     if (cd.IsKey && !res.ContainsKey(cd.ColumnName))
                     {
-                        res.Add(cd.ColumnName, new ColumnReference(this, cd));
+                        res.Add(cd.ColumnName, new ColumnReference(cd, this, new DataTypeReference(cd.DataType)));
                     }
                 }
             }

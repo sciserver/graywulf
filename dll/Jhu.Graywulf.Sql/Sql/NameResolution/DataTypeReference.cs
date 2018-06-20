@@ -10,9 +10,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
     {
         #region Property storage variables
 
-        private string systemDataTypeName;
-        private bool isUdt;
-
         #endregion
         #region Properties
 
@@ -21,17 +18,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             get { return (Schema.DataType)DatabaseObject; }
             set { DatabaseObject = value; }
         }
-
-        public bool IsUdt
-        {
-            get { return isUdt; }
-        }
-
-        public bool IsSystem
-        {
-            get { return !isUdt; }
-        }
-
+        
         /// <summary>
         /// 
         /// </summary>
@@ -48,7 +35,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 else
                 {
-                    return systemDataTypeName;
+                    return base.DatabaseObjectName;
                 }
             }
         }
@@ -66,11 +53,17 @@ namespace Jhu.Graywulf.Sql.NameResolution
             CopyMembers(old);
         }
 
+        public DataTypeReference(Schema.DataType dataType)
+            :base(dataType)
+        {
+            InitializeMembers();
+        }
+
         public DataTypeReference(Parsing.DataTypeIdentifier dt)
             : this()
         {
             InitializeMembers();
-            InterpretDataType(dt);
+            InterpretDataTypeIdentifier(dt);
         }
 
         private void InitializeMembers()
@@ -88,7 +81,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         #endregion
 
-        private void InterpretDataType(Parsing.DataTypeIdentifier dataType)
+        private void InterpretDataTypeIdentifier(Parsing.DataTypeIdentifier dataType)
         {
             var sys = dataType.SystemDataTypeIdentifier;
             var udt = dataType.UdtIdentifier;
@@ -123,7 +116,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 throw new NotImplementedException();
             }
 
-            isUdt = false;
+            IsUserDefined = false;
         }
 
         private void InterpretUdtIdentifier(Parsing.UdtIdentifier dataType, bool isNullable)
@@ -140,7 +133,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var tn = dataType.FindDescendant<Parsing.FunctionName>();
             DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
 
-            isUdt = true;
+            IsUserDefined = true;
         }
     }
 }

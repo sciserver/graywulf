@@ -540,8 +540,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                 case TableOrViewName t:
                     WriteTableOrViewName(t);
                     break;
-                case ColumnDefinitionName cd:
-                    WriteColumnDefinitionName(cd);
+                case ColumnDefinition cd:
+                    WriteColumnDefinition(cd);
                     break;
                 case ColumnIdentifier ci:
                     WriteColumnIdentifier(ci);
@@ -646,17 +646,27 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             }
         }
 
-        public void WriteColumnDefinitionName(ColumnDefinitionName node)
+        public void WriteColumnDefinition(ColumnDefinition node)
         {
-            switch (columnNameRendering)
+            foreach (var n in node.Stack)
             {
-                case NameRendering.FullyQualified:
-                case NameRendering.IdentifierOnly:
-                    Writer.Write(GetQuotedIdentifier(node.ColumnReference.ColumnName));
-                    break;
-                default:
-                    base.WriteNode(node);
-                    break;
+                if (n is ColumnName)
+                {
+                    switch (columnNameRendering)
+                    {
+                        case NameRendering.FullyQualified:
+                        case NameRendering.IdentifierOnly:
+                            Writer.Write(GetQuotedIdentifier(node.ColumnReference.ColumnName));
+                            break;
+                        default:
+                            base.WriteNode(node);
+                            break;
+                    }
+                }
+                else
+                {
+                    WriteNode(n);
+                }
             }
         }
 
