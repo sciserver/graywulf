@@ -1743,6 +1743,8 @@ FOR select_statement
                         BracketClose
                     )
                 )
+
+                // TODO: WITH, ON
             );
 
         public static Expression<Rule> IndexColumnDefinitionList = () =>
@@ -1762,9 +1764,11 @@ FOR select_statement
         public static Expression<Rule> IncludedColumnList = () =>
             Sequence
             (
-                ColumnName,
+                IncludedColumnDefinition,
                 May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), IncludedColumnList))
             );
+
+        public static Expression<Rule> IncludedColumnDefinition = () => ColumnName;
 
         public static Expression<Rule> DropIndexStatement = () =>
             Sequence

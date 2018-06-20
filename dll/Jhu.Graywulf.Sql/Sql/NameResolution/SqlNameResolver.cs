@@ -445,7 +445,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveCreateIndexStatement(CreateIndexStatement statement)
         {
-            throw new NotImplementedException();
+            ResolveTargetTable(null, null, statement.TargetTable);
+
+            // TODO: update index in schema
         }
 
         private void ResolveDropIndexStatement(DropIndexStatement statement)
@@ -964,7 +966,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             ResolveExpressionReferences(cte, resolvedSourceTables, ColumnContext.None, node);
         }
 
-        protected void ResolveTargetTable(CommonTableExpression cte, ISourceTableCollection resolvedSourceTables, TargetTableSpecification target)
+        protected void ResolveTargetTable(CommonTableExpression cte, ISourceTableCollection resolvedSourceTables, ITableReference target)
         {
             SubstituteSourceTableDefaults(cte, resolvedSourceTables, target.TableReference);
             ResolveSourceTableReference(cte, resolvedSourceTables, target.TableReference);
@@ -1371,7 +1373,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 if (tr.IsPossiblyAlias &&
                     (cte != null && cte.CommonTableReferences.ContainsKey(tr.DatabaseObjectName) ||
-                     resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(tr.DatabaseObjectName)))
+                     resolvedSourceTables != null && resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(tr.DatabaseObjectName)))
                 {
                     // Don't do any substitution if referencing a common table or anything that aliased
                 }

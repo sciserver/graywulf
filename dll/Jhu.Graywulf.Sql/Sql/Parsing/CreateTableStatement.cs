@@ -19,6 +19,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return StatementType.Schema; }
         }
 
+        public TableOrViewName TargetTable
+        {
+            get { return FindDescendant<TableOrViewName>(); }
+        }
+
         public DatabaseObjectReference DatabaseObjectReference
         {
             get { return TargetTable.DatabaseObjectReference; }
@@ -28,11 +33,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return TargetTable.TableReference; }
             set { TargetTable.TableReference = value; }
-        }
-
-        public TableOrViewName TargetTable
-        {
-            get { return FindDescendant<TableOrViewName>(); }
         }
 
         public TableDefinitionList TableDefinition

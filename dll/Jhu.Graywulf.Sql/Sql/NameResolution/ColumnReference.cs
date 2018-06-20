@@ -11,11 +11,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
     {
         #region Private member variables
 
-        private ColumnExpression columnExpression;
-        private ColumnIdentifier columnIdentifier;
-        private ColumnDefinition columnDefinition;
-        private IndexColumnDefinition indexColumnDefinition;
-
         private TableReference tableReference;
         private DataTypeReference dataTypeReference;
 
@@ -147,9 +142,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void InitializeMembers()
         {
-            this.columnExpression = null;
-            this.columnIdentifier = null;
-            this.columnDefinition = null;
             this.tableReference = null;
 
             this.columnName = null;
@@ -165,9 +157,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void CopyMembers(ColumnReference old)
         {
-            this.columnExpression = old.columnExpression;
-            this.columnIdentifier = old.columnIdentifier;
-            this.columnDefinition = old.columnDefinition;
             this.tableReference = old.tableReference;
 
             this.columnName = old.columnName;
@@ -205,8 +194,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public static ColumnReference Interpret(ColumnIdentifier ci)
         {
             var cr = new ColumnReference();
-
-            cr.columnIdentifier = ci;
             cr.tableReference = new TableReference(ci);
 
             var star = ci.FindDescendant<Mul>();
@@ -232,9 +219,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var cr = new ColumnReference()
             {
                 DataTypeReference = cd.DataTypeReference,
-                columnDefinition = cd,
-                isStar = false,
-                isComplexExpression = false,
                 columnName = Util.RemoveIdentifierQuotes(cd.ColumnName.Value)
             };
 
@@ -245,9 +229,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var cr = new ColumnReference()
             {
-                indexColumnDefinition = ic,
-                isStar = false,
-                isComplexExpression = false,
+                columnName = Util.RemoveIdentifierQuotes(ic.ColumnName.Value)
+            };
+
+            return cr;
+        }
+
+        public static ColumnReference Interpret(IncludedColumnDefinition ic)
+        {
+            var cr = new ColumnReference()
+            {
                 columnName = Util.RemoveIdentifierQuotes(ic.ColumnName.Value)
             };
 
@@ -280,8 +271,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 cr.columnAlias = ca.Value;
             }
-
-            cr.columnExpression = ce;
 
             return cr;
         }

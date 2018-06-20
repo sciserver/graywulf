@@ -266,8 +266,8 @@
     <Compile Include="Sql\Parsing\CommonTableExpression.cs" />
     <Compile Include="Sql\Parsing\CommonTableSpecification.cs" />
     <Compile Include="Sql\Parsing\DataTypeIdentifier.cs" />
+    <Compile Include="Sql\Parsing\IncludedColumnDefinition.cs" />
     <Compile Include="Sql\Parsing\IndexColumnDefinition.cs" />
-    <Compile Include="Sql\Parsing\IndexColumnDefinitionList.cs" />
     <Compile Include="Sql\Parsing\PrintStatement.cs" />
     <Compile Include="Sql\Parsing\StatementSeparator.cs" />
     <Compile Include="Sql\Parsing\StatementType.cs" />
