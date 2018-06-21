@@ -328,6 +328,25 @@ testline
             dr.Read();
         }
 
+        [TestMethod]
+        public void FileFromGerardTest()
+        {
+            var csv = "_id,STATION,NAME,LATITUDE,LONGITUDE,DATE,PRCP,SNOW,SNWD,\n0,US1NYWC0003,'WHITE PLAINS 3.1 NNW, NY US',41.0639,-73.7722,2013-07-01,0.0,,\n1,US1NYWC0003,'WHITE PLAINS 3.1 NNW, NY US',41.0639,-73.7722,2013-07-02,2.58,,\n2,US1NYWC0003,'WHITE PLAINS 3.1 NNW, NY US',41.0639,-73.7722,2013-07-03,0.0,,\n3,US1NYWC0003,'WHITE PLAINS 3.1 NNW, NY US',41.0639,-73.7722,2013-07-16,0.0,0.0,\n4,US1NYWC0003,'WHITE PLAINS 3.1 NNW, NY US',41.0639,-73.7722,2013-07-17,0.0,0.0,\n5,US1NYWC0003,'WHITE PLAINS 3.1 NNW, NY US',41.0639,-73.7722,2013-07-18,0.0,0.0,\n6,US1NYWC0003,'WHITE PLAINS 3.1 NNW, NY US',41.0639,-73.7722,2013-07-19,0.0,0.0,\n7,US1NYWC0003,'WHITE PLAINS 3.1 NNW, NY US',41.0639,-73.7722,2013-07-20,0.0,0.0,\n8,US1NYWC0003,'WHITE PLAINS 3.1 NNW, NY US',41.0639,-73.7722,2013-07-21,0.0,0.0,\n";
+
+            var f = new DelimitedTextDataFile(new StringReader(csv));
+            f.ColumnNamesInFirstLine = true;
+            f.AutoDetectColumns = true;
+            f.AutoDetectColumnsCount = 100;
+            f.GenerateIdentityColumn = false;
+
+            var cmd = new FileCommand(f);
+            var dr = cmd.ExecuteReader();
+
+            Assert.AreEqual(typeof(Int32), dr.GetFieldType(0));
+
+            while (dr.Read()) ;
+        }
+
 
         // TODO: test nulls, string nulls, empty strings
         // multi-line strings
