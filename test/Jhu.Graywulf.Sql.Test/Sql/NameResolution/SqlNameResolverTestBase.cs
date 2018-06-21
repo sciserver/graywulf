@@ -89,7 +89,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             ResolveNames(script);
 
-            return script.FindDescendantRecursive<T>();
+            if (script is T)
+            {
+                return (T)(Jhu.Graywulf.Parsing.Node)script;
+            }
+            else
+            {
+                return script.FindDescendantRecursive<T>();
+            }
         }
 
         protected string GenerateCode(Jhu.Graywulf.Parsing.Node node)
@@ -99,6 +106,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             cg.TableNameRendering = CodeGeneration.NameRendering.FullyQualified;
             cg.ColumnNameRendering = CodeGeneration.NameRendering.FullyQualified;
             cg.ColumnAliasRendering = CodeGeneration.AliasRendering.Always;
+            cg.DataTypeNameRendering = CodeGeneration.NameRendering.FullyQualified;
             cg.FunctionNameRendering = CodeGeneration.NameRendering.FullyQualified;
 
             var sw = new StringWriter();

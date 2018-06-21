@@ -34,6 +34,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
                         cg.TableNameRendering = CodeGeneration.NameRendering.FullyQualified;
                         cg.ColumnNameRendering = CodeGeneration.NameRendering.IdentifierOnly;
+                        cg.DataTypeNameRendering = CodeGeneration.NameRendering.FullyQualified;
                         cg.FunctionNameRendering = CodeGeneration.NameRendering.FullyQualified;
 
                         var sw = new StringWriter();

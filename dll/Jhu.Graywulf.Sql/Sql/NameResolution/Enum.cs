@@ -51,6 +51,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
         Target = 0x00080000,                 // INSERT, UPDATE, DELETE
         CreateTable = 0x00100000,
         AlterTable = 0x00200000,
+        DropTable = 0x00400000,
+        CreateIndex = 0x00800000,
+        DropIndex = 0x01000000,
     }
 
     [Flags]

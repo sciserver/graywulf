@@ -11,12 +11,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
     {
         #region Private member variables
 
-        private ColumnExpression columnExpression;
-        private ColumnIdentifier columnIdentifier;
         private TableReference tableReference;
+        private DataTypeReference dataTypeReference;
 
         private string columnName;
-        private Schema.DataType dataType;
         private string columnAlias;
 
         private bool isStar;
@@ -35,18 +33,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
             set { tableReference = value; }
         }
 
+        public DataTypeReference DataTypeReference
+        {
+            get { return dataTypeReference; }
+            set { dataTypeReference = value; }
+        }
+
         public string ColumnName
         {
             get { return columnName; }
             set { columnName = value; }
         }
-
-        public Schema.DataType DataType
-        {
-            get { return dataType; }
-            set { dataType = value; }
-        }
-
+        
         public string ColumnAlias
         {
             get { return columnAlias; }
@@ -103,29 +101,30 @@ namespace Jhu.Graywulf.Sql.NameResolution
             CopyMembers(old);
         }
 
-        public ColumnReference(TableReference tableReference, string columnName, Schema.DataType columnType)
+        public ColumnReference(TableReference tableReference, string columnName, DataTypeReference dataTypeReference)
         {
             InitializeMembers();
 
             this.tableReference = tableReference;
+            this.dataTypeReference = dataTypeReference;
             this.columnName = columnName;
-            this.dataType = columnType;
         }
 
-        public ColumnReference(TableReference tableReference, Column columnDescription)
+        public ColumnReference(Column column, TableReference tableReference, DataTypeReference dataTypeReference)
         {
             InitializeMembers();
 
             this.tableReference = tableReference;
-            this.columnName = columnDescription.Name;
-            this.dataType = columnDescription.DataType;
+            this.dataTypeReference = dataTypeReference;
 
-            if (columnDescription.IsKey)
+            this.columnName = column.Name;
+
+            if (column.IsKey)
             {
                 this.columnContext |= ColumnContext.PrimaryKey;
             }
 
-            if (columnDescription.IsIdentity)
+            if (column.IsIdentity)
             {
                 this.columnContext |= ColumnContext.Identity;
             }
@@ -139,17 +138,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             this.tableReference = null;
             this.columnName = name;
-            this.dataType = dataType;
         }
 
         private void InitializeMembers()
         {
-            this.columnExpression = null;
-            this.columnIdentifier = null;
             this.tableReference = null;
 
             this.columnName = null;
-            this.dataType = DataTypes.Unknown;
             this.columnAlias = null;
 
             this.isStar = false;
@@ -162,12 +157,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void CopyMembers(ColumnReference old)
         {
-            this.columnExpression = old.columnExpression;
-            this.columnIdentifier = old.columnIdentifier;
             this.tableReference = old.tableReference;
 
             this.columnName = old.columnName;
-            this.dataType = old.dataType;
             this.columnAlias = old.columnAlias;
 
             this.isStar = old.isStar;
@@ -202,8 +194,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public static ColumnReference Interpret(ColumnIdentifier ci)
         {
             var cr = new ColumnReference();
-
-            cr.columnIdentifier = ci;
             cr.tableReference = new TableReference(ci);
 
             var star = ci.FindDescendant<Mul>();
@@ -220,6 +210,37 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
 
             cr.isComplexExpression = false;
+
+            return cr;
+        }
+
+        public static ColumnReference Interpret(ColumnDefinition cd)
+        {
+            var cr = new ColumnReference()
+            {
+                DataTypeReference = cd.DataTypeReference,
+                columnName = Util.RemoveIdentifierQuotes(cd.ColumnName.Value)
+            };
+
+            return cr;
+        }
+
+        public static ColumnReference Interpret(IndexColumnDefinition ic)
+        {
+            var cr = new ColumnReference()
+            {
+                columnName = Util.RemoveIdentifierQuotes(ic.ColumnName.Value)
+            };
+
+            return cr;
+        }
+
+        public static ColumnReference Interpret(IncludedColumnDefinition ic)
+        {
+            var cr = new ColumnReference()
+            {
+                columnName = Util.RemoveIdentifierQuotes(ic.ColumnName.Value)
+            };
 
             return cr;
         }
@@ -250,8 +271,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 cr.columnAlias = ca.Value;
             }
-
-            cr.columnExpression = ce;
 
             return cr;
         }

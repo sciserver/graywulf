@@ -137,5 +137,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             return CreateException(ExceptionMessages.ColumnNotPartOfTargetTable, null, null, node);
         }
+
+        public static NameResolverException TableAlreadyExists(Node node)
+        {
+            return CreateException(ExceptionMessages.TableAlreadyExists, null, null, node);
+        }
     }
 }

@@ -359,6 +359,75 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveCreateTableStatement(CreateTableStatement statement)
         {
+            SubstituteOutputTableDefaults(null, statement.TargetTable.TableReference, TableContext.CreateTable);
+
+            var tr = statement.TargetTable.TableReference;
+            tr.InterpretTableDefinition(statement.TableDefinition);
+
+            var table = CreateTable(tr);
+            if (!table.Dataset.Tables.TryAdd(table.UniqueKey, table))
+            {
+                throw NameResolutionError.TableAlreadyExists(statement.TargetTable);
+            }
+
+            tr.DatabaseObject = table;
+
+            foreach (var item in statement.TableDefinition.EnumerateTableDefinitionItems())
+            {
+                var cd = item.ColumnDefinition;
+                var tc = item.TableConstraint;
+                var ti = item.TableIndex;
+
+                // Column defults contain an expression
+                if (cd != null)
+                {
+                    var dd = cd.DefaultDefinition;
+
+                    if (dd != null)
+                    {
+                        var exp = dd.Expression;
+
+                        ResolveSubtree(QueryContext.None, exp);
+                    }
+                }
+            }
+
+            
+        }
+
+        private Table CreateTable(TableReference tr)
+        {
+            var ds = SchemaManager.Datasets[tr.DatasetName];
+
+            var table = new Schema.Table(ds)
+            {
+                DatabaseName = tr.DatabaseName,
+                SchemaName = tr.SchemaName,
+                TableName = tr.DatabaseObjectName
+            };
+
+            foreach (var cr in tr.ColumnReferences)
+            {
+                var col = CreateColumn(cr);
+                table.Columns.TryAdd(col.ColumnName, col);
+            }
+
+            // TODO:
+            // indexes
+            // primary key
+            // metadata
+
+            return table;
+        }
+
+        private Column CreateColumn(ColumnReference cr)
+        {
+            var column = new Column(cr.ColumnName, cr.DataTypeReference.DataType);
+            return column;
+        }
+
+        private Table AlterTable(TableReference tr)
+        {
             throw new NotImplementedException();
         }
 
@@ -376,7 +445,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveCreateIndexStatement(CreateIndexStatement statement)
         {
-            throw new NotImplementedException();
+            ResolveTargetTable(null, null, statement.TargetTable);
+
+            // TODO: update index in schema
         }
 
         private void ResolveDropIndexStatement(DropIndexStatement statement)
@@ -895,7 +966,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             ResolveExpressionReferences(cte, resolvedSourceTables, ColumnContext.None, node);
         }
 
-        protected void ResolveTargetTable(CommonTableExpression cte, ISourceTableCollection resolvedSourceTables, TargetTableSpecification target)
+        protected void ResolveTargetTable(CommonTableExpression cte, ISourceTableCollection resolvedSourceTables, ITableReference target)
         {
             SubstituteSourceTableDefaults(cte, resolvedSourceTables, target.TableReference);
             ResolveSourceTableReference(cte, resolvedSourceTables, target.TableReference);
@@ -1300,9 +1371,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             try
             {
-                if (tr.IsPossiblyAlias && 
+                if (tr.IsPossiblyAlias &&
                     (cte != null && cte.CommonTableReferences.ContainsKey(tr.DatabaseObjectName) ||
-                     resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(tr.DatabaseObjectName)))
+                     resolvedSourceTables != null && resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(tr.DatabaseObjectName)))
                 {
                     // Don't do any substitution if referencing a common table or anything that aliased
                 }

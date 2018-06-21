@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 
             cg.TableNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.ColumnNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
+            cg.DataTypeNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.FunctionNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.Execute(sw, node);
 
@@ -68,6 +69,55 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 
                 res += GetQuotedIdentifier(tableName);
             }
+
+            return res;
+        }
+
+        protected override string GetResolvedDataTypeName(DataType dataType)
+        {
+            // TODO: This is a duplicate with DataType.TypeNameWithLength, merge
+
+            var name = GetQuotedIdentifier(dataType.ObjectName.ToLowerInvariant());
+
+            if (!dataType.HasLength)
+            {
+                return name;
+            }
+            else if (dataType.HasPrecision && !dataType.HasScale)
+            {
+                return String.Format("{0}({1})", name, dataType.Precision);
+            }
+            else if (dataType.HasScale && !dataType.HasPrecision)
+            {
+                return String.Format("{0}({1})", name, dataType.Scale);
+            }
+            else if (dataType.HasScale && dataType.HasPrecision)
+            {
+                return String.Format("{0}({1}, {2})", name, dataType.Precision, dataType.Scale);
+            }
+            else if (dataType.IsMaxLength)
+            {
+                return String.Format("{0}(max)", name);
+            }
+            else
+            {
+                return String.Format("{0}({1})", name, dataType.Length);
+            }
+        }
+
+        protected override string GetResolvedDataTypeName(string databaseName, string schemaName, string functionName)
+        {
+            string res = String.Empty;
+
+
+            if (databaseName != null)
+            {
+                res += GetQuotedIdentifier(databaseName) + ".";
+            }
+
+            // SQL Server UTDs must always have the schema name specified
+            res += GetQuotedIdentifier(schemaName) + ".";
+            res += GetQuotedIdentifier(functionName);
 
             return res;
         }

@@ -20,9 +20,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<UserVariable>(); }
         }
 
-        public DataType DataType
+        public DataTypeIdentifier DataType
         {
-            get { return FindDescendant<DataType>(); }
+            get { return FindDescendant<DataTypeIdentifier>(); }
         }
         
         public bool IsCursor

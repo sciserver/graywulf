@@ -14,12 +14,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private Node node;
 
         private DatabaseObject databaseObject;
+        private bool isUserDefined;
 
         private string datasetName;
         private string databaseName;
         private string schemaName;
         private string databaseObjectName;
-
+        
         #endregion
         #region Properties
 
@@ -39,6 +40,23 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get { return databaseObject; }
             set { databaseObject = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the object is defined by the system or the user.
+        /// </summary>
+        /// <remarks>
+        /// This is used to distinguish UDTs and UDFs and not user-defined tables.
+        /// </remarks>
+        public bool IsUserDefined
+        {
+            get { return isUserDefined; }
+            set { isUserDefined = value; }
+        }
+        
+        public bool IsSystem
+        {
+            get { return !isUserDefined; }
         }
 
         /// <summary>
@@ -134,6 +152,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.node = null;
 
             this.databaseObject = databaseObject;
+            this.isUserDefined = databaseObject.IsUserDefined;
 
             this.datasetName = databaseObject.DatasetName;
             this.databaseName = databaseObject.DatabaseName;
@@ -146,6 +165,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.node = null;
 
             this.databaseObject = null;
+            this.isUserDefined = false;
 
             this.datasetName = null;
             this.databaseName = null;
@@ -158,6 +178,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.node = old.node;
 
             this.databaseObject = old.databaseObject;
+            this.isUserDefined = old.isUserDefined;
 
             this.datasetName = old.datasetName;
             this.databaseName = old.databaseName;
@@ -181,6 +202,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             if (this.datasetName == null)
             {
                 this.datasetName = defaultDataSetName;
+            }
+
+            if (this.databaseName == null)
+            {
+                this.databaseName = schemaManager.Datasets[this.datasetName].DatabaseName;
             }
 
             if (this.schemaName == null)

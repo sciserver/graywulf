@@ -146,6 +146,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 TableAliasRendering = AliasRendering.Default,
                 ColumnNameRendering = NameRendering.FullyQualified,
                 ColumnAliasRendering = AliasRendering.Always,
+                DataTypeNameRendering = NameRendering.FullyQualified,
                 FunctionNameRendering = NameRendering.FullyQualified
             };
         }
@@ -370,6 +371,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                         cg.TableAliasRendering = AliasRendering.Never;
                         cg.ColumnNameRendering = NameRendering.IdentifierOnly;
                         cg.ColumnAliasRendering = AliasRendering.Never;
+                        cg.DataTypeNameRendering = NameRendering.FullyQualified;
                         cg.FunctionNameRendering = NameRendering.FullyQualified;
                     }
 

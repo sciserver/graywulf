@@ -20,6 +20,9 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             sql = @"CREATE TABLE test1 ( ID int )";
             new SqlParser().Execute<CreateTableStatement>(sql);
+
+            sql = @"CREATE TABLE[test1](ID[int])";
+            new SqlParser().Execute<CreateTableStatement>(sql);
         }
 
         [TestMethod]
@@ -117,6 +120,28 @@ namespace Jhu.Graywulf.Sql.Parsing
     ID int DEFAULT 1,
     UNIQUE (ID ASC)
 )";
+            new SqlParser().Execute<CreateTableStatement>(sql);
+        }
+
+        [TestMethod]
+        public void TableIndexTest()
+        {
+            var sql = @"CREATE TABLE test(ID int, INDEX IX_test (ID))";
+            new SqlParser().Execute<CreateTableStatement>(sql);
+
+            sql = @"CREATE TABLE test(ID int, INDEX IX_test CLUSTERED (ID))";
+            new SqlParser().Execute<CreateTableStatement>(sql);
+
+            sql = @"CREATE TABLE test(ID int, INDEX IX_test NONCLUSTERED (ID))";
+            new SqlParser().Execute<CreateTableStatement>(sql);
+
+            sql = @"CREATE TABLE test(ID int, INDEX[IX_test](ID))";
+            new SqlParser().Execute<CreateTableStatement>(sql);
+
+            sql = @"CREATE TABLE test(ID int, INDEX[IX_test]CLUSTERED(ID))";
+            new SqlParser().Execute<CreateTableStatement>(sql);
+
+            sql = @"CREATE TABLE test(ID int, INDEX[IX_test]NONCLUSTERED(ID))";
             new SqlParser().Execute<CreateTableStatement>(sql);
         }
 

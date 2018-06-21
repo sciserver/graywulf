@@ -273,6 +273,7 @@ WHERE @__partKeyMin <= id AND id < @__partKeyMax";
             {
                 TableNameRendering = CodeGeneration.NameRendering.FullyQualified,
                 ColumnNameRendering = CodeGeneration.NameRendering.FullyQualified,
+                DataTypeNameRendering = CodeGeneration.NameRendering.FullyQualified,
                 FunctionNameRendering = CodeGeneration.NameRendering.FullyQualified,
             };
             var ts = q.QueryDetails.ParsingTree.FindDescendantRecursive<SelectStatement>().QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();

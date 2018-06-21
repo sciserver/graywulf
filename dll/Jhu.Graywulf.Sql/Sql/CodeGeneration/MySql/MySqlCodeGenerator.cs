@@ -50,6 +50,28 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
             return res;
         }
 
+        protected override string GetResolvedDataTypeName(DataType dataType)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override string GetResolvedDataTypeName(string databaseName, string schemaName, string functionName)
+        {
+            string res = String.Empty;
+
+
+            if (databaseName != null)
+            {
+                res += GetQuotedIdentifier(databaseName) + ".";
+            }
+
+            // MySQL doesn't have the equivalent of SQL Server schame name
+
+            res += GetQuotedIdentifier(functionName);
+
+            return res;
+        }
+
         protected override string GetResolvedFunctionName(string databaseName, string schemaName, string functionName)
         {
             string res = String.Empty;

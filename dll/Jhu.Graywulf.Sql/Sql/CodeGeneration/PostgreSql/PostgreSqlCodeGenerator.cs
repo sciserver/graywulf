@@ -61,6 +61,29 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.PostgreSql
             return res;
         }
 
+        protected override string GetResolvedDataTypeName(DataType dataType)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override string GetResolvedDataTypeName(string databaseName, string schemaName, string functionName)
+        {
+            string res = String.Empty;
+
+
+            if (databaseName != null)
+            {
+                res += GetQuotedIdentifier(databaseName) + ".";
+            }
+
+            // TODO: verify this for postgres
+            // SQL Server function must always have the schema name specified
+            res += GetQuotedIdentifier(schemaName) + ".";
+            res += GetQuotedIdentifier(functionName);
+
+            return res;
+        }
+
         protected override string GetResolvedFunctionName(string databaseName, string schemaName, string functionName)
         {
             string res = String.Empty;

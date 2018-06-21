@@ -24,6 +24,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
             cg.TableNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.ColumnNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.ColumnAliasRendering = resolveAliases ? AliasRendering.Always : AliasRendering.Default;
+            cg.DataTypeNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.FunctionNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.Execute(w, ss);
 

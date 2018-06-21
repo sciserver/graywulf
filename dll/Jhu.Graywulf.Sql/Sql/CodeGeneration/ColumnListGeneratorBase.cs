@@ -86,7 +86,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
             foreach (var c in table.Columns.Values.OrderBy(ci => ci.ID))
             {
-                var cr = new ColumnReference(tr, c);
+                var cr = new ColumnReference(c, tr, new DataTypeReference(c.DataType));
                 this.columns.Add(cr);
             }
         }
@@ -101,7 +101,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
             foreach (var c in index.Columns.Values)
             {
-                var cr = new ColumnReference(tr, c);
+                var cr = new ColumnReference(c, tr, new DataTypeReference(c.DataType));
                 this.columns.Add(cr);
             }
         }
@@ -285,7 +285,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
             if (nullRendering == ColumnListNullRendering.Original)
             {
-                nullspec = column.DataType.IsNullable ? columnNull : columnNotNull;
+                nullspec = column.DataTypeReference.DataType.IsNullable ? columnNull : columnNotNull;
             }
             else
             {
@@ -348,7 +348,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                     alias,
                     QuoteIdentifier(EscapePropagatedColumnName(column.TableReference, column.ColumnName)),
                     QuoteIdentifier(column.ColumnName),
-                    column.DataType.TypeNameWithLength,
+                    // TODO: replace this with reald code generator
+                    column.DataTypeReference.DataType.TypeNameWithLength,
                     nullspec,
                     identityspec,
                     jalias);

@@ -8,12 +8,36 @@ namespace Jhu.Graywulf.Sql.NameResolution
 {
     public class DataTypeReference : DatabaseObjectReference
     {
+        #region Property storage variables
+
+        #endregion
         #region Properties
 
         public Schema.DataType DataType
         {
             get { return (Schema.DataType)DatabaseObject; }
             set { DatabaseObject = value; }
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>
+        /// Never use this in query generation!
+        /// </remarks>
+        public override string UniqueName
+        {
+            get
+            {
+                if (!IsSystem)
+                {
+                    return base.UniqueName;
+                }
+                else
+                {
+                    return base.DatabaseObjectName;
+                }
+            }
         }
 
         #endregion
@@ -29,10 +53,17 @@ namespace Jhu.Graywulf.Sql.NameResolution
             CopyMembers(old);
         }
 
-        public DataTypeReference(Parsing.DataType dt)
+        public DataTypeReference(Schema.DataType dataType)
+            :base(dataType)
+        {
+            InitializeMembers();
+        }
+
+        public DataTypeReference(Parsing.DataTypeIdentifier dt)
             : this()
         {
-            InterpretDataType(dt);
+            InitializeMembers();
+            InterpretDataTypeIdentifier(dt);
         }
 
         private void InitializeMembers()
@@ -50,7 +81,23 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         #endregion
 
-        private void InterpretDataType(Parsing.DataType dataType)
+        private void InterpretDataTypeIdentifier(Parsing.DataTypeIdentifier dataType)
+        {
+            var sys = dataType.SystemDataTypeIdentifier;
+            var udt = dataType.UdtIdentifier;
+            var isNullable = dataType.IsNullable;
+
+            if (sys != null)
+            {
+                InterpretSystemDataType(sys, isNullable);
+            }
+            else
+            {
+                InterpretUdtIdentifier(udt, isNullable);
+            }
+        }
+
+        private void InterpretSystemDataType(Parsing.SystemDataTypeIdentifier dataType, bool isNullable)
         {
             var name = Util.RemoveIdentifierQuotes(dataType.TypeName);
 
@@ -58,7 +105,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 // This is a system type
                 var sqltype = Schema.SqlServer.Constants.SqlDataTypes[name];
-                var dt = Schema.DataType.Create(sqltype, dataType.Length, dataType.Precision, dataType.Scale, dataType.IsNullable);
+                var dt = Schema.DataType.Create(sqltype, dataType.Length, dataType.Precision, dataType.Scale, isNullable);
 
                 DatabaseObject = dt;
                 DatabaseObjectName = dt.TypeNameWithLength;
@@ -68,6 +115,25 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // TODO: implement UDTs and CLR UDTs
                 throw new NotImplementedException();
             }
+
+            IsUserDefined = false;
+        }
+
+        private void InterpretUdtIdentifier(Parsing.UdtIdentifier dataType, bool isNullable)
+        {
+            var ds = dataType.FindDescendant<Parsing.DatasetName>();
+            DatasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
+
+            var dbn = dataType.FindDescendant<Parsing.DatabaseName>();
+            DatabaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
+
+            var sn = dataType.FindDescendant<Parsing.SchemaName>();
+            SchemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
+
+            var tn = dataType.FindDescendant<Parsing.FunctionName>();
+            DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
+
+            IsUserDefined = true;
         }
     }
 }

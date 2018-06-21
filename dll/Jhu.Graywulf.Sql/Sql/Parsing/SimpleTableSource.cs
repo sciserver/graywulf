@@ -139,7 +139,7 @@ namespace Jhu.Graywulf.Sql.Parsing
                 var ci = tpc.FindDescendant<ColumnIdentifier>();
                 partitioningColumn = ci;
                 partitioningKeyExpression = Expression.Create(ci);
-                partitioningKeyDataType = ci.ColumnReference.DataType;
+                partitioningKeyDataType = ci.ColumnReference.DataTypeReference.DataType;
             }
         }
 

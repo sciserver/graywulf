@@ -22,6 +22,9 @@ namespace Jhu.Graywulf.Sql.Schema
         private DatabaseObjectType objectType;
 
         [NonSerialized]
+        private bool isUserDefined;
+
+        [NonSerialized]
         private DatasetBase dataset;
 
         [NonSerialized]
@@ -49,6 +52,13 @@ namespace Jhu.Graywulf.Sql.Schema
             set { objectType = value; }
         }
 
+        [DataMember]
+        public bool IsUserDefined
+        {
+            get { return isUserDefined; }
+            set { isUserDefined = value; }
+        }
+
         /// <summary>
         /// Gets the dataset this object belongs to.
         /// </summary>
@@ -65,7 +75,7 @@ namespace Jhu.Graywulf.Sql.Schema
         [IgnoreDataMember]
         public string DatasetName
         {
-            get { return dataset.Name; }
+            get { return dataset?.Name; }
         }
 
         [DataMember(Name = "DatasetName")]
@@ -255,6 +265,7 @@ namespace Jhu.Graywulf.Sql.Schema
         private void InitializeMembers(StreamingContext context)
         {
             this.objectType = DatabaseObjectType.Unknown;
+            this.isUserDefined = false;
             this.dataset = null;
             this.databaseName = null;
             this.schemaName = null;
@@ -270,6 +281,7 @@ namespace Jhu.Graywulf.Sql.Schema
         private void CopyMembers(DatabaseObject old)
         {
             this.objectType = old.objectType;
+            this.isUserDefined = old.isUserDefined;
             this.dataset = old.dataset;
             this.databaseName = old.databaseName;
             this.schemaName = old.schemaName;
