@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Format
             {
                 columns[i] = new Column();
 
-                if (useNames)
+                if (useNames && parts[i] != null)
                 {
                     columns[i].Name = parts[i].Trim();
                 }

@@ -114,7 +114,9 @@ namespace Jhu.Graywulf.Format
                 int size, precedence;
                 if (!GetBestColumnTypeEstimate(parts[i], out type, out size, out precedence))
                 {
+                    columns[i].DataType = DataTypes.SqlVarChar;
                     columns[i].DataType.IsNullable = true;
+                    columns[i].DataType.Length = 50;
                 }
 
                 if (columns[i].DataType == null || columnTypePredence[i] < precedence)
