@@ -48,7 +48,32 @@ namespace Jhu.Graywulf.Sql.NameResolution
     Data float
 )
 
-SELECT * FROM @test
+SELECT * FROM @test";
+
+            var gt =
+@"DECLARE @test TABLE
+(
+    [ID] [bigint] IDENTITY,
+    [Data] [float]
+)
+
+SELECT [@test].[ID] AS [ID], [@test].[Data] AS [Data] FROM @test";
+
+            var ss = Parse<StatementBlock>(sql);
+
+            var res = GenerateCode(ss);
+            Assert.AreEqual(gt, res);
+        }
+
+        [TestMethod]
+        public void DeclareAndResolveTableWithAliasTest()
+        {
+            var sql =
+@"DECLARE @test TABLE
+(
+    ID bigint IDENTITY,
+    Data float
+)
 
 SELECT * FROM @test a";
 
@@ -59,9 +84,34 @@ SELECT * FROM @test a";
     [Data] [float]
 )
 
-SELECT [@test].[ID] AS [ID], [@test].[Data] AS [Data] FROM @test
-
 SELECT [a].[ID] AS [a_ID], [a].[Data] AS [a_Data] FROM @test [a]";
+
+            var ss = Parse<StatementBlock>(sql);
+
+            var res = GenerateCode(ss);
+            Assert.AreEqual(gt, res);
+        }
+
+        [TestMethod]
+        public void DeclareAndResolveTableInSubqueryTest()
+        {
+            var sql =
+@"DECLARE @test TABLE
+(
+    ID bigint IDENTITY,
+    Data float
+)
+
+SELECT * FROM (SELECT * FROM @test) AS q";
+
+            var gt =
+@"DECLARE @test TABLE
+(
+    [ID] [bigint] IDENTITY,
+    [Data] [float]
+)
+
+SELECT [q].[ID] AS [q_ID], [q].[Data] AS [q_Data] FROM (SELECT [@test].[ID], [@test].[Data] FROM @test) AS [q]";
 
             var ss = Parse<StatementBlock>(sql);
 
