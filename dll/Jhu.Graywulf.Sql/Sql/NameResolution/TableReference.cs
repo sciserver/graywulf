@@ -299,10 +299,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             foreach (var cr in old.columnReferences)
             {
-                var ncr = new ColumnReference(cr)
-                {
-                    TableReference = this
-                };
+                var ncr = new ColumnReference(this, cr);
                 this.columnReferences.Add(ncr);
             }
         }
@@ -419,8 +416,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (cd != null)
                 {
-                    var cr = cd.ColumnReference;
-                    cr.TableReference = this;
+                    var cr = new ColumnReference(this, cd.ColumnReference);
                     this.ColumnReferences.Add(cr);
                 }
 

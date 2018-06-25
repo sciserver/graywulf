@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             Assert.AreEqual(1, cs.Length);
             Assert.AreEqual("Name", cs[0].ColumnName);
-            Assert.AreEqual(ts[0], cs[0].TableReference);
+            Assert.AreEqual(ts[0], cs[0].ParentTableReference);
         }
 
         [TestMethod]
@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             Assert.AreEqual(1, cs.Length);
             Assert.AreEqual("Name", cs[0].ColumnName);
-            Assert.AreEqual(ts[0], cs[0].TableReference);
+            Assert.AreEqual(ts[0], cs[0].ParentTableReference);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author] INNER JOIN [Graywulf_Schema_Test].[dbo].[Book] ON [Graywulf_Schema_Test].[dbo].[Author].[ID] = 5", res);
@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             Assert.AreEqual(1, cs.Length);
             Assert.AreEqual("Name", cs[0].ColumnName);
-            Assert.AreEqual(ts[0], cs[0].TableReference);
+            Assert.AreEqual(ts[0], cs[0].ParentTableReference);
         }
 
         [TestMethod]
@@ -101,7 +101,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             Assert.AreEqual(2, cs.Length);
             Assert.AreEqual("ID", cs[0].ColumnName);
-            Assert.AreEqual(ts[0], cs[0].TableReference);
+            Assert.AreEqual(ts[0], cs[0].ParentTableReference);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID], MAX([Graywulf_Schema_Test].[dbo].[Author].[Name]) AS [Col_1] FROM [Graywulf_Schema_Test].[dbo].[Author] GROUP BY [Graywulf_Schema_Test].[dbo].[Author].[ID]", res);
@@ -126,7 +126,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             Assert.AreEqual(2, cs.Length);
             Assert.AreEqual("ID", cs[0].ColumnName);
-            Assert.AreEqual(ts[0], cs[0].TableReference);
+            Assert.AreEqual(ts[0], cs[0].ParentTableReference);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID], MAX([Graywulf_Schema_Test].[dbo].[Author].[Name]) AS [Col_1] FROM [Graywulf_Schema_Test].[dbo].[Author] GROUP BY [Graywulf_Schema_Test].[dbo].[Author].[ID] HAVING MAX([Graywulf_Schema_Test].[dbo].[Author].[Name]) > 5", res);
@@ -179,8 +179,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
 
             Assert.AreEqual(2, cs.Length);
-            Assert.AreEqual(cs[0].TableReference, ts[0]);
-            Assert.AreEqual(cs[1].TableReference, ts[1]);
+            Assert.AreEqual(cs[0].ParentTableReference, ts[0]);
+            Assert.AreEqual(cs[1].ParentTableReference, ts[1]);
             Assert.AreNotEqual(ts[0], ts[1]);
         }
 
@@ -204,8 +204,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
 
             Assert.AreEqual(2, cs.Length);
-            Assert.AreEqual(cs[0].TableReference, ts[0]);
-            Assert.AreEqual(cs[1].TableReference, ts[1]);
+            Assert.AreEqual(cs[0].ParentTableReference, ts[0]);
+            Assert.AreEqual(cs[1].ParentTableReference, ts[1]);
         }
 
         [TestMethod]
@@ -228,8 +228,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
 
             Assert.AreEqual(2, cs.Length);
-            Assert.AreEqual(cs[0].TableReference, ts[0]);
-            Assert.AreEqual(cs[1].TableReference, ts[1]);
+            Assert.AreEqual(cs[0].ParentTableReference, ts[0]);
+            Assert.AreEqual(cs[1].ParentTableReference, ts[1]);
 
         }
 

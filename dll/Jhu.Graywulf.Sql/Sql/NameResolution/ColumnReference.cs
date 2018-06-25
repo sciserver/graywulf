@@ -11,11 +11,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
     {
         #region Private member variables
 
-        private TableReference tableReference;
-        private DataTypeReference dataTypeReference;
+        private TableReference parentTableReference;
+        private DataTypeReference parentDataTypeReference;
 
         private string columnName;
         private string columnAlias;
+        private DataTypeReference dataTypeReference;
 
         private bool isStar;
         private bool isComplexExpression;
@@ -27,16 +28,22 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #endregion
         #region Properties
         
-        public TableReference TableReference
+        /// <summary>
+        /// Gets or sets the reference to the table defining the column
+        /// </summary>
+        public TableReference ParentTableReference
         {
-            get { return tableReference; }
-            set { tableReference = value; }
+            get { return parentTableReference; }
+            set { parentTableReference = value; }
         }
 
-        public DataTypeReference DataTypeReference
+        /// <summary>
+        /// Gets or sets the reference to the data type defining the column
+        /// </summary>
+        public DataTypeReference ParentDataTypeReference
         {
-            get { return dataTypeReference; }
-            set { dataTypeReference = value; }
+            get { return parentDataTypeReference; }
+            set { parentDataTypeReference = value; }
         }
 
         public string ColumnName
@@ -49,6 +56,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get { return columnAlias; }
             set { columnAlias = value; }
+        }
+
+        public DataTypeReference DataTypeReference
+        {
+            get { return dataTypeReference; }
+            set { dataTypeReference = value; }
         }
 
         public bool IsStar
@@ -101,11 +114,25 @@ namespace Jhu.Graywulf.Sql.NameResolution
             CopyMembers(old);
         }
 
+        public ColumnReference(TableReference parentTableReference, ColumnReference old)
+        {
+            CopyMembers(old);
+
+            this.parentTableReference = parentTableReference;
+        }
+
+        public ColumnReference(DataTypeReference parentDataTypeReference, ColumnReference old)
+        {
+            CopyMembers(old);
+
+            this.parentDataTypeReference = parentDataTypeReference;
+        }
+
         public ColumnReference(TableReference tableReference, string columnName, DataTypeReference dataTypeReference)
         {
             InitializeMembers();
 
-            this.tableReference = tableReference;
+            this.parentTableReference = tableReference;
             this.dataTypeReference = dataTypeReference;
             this.columnName = columnName;
         }
@@ -114,7 +141,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             InitializeMembers();
 
-            this.tableReference = tableReference;
+            this.parentTableReference = tableReference;
             this.dataTypeReference = dataTypeReference;
 
             this.columnName = column.Name;
@@ -131,21 +158,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             // TODO: copy metadata here
         }
-
-        public ColumnReference(string name, Schema.DataType dataType)
-        {
-            InitializeMembers();
-
-            this.columnName = name;
-        }
-
+        
         private void InitializeMembers()
         {
-            this.tableReference = null;
-            this.dataTypeReference = null;
+            this.parentTableReference = null;
+            this.parentDataTypeReference = null;
 
             this.columnName = null;
             this.columnAlias = null;
+            this.dataTypeReference = null;
 
             this.isStar = false;
             this.isComplexExpression = false;
@@ -157,11 +178,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void CopyMembers(ColumnReference old)
         {
-            this.tableReference = old.tableReference;
-            this.dataTypeReference = old.dataTypeReference;
+            this.parentTableReference = old.parentTableReference;
+            this.parentDataTypeReference = old.parentDataTypeReference;
 
             this.columnName = old.columnName;
             this.columnAlias = old.columnAlias;
+            this.dataTypeReference = old.dataTypeReference;
 
             this.isStar = old.isStar;
             this.isComplexExpression = old.isComplexExpression;
@@ -187,7 +209,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public static ColumnReference CreateStar(TableReference tableReference)
         {
             var cr = CreateStar();
-            cr.tableReference = tableReference;
+            cr.parentTableReference = tableReference;
 
             return cr;
         }
@@ -195,7 +217,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public static ColumnReference Interpret(ColumnIdentifier ci)
         {
             var cr = new ColumnReference();
-            cr.tableReference = new TableReference(ci);
+            cr.parentTableReference = new TableReference(ci);
 
             var star = ci.FindDescendant<Mul>();
 
@@ -217,11 +239,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static ColumnReference Interpret(ColumnDefinition cd)
         {
-            var cr = new ColumnReference()
-            {
-                DataTypeReference = cd.DataTypeReference,
-                columnName = Util.RemoveIdentifierQuotes(cd.ColumnName.Value)
-            };
+            var dr = cd.DataTypeReference;
+
+            dr.DataType.IsNullable = cd.IsNullable;
+
+            var cr = new ColumnReference(
+                null,
+                Util.RemoveIdentifierQuotes(cd.ColumnName.Value),
+                dr);
 
             return cr;
         }
@@ -280,30 +305,30 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             // other must be a direct column reference, ie having a TableReference set
             // or must be a complex expression with an alias set
-            if (other.tableReference == null && !other.isComplexExpression)
+            if (other.parentTableReference == null && !other.isComplexExpression)
             {
                 throw new InvalidOperationException();
             }
 
             bool res = true;
 
-            if ((this.tableReference == null || this.tableReference.IsUndefined) && !this.isComplexExpression)
+            if ((this.parentTableReference == null || this.parentTableReference.IsUndefined) && !this.isComplexExpression)
             {
                 // No table is specified, only compare by column name
                 res &= this.CompareByName(other);
             }
-            else if (other.tableReference == null || other.tableReference.IsUndefined)
+            else if (other.parentTableReference == null || other.parentTableReference.IsUndefined)
             {
                 // TODO: verify if this can happen
                 // if this is an alias
-                res &= this.tableReference == null && SchemaManager.Comparer.Compare(this.columnName, other.columnAlias) == 0;
+                res &= this.parentTableReference == null && SchemaManager.Comparer.Compare(this.columnName, other.columnAlias) == 0;
             }
             else
             {
                 // Now both have the table reference set, make sure they are equal
 
                 // compare the two table references
-                res &= (this.tableReference.Compare(other.tableReference));
+                res &= (this.parentTableReference.Compare(other.parentTableReference));
 
                 // compare the two names
                 res &= this.CompareByName(other);
@@ -336,9 +361,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var res = String.Empty;
 
-            if (tableReference != null && !TableReference.IsUndefined)
+            if (parentTableReference != null && !ParentTableReference.IsUndefined)
             {
-                res += tableReference.ToString();
+                res += parentTableReference.ToString();
                 res += ".";
             }
 

@@ -88,10 +88,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             foreach (var cr in old.columnReferences)
             {
-                var ncr = new ColumnReference(cr)
-                {
-                    DataTypeReference = this
-                };
+                var ncr = new ColumnReference(this, cr);
                 this.columnReferences.Add(ncr);
             }
         }
@@ -107,19 +104,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sys = dataType.SystemDataTypeIdentifier;
             var udt = dataType.UdtIdentifier;
-            var isNullable = dataType.IsNullable;
 
             if (sys != null)
             {
-                InterpretSystemDataType(sys, isNullable);
+                InterpretSystemDataType(sys);
             }
             else
             {
-                InterpretUdtIdentifier(udt, isNullable);
+                InterpretUdtIdentifier(udt);
             }
         }
 
-        private void InterpretSystemDataType(Parsing.SystemDataTypeIdentifier dataType, bool isNullable)
+        private void InterpretSystemDataType(Parsing.SystemDataTypeIdentifier dataType)
         {
             var name = Util.RemoveIdentifierQuotes(dataType.TypeName);
 
@@ -127,7 +123,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 // This is a system type
                 var sqltype = Schema.SqlServer.Constants.SqlDataTypes[name];
-                var dt = Schema.DataType.Create(sqltype, dataType.Length, dataType.Precision, dataType.Scale, isNullable);
+                var dt = Schema.DataType.Create(sqltype, dataType.Length, dataType.Precision, dataType.Scale, false);
 
                 DatabaseObject = dt;
                 DatabaseObjectName = dt.TypeNameWithLength;
@@ -141,7 +137,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             IsUserDefined = false;
         }
 
-        private void InterpretUdtIdentifier(Parsing.UdtIdentifier dataType, bool isNullable)
+        private void InterpretUdtIdentifier(Parsing.UdtIdentifier dataType)
         {
             var ds = dataType.FindDescendant<Parsing.DatasetName>();
             DatasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
@@ -167,8 +163,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (cd != null)
                 {
-                    var cr = cd.ColumnReference;
-                    cr.DataTypeReference = this;
+                    var cr = new ColumnReference(this, cd.ColumnReference);
                     this.ColumnReferences.Add(cr);
                 }
 

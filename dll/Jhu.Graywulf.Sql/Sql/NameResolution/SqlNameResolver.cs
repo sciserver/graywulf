@@ -575,7 +575,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     ResolveColumnReference(null, new[] { target.TableReference }, ColumnContext.Insert, column);
 
                     // Make sure column belongs to the target table
-                    if (!column.ColumnReference.TableReference.Compare(target.TableReference))
+                    if (!column.ColumnReference.ParentTableReference.Compare(target.TableReference))
                     {
                         throw NameResolutionError.ColumnNotPartOfTargetTable(column);
                     }
@@ -838,7 +838,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 ColumnReference ncr = null;
                 int q = 0;
 
-                if (cr.ColumnReference.TableReference.IsUndefined)
+                if (cr.ColumnReference.ParentTableReference.IsUndefined)
                 {
                     // This has an empty table reference (only column name specified)
                     // Look for a match based on column name only
@@ -863,7 +863,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     // This has a table reference already so only check
                     // columns of that particular table
-                    foreach (var ccr in cr.ColumnReference.TableReference.ColumnReferences)
+                    foreach (var ccr in cr.ColumnReference.ParentTableReference.ColumnReferences)
                     {
                         if (cr.ColumnReference.Compare(ccr))
                         {
@@ -1593,9 +1593,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     }
                     else if (!subquery)
                     {
-                        if (cr.TableReference != null && cr.TableReference.Alias != null)
+                        if (cr.ParentTableReference != null && cr.ParentTableReference.Alias != null)
                         {
-                            alias = GetUniqueColumnAlias(aliases, String.Format("{0}_{1}", cr.TableReference.Alias, cr.ColumnName));
+                            alias = GetUniqueColumnAlias(aliases, String.Format("{0}_{1}", cr.ParentTableReference.Alias, cr.ColumnName));
                         }
                         else
                         {

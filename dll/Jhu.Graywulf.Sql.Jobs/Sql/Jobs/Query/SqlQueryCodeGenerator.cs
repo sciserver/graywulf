@@ -549,10 +549,10 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             {
                 var cr = ci.ColumnReference;
 
-                if (original.Compare(cr.TableReference) && !ColumnReferenceMap.ContainsKey(cr))
+                if (original.Compare(cr.ParentTableReference) && !ColumnReferenceMap.ContainsKey(cr))
                 {
                     var ncr = new ColumnReference(cr);
-                    ncr.TableReference = other;
+                    ncr.ParentTableReference = other;
                     ColumnReferenceMap.Add(cr, ncr);
                 }
             }

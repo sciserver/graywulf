@@ -19,19 +19,19 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public DatabaseObjectReference DatabaseObjectReference
         {
-            get { return columnReference.TableReference; }
+            get { return columnReference.ParentTableReference; }
         }
 
         public TableReference TableReference
         {
-            get { return columnReference.TableReference; }
-            set { columnReference.TableReference = value; }
+            get { return columnReference.ParentTableReference; }
+            set { columnReference.ParentTableReference = value; }
         }
 
         public DataTypeReference DataTypeReference
         {
             get { return DataType.DataTypeReference; }
-            set { DataType.DataTypeReference = value; }
+            set { columnReference.ParentDataTypeReference = value; }
         }
 
         public ColumnName ColumnName
@@ -42,6 +42,22 @@ namespace Jhu.Graywulf.Sql.Parsing
         public DataTypeIdentifier DataType
         {
             get { return FindDescendant<DataTypeIdentifier>(); }
+        }
+
+        public bool IsNullable
+        {
+            get
+            {
+                // TODO: update this becaues there can be other literals in the future
+                var k = FindDescendant<ColumnNullDefinition>()?.FindDescendantRecursive<Jhu.Graywulf.Parsing.Literal>();
+
+                if (k != null && SqlParser.ComparerInstance.Compare("not", k.Value) != 0)
+                {
+                    return true;
+                }
+
+                return false;
+            }
         }
 
         public ColumnDefaultDefinition DefaultDefinition

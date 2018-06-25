@@ -19,13 +19,13 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public DatabaseObjectReference DatabaseObjectReference
         {
-            get { return columnReference.TableReference; }
+            get { return columnReference.ParentTableReference; }
         }
 
         public TableReference TableReference
         {
-            get { return columnReference.TableReference; }
-            set { columnReference.TableReference = value; }
+            get { return columnReference.ParentTableReference; }
+            set { columnReference.ParentTableReference = value;  }
         }
 
         protected override void OnInitializeMembers()
@@ -69,16 +69,16 @@ namespace Jhu.Graywulf.Sql.Parsing
             var nci = new ColumnIdentifier();
             nci.ColumnReference = cr;
 
-            if (cr.TableReference != null && !cr.TableReference.IsUndefined)
+            if (cr.ParentTableReference != null && !cr.ParentTableReference.IsUndefined)
             {
-                if (String.IsNullOrEmpty(cr.TableReference.Alias))
+                if (String.IsNullOrEmpty(cr.ParentTableReference.Alias))
                 {
-                    nci.Stack.AddLast(TableName.Create(cr.TableReference.DatabaseObjectName));
+                    nci.Stack.AddLast(TableName.Create(cr.ParentTableReference.DatabaseObjectName));
                     nci.Stack.AddLast(Dot.Create());
                 }
                 else
                 {
-                    nci.Stack.AddLast(TableName.Create(cr.TableReference.Alias));
+                    nci.Stack.AddLast(TableName.Create(cr.ParentTableReference.Alias));
                     nci.Stack.AddLast(Dot.Create());
                 }
             }

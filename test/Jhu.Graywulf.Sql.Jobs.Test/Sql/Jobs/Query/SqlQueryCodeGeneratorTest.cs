@@ -282,7 +282,7 @@ WHERE @__partKeyMin <= id AND id < @__partKeyMax";
             var stat = new TableStatistics(ts)
             {
                 BinCount = 200,
-                KeyColumn = Expression.Create(new ColumnReference("dec", DataTypes.SqlFloat)),
+                KeyColumn = Expression.Create(new ColumnReference(null, "dec", new DataTypeReference(DataTypes.SqlFloat))),
                 KeyColumnDataType = DataTypes.SqlFloat
             };
 

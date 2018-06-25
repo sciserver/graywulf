@@ -19,7 +19,8 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public DatabaseObjectReference DatabaseObjectReference
         {
-            get { return columnReference.TableReference; }
+            get { return columnReference.ParentTableReference; }
+            set { throw new InvalidOperationException(); }
         }
 
         /// <summary>
@@ -28,8 +29,8 @@ namespace Jhu.Graywulf.Sql.Parsing
         /// <remarks></remarks>
         public TableReference TableReference
         {
-            get { return columnReference.TableReference; }
-            set { columnReference.TableReference = value; }
+            get { return columnReference.ParentTableReference; }
+            set { columnReference.ParentTableReference = value; }
         }
 
         public UserVariable AssignedVariable

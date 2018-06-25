@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public DatabaseObjectReference DatabaseObjectReference
         {
-            get { return columnReference.TableReference; }
+            get { return columnReference.ParentTableReference; }
         }
 
         public ColumnName ColumnName

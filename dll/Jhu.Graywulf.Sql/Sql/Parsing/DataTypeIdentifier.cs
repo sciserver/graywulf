@@ -32,24 +32,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<SystemDataTypeIdentifier>(); }
         }
 
-        public bool IsNullable
-        {
-            get
-            {
-                // TODO: update this becaues there can be other literals in the future
-                var k = FindDescendantRecursive<Jhu.Graywulf.Parsing.Literal>();
-
-                if (k != null && SqlParser.ComparerInstance.Compare("not", k.Value) == 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-        }
-
         protected override void OnInitializeMembers()
         {
             base.OnInitializeMembers();

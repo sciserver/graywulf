@@ -8,7 +8,7 @@ using Jhu.Graywulf.Sql.Parsing;
 namespace Jhu.Graywulf.Sql.NameResolution
 {
     [TestClass]
-    public class TableTableTest : SqlNameResolverTestBase
+    public class DeclareTableTest : SqlNameResolverTestBase
     {
         [TestMethod]
         public void SimpleDeclareTableTest()
@@ -17,14 +17,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
 @"DECLARE @test TABLE
 (
     ID bigint PRIMARY KEY,
-    Data nvarchar(50)
+    Data1 nvarchar(50),
+    Data2 nvarchar(50) NULL,
+    Data3 nvarchar(50) NOT NULL
 )";
 
             var gt =
 @"DECLARE @test TABLE
 (
     [ID] [bigint] PRIMARY KEY,
-    [Data] [nvarchar](50)
+    [Data1] [nvarchar](50),
+    [Data2] [nvarchar](50) NULL,
+    [Data3] [nvarchar](50) NOT NULL
 )";
 
             var ss = Parse<DeclareTableStatement>(sql);
@@ -35,7 +39,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var v = ss.VariableReference.Variable;
             var t = ss.VariableReference.DataTypeReference.DataType;
             Assert.AreEqual("@test", v.Name);
-            Assert.AreEqual(2, t.Columns.Count);
+            Assert.AreEqual(4, t.Columns.Count);
+
+            Assert.IsFalse(t.Columns["ID"].DataType.IsNullable);
+            Assert.IsFalse(t.Columns["Data1"].DataType.IsNullable);
+            Assert.IsTrue(t.Columns["Data2"].DataType.IsNullable);
+            Assert.IsFalse(t.Columns["Data3"].DataType.IsNullable);
         }
 
         [TestMethod]

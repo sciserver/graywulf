@@ -338,7 +338,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                     columnlist.Append(separator);
                 }
 
-                var alias = GetTableAlias(column.TableReference);
+                var alias = GetTableAlias(column.ParentTableReference);
                 var jalias = GetJoinedTableAlias();
                 var nullspec = GetNullSpec(column, nullstring);
                 var identityspec = GetIdentitySpec(column);
@@ -346,7 +346,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                 columnlist.AppendFormat(
                     format,
                     alias,
-                    QuoteIdentifier(EscapePropagatedColumnName(column.TableReference, column.ColumnName)),
+                    QuoteIdentifier(EscapePropagatedColumnName(column.ParentTableReference, column.ColumnName)),
                     QuoteIdentifier(column.ColumnName),
                     // TODO: replace this with reald code generator
                     column.DataTypeReference.DataType.TypeNameWithLength,

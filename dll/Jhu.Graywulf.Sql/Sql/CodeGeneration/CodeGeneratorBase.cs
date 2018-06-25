@@ -403,7 +403,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         public string GetResolvedColumnName(ColumnReference column)
         {
             column = MapColumnReference(column);
-            var table = MapTableReference(column.TableReference);
+            var table = MapTableReference(column.ParentTableReference);
 
             string tablename;
 

@@ -143,9 +143,9 @@ namespace Jhu.Graywulf.Parser.Test
             {
                 ListViewItem ni;
 
-                if (cr.TableReference != null)
+                if (cr.ParentTableReference != null)
                 {
-                    ni = new ListViewItem(cr.TableReference.UniqueName);
+                    ni = new ListViewItem(cr.ParentTableReference.UniqueName);
                 }
                 else
                 {

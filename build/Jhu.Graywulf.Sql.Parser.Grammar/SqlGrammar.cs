@@ -417,8 +417,11 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> DataTypeIdentifier = () =>
             Sequence
             (
-                Must(SystemDataTypeIdentifier, UdtIdentifier),
-                May(Sequence(May(CommentOrWhitespace), May(Sequence(Keyword("NOT"), CommentOrWhitespace)), Keyword("NULL")))
+                Must
+                (
+                    UdtIdentifier,
+                    SystemDataTypeIdentifier
+                )
             );
 
         public static Expression<Rule> SystemDataTypeIdentifier = () =>
@@ -778,20 +781,15 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             (
                 UserVariable,
                 May(Sequence(CommentOrWhitespace, Keyword("AS"))),
-                CommentOrWhitespace,
-                Must(
-                    Keyword("CURSOR"),
-                    Sequence(
-                        DataTypeIdentifier,
-                        May(
-                            Sequence
-                            (
-                                May(CommentOrWhitespace),
-                                Equals1,
-                                May(CommentOrWhitespace),
-                                Expression
-                            )
-                        )
+                May(CommentOrWhitespace),
+                DataTypeIdentifier,
+                May(
+                    Sequence
+                    (
+                        May(CommentOrWhitespace),
+                        Equals1,
+                        May(CommentOrWhitespace),
+                        Expression
                     )
                 )
             );
@@ -1574,6 +1572,14 @@ FOR select_statement
                     Sequence
                     (
                         May(CommentOrWhitespace),
+                        ColumnNullDefinition
+                    )
+                ),
+                May
+                (
+                    Sequence
+                    (
+                        May(CommentOrWhitespace),
                         Must
                         (
                             ColumnDefaultDefinition,
@@ -1589,6 +1595,13 @@ FOR select_statement
                         ColumnConstraint
                     )
                 )
+            );
+
+        public static Expression<Rule> ColumnNullDefinition = () =>
+            Sequence
+            (
+                May(Sequence(Keyword("NOT"), CommentOrWhitespace)),
+                Keyword("NULL")
             );
 
         // TODO: add computed columns

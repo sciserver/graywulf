@@ -17,14 +17,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
 @"CREATE TABLE test
 (
     ID bigint PRIMARY KEY,
-    Data nvarchar(50)
+    Data1 nvarchar(50),
+    Data2 nvarchar(50) NOT NULL,
+    Data3 nvarchar(50) NULL
 )";
 
             var gt =
 @"CREATE TABLE [Graywulf_Schema_Test].[dbo].[test]
 (
     [ID] [bigint] PRIMARY KEY,
-    [Data] [nvarchar](50)
+    [Data1] [nvarchar](50),
+    [Data2] [nvarchar](50) NOT NULL,
+    [Data3] [nvarchar](50) NULL
 )";
 
             var ss = Parse<CreateTableStatement>(sql);
@@ -34,7 +38,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var t = (Schema.Table)ss.DatabaseObjectReference.DatabaseObject;
             Assert.AreEqual("test", t.TableName);
-            Assert.AreEqual(2, t.Columns.Count);
+            Assert.AreEqual(4, t.Columns.Count);
+
+            Assert.IsFalse(t.Columns["ID"].DataType.IsNullable);
+            Assert.IsFalse(t.Columns["Data1"].DataType.IsNullable);
+            Assert.IsFalse(t.Columns["Data2"].DataType.IsNullable);
+            Assert.IsTrue(t.Columns["Data3"].DataType.IsNullable);
         }
 
         [TestMethod]
