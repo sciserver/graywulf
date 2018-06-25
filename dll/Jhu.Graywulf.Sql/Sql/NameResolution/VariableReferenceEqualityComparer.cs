@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             bool res =
                 x.Type == y.Type &&
-                SchemaManager.Comparer.Compare(x.Name, y.Name) == 0 &&
+                SchemaManager.Comparer.Compare(x.VariableName, y.VariableName) == 0 &&
                 DataTypeReferenceEqualityComparer.Default.Equals(x.DataTypeReference, y.DataTypeReference);
 
             return res;
@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var res =
                 obj.Type.GetHashCode() +
-                (obj.Name == null ? 0 : obj.Name.GetHashCode()) +
+                (obj.VariableName == null ? 0 : obj.VariableName.GetHashCode()) +
                 (obj.DataTypeReference == null ? 0 : DataTypeReferenceEqualityComparer.Default.GetHashCode(obj.DataTypeReference));
 
             return res;

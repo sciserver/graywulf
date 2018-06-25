@@ -122,6 +122,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.partitioningKey = null;
             this.variableReferences = new Dictionary<string, VariableReference>(Schema.SchemaManager.Comparer);
             this.sourceTableReferences = new Dictionary<string, List<TableReference>>(Schema.SchemaManager.Comparer);
+            this.targetTableReferences = new Dictionary<string, List<TableReference>>(Schema.SchemaManager.Comparer);
             this.outputTableReferences = new Dictionary<string, List<TableReference>>(Schema.SchemaManager.Comparer);
             this.functionReferences = new Dictionary<string, List<FunctionReference>>(Schema.SchemaManager.Comparer);
         }
@@ -135,6 +136,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.partitioningKey = old.partitioningKey;
             this.variableReferences = new Dictionary<string, VariableReference>(old.variableReferences);
             this.sourceTableReferences = new Dictionary<string, List<TableReference>>(old.sourceTableReferences);
+            this.targetTableReferences = new Dictionary<string, List<TableReference>>(old.targetTableReferences);
             this.outputTableReferences = new Dictionary<string, List<TableReference>>(old.outputTableReferences);
             this.functionReferences = new Dictionary<string, List<FunctionReference>>(old.functionReferences);
         }

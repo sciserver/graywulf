@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         #endregion
         #region Properties
-
+        
         public TableReference TableReference
         {
             get { return tableReference; }
@@ -136,13 +136,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             InitializeMembers();
 
-            this.tableReference = null;
             this.columnName = name;
         }
 
         private void InitializeMembers()
         {
             this.tableReference = null;
+            this.dataTypeReference = null;
 
             this.columnName = null;
             this.columnAlias = null;
@@ -158,6 +158,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void CopyMembers(ColumnReference old)
         {
             this.tableReference = old.tableReference;
+            this.dataTypeReference = old.dataTypeReference;
 
             this.columnName = old.columnName;
             this.columnAlias = old.columnAlias;

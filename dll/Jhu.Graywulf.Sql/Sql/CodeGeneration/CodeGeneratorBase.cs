@@ -415,6 +415,10 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             {
                 tablename = GetQuotedIdentifier(table.Alias);
             }
+            else if (!String.IsNullOrEmpty(table.VariableName))
+            {
+                tablename = GetQuotedIdentifier(table.VariableName);
+            }
             else
             {
                 tablename = GetResolvedTableName(table);

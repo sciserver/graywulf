@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Jhu.Graywulf.Parsing;
+using Jhu.Graywulf.Sql.Schema;
+using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
     public class DataTypeReference : DatabaseObjectReference
     {
         #region Property storage variables
+
+        private List<ColumnReference> columnReferences;
 
         #endregion
         #region Properties
@@ -40,6 +45,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
+        public List<ColumnReference> ColumnReferences
+        {
+            get { return columnReferences; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -68,10 +78,22 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void InitializeMembers()
         {
+            this.columnReferences = new List<ColumnReference>();
         }
 
         private void CopyMembers(DataTypeReference old)
         {
+            // Deep copy of column references
+            this.columnReferences = new List<ColumnReference>();
+
+            foreach (var cr in old.columnReferences)
+            {
+                var ncr = new ColumnReference(cr)
+                {
+                    DataTypeReference = this
+                };
+                this.columnReferences.Add(ncr);
+            }
         }
 
         public override object Clone()
@@ -134,6 +156,27 @@ namespace Jhu.Graywulf.Sql.NameResolution
             DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
 
             IsUserDefined = true;
+        }
+
+        public void InterpretTableDefinition(TableDefinitionList tableDefinition)
+        {
+            foreach (var item in tableDefinition.EnumerateTableDefinitionItems())
+            {
+                var cd = item.ColumnDefinition;
+                var tc = item.TableConstraint;
+
+                if (cd != null)
+                {
+                    var cr = cd.ColumnReference;
+                    cr.DataTypeReference = this;
+                    this.ColumnReferences.Add(cr);
+                }
+
+                if (item.TableConstraint != null)
+                {
+                    // TODO: implement, if index name resolution is required
+                }
+            }
         }
     }
 }

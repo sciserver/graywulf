@@ -313,6 +313,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             throw new NotImplementedException();
         }
 
+        #region Scalar and table-valued variables
+
         private void ResolveDeclareVariableStatement(DeclareVariableStatement statement)
         {
             foreach (var vd in statement.EnumerateDescendantsRecursive<VariableDeclaration>())
@@ -323,16 +325,20 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveVariableDeclaration(VariableDeclaration vd)
         {
+            // Resolve value assignment expression
             var exp = vd.Expression;
-
             if (exp != null)
             {
                 ResolveSubtree(QueryContext.None, exp);
             }
 
-            if (!details.VariableReferences.ContainsKey(vd.VariableReference.Name))
+            var vr = vd.VariableReference;
+            var variable = CreateVariable(vr);
+
+            // Add to query details
+            if (!details.VariableReferences.ContainsKey(vd.VariableReference.VariableName))
             {
-                details.VariableReferences.Add(vd.VariableReference.Name, vd.VariableReference);
+                details.VariableReferences.Add(vd.VariableReference.VariableName, vd.VariableReference);
             }
             else
             {
@@ -340,11 +346,22 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
+        private Schema.Variable CreateVariable(VariableReference vr)
+        {
+            var variable = new Schema.Variable()
+            {
+                Name = vr.VariableName,
+                DataType = vr.DataTypeReference.DataType,
+            };
+
+            return variable;
+        }
+
         private void ResolveSetVariableStatement(SetVariableStatement statement)
         {
-            if (details.VariableReferences.ContainsKey(statement.VariableReference.Name))
+            if (details.VariableReferences.ContainsKey(statement.VariableReference.VariableName))
             {
-                statement.VariableReference = details.VariableReferences[statement.VariableReference.Name];
+                statement.VariableReference = details.VariableReferences[statement.VariableReference.VariableName];
             }
             else
             {
@@ -354,8 +371,58 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveDeclareTableStatement(DeclareTableStatement statement)
         {
-            throw new NotImplementedException();
+            var vr = statement.VariableReference;
+
+            var dr = new DataTypeReference();
+            dr.InterpretTableDefinition(statement.TableDefinition);
+            statement.VariableReference.DataTypeReference = dr;
+
+            var tr = new TableReference();
+            tr.InterpretDeclareTable(statement);
+            statement.VariableReference.TableReference = tr;
+
+            var variable = CreateVariable(vr);
+            var dataType = CreateDataType(dr);
+
+            vr.Variable = variable;
+            dr.DataType = dataType;
+            
+            // Add to query details
+            if (!details.VariableReferences.ContainsKey(vr.VariableName))
+            {
+                details.VariableReferences.Add(vr.VariableName, vr);
+            }
+            else
+            {
+                throw NameResolutionError.DuplicateVariableName(statement.TargetVariable);
+            }
         }
+
+        private DataType CreateDataType(DataTypeReference dr)
+        {
+            var dataType = new Schema.DataType()
+            {
+                IsTableType = dr.ColumnReferences.Count > 0,
+                IsUserDefined = true,
+            };
+
+
+            foreach (var cr in dr.ColumnReferences)
+            {
+                var col = CreateColumn(cr);
+                dataType.Columns.TryAdd(col.ColumnName, col);
+            }
+
+            // TODO:
+            // indexes
+            // primary key
+            // metadata
+
+            return dataType;
+        }
+
+        #endregion
+        #region Table DDL
 
         private void ResolveCreateTableStatement(CreateTableStatement statement)
         {
@@ -391,8 +458,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     }
                 }
             }
-
-            
         }
 
         private Table CreateTable(TableReference tr)
@@ -435,12 +500,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveDropTableStatement(DropTableStatement statement)
         {
-            throw new NotImplementedException();
+            ResolveTargetTable(null, null, statement.TargetTable);
+
+            var table = (Schema.Table)statement.TargetTable.TableReference.DatabaseObject;
+
+            if (!table.Dataset.Tables.TryRemove(table.UniqueKey, out var t))
+            {
+                throw NameResolutionError.TableDoesNotExists(statement.TargetTable);
+            }
         }
 
         private void ResolveTruncateTableStatement(TruncateTableStatement statement)
         {
-            throw new NotImplementedException();
+            ResolveTargetTable(null, null, statement.TargetTable);
         }
 
         private void ResolveCreateIndexStatement(CreateIndexStatement statement)
@@ -452,8 +524,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveDropIndexStatement(DropIndexStatement statement)
         {
-            throw new NotImplementedException();
+            ResolveTargetTable(null, null, statement.TargetTable);
+
+            // TODO: update index in schema
         }
+
+        #endregion
 
         private void ResolveSelectStatement(SelectStatement statement)
         {
@@ -648,7 +724,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             foreach (var n in node.Nodes)
             {
-                if (n is Subquery || n is Statement)
+                if (n is Subquery || 
+                    n is VariableTableSource ||
+                    n is Statement)
                 {
                     return;
                 }
@@ -730,16 +808,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             if (vr.VariableReference.Type == VariableReferenceType.System)
             {
-                var name = vr.VariableReference.Name.TrimStart('@');
+                var name = vr.VariableReference.VariableName.TrimStart('@');
 
                 if (!SystemVariableNames.Contains(name))
                 {
                     throw NameResolutionError.UnresolvableVariableReference(vr);
                 }
             }
-            else if (details.VariableReferences.ContainsKey(vr.VariableReference.Name))
+            else if (details.VariableReferences.ContainsKey(vr.VariableReference.VariableName))
             {
-                vr.VariableReference = details.VariableReferences[vr.VariableReference.Name];
+                vr.VariableReference = details.VariableReferences[vr.VariableReference.VariableName];
 
                 if (vr.VariableReference.Type != VariableReferenceType.Scalar)
                 {
@@ -1006,30 +1084,28 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var exportedName = tr.ExportedName;
 
             // Make sure that table key is used only once
-            if (resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(exportedName))
+            if (exportedName != null && resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(exportedName))
             {
                 throw NameResolutionError.DuplicateTableAlias(exportedName, tr.Node);
             }
-            else
+
+            var ntr = ResolveSourceTableReference(cte, resolvedSourceTables, tr);
+
+            // Save the table in the query specification
+            resolvedSourceTables.ResolvedSourceTableReferences.Add(exportedName, ntr);
+
+            // Collect in the global store
+            if (ntr.TableContext.HasFlag(TableContext.TableOrView))
             {
-                var ntr = ResolveSourceTableReference(cte, resolvedSourceTables, tr);
+                var uniqueKey = ntr.DatabaseObject.UniqueKey;
 
-                // Save the table in the query specification
-                resolvedSourceTables.ResolvedSourceTableReferences.Add(exportedName, ntr);
-
-                // Collect in the global store
-                if (ntr.TableContext.HasFlag(TableContext.TableOrView))
+                if (!details.SourceTableReferences.ContainsKey(uniqueKey))
                 {
-                    var uniqueKey = ntr.DatabaseObject.UniqueKey;
-
-                    if (!details.SourceTableReferences.ContainsKey(uniqueKey))
-                    {
-                        details.SourceTableReferences.Add(uniqueKey, new List<TableReference>());
-                    }
-
-                    details.SourceTableReferences[uniqueKey].Add(ntr);
-                    ts.UniqueKey = String.Format("{0}_{1}_{2}", uniqueKey, ntr.Alias, details.SourceTableReferences[uniqueKey].Count - 1);
+                    details.SourceTableReferences.Add(uniqueKey, new List<TableReference>());
                 }
+
+                details.SourceTableReferences[uniqueKey].Add(ntr);
+                ts.UniqueKey = String.Format("{0}_{1}_{2}", uniqueKey, ntr.Alias, details.SourceTableReferences[uniqueKey].Count - 1);
             }
         }
 
@@ -1043,7 +1119,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             TableReference ntr;
 
-            if (tr.IsPossiblyAlias && cte != null && cte.CommonTableReferences.ContainsKey(tr.ExportedName))
+            if (tr.TableContext.HasFlag(TableContext.Variable))
+            {
+                ntr = new TableReference(details.VariableReferences[tr.VariableName].TableReference);
+                ntr.Alias = tr.Alias;
+                ntr.TableContext |= TableContext.Variable;
+            }
+            else if (tr.IsPossiblyAlias && cte != null && cte.CommonTableReferences.ContainsKey(tr.ExportedName))
             {
                 // This is a reference to a CTE query
 

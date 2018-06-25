@@ -9,8 +9,8 @@ using Jhu.Graywulf.Sql.Schema;
 namespace Jhu.Graywulf.Sql.Schema
 {
     [Serializable]
-    [DataContract(Namespace="")]
-    public abstract class Variable
+    [DataContract(Namespace = "")]
+    public class Variable
     {
         [NonSerialized]
         private DatabaseObject parent;
@@ -68,6 +68,22 @@ namespace Jhu.Graywulf.Sql.Schema
         {
             get { return metadata.Value; }
             set { metadata.Value = value; }
+        }
+
+        [IgnoreDataMember]
+        public virtual string FullyResolvedName
+        {
+            get { return name; }
+        }
+
+        /// <summary>
+        /// Gets the internal object key.
+        /// </summary>
+        [IgnoreDataMember]
+        public string UniqueKey
+        {
+            get { return name; }
+            set { name = value; }
         }
 
         public Variable()

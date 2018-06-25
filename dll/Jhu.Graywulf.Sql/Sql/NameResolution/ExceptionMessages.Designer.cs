@@ -196,6 +196,15 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Table with name &apos;{0}&apos; found at ({1},{2}) does not exist..
+        /// </summary>
+        internal static string TableDoesNotExists {
+            get {
+                return ResourceManager.GetString("TableDoesNotExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The target dataset &apos;{0}&apos; specified at ({1},{2}) is read only..
         /// </summary>
         internal static string TargetDatasetReadOnly {

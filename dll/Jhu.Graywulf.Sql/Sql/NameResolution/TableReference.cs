@@ -13,10 +13,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #region Property storage variables
 
         private string alias;
+        private string variableName;
         private TableContext tableContext;
         private bool isComputed;
         private bool isResolved;
 
+        private VariableReference variableReference;
         private List<ColumnReference> columnReferences;
 
         #endregion
@@ -29,6 +31,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get { return alias; }
             set { alias = value; }
+        }
+
+        public string VariableName
+        {
+            get { return variableName; }
+            set { variableName = value; }
         }
 
         public TableContext TableContext
@@ -61,7 +69,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             get { return isResolved; }
             set { isResolved = value; }
         }
-        
+
         public bool IsCachable
         {
             get
@@ -70,6 +78,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                   !tableContext.HasFlag(TableContext.Subquery) &&
                   !tableContext.HasFlag(TableContext.CommonTable) &&
                   !tableContext.HasFlag(TableContext.UserDefinedFunction) &&
+                  !tableContext.HasFlag(TableContext.Variable) &&
                   !tableContext.HasFlag(TableContext.CreateTable) &&
                   !tableContext.HasFlag(TableContext.Target) &&             // TODO: review this
                   !IsComputed;
@@ -86,13 +95,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get
             {
-                return (alias != null || DatabaseObjectName != null) && DatasetName == null && DatabaseName == null;
+                return (alias != null || DatabaseObjectName != null) && DatasetName == null && DatabaseName == null && VariableName == null;
             }
         }
 
         public override bool IsUndefined
         {
-            get { return base.IsUndefined && alias == null; }
+            get { return base.IsUndefined && alias == null && variableName == null; }
         }
 
         /// <summary>
@@ -108,13 +117,17 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // TODO: review this and make sure kez is unique even if table
                 // is referenced deep down in CTEs
 
-                if (String.IsNullOrWhiteSpace(alias))
+                if (!String.IsNullOrWhiteSpace(variableName))
                 {
-                    return base.UniqueName;
+                    return String.Format("{0}", variableName);
+                }
+                else if (!String.IsNullOrWhiteSpace(alias))
+                {
+                    return String.Format("[{0}]", alias);
                 }
                 else
                 {
-                    return String.Format("[{0}]", alias);
+                    return base.UniqueName;
                 }
             }
         }
@@ -134,6 +147,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     return alias;
                 }
+                else if (tableContext.HasFlag(TableContext.Variable))
+                {
+                    return variableName;
+                }
                 else
                 {
                     // If no alias is used then use table name
@@ -144,12 +161,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
+        public VariableReference VariableReference
+        {
+            get { return variableReference; }
+            set { variableReference = value; }
+        }
+
         public List<ColumnReference> ColumnReferences
         {
             get { return columnReferences; }
         }
 
-#endregion
+        #endregion
         #region Constructors and initializer
 
         public TableReference()
@@ -207,6 +230,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public TableReference(VariableTableSource ts)
         {
             InterpretTableSource(ts);
+            InterpretVariableTableSource(ts);
 
             this.Node = ts;
         }
@@ -251,17 +275,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.Node = tvf;
         }
 
-        public TableReference(UserVariable v)
-            :this()
-        {
-            InterpretUserVariable(v);
-
-            this.Node = v;
-        }
-
         private void InitializeMembers()
         {
             this.alias = null;
+            this.variableName = null;
             this.tableContext = TableContext.None;
             this.isComputed = false;
             this.isResolved = false;
@@ -272,6 +289,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void CopyMembers(TableReference old)
         {
             this.alias = old.alias;
+            this.variableName = old.variableName;
             this.tableContext = old.tableContext;
             this.isComputed = old.isComputed;
             this.isResolved = old.isResolved;
@@ -294,7 +312,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return new TableReference(this);
         }
 
-#endregion
+        #endregion
 
         public void InterpretTableSource(Node tableSource)
         {
@@ -349,10 +367,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.tableContext |= TableContext.TableOrView;
         }
 
+        private void InterpretVariableTableSource(VariableTableSource vts)
+        {
+            var tv = vts.FindDescendant<TableVariable>();
+
+            variableName = tv.Value;
+            variableReference = tv.VariableReference;
+            tableContext |= TableContext.Variable;
+        }
+
         private void InterpretTableValuedFunctionCall(TableValuedFunctionCall tvf)
         {
             var fi = tvf.FindDescendant<FunctionIdentifier>();
-
             var udfi = fi.FindDescendant<UdfIdentifier>();
 
             if (udfi != null)
@@ -377,10 +403,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        private void InterpretUserVariable(UserVariable v)
+        public void InterpretDeclareTable(DeclareTableStatement dt)
         {
-            // TODO: add variable name?
-            tableContext |= TableContext.Variable;
+            this.variableName = dt.TargetVariable.VariableReference.VariableName;
+
+            InterpretTableDefinition(dt.TableDefinition);
         }
 
         public void InterpretTableDefinition(TableDefinitionList tableDefinition)
@@ -600,6 +627,5 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             return new List<ColumnReference>(res.Values.OrderBy(c => t.Columns[c.ColumnName].ID));
         }
-
     }
 }

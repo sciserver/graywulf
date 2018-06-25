@@ -105,17 +105,17 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static NameResolverException UnresolvableVariableReference(IVariableReference node)
         {
-            return CreateException(ExceptionMessages.UnresolvableVariableReference, null, node.VariableReference.Name, (Node)node);
+            return CreateException(ExceptionMessages.UnresolvableVariableReference, null, node.VariableReference.VariableName, (Node)node);
         }
 
         public static NameResolverException DuplicateVariableName(IVariableReference node)
         {
-            return CreateException(ExceptionMessages.DuplicateVariableName, null, node.VariableReference.Name, (Node)node);
+            return CreateException(ExceptionMessages.DuplicateVariableName, null, node.VariableReference.VariableName, (Node)node);
         }
 
         public static NameResolverException ScalarVariableExpected(IVariableReference node)
         {
-            return CreateException(ExceptionMessages.ScalarVariableExpected, null, node.VariableReference.Name, (Node)node);
+            return CreateException(ExceptionMessages.ScalarVariableExpected, null, node.VariableReference.VariableName, (Node)node);
         }
 
         public static NameResolverException TargetDatasetReadOnly(ITableReference node)
@@ -141,6 +141,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public static NameResolverException TableAlreadyExists(Node node)
         {
             return CreateException(ExceptionMessages.TableAlreadyExists, null, null, node);
+        }
+
+        public static NameResolverException TableDoesNotExists(Node node)
+        {
+            return CreateException(ExceptionMessages.TableDoesNotExists, null, null, node);
         }
     }
 }
