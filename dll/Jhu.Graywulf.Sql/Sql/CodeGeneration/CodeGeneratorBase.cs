@@ -748,29 +748,17 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         public virtual void WriteDataTypeIdentifier(DataTypeIdentifier node)
         {
-            foreach (var n in node.Stack)
+            switch (dataTypeNameRendering)
             {
-                switch (n)
-                {
-                    case SystemDataTypeIdentifier di:
-                    case UdtIdentifier udt:
-                        switch (dataTypeNameRendering)
-                        {
-                            case NameRendering.FullyQualified:
-                                Writer.Write(GetResolvedDataTypeName(node.DataTypeReference));
-                                break;
-                            case NameRendering.IdentifierOnly:
-                                // No point doing this because it would break the query
-                                throw new InvalidOperationException();
-                            default:
-                                base.WriteNode(node);
-                                break;
-                        }
-                        break;
-                    default:
-                        base.WriteNode(node);
-                        break;
-                }
+                case NameRendering.FullyQualified:
+                    Writer.Write(GetResolvedDataTypeName(node.DataTypeReference));
+                    break;
+                case NameRendering.IdentifierOnly:
+                    // No point doing this because it would break the query
+                    throw new InvalidOperationException();
+                default:
+                    base.WriteNode(node);
+                    break;
             }
         }
 

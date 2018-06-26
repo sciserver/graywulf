@@ -414,20 +414,28 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         #endregion
         #region Data types
 
+        // TODO: extend this when implementing array support
+
+        // UDT restrictions:
+        // - cannot have a schema name
+        // - can only reference types from current database
+        // - https://docs.microsoft.com/en-us/previous-versions/sql/sql-server-2008-r2/ms178069(v=sql.105)
+
         public static Expression<Rule> DataTypeIdentifier = () =>
             Sequence
             (
                 Must
                 (
-                    UdtIdentifier,
-                    SystemDataTypeIdentifier
-                )
-            );
-
-        public static Expression<Rule> SystemDataTypeIdentifier = () =>
-            Sequence
-            (
-                DataTypeName,
+                    Sequence
+                    (
+                        SchemaName,
+                        May(CommentOrWhitespace),
+                        Dot,
+                        May(CommentOrWhitespace),
+                        DataTypeName
+                    ),
+                    DataTypeName
+                ),
                 May
                 (
                     Sequence
@@ -440,27 +448,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                         )
                     )
                 )
-            );
-
-        public static Expression<Rule> UdtIdentifier = () =>
-            Sequence
-            (
-                May(Sequence(DatasetName, May(CommentOrWhitespace), Colon, May(CommentOrWhitespace))),
-                Must
-                (
-                    Sequence(DatabaseName, May(CommentOrWhitespace), Dot, May(Sequence(May(CommentOrWhitespace), SchemaName)), May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), DataTypeName),
-                    Sequence(SchemaName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), DataTypeName)
-                )
-            );
-
-        public static Expression<Rule> DataTypeSize = () =>
-            Sequence
-            (
-                BracketOpen,
-                May(CommentOrWhitespace),
-                Must(Literal("MAX"), Number),
-                May(CommentOrWhitespace),
-                BracketClose
             );
 
         public static Expression<Rule> DataTypeScaleAndPrecision = () =>
@@ -477,7 +464,15 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 BracketClose
             );
 
-        // TODO: allow CLR types
+        public static Expression<Rule> DataTypeSize = () =>
+            Sequence
+            (
+                BracketOpen,
+                May(CommentOrWhitespace),
+                Must(Literal("MAX"), Number),
+                May(CommentOrWhitespace),
+                BracketClose
+            );
 
         #endregion
         #region Function call syntax

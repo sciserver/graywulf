@@ -105,19 +105,18 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
             }
         }
 
-        protected override string GetResolvedDataTypeName(string databaseName, string schemaName, string functionName)
+        protected override string GetResolvedDataTypeName(string databaseName, string schemaName, string dataTypeName)
         {
             string res = String.Empty;
 
+            // SQL Server UDTs can never have a database name but might have a schema name
 
-            if (databaseName != null)
+            if (schemaName != null)
             {
-                res += GetQuotedIdentifier(databaseName) + ".";
+                res += GetQuotedIdentifier(schemaName) + ".";
             }
 
-            // SQL Server UTDs must always have the schema name specified
-            res += GetQuotedIdentifier(schemaName) + ".";
-            res += GetQuotedIdentifier(functionName);
+            res += GetQuotedIdentifier(dataTypeName);
 
             return res;
         }

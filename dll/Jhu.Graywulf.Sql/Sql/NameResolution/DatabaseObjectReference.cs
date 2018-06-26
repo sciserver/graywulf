@@ -57,6 +57,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public bool IsSystem
         {
             get { return !isUserDefined; }
+            set { isUserDefined = !value; }
         }
 
         /// <summary>

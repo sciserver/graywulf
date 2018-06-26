@@ -373,8 +373,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var vr = statement.VariableReference;
 
-            var dr = new DataTypeReference();
-            dr.InterpretTableDefinition(statement.TableDefinition);
+            var dr = DataTypeReference.Interpret(statement.TableDefinition);
             statement.VariableReference.DataTypeReference = dr;
 
             var tr = new TableReference();

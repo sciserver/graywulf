@@ -22,14 +22,63 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { dataTypeReference = value; }
         }
 
-        public UdtIdentifier UdtIdentifier
+        public int Length
         {
-            get { return FindDescendant<UdtIdentifier>(); }
+            get
+            {
+                var s = FindDescendant<DataTypeSize>();
+
+                if (s == null)
+                {
+                    return 0;
+                }
+                else
+                {
+                    var max = s.FindDescendant<Jhu.Graywulf.Parsing.Literal>();
+                    if (max != null && SqlParser.ComparerInstance.Compare(max.Value, "max") == 0)
+                    {
+                        return -1;
+                    }
+                    else
+                    {
+                        return int.Parse(s.FindDescendant<Number>(0).Value);
+                    }
+                }
+            }
         }
 
-        public SystemDataTypeIdentifier SystemDataTypeIdentifier
+        public byte Precision
         {
-            get { return FindDescendant<SystemDataTypeIdentifier>(); }
+            get
+            {
+                var sp = FindDescendant<DataTypeScaleAndPrecision>();
+
+                if (sp != null)
+                {
+                    return byte.Parse(sp.FindDescendant<Number>(0).Value);
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public byte Scale
+        {
+            get
+            {
+                var sp = FindDescendant<DataTypeScaleAndPrecision>();
+
+                if (sp != null)
+                {
+                    return byte.Parse(sp.FindDescendant<Number>(1).Value);
+                }
+                else
+                {
+                    return 0;
+                }
+            }
         }
 
         protected override void OnInitializeMembers()
@@ -48,7 +97,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         public override void Interpret()
         {
             base.Interpret();
-            this.dataTypeReference = new DataTypeReference(this);
+            this.dataTypeReference = DataTypeReference.Interpret(this);
         }
     }
 }

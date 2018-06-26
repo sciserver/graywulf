@@ -271,13 +271,13 @@
     <Compile Include="Sql\Parsing\PrintStatement.cs" />
     <Compile Include="Sql\Parsing\StatementSeparator.cs" />
     <Compile Include="Sql\Parsing\StatementType.cs" />
-    <Compile Include="Sql\Parsing\SystemDataTypeIdentifier.cs" />
     <Compile Include="Sql\Parsing\SystemVariable.cs" />
     <Compile Include="Sql\Parsing\TableConstraint.cs" />
     <Compile Include="Sql\Parsing\TableDefinitionItem.cs" />
     <Compile Include="Sql\Parsing\TableDefinitionList.cs" />
     <Compile Include="Sql\Parsing\TableVariable.cs" />
     <Compile Include="Sql\Parsing\TargetTableSpecification.cs" />
+    <Compile Include="Sql\Parsing\UdtFunctionIdentifier.cs" />
     <Compile Include="Sql\Parsing\UpdateSetColumn.cs" />
     <Compile Include="Sql\Parsing\UpdateSetLeftHandSide.cs" />
     <Compile Include="Sql\Parsing\UpdateSetList.cs" />
@@ -360,7 +360,6 @@
     <Compile Include="Sql\Parsing\TableValuedFunctionCall.cs" />
     <Compile Include="Sql\Parsing\UdfIdentifier.cs" />
     <Compile Include="Sql\Parsing\UdtFunctionCall.cs" />
-    <Compile Include="Sql\Parsing\UdtFunctionIdentifier.cs" />
     <Compile Include="Sql\Parsing\VariableTableSource.cs" />
     <Compile Include="Sql\Parsing\WhereClause.cs" />
     <Compile Include="Sql\Parsing\Whitespace.cs" />

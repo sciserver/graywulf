@@ -24,13 +24,17 @@ namespace Jhu.Graywulf.Schema.Clr
 
         public int ID
         {
+            [SqlMethod]
             get { return id; }
+            [SqlMethod(IsMutator = true)]
             set { id = value; }
         }
 
         public double Data
         {
+            [SqlMethod]
             get { return data; }
+            [SqlMethod(IsMutator = true)]
             set { data = value; }
         }
 
@@ -73,6 +77,18 @@ namespace Jhu.Graywulf.Schema.Clr
                 sb.Append(data);
                 return sb.ToString();
             }
+        }
+
+        [SqlMethod]
+        public string Method()
+        {
+            return this.ToString();
+        }
+
+        [SqlMethod]
+        public static string StaticMethod()
+        {
+            return "Hello from StaticMethod";
         }
     }
 }

@@ -68,14 +68,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             InitializeMembers();
         }
-
-        public DataTypeReference(Parsing.DataTypeIdentifier dt)
-            : this()
-        {
-            InitializeMembers();
-            InterpretDataTypeIdentifier(dt);
-        }
-
+        
         private void InitializeMembers()
         {
             this.columnReferences = new List<ColumnReference>();
@@ -100,62 +93,39 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         #endregion
 
-        private void InterpretDataTypeIdentifier(Parsing.DataTypeIdentifier dataType)
+        public static DataTypeReference Interpret(DataTypeIdentifier di)
         {
-            var sys = dataType.SystemDataTypeIdentifier;
-            var udt = dataType.UdtIdentifier;
+            var schema = Util.RemoveIdentifierQuotes(di.FindDescendant<SchemaName>()?.Value);
+            var name = Util.RemoveIdentifierQuotes(di.FindDescendant<DataTypeName>()?.Value);
 
-            if (sys != null)
+            var dr = new DataTypeReference()
             {
-                InterpretSystemDataType(sys);
-            }
-            else
-            {
-                InterpretUdtIdentifier(udt);
-            }
-        }
+                SchemaName = schema,
+                DatabaseObjectName = name,
+            };
 
-        private void InterpretSystemDataType(Parsing.SystemDataTypeIdentifier dataType)
-        {
-            var name = Util.RemoveIdentifierQuotes(dataType.TypeName);
-
-            if (Schema.SqlServer.Constants.SqlDataTypes.ContainsKey(name))
+            if (schema == null && Schema.SqlServer.Constants.SqlDataTypes.ContainsKey(name))
             {
-                // This is a system type
+                // System type
                 var sqltype = Schema.SqlServer.Constants.SqlDataTypes[name];
-                var dt = Schema.DataType.Create(sqltype, dataType.Length, dataType.Precision, dataType.Scale, false);
+                var dt = Schema.DataType.Create(sqltype, di.Length, di.Precision, di.Scale, false);
 
-                DatabaseObject = dt;
-                DatabaseObjectName = dt.TypeNameWithLength;
+                dr.IsUserDefined = false;
+                dr.DatabaseObject = dt;
+                dr.DatabaseObjectName = dt.TypeNameWithLength;
             }
             else
             {
-                // TODO: implement UDTs and CLR UDTs
-                throw new NotImplementedException();
+                dr.IsUserDefined = true;
             }
 
-            IsUserDefined = false;
+            return dr;
         }
-
-        private void InterpretUdtIdentifier(Parsing.UdtIdentifier dataType)
+        
+        public static DataTypeReference Interpret(TableDefinitionList tableDefinition)
         {
-            var ds = dataType.FindDescendant<Parsing.DatasetName>();
-            DatasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
+            var dr = new DataTypeReference();
 
-            var dbn = dataType.FindDescendant<Parsing.DatabaseName>();
-            DatabaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
-
-            var sn = dataType.FindDescendant<Parsing.SchemaName>();
-            SchemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
-
-            var tn = dataType.FindDescendant<Parsing.FunctionName>();
-            DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
-
-            IsUserDefined = true;
-        }
-
-        public void InterpretTableDefinition(TableDefinitionList tableDefinition)
-        {
             foreach (var item in tableDefinition.EnumerateTableDefinitionItems())
             {
                 var cd = item.ColumnDefinition;
@@ -163,8 +133,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (cd != null)
                 {
-                    var cr = new ColumnReference(this, cd.ColumnReference);
-                    this.ColumnReferences.Add(cr);
+                    var cr = new ColumnReference(dr, cd.ColumnReference);
+                    dr.ColumnReferences.Add(cr);
                 }
 
                 if (item.TableConstraint != null)
@@ -172,6 +142,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     // TODO: implement, if index name resolution is required
                 }
             }
+
+            return dr;
         }
     }
 }

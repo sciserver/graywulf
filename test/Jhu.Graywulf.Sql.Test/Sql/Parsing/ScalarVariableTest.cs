@@ -24,6 +24,12 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             sql = @"DECLARE @test nvarchar(max) = 'value'";
             new SqlParser().Execute<DeclareVariableStatement>(sql);
+
+            sql = @"DECLARE @test nvarchar(10) = 'value'";
+            new SqlParser().Execute<DeclareVariableStatement>(sql);
+
+            sql = @"DECLARE @test numeric(10, 5) = 'value'";
+            new SqlParser().Execute<DeclareVariableStatement>(sql);
         }
 
         [TestMethod]

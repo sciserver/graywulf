@@ -11,6 +11,7 @@ namespace Jhu.Graywulf.Sql.Parsing
     [TestClass]
     public class CreateTableTest
     {
+        // TODO move most of these to ColumnDefinitionTest
 
         [TestMethod]
         public void SimpleCreateTableTest()
@@ -41,57 +42,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             new SqlParser().Execute<CreateTableStatement>(sql);
 
             sql = @"CREATE TABLE test( ID int , Data nvarchar(max) , Data2 float )";
-            new SqlParser().Execute<CreateTableStatement>(sql);
-        }
-
-        [TestMethod]
-        public void DefaultValueTest()
-        {
-            var sql =
-@"CREATE TABLE test
-(
-    ID int DEFAULT 1,
-    Data nvarchar(max)DEFAULT'string',
-    Data2 float DEFAULT (12 + 34)
-)";
-            new SqlParser().Execute<CreateTableStatement>(sql);
-
-            sql = @"CREATE TABLE test(ID int CONSTRAINT def_test DEFAULT 8)";
-            new SqlParser().Execute<CreateTableStatement>(sql);
-
-            sql = @"CREATE TABLE test(ID int CONSTRAINT[def_test]DEFAULT(8))";
-            new SqlParser().Execute<CreateTableStatement>(sql);
-        }
-
-        [TestMethod]
-        public void IdentityTest()
-        {
-            var sql = @"CREATE TABLE test(ID int IDENTITY)";
-            new SqlParser().Execute<CreateTableStatement>(sql);
-
-            sql = @"CREATE TABLE test(ID int IDENTITY(1, 2))";
-            new SqlParser().Execute<CreateTableStatement>(sql);
-
-            sql = @"CREATE TABLE test(ID int IDENTITY ( 1,2 ))";
-            new SqlParser().Execute<CreateTableStatement>(sql);
-        }
-
-        [TestMethod]
-        public void ColumnConstraintTest()
-        {
-            var sql = @"CREATE TABLE test(ID int IDENTITY PRIMARY KEY)";
-            new SqlParser().Execute<CreateTableStatement>(sql);
-
-            sql = @"CREATE TABLE test(ID int IDENTITY PRIMARY KEY CLUSTERED)";
-            new SqlParser().Execute<CreateTableStatement>(sql);
-
-            sql = @"CREATE TABLE test(ID int IDENTITY CONSTRAINT pk_test PRIMARY KEY CLUSTERED)";
-            new SqlParser().Execute<CreateTableStatement>(sql);
-
-            sql = @"CREATE TABLE test(ID int CONSTRAINT def_test DEFAULT(5) CONSTRAINT pk_test PRIMARY KEY CLUSTERED)";
-            new SqlParser().Execute<CreateTableStatement>(sql);
-
-            sql = @"CREATE TABLE test(ID int UNIQUE NONCLUSTERED)";
             new SqlParser().Execute<CreateTableStatement>(sql);
         }
 

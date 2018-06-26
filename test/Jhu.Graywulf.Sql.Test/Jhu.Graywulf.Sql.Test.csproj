@@ -118,6 +118,7 @@
     <Compile Include="Sql\Parsing\BeginEndStatementTest.cs" />
     <Compile Include="Sql\Parsing\BitwiseOperatorTest.cs" />
     <Compile Include="Sql\Parsing\CnfConverterTest.cs" />
+    <Compile Include="Sql\Parsing\ColumnDefinitionTest.cs" />
     <Compile Include="Sql\Parsing\ColumnIdentifierTest.cs" />
     <Compile Include="Sql\Parsing\CommentOrWhitespaceTest.cs" />
     <Compile Include="Sql\Parsing\CommonTableExpressionTest.cs" />
