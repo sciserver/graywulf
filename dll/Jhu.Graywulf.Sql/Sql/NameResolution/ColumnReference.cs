@@ -120,6 +120,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             this.parentTableReference = parentTableReference;
         }
+        
+        public ColumnReference(TableReference parentTableReference, DataTypeReference parentDataTypeReference, ColumnReference old, DataTypeReference dataTypeReference)
+        {
+            CopyMembers(old);
+
+            this.parentTableReference = parentTableReference;
+            this.parentDataTypeReference = parentDataTypeReference;
+            this.dataTypeReference = dataTypeReference;
+        }
 
         public ColumnReference(DataTypeReference parentDataTypeReference, ColumnReference old)
         {
@@ -239,14 +248,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static ColumnReference Interpret(ColumnDefinition cd)
         {
-            var dr = cd.DataTypeReference;
-
-            dr.DataType.IsNullable = cd.IsNullable;
-
             var cr = new ColumnReference(
                 null,
                 Util.RemoveIdentifierQuotes(cd.ColumnName.Value),
-                dr);
+                cd.DataTypeIdentifier.DataTypeReference);
 
             return cr;
         }

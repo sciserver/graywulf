@@ -47,6 +47,46 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         [TestMethod]
+        public void CreateTableWithUDTTest()
+        {
+            var sql =
+@"CREATE TABLE test
+(
+    ID bigint PRIMARY KEY,
+    Data1 dbo.SimpleUDT,
+    Data2 SimpleUDT NOT NULL,
+    Data3 dbo.ClrUDT NULL,
+    Data4 ClrUDT NOT NULL
+)";
+
+            var gt =
+@"CREATE TABLE [Graywulf_Schema_Test].[dbo].[test]
+(
+    [ID] [bigint] PRIMARY KEY,
+    [Data1] [dbo].[SimpleUDT],
+    [Data2] [dbo].[SimpleUDT] NOT NULL,
+    [Data3] [dbo].[ClrUDT] NULL,
+    [Data4] [dbo].[ClrUDT] NOT NULL
+)";
+
+            var ss = Parse<CreateTableStatement>(sql);
+
+            var res = GenerateCode(ss);
+            Assert.AreEqual(gt, res);
+
+            var t = (Schema.Table)ss.DatabaseObjectReference.DatabaseObject;
+            Assert.AreEqual("test", t.TableName);
+            Assert.AreEqual(5, t.Columns.Count);
+
+            Assert.IsFalse(t.Columns["ID"].DataType.IsNullable);
+            Assert.IsFalse(t.Columns["Data1"].DataType.IsNullable);
+            Assert.IsFalse(t.Columns["Data2"].DataType.IsNullable);
+            Assert.IsTrue(t.Columns["Data3"].DataType.IsNullable);
+            Assert.IsFalse(t.Columns["Data4"].DataType.IsNullable);
+
+        }
+
+        [TestMethod]
         public void CreateTableWithDefaultsTest()
         {
             var sql =

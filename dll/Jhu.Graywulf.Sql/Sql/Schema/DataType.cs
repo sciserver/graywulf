@@ -805,6 +805,7 @@ namespace Jhu.Graywulf.Sql.Schema
         }
 
         internal DataType(DataType old)
+            :base(old)
         {
             CopyMembers(old);
         }

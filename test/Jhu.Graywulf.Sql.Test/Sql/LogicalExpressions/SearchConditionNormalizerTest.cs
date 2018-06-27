@@ -32,6 +32,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             SqlNameResolver nr = new SqlNameResolver();
             nr.DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
             nr.DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName;
+            nr.DefaultDataTypeDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName;
             nr.SchemaManager = CreateSchemaManager();
             var details = nr.Execute(script);
 

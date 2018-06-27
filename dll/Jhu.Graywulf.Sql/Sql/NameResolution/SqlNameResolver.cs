@@ -80,6 +80,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private string defaultTableDatasetName;
         private string defaultFunctionDatasetName;
+        private string defaultDataTypeDatasetName;
         private string defaultOutputDatasetName;
 
         #endregion
@@ -110,6 +111,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             set { defaultFunctionDatasetName = value; }
         }
 
+        public string DefaultDataTypeDatasetName
+        {
+            get { return defaultDataTypeDatasetName; }
+            set { defaultDataTypeDatasetName = value; }
+        }
+
         public string DefaultOutputDatasetName
         {
             get { return defaultOutputDatasetName; }
@@ -136,6 +143,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             this.defaultTableDatasetName = String.Empty;
             this.defaultFunctionDatasetName = String.Empty;
+            this.defaultDataTypeDatasetName = String.Empty;
         }
 
         #endregion
@@ -325,6 +333,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveVariableDeclaration(VariableDeclaration vd)
         {
+            SubstituteDataTypeDefaults(vd.DataType.DataTypeReference);
+            ResolveDataTypeReference(vd.DataType.DataTypeReference);
+
             // Resolve value assignment expression
             var exp = vd.Expression;
             if (exp != null)
@@ -372,20 +383,24 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void ResolveDeclareTableStatement(DeclareTableStatement statement)
         {
             var vr = statement.VariableReference;
+            var td = statement.TableDefinition;
+            var dr = new DataTypeReference();
+            var tr = new TableReference()
+            {
+                VariableName = vr.VariableName
+            };
 
-            var dr = DataTypeReference.Interpret(statement.TableDefinition);
-            statement.VariableReference.DataTypeReference = dr;
+            ResolveTableDefinition(td, tr, dr);
 
-            var tr = new TableReference();
-            tr.InterpretDeclareTable(statement);
             statement.VariableReference.TableReference = tr;
-
+            statement.VariableReference.DataTypeReference = dr;
+            
             var variable = CreateVariable(vr);
             var dataType = CreateDataType(dr);
 
             vr.Variable = variable;
             dr.DataType = dataType;
-            
+
             // Add to query details
             if (!details.VariableReferences.ContainsKey(vr.VariableName))
             {
@@ -425,10 +440,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveCreateTableStatement(CreateTableStatement statement)
         {
-            SubstituteOutputTableDefaults(null, statement.TargetTable.TableReference, TableContext.CreateTable);
-
             var tr = statement.TargetTable.TableReference;
-            tr.InterpretTableDefinition(statement.TableDefinition);
+            var td = statement.TableDefinition;
+
+            SubstituteOutputTableDefaults(null, statement.TargetTable.TableReference, TableContext.CreateTable);
+            ResolveTableDefinition(td, tr, null);
 
             var table = CreateTable(tr);
             if (!table.Dataset.Tables.TryAdd(table.UniqueKey, table))
@@ -438,25 +454,74 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             tr.DatabaseObject = table;
 
-            foreach (var item in statement.TableDefinition.EnumerateTableDefinitionItems())
+            // Add to query details
+            if (!details.TargetTableReferences.ContainsKey(table.UniqueKey))
+            {
+                details.TargetTableReferences.Add(table.UniqueKey, new List<TableReference>());
+            }
+            details.TargetTableReferences[table.UniqueKey].Add(tr);
+        }
+
+        private void ResolveTableDefinition(TableDefinitionList td, TableReference tr, DataTypeReference dr)
+        {
+            foreach (var item in td.EnumerateTableDefinitionItems())
             {
                 var cd = item.ColumnDefinition;
                 var tc = item.TableConstraint;
                 var ti = item.TableIndex;
 
-                // Column defults contain an expression
                 if (cd != null)
                 {
-                    var dd = cd.DefaultDefinition;
+                    ResolveColumnDefinition(cd, tr, dr);
+                }
 
-                    if (dd != null)
-                    {
-                        var exp = dd.Expression;
+                if (tc != null)
+                {
+                    ResolveTableConstraint(tc);
+                }
 
-                        ResolveSubtree(QueryContext.None, exp);
-                    }
+                if (ti != null)
+                {
+                    ResolveTableIndex(ti);
                 }
             }
+        }
+
+        private void ResolveColumnDefinition(ColumnDefinition cd, TableReference tr, DataTypeReference dr)
+        {
+            SubstituteDataTypeDefaults(cd.DataTypeIdentifier.DataTypeReference);
+            ResolveDataTypeReference(cd.DataTypeIdentifier.DataTypeReference);
+
+            cd.DataTypeIdentifier.DataTypeReference.DataType.IsNullable = cd.IsNullable;
+
+            // Column defults contain an expression
+            var dd = cd.DefaultDefinition;
+
+            if (dd != null)
+            {
+                var exp = dd.Expression;
+                ResolveSubtree(QueryContext.None, exp);
+            }
+
+            var ncr = new ColumnReference(tr, dr, cd.ColumnReference, cd.DataTypeIdentifier.DataTypeReference);
+
+            if (tr != null)
+            {
+                tr.ColumnReferences.Add(ncr);
+            }
+
+            if (dr != null)
+            {
+                dr.ColumnReferences.Add(ncr);
+            }
+        }
+
+        private void ResolveTableConstraint(TableConstraint tc)
+        {
+        }
+
+        private void ResolveTableIndex(TableIndex ti)
+        {
         }
 
         private Table CreateTable(TableReference tr)
@@ -723,7 +788,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             foreach (var n in node.Nodes)
             {
-                if (n is Subquery || 
+                if (n is Subquery ||
                     n is VariableTableSource ||
                     n is Statement)
                 {
@@ -1516,6 +1581,21 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
+        private void SubstituteDataTypeDefaults(DataTypeReference dr)
+        {
+            if (!dr.IsSystem)
+            {
+                try
+                {
+                    dr.SubstituteDefaults(SchemaManager, defaultDataTypeDatasetName);
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw NameResolutionError.UnresolvableDatasetReference(ex, dr);
+                }
+            }
+        }
+
         public SelectList SubstituteStars(SelectList selectList)
         {
             var ce = selectList.FindDescendant<ColumnExpression>();
@@ -1657,9 +1737,36 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         #endregion
 
-        private void ResolveDataTypeReferences()
+        private void ResolveDataTypeReference(DataTypeReference dr)
         {
-            throw new NotImplementedException();
+            if (!dr.IsResolved && dr.IsUserDefined)
+            {
+                // Load table description from underlying schema
+                // Attempt to load dataset and throw exception of name cannot be resolved
+                DatasetBase ds;
+
+                try
+                {
+                    ds = schemaManager.Datasets[dr.DatasetName];
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw NameResolutionError.UnresolvableDatasetReference(ex, dr);
+                }
+                catch (SchemaException ex)
+                {
+                    throw NameResolutionError.UnresolvableDatasetReference(ex, dr);
+                }
+
+                // Because this is the base type only, create a copy here since
+                // properties like IsNullable will be overwritten later
+                var dt = (DataType)ds.GetObject(dr.DatabaseName, dr.SchemaName, dr.DatabaseObjectName);
+                dr.DatabaseObject = new DataType(dt);
+
+                // TODO: load data type columns if necessary
+            }
+
+            dr.IsResolved = true;
         }
 
         /// <summary>

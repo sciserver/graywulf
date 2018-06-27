@@ -21,6 +21,34 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         [TestMethod]
+        public void DeclareSimpleUDTVariableTest()
+        {
+            var query = Parse("DECLARE @var SimpleUDT");
+            var d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
+            Assert.AreEqual(1, query.VariableReferences.Count);
+            Assert.IsTrue(query.VariableReferences.ContainsKey("@var"));
+
+            query = Parse("DECLARE @var dbo.SimpleUDT");
+            d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
+            Assert.AreEqual(1, query.VariableReferences.Count);
+            Assert.IsTrue(query.VariableReferences.ContainsKey("@var"));
+        }
+
+        [TestMethod]
+        public void DeclareClrUDTVariableTest()
+        {
+            var query = Parse("DECLARE @var ClrUDT");
+            var d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
+            Assert.AreEqual(1, query.VariableReferences.Count);
+            Assert.IsTrue(query.VariableReferences.ContainsKey("@var"));
+
+            query = Parse("DECLARE @var dbo.ClrUDT");
+            d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
+            Assert.AreEqual(1, query.VariableReferences.Count);
+            Assert.IsTrue(query.VariableReferences.ContainsKey("@var"));
+        }
+
+        [TestMethod]
         public void DeclareMultipleVariableTest()
         {
             var query = Parse("DECLARE @var1 int, @var2 float");

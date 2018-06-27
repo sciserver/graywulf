@@ -15,6 +15,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private DatabaseObject databaseObject;
         private bool isUserDefined;
+        private bool isResolved;
 
         private string datasetName;
         private string databaseName;
@@ -58,6 +59,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get { return !isUserDefined; }
             set { isUserDefined = !value; }
+        }
+
+        public bool IsResolved
+        {
+            get { return isResolved; }
+            set { isResolved = value; }
         }
 
         /// <summary>
@@ -154,6 +161,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             this.databaseObject = databaseObject;
             this.isUserDefined = databaseObject.IsUserDefined;
+            this.isResolved = true;
 
             this.datasetName = databaseObject.DatasetName;
             this.databaseName = databaseObject.DatabaseName;
@@ -167,6 +175,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             this.databaseObject = null;
             this.isUserDefined = false;
+            this.isResolved = false;
 
             this.datasetName = null;
             this.databaseName = null;
@@ -180,6 +189,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             this.databaseObject = old.databaseObject;
             this.isUserDefined = old.isUserDefined;
+            this.isResolved = old.isResolved;
 
             this.datasetName = old.datasetName;
             this.databaseName = old.databaseName;

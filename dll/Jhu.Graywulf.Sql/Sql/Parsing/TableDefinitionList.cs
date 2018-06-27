@@ -12,5 +12,17 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             return EnumerateDescendants<TableDefinitionItem>();
         }
+
+        public IEnumerable<ColumnDefinition> EnumerateColumnDefinitions()
+        {
+            foreach (var item in EnumerateDescendants<TableDefinitionItem>())
+            {
+                var cd = item.FindDescendant<ColumnDefinition>();
+                if (cd != null)
+                {
+                    yield return cd;
+                }
+            }
+        }
     }
 }

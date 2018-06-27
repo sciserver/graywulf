@@ -62,6 +62,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             nameResolver.SchemaManager = CreateSchemaManager();
             nameResolver.DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
             nameResolver.DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
+            nameResolver.DefaultDataTypeDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
             nameResolver.DefaultOutputDatasetName = Jhu.Graywulf.Test.Constants.MyDBDatasetName;
 
             return nameResolver;

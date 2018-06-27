@@ -16,7 +16,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private string variableName;
         private TableContext tableContext;
         private bool isComputed;
-        private bool isResolved;
 
         private VariableReference variableReference;
         private List<ColumnReference> columnReferences;
@@ -62,12 +61,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get { return isComputed; }
             set { isComputed = value; }
-        }
-
-        public bool IsResolved
-        {
-            get { return isResolved; }
-            set { isResolved = value; }
         }
 
         public bool IsCachable
@@ -191,7 +184,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.alias = alias;
             this.tableContext = TableContext.None;
             this.isComputed = false;
-            this.isResolved = false;
         }
 
         public TableReference(TableOrView table, string alias, bool copyColumns)
@@ -200,7 +192,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.alias = alias;
             this.tableContext = TableContext.None;
             this.isComputed = false;
-            this.isResolved = true;
 
             this.columnReferences = new List<ColumnReference>();
 
@@ -281,7 +272,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.variableName = null;
             this.tableContext = TableContext.None;
             this.isComputed = false;
-            this.isResolved = false;
 
             this.columnReferences = new List<ColumnReference>();
         }
@@ -292,7 +282,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.variableName = old.variableName;
             this.tableContext = old.tableContext;
             this.isComputed = old.isComputed;
-            this.isResolved = old.isResolved;
 
             // Deep copy of column references
             this.columnReferences = new List<ColumnReference>();
@@ -399,34 +388,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 throw new NameResolverException(ExceptionMessages.FunctionCallNotAllowed);
             }
         }
-
-        public void InterpretDeclareTable(DeclareTableStatement dt)
-        {
-            this.variableName = dt.TargetVariable.VariableReference.VariableName;
-
-            InterpretTableDefinition(dt.TableDefinition);
-        }
-
-        public void InterpretTableDefinition(TableDefinitionList tableDefinition)
-        {
-            foreach (var item in tableDefinition.EnumerateTableDefinitionItems())
-            {
-                var cd = item.ColumnDefinition;
-                var tc = item.TableConstraint;
-
-                if (cd != null)
-                {
-                    var cr = new ColumnReference(this, cd.ColumnReference);
-                    this.ColumnReferences.Add(cr);
-                }
-
-                if (item.TableConstraint != null)
-                {
-                    // TODO: implement, if index name resolution is required
-                }
-            }
-        }
-
+                
         private void InterpretSubquery()
         {
             this.tableContext |= TableContext.Subquery;

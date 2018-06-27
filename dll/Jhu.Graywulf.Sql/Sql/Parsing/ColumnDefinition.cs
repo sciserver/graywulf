@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public DataTypeReference DataTypeReference
         {
-            get { return DataType.DataTypeReference; }
+            get { return columnReference.ParentDataTypeReference; }
             set { columnReference.ParentDataTypeReference = value; }
         }
 
@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<ColumnName>(); }
         }
 
-        public DataTypeIdentifier DataType
+        public DataTypeIdentifier DataTypeIdentifier
         {
             get { return FindDescendant<DataTypeIdentifier>(); }
         }
@@ -95,7 +95,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             base.Interpret();
 
-            this.columnReference = ColumnReference.Interpret(this);
+            this.columnReference = NameResolution.ColumnReference.Interpret(this);
         }
     }
 }

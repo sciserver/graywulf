@@ -502,6 +502,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             nr.DefaultTableDatasetName = parameters.DefaultSourceDataset.Name;
             nr.DefaultOutputDatasetName = parameters.DefaultOutputDataset.Name;
             nr.DefaultFunctionDatasetName = CodeDataset.Name;
+            nr.DefaultDataTypeDatasetName = CodeDataset.Name;
 
             return nr;
         }

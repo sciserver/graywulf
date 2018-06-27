@@ -106,41 +106,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             if (schema == null && Schema.SqlServer.Constants.SqlDataTypes.ContainsKey(name))
             {
-                // System type
+                // System type, this needs to be resolved here to have
+                // access to precision, scale and length
                 var sqltype = Schema.SqlServer.Constants.SqlDataTypes[name];
                 var dt = Schema.DataType.Create(sqltype, di.Length, di.Precision, di.Scale, false);
 
                 dr.IsUserDefined = false;
                 dr.DatabaseObject = dt;
-                dr.DatabaseObjectName = dt.TypeNameWithLength;
+                dr.DatabaseObjectName = dt.TypeNameWithLength;  // Needs update for system types
             }
             else
             {
                 dr.IsUserDefined = true;
-            }
-
-            return dr;
-        }
-        
-        public static DataTypeReference Interpret(TableDefinitionList tableDefinition)
-        {
-            var dr = new DataTypeReference();
-
-            foreach (var item in tableDefinition.EnumerateTableDefinitionItems())
-            {
-                var cd = item.ColumnDefinition;
-                var tc = item.TableConstraint;
-
-                if (cd != null)
-                {
-                    var cr = new ColumnReference(dr, cd.ColumnReference);
-                    dr.ColumnReferences.Add(cr);
-                }
-
-                if (item.TableConstraint != null)
-                {
-                    // TODO: implement, if index name resolution is required
-                }
             }
 
             return dr;
