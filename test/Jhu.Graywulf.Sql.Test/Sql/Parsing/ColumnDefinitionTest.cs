@@ -23,24 +23,20 @@ namespace Jhu.Graywulf.Sql.Parsing
         public void NullTest()
         {
             var cd = Parse("col1 int NULL");
-            Assert.AreEqual(SqlDbType.Int, cd.DataTypeReference.DataType.SqlDbType);
-            Assert.IsTrue(cd.DataTypeReference.DataType.IsNullable);
+            Assert.AreEqual(SqlDbType.Int, cd.DataTypeIdentifier.DataTypeReference.DataType.SqlDbType);
 
             cd = Parse("col1[int]NULL");
-            Assert.AreEqual(SqlDbType.Int, cd.DataTypeReference.DataType.SqlDbType);
-            Assert.IsTrue(cd.DataTypeReference.DataType.IsNullable);
+            Assert.AreEqual(SqlDbType.Int, cd.DataTypeIdentifier.DataTypeReference.DataType.SqlDbType);
         }
 
         [TestMethod]
         public void NotNullTest()
         {
             var dt = Parse("col1 int NOT NULL");
-            Assert.AreEqual(SqlDbType.Int, dt.DataTypeReference.DataType.SqlDbType);
-            Assert.IsFalse(dt.DataTypeReference.DataType.IsNullable);
+            Assert.AreEqual(SqlDbType.Int, dt.DataTypeIdentifier.DataTypeReference.DataType.SqlDbType);
 
             dt = Parse("col1[int]NOT NULL");
-            Assert.AreEqual(SqlDbType.Int, dt.DataTypeReference.DataType.SqlDbType);
-            Assert.IsFalse(dt.DataTypeReference.DataType.IsNullable);
+            Assert.AreEqual(SqlDbType.Int, dt.DataTypeIdentifier.DataTypeReference.DataType.SqlDbType);
         }
 
         [TestMethod]

@@ -95,7 +95,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             base.Interpret();
 
-            this.columnReference = NameResolution.ColumnReference.Interpret(this);
+            this.columnReference = ColumnReference.Interpret(this);
         }
     }
 }
