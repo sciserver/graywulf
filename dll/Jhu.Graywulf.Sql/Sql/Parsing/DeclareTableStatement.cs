@@ -19,9 +19,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return StatementType.Declaration; }
         }
 
-        public TableVariable TargetVariable
+        public UserVariable TargetVariable
         {
-            get { return FindDescendant<TableVariable>(); }
+            get { return FindDescendant<UserVariable>(); }
         }
 
         public VariableReference VariableReference

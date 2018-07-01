@@ -78,7 +78,7 @@ ORDER BY 1";
             var sql = "SELECT TOP 10 a FROM table1";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("10", exp.FindDescendantRecursive<TopExpression>().FindDescendantRecursive<Number>().Value);
+            Assert.AreEqual("10", exp.FindDescendantRecursive<TopExpression>().FindDescendantRecursive<NumericConstant>().Value);
             Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
         }
 

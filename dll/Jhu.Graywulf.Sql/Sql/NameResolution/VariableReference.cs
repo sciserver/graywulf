@@ -8,18 +8,14 @@ using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public class VariableReference
+    public class VariableReference : ReferenceBase
     {
         #region Property storage variables
 
-        private Node node;
-
         private Variable variable;
-        private bool isUserDefined;
 
         private string variableName;
-
-        private VariableReferenceType type;
+        private VariableContext variableContext;
 
         private DataTypeReference dataTypeReference;
         private TableReference tableReference;
@@ -27,30 +23,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #endregion
         #region Properties
 
-        /// <summary>
-        /// Gets the parser tree node this table reference references
-        /// </summary>
-        public Node Node
-        {
-            get { return node; }
-            protected set { node = value; }
-        }
-
         public Variable Variable
         {
             get { return variable; }
             set { variable = value; }
-        }
-
-        public bool IsUserDefined
-        {
-            get { return isUserDefined; }
-            set { isUserDefined = value; }
-        }
-
-        public bool IsSystem
-        {
-            get { return !isUserDefined; }
         }
 
         public string VariableName
@@ -59,15 +35,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
             set { variableName = value; }
         }
 
-        public virtual string UniqueName
+        public override string UniqueName
         {
             get { return variableName; }
+            set { throw new InvalidOperationException(); }
         }
 
-        public VariableReferenceType Type
+        public VariableContext VariableContext
         {
-            get { return type; }
-            set { type = value; }
+            get { return variableContext; }
+            set { variableContext = value; }
         }
 
         public DataTypeReference DataTypeReference
@@ -75,7 +52,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             get { return dataTypeReference; }
             set { dataTypeReference = value; }
         }
-        
+
         public TableReference TableReference
         {
             get { return tableReference; }
@@ -90,89 +67,75 @@ namespace Jhu.Graywulf.Sql.NameResolution
             InitializeMembers();
         }
 
+        public VariableReference(Node node)
+            :base(node)
+        {
+            InitializeMembers();
+        }
+
         public VariableReference(VariableReference old)
+            : base(old)
         {
             CopyMembers(old);
         }
 
-        public VariableReference(Parsing.UserVariable variable)
-            : this()
-        {
-            InterpretUserVariable(variable);
-        }
-
-        public VariableReference(Parsing.TableVariable variable)
-            : this()
-        {
-            InterpretTableVariable(variable);
-        }
-
-        public VariableReference(Parsing.SystemVariable variable)
-            : this()
-        {
-            InterpretSystemVariable(variable);
-        }
-
         private void InitializeMembers()
         {
-            this.node = null;
-
             this.variable = null;
-            this.isUserDefined = true;
 
             this.variableName = null;
-            this.type = VariableReferenceType.Unknown;
+            this.variableContext = VariableContext.None;
             this.dataTypeReference = null;
             this.tableReference = null;
         }
 
         private void CopyMembers(VariableReference old)
         {
-            this.node = old.node;
-
             this.variable = old.variable;
-            this.isUserDefined = old.isUserDefined;
 
             this.variableName = old.variableName;
-            this.type = old.type;
+            this.variableContext = old.variableContext;
             this.dataTypeReference = old.dataTypeReference;
             this.tableReference = old.tableReference;
         }
 
-        public virtual object Clone()
+        public override object Clone()
         {
             return new VariableReference(this);
         }
 
         #endregion
 
-        public void InterpretUserVariable(Parsing.UserVariable variable)
+        public static VariableReference Interpret(Parsing.UserVariable variable)
         {
-            variableName = variable.Name;
-            type = VariableReferenceType.Scalar;
+            var vr = new VariableReference(variable)
+            {
+                variableName = variable.VariableName,
+                variableContext = VariableContext.Scalar,
+                IsUserDefined = true,
+            };
+            return vr;
         }
 
-        public void InterpretTableVariable(Parsing.TableVariable variable)
+        public static VariableReference Interpret(Parsing.SystemVariable variable)
         {
-            variableName = variable.Name;
-            type = VariableReferenceType.Table;
-        }
-
-        public void InterpretSystemVariable(Parsing.SystemVariable variable)
-        {
-            variableName = variable.Name;
-            type = VariableReferenceType.System;
+            var vr = new VariableReference(variable)
+            {
+                variableName = variable.VariableName,
+                variableContext = VariableContext.Scalar | VariableContext.System,
+            };
+            return vr;
         }
 
         public void InterpretVariableDeclaration(Parsing.VariableDeclaration vd)
         {
             if (vd.IsCursor)
             {
-                this.type = VariableReferenceType.Cursor;
+                this.variableContext = VariableContext.Cursor;
             }
             else
             {
-                this.type = VariableReferenceType.Scalar;
+                this.variableContext = VariableContext.Scalar;
             }
 
             dataTypeReference = vd.DataType.DataTypeReference;

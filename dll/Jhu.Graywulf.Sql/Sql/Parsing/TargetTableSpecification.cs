@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Sql.Parsing
     public partial class TargetTableSpecification : ITableSource, ITableReference
     {
         private string uniqueKey;
-        private TableOrViewName tableName;
+        private TableOrViewIdentifier tableName;
         private UserVariable variable;
         private TableReference tableReference;
 
@@ -71,7 +71,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
         }
 
-        public TableOrViewName TableName
+        public TableOrViewIdentifier TableName
         {
             get { return tableName; }
         }
@@ -85,7 +85,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             base.Interpret();
 
-            this.tableName = FindDescendantRecursive<TableOrViewName>();
+            this.tableName = FindDescendantRecursive<TableOrViewIdentifier>();
             this.variable = FindDescendantRecursive<UserVariable>();
         }
 

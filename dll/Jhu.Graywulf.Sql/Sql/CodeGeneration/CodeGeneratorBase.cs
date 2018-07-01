@@ -504,7 +504,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             if (function.IsSystem)
             {
                 // This is a built-in function
-                return function.SystemFunctionName.ToUpperInvariant();
+                return function.FunctionName.ToUpperInvariant();
             }
             else if (function.DatabaseObject != null)
             {
@@ -541,7 +541,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                 case TableAlias ta:
                     WriteTableAlias(ta);
                     break;
-                case TableOrViewName t:
+                case TableOrViewIdentifier t:
                     WriteTableOrViewName(t);
                     break;
                 case ColumnDefinition cd:
@@ -615,7 +615,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         /// table appears in the FROM clause. In all other cases it's
         /// WriteColumnIdentifier that generates the output
         /// </remarks>
-        public void WriteTableOrViewName(TableOrViewName node)
+        public void WriteTableOrViewName(TableOrViewIdentifier node)
         {
             switch (tableNameRendering)
             {

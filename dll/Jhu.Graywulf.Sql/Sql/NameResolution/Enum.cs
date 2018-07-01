@@ -68,4 +68,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
         Subquery = 32,                   // Subquery in FROM
         SemiJoin = 64                    // Subquery in EXISTS, ALL, SOME and ANY, etc.
     }
+
+    [Flags]
+    public enum VariableContext : long
+    {
+        None,
+        System = 0x0001,
+
+        Scalar = 0x0010,
+        Table = 0x0020,
+        Cursor = 0x0030,
+    }
 }

@@ -18,14 +18,10 @@ namespace Jhu.Graywulf.Sql.Parsing
             {
                 if (Stack.Count == 1)
                 {
-                    var av = FindDescendant<AnyVariable>();
-                    if (av != null)
+                    var ci = FindDescendant<ColumnIdentifier>();
+                    if (ci != null)
                     {
-                        var ci = av.FindDescendant<ColumnIdentifier>();
-                        if (ci != null)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
 
@@ -39,8 +35,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             {
                 if (Stack.Count == 1)
                 {
-                    var av = FindDescendant<Number>();
-                    if (av != null)
+                    var nc = FindDescendant<Constant>()?.FindDescendant<NumericConstant>();
+                    if (nc != null)
                     {
                         return true;
                     }
@@ -50,63 +46,59 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
         }
 
-
-
         public static Expression Create(ColumnIdentifier ci)
         {
             var nex = new Expression();
-            var avr = new AnyVariable();
-
-            avr.Stack.AddLast(ci);
-            nex.Stack.AddLast(avr);
+            nex.Stack.AddLast(ci);
 
             return nex;
         }
-        
+
         public static Expression Create(ColumnReference cr)
         {
             var ci = ColumnIdentifier.Create(cr);
             return Create(ci);
         }
 
-        public static Expression Create(Variable var)
+        public static Expression Create(SystemVariable var)
         {
             var nex = new Expression();
-            var avr = new AnyVariable();
-
-            avr.Stack.AddLast(var);
-            nex.Stack.AddLast(avr);
-
+            nex.Stack.AddLast(var);
             return nex;
         }
 
-        public static Expression Create(FunctionCall fun)
+        public static Expression Create(UserVariable var)
+        {
+            var nex = new Expression();
+            nex.Stack.AddLast(var);
+            return nex;
+        }
+
+        public static Expression Create(ScalarFunctionCall fun)
         {
             var nex = new Expression();
             nex.Stack.AddLast(fun);
             return nex;
         }
 
-        public static Expression Create(UdtFunctionCall fun)
+        public static Expression Create(PropertyAccess pa)
         {
             var nex = new Expression();
-            nex.Stack.AddLast(fun);
+            nex.Stack.AddLast(pa);
             return nex;
         }
 
         public static Expression CreateNumber(string number)
         {
             var nex = new Expression();
-            var num = Number.Create(number);
-            nex.Stack.AddLast(num);
+            nex.Stack.AddLast(Constant.CreateNumeric(number));
             return nex;
         }
 
         public static Expression CreateString(string s)
         {
             var nex = new Expression();
-            var str = StringConstant.Create(s);
-            nex.Stack.AddLast(str);
+            nex.Stack.AddLast(Constant.CreateString(s));
             return nex;
         }
     }

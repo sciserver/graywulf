@@ -7,32 +7,19 @@ using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public abstract class DatabaseObjectReference : ICloneable
+    public abstract class DatabaseObjectReference : ReferenceBase
     {
         #region Property storage variables
 
-        private Node node;
-
         private DatabaseObject databaseObject;
-        private bool isUserDefined;
-        private bool isResolved;
 
         private string datasetName;
         private string databaseName;
         private string schemaName;
         private string databaseObjectName;
-        
+
         #endregion
         #region Properties
-
-        /// <summary>
-        /// Gets the parser tree node this table reference references
-        /// </summary>
-        public Node Node
-        {
-            get { return node; }
-            protected set { node = value; }
-        }
 
         /// <summary>
         /// Gets or set the database object (schema object) this reference refers to
@@ -41,30 +28,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get { return databaseObject; }
             set { databaseObject = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets whether the object is defined by the system or the user.
-        /// </summary>
-        /// <remarks>
-        /// This is used to distinguish UDTs and UDFs and not user-defined tables.
-        /// </remarks>
-        public bool IsUserDefined
-        {
-            get { return isUserDefined; }
-            set { isUserDefined = value; }
-        }
-        
-        public bool IsSystem
-        {
-            get { return !isUserDefined; }
-            set { isUserDefined = !value; }
-        }
-
-        public bool IsResolved
-        {
-            get { return isResolved; }
-            set { isResolved = value; }
         }
 
         /// <summary>
@@ -110,7 +73,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// <remarks>
         /// Never use this in query generation!
         /// </remarks>
-        public virtual string UniqueName
+        public override string UniqueName
         {
             get
             {
@@ -133,6 +96,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                             DatabaseObjectName);
                 }
             }
+            set { throw new InvalidOperationException(); }
         }
 
         public virtual bool IsUndefined
@@ -148,34 +112,34 @@ namespace Jhu.Graywulf.Sql.NameResolution
             InitializeMembers();
         }
 
-        protected DatabaseObjectReference(DatabaseObjectReference old)
+        protected DatabaseObjectReference(Node node)
+            : base(node)
         {
-            CopyMembers(old);
+            InitializeMembers();
         }
 
         protected DatabaseObjectReference(DatabaseObject databaseObject)
         {
             InitializeMembers();
 
-            this.node = null;
-
             this.databaseObject = databaseObject;
-            this.isUserDefined = databaseObject.IsUserDefined;
-            this.isResolved = true;
 
             this.datasetName = databaseObject.DatasetName;
             this.databaseName = databaseObject.DatabaseName;
             this.schemaName = databaseObject.SchemaName;
             this.databaseObjectName = databaseObject.ObjectName;
+            this.IsUserDefined = databaseObject.IsUserDefined;
+        }
+
+        protected DatabaseObjectReference(DatabaseObjectReference old)
+            : base(old)
+        {
+            CopyMembers(old);
         }
 
         private void InitializeMembers()
         {
-            this.node = null;
-
             this.databaseObject = null;
-            this.isUserDefined = false;
-            this.isResolved = false;
 
             this.datasetName = null;
             this.databaseName = null;
@@ -185,19 +149,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void CopyMembers(DatabaseObjectReference old)
         {
-            this.node = old.node;
-
             this.databaseObject = old.databaseObject;
-            this.isUserDefined = old.isUserDefined;
-            this.isResolved = old.isResolved;
 
             this.datasetName = old.datasetName;
             this.databaseName = old.databaseName;
             this.schemaName = old.schemaName;
             this.databaseObjectName = old.databaseObjectName;
         }
-
-        public abstract object Clone();
 
         #endregion
 

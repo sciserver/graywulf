@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class TableOrViewName : ITableReference
+    public partial class TableOrViewIdentifier : ITableReference
     {
         private TableReference tableReference;
 
@@ -33,14 +33,19 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             base.OnCopyMembers(other);
 
-            var old = (TableOrViewName)other;
+            var old = (TableOrViewIdentifier)other;
 
             this.tableReference = old.tableReference;
         }
 
-        public static TableOrViewName Create(TableReference tr)
+        public static TableOrViewIdentifier Create(TableReference tr)
         {
-            var res = new TableOrViewName();
+            // TODO: use four part identifier
+
+            throw new NotImplementedException();
+
+            /*
+            var res = new TableOrViewIdentifier();
             res.tableReference = tr;
 
             if (!String.IsNullOrWhiteSpace(tr.DatasetName))
@@ -61,13 +66,14 @@ namespace Jhu.Graywulf.Sql.Parsing
             res.Stack.AddLast(TableName.Create(tr.DatabaseObjectName));
 
             return res;
+            */
         }
 
         public override void Interpret()
         {
             base.Interpret();
 
-            this.tableReference = new TableReference(this);
+            this.tableReference = TableReference.Interpret(this);
         }
     }
 }

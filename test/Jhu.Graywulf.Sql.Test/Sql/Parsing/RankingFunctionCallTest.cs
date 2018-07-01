@@ -13,56 +13,56 @@ namespace Jhu.Graywulf.Sql.Parsing
         public void RankingFunctionCallNoArgumentTest()
         {
             var sql = "ROW_NUMBER ( ) OVER ( )";
-            new SqlParser().Execute<RankingFunctionCall>(sql);
+            new SqlParser().Execute<WindowedFunctionCall>(sql);
 
             sql = "ROW_NUMBER()OVER()";
-            new SqlParser().Execute<RankingFunctionCall>(sql);
+            new SqlParser().Execute<WindowedFunctionCall>(sql);
         }
 
         [TestMethod]
         public void RankingFunctionWithArgumentsTest()
         {
             var sql = "NTILE ( 8 ) OVER ( )";
-            new SqlParser().Execute<RankingFunctionCall>(sql);
+            new SqlParser().Execute<WindowedFunctionCall>(sql);
 
             sql = "NTILE(8)OVER()";
-            new SqlParser().Execute<RankingFunctionCall>(sql);
+            new SqlParser().Execute<WindowedFunctionCall>(sql);
         }
 
         [TestMethod]
         public void PartitionByTest()
         {
             var sql = "ROW_NUMBER () OVER ( PARTITION BY ID )";
-            new SqlParser().Execute<RankingFunctionCall>(sql);
+            new SqlParser().Execute<WindowedFunctionCall>(sql);
 
             sql = "ROW_NUMBER () OVER ( PARTITION BY ID, ID2 )";
-            new SqlParser().Execute<RankingFunctionCall>(sql);
+            new SqlParser().Execute<WindowedFunctionCall>(sql);
 
             sql = "ROW_NUMBER () OVER (PARTITION BY[ID],[ID2])";
-            new SqlParser().Execute<RankingFunctionCall>(sql);
+            new SqlParser().Execute<WindowedFunctionCall>(sql);
         }
 
         [TestMethod]
         public void OrderByTest()
         {
             var sql = "ROW_NUMBER () OVER ( ORDER BY ID )";
-            new SqlParser().Execute<RankingFunctionCall>(sql);
+            new SqlParser().Execute<WindowedFunctionCall>(sql);
 
             sql = "ROW_NUMBER () OVER ( ORDER BY ID, ID2 )";
-            new SqlParser().Execute<RankingFunctionCall>(sql);
+            new SqlParser().Execute<WindowedFunctionCall>(sql);
 
             sql = "ROW_NUMBER () OVER (ORDER BY[ID],[ID2])";
-            new SqlParser().Execute<RankingFunctionCall>(sql);
+            new SqlParser().Execute<WindowedFunctionCall>(sql);
 
             sql = "ROW_NUMBER () OVER ( ORDER BY ID ASC, ID2 DESC)";
-            new SqlParser().Execute<RankingFunctionCall>(sql);
+            new SqlParser().Execute<WindowedFunctionCall>(sql);
         }
 
         [TestMethod]
         public void PartitionByOrderByTest()
         {
             var sql = "ROW_NUMBER () OVER ( PARTITION BY ID1 ORDER BY ID2, ID3 )";
-            new SqlParser().Execute<RankingFunctionCall>(sql);
+            new SqlParser().Execute<WindowedFunctionCall>(sql);
         }
 
         [TestMethod]

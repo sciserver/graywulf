@@ -129,7 +129,6 @@
     <Compile Include="Sql\Parsing\DeleteStatementTest.cs" />
     <Compile Include="Sql\Parsing\DnfConverterTest.cs" />
     <Compile Include="Sql\Parsing\ExpressionTest.cs" />
-    <Compile Include="Sql\Parsing\FunctionCallTest.cs" />
     <Compile Include="Sql\Parsing\FunctionIdentifierTest.cs" />
     <Compile Include="Sql\Parsing\GroupByTest.cs" />
     <Compile Include="Sql\Parsing\HavingTest.cs" />
@@ -142,6 +141,7 @@
     <Compile Include="Sql\Parsing\QueryHintTest.cs" />
     <Compile Include="Sql\Parsing\QuerySpecificationTest.cs" />
     <Compile Include="Sql\Parsing\RankingFunctionCallTest.cs" />
+    <Compile Include="Sql\Parsing\ScalarFunctionCallTest.cs" />
     <Compile Include="Sql\Parsing\ScalarVariableTest.cs" />
     <Compile Include="Sql\Parsing\SearchConditionNormalizerTest.cs" />
     <Compile Include="Sql\Parsing\SearchConditionTest.cs" />

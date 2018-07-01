@@ -9,10 +9,10 @@ namespace Jhu.Graywulf.Sql.Parsing
     [TestClass]
     public class FunctionIdentifierTest
     {
-        private FunctionCall ExpressionTestHelper(string query)
+        private ScalarFunctionCall ExpressionTestHelper(string query)
         {
             var p = new SqlParser();
-            return p.Execute<FunctionCall>(query);
+            return p.Execute<ScalarFunctionCall>(query);
         }
 
         [TestMethod]
@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "function(a)";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("function", exp.FindDescendantRecursive<FunctionName>().Value);
+            Assert.AreEqual("function", exp.FunctionReference.FunctionName);
         }
 
         [TestMethod]
@@ -30,8 +30,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "schema.function(a)";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("schema", exp.FindDescendantRecursive<SchemaName>().Value);
-            Assert.AreEqual("function", exp.FindDescendantRecursive<FunctionName>().Value);
+            Assert.AreEqual("schema", exp.FunctionReference.SchemaName);
+            Assert.AreEqual("function", exp.FunctionReference.FunctionName);
         }
 
         [TestMethod]
@@ -40,9 +40,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "database.schema.function(a)";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("database", exp.FindDescendantRecursive<DatabaseName>().Value);
-            Assert.AreEqual("schema", exp.FindDescendantRecursive<SchemaName>().Value);
-            Assert.AreEqual("function", exp.FindDescendantRecursive<FunctionName>().Value);
+            Assert.AreEqual("database", exp.FunctionReference.DatabaseName);
+            Assert.AreEqual("schema", exp.FunctionReference.SchemaName);
+            Assert.AreEqual("function", exp.FunctionReference.FunctionName);
         }
 
         [TestMethod]
@@ -51,9 +51,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "database . schema . function(a)";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("database", exp.FindDescendantRecursive<DatabaseName>().Value);
-            Assert.AreEqual("schema", exp.FindDescendantRecursive<SchemaName>().Value);
-            Assert.AreEqual("function", exp.FindDescendantRecursive<FunctionName>().Value);
+            Assert.AreEqual("database", exp.FunctionReference.DatabaseName);
+            Assert.AreEqual("schema", exp.FunctionReference.SchemaName);
+            Assert.AreEqual("function", exp.FunctionReference.FunctionName);
         }
 
         [TestMethod]

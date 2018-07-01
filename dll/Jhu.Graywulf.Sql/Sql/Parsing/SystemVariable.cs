@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { variableReference = value; }
         }
 
-        public string Name
+        public string VariableName
         {
             get { return FindDescendant<Variable2>().Value; }
         }
@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         public override void Interpret()
         {
             base.Interpret();
-            this.variableReference = new VariableReference(this);
+            this.variableReference = VariableReference.Interpret(this);
         }
     }
 }

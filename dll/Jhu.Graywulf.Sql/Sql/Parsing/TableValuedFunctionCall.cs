@@ -11,11 +11,6 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         private TableReference tableReference;
 
-        public DatabaseObjectReference DatabaseObjectReference
-        {
-            get { return tableReference; }
-        }
-
         public TableReference TableReference
         {
             get { return tableReference; }
@@ -63,7 +58,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             f.Stack.AddLast(fun);
             f.Stack.AddLast(args);
 
-            f.tableReference = new TableReference(f);
+            f.tableReference = TableReference.Interpret(f);
 
             return f;
         }
@@ -72,10 +67,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             base.Interpret();
 
-            if (IsUdf)
-            {
-                this.tableReference = new TableReference(this);
-            }
+            this.tableReference = TableReference.Interpret(this);
         }
     }
 }

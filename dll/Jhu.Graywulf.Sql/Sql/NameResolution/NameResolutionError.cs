@@ -53,26 +53,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return CreateException(ExceptionMessages.MissingColumnAlias, null, null, node);
         }
 
-        public static NameResolverException UnresolvableDatasetReference(IDatabaseObjectReference node)
+        public static NameResolverException UnresolvableDatasetReference(DatabaseObjectReference dr)
         {
-            return UnresolvableDatasetReference(null, node);
+            return UnresolvableDatasetReference(null, dr);
         }
 
-        public static NameResolverException UnresolvableDatasetReference(Exception innerException, IDatabaseObjectReference node)
+        public static NameResolverException UnresolvableDatasetReference(Exception innerException, DatabaseObjectReference dr)
         {
-            return CreateException(ExceptionMessages.UnresolvableDatasetReference, innerException, node.DatabaseObjectReference.DatasetName, (Node)node);
+            return CreateException(ExceptionMessages.UnresolvableDatasetReference, innerException, dr.DatasetName, dr.Node);
         }
-
-        public static NameResolverException UnresolvableDatasetReference(DatabaseObjectReference node)
-        {
-            return UnresolvableDatasetReference(null, node);
-        }
-
-        public static NameResolverException UnresolvableDatasetReference(Exception innerException, DatabaseObjectReference node)
-        {
-            return CreateException(ExceptionMessages.UnresolvableDatasetReference, innerException, node.DatasetName, node.Node);
-        }
-
+        
         public static NameResolverException AmbigousTableReference(ITableReference node)
         {
             return CreateException(ExceptionMessages.AmbigousTableReference, null, node.TableReference.DatabaseObjectName, (Node)node);
@@ -95,7 +85,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static NameResolverException UnknownFunctionName(IFunctionReference node)
         {
-            return CreateException(ExceptionMessages.UnknownFunctionName, null, node.FunctionReference.SystemFunctionName, (Node)node);
+            return CreateException(ExceptionMessages.UnknownFunctionName, null, node.FunctionReference.FunctionName, (Node)node);
         }
 
         public static NameResolverException UnresolvableFunctionReference(IFunctionReference node)

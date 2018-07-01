@@ -62,12 +62,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             nsl.Stack.AddLast(nce);
 
             var nex = new Expression();
+            nex.Stack.AddLast(ColumnIdentifier.Create(ncr));
             nce.Stack.AddLast(nex);
-
-            var nav = new AnyVariable();
-            nex.Stack.AddLast(nav);
-
-            nav.Stack.AddLast(ColumnIdentifier.Create(ncr));
 
             return nsl;
         }

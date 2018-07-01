@@ -210,7 +210,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             // Use a SQL parser to extract table name parts from the string
             var parser = new Sql.Parsing.SqlParser();
-            var tn = (Sql.Parsing.TableOrViewName)parser.Execute(new Sql.Parsing.TableOrViewName(), tableName);
+            var tn = (Sql.Parsing.TableOrViewIdentifier)parser.Execute(new Sql.Parsing.TableOrViewIdentifier(), tableName);
             var tr = tn.TableReference;
             tr.SubstituteDefaults(FederationContext.SchemaManager, dataset.Name);
 

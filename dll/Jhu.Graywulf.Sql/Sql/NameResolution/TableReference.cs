@@ -218,7 +218,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.Node = qs;
         }
 
-        public TableReference(VariableTableSource ts)
+        /*public TableReference(VariableTableSource ts)
         {
             InterpretTableSource(ts);
             InterpretVariableTableSource(ts);
@@ -264,7 +264,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             InterpretTableValuedFunctionCall(tvf);
 
             this.Node = tvf;
-        }
+        }*/
 
         private void InitializeMembers()
         {
@@ -300,9 +300,60 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         #endregion
 
+        public static TableReference Interpret(TableValuedFunctionCall tvf)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static TableReference Interpret(FunctionTableSource ts)
+        {
+            // Should update existing
+
+            throw new NotImplementedException();
+        }
+
+        public static TableReference Interpret(SimpleTableSource ts)
+        {
+            // Should update existing
+
+            throw new NotImplementedException();
+        }
+
+        public static TableReference Interpret(VariableTableSource ts)
+        {
+            // Should update existing
+
+            throw new NotImplementedException();
+        }
+
+        public static TableReference Interpret(SubqueryTableSource ts)
+        {
+            // Should update existing
+
+            throw new NotImplementedException();
+        }
+
+        public static TableReference Interpret(CommonTableSpecification cts)
+        {
+            // Should update existing
+
+            throw new NotImplementedException();
+        }
+
+        public static TableReference Interpret(TableOrViewIdentifier ti)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static TableReference Interpret(ColumnIdentifier ci)
+        {
+            throw new NotImplementedException();
+        }
+
+        /*
         public void InterpretTableSource(Node tableSource)
         {
-            Node = tableSource.FindAscendant<TableSource>();
+            Node = tableSource.FindAscendant<TableSourceSpecification>();
 
             TableAlias a = tableSource.FindDescendant<TableAlias>();
             if (a != null)
@@ -394,6 +445,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.tableContext |= TableContext.Subquery;
             this.isComputed = false;
         }
+        */
 
         public void LoadColumnReferences(SchemaManager schemaManager)
         {

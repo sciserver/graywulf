@@ -226,7 +226,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public static ColumnReference Interpret(ColumnIdentifier ci)
         {
             var cr = new ColumnReference();
-            cr.parentTableReference = new TableReference(ci);
+            cr.parentTableReference = TableReference.Interpret(ci);
 
             var star = ci.FindDescendant<Mul>();
 

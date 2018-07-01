@@ -26,18 +26,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public override bool Equals(FunctionReference x, FunctionReference y)
         {
-            bool res =
-                SchemaManager.Comparer.Compare(x.SystemFunctionName, y.SystemFunctionName) == 0 &&
-                base.Equals(x, y);
+            bool res = base.Equals(x, y);
 
             return res;
         }
 
         public override int GetHashCode(FunctionReference obj)
         {
-            var res =
-                (obj.SystemFunctionName == null ? 0 : obj.SystemFunctionName.GetHashCode()) +
-                base.GetHashCode(obj);
+            var res = base.GetHashCode(obj);
 
             return res;
         }

@@ -95,20 +95,23 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static DataTypeReference Interpret(DataTypeIdentifier di)
         {
-            var schema = Util.RemoveIdentifierQuotes(di.FindDescendant<SchemaName>()?.Value);
-            var name = Util.RemoveIdentifierQuotes(di.FindDescendant<DataTypeName>()?.Value);
+            var ds = di.FindDescendant<DatasetPrefix>();
+            var fpi = di.FindDescendant<FourPartIdentifier>();
 
             var dr = new DataTypeReference()
             {
-                SchemaName = schema,
-                DatabaseObjectName = name,
+                DatasetName = Util.RemoveIdentifierQuotes(ds?.DatasetName),
+                DatabaseName = Util.RemoveIdentifierQuotes(fpi.NamePart3),
+                SchemaName = Util.RemoveIdentifierQuotes(fpi.NamePart2),
+                DatabaseObjectName = Util.RemoveIdentifierQuotes(fpi.NamePart1),
             };
 
-            if (schema == null && Schema.SqlServer.Constants.SqlDataTypes.ContainsKey(name))
+            if (dr.DatasetName == null &&  dr.DatabaseName == null && dr.SchemaName == null &&
+                Schema.SqlServer.Constants.SqlDataTypes.ContainsKey(dr.DatabaseObjectName))
             {
                 // System type, this needs to be resolved here to have
                 // access to precision, scale and length
-                var sqltype = Schema.SqlServer.Constants.SqlDataTypes[name];
+                var sqltype = Schema.SqlServer.Constants.SqlDataTypes[dr.DatabaseObjectName];
                 var dt = Schema.DataType.Create(sqltype, di.Length, di.Precision, di.Scale, false);
 
                 dr.IsUserDefined = false;

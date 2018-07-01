@@ -19,9 +19,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return StatementType.Modify; }
         }
 
-        public TableOrViewName TargetTable
+        public TableOrViewIdentifier TargetTable
         {
-            get { return FindDescendant<TableOrViewName>(); }
+            get { return FindDescendant<TableOrViewIdentifier>(); }
         }
 
         public DatabaseObjectReference DatabaseObjectReference

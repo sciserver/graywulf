@@ -9,10 +9,10 @@ namespace Jhu.Graywulf.Sql.Parsing
     [TestClass]
     public class TableOrViewNameTest
     {
-        private TableOrViewName TablenameTestHelper(string query)
+        private TableOrViewIdentifier TablenameTestHelper(string query)
         {
             var p = new SqlParser();
-            return p.Execute<TableOrViewName>(query);
+            return p.Execute<TableOrViewIdentifier>(query);
         }
 
         [TestMethod]

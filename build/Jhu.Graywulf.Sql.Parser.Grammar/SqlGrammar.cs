@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Whitespace> Whitespace = () => @"\G\s+";
         public static Expression<Comment> SingleLineComment = () => @"\G--.*";
         public static Expression<Comment> MultiLineComment = () => @"\G(?sm)/\*.*?\*/";
-        public static Expression<Terminal> Number = () => @"\G([0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)";
+        public static Expression<Terminal> NumericConstant = () => @"\G([0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)";
         public static Expression<Terminal> HexLiteral = () => @"\G0[xX][0-9a-fA-F]+";
         public static Expression<Terminal> StringConstant = () => @"\G('([^']|'')*')";
         public static Expression<Terminal> Identifier = () => @"\G([a-zA-Z_]+[0-9a-zA-Z_]*|\[[^\]]+\])";
@@ -102,17 +102,66 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> TableName = () => Identifier;
         public static Expression<Rule> ConstraintName = () => Identifier;
         public static Expression<Rule> IndexName = () => Identifier;
-        public static Expression<Rule> DataTypeName = () => Identifier;
         public static Expression<Rule> DerivedTable = () => Identifier;
         public static Expression<Rule> TableAlias = () => Identifier;
-        public static Expression<Rule> FunctionName = () => Identifier;
+        public static Expression<Rule> MethodName = () => Identifier;
         public static Expression<Rule> ColumnName = () => Identifier;
         public static Expression<Rule> ColumnAlias = () => Identifier;
         public static Expression<Rule> UdtColumnName = () => Identifier;
         public static Expression<Rule> PropertyName = () => Identifier;
-        public static Expression<Rule> SampleNumber = () => Number;
-        public static Expression<Rule> RepeatSeed = () => Number;
+        public static Expression<Rule> SampleNumber = () => NumericConstant;
+        public static Expression<Rule> RepeatSeed = () => NumericConstant;
         public static Expression<Rule> IndexValue = () => Identifier;
+
+        public static Expression<Rule> NamePart1 = () => Identifier;
+        public static Expression<Rule> NamePart2 = () => Identifier;
+        public static Expression<Rule> NamePart3 = () => Identifier;
+        public static Expression<Rule> NamePart4 = () => Identifier;
+
+        public static Expression<Rule> DatasetPrefix = () =>
+            Sequence
+            (
+                DatasetName,
+                May(CommentOrWhitespace),
+                Colon,
+                May(CommentOrWhitespace)
+            );
+
+        public static Expression<Rule> FourPartIdentifier = () =>
+            Sequence
+            (
+                Must
+                (
+                    Sequence
+                    (
+                        NamePart4, May(CommentOrWhitespace),
+                        Dot, May(CommentOrWhitespace),
+                        May(Sequence(NamePart3, May(CommentOrWhitespace))),
+                        Dot, May(CommentOrWhitespace),
+                        May(Sequence(NamePart2, May(CommentOrWhitespace))),
+                        Dot, May(CommentOrWhitespace),
+                        NamePart1
+                    ),
+
+                    Sequence
+                    (
+                        NamePart3, May(CommentOrWhitespace),
+                        Dot, May(CommentOrWhitespace),
+                        May(Sequence(NamePart2, May(CommentOrWhitespace))),
+                        Dot, May(CommentOrWhitespace),
+                        NamePart1
+                    ),
+
+                    Sequence
+                    (
+                        NamePart2, May(CommentOrWhitespace),
+                        Dot, May(CommentOrWhitespace),
+                        NamePart1
+                    ),
+
+                    NamePart1
+                )
+            );
 
         #endregion
         #region Arithemtic expressions
@@ -127,20 +176,24 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> Expression = () =>
             Sequence
             (
-                May(UnaryOperator),
-                May(CommentOrWhitespace),
+                May(Sequence(UnaryOperator, May(CommentOrWhitespace))),
                 Must
                 (
+                    Constant,
+
                     Subquery,
                     ExpressionBrackets,
-                    RankingFunctionCall,
-                    UdtFunctionCall,
-                    FunctionCall,
-                    Null,
-                    HexLiteral,
-                    Number,
-                    AnyVariable,
-                    StringConstant,
+
+                    WindowedFunctionCall,
+                    ScalarFunctionCall,
+
+                    PropertyAccess,
+
+                    SystemVariable,
+                    UserVariable,
+
+                    ColumnIdentifier,
+
                     SimpleCaseExpression,
                     SearchedCaseExpression
                 ),
@@ -156,18 +209,19 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 )
             );
 
+        public static Expression<Rule> Constant = () =>
+            Must
+            (
+                    Null,
+                    HexLiteral,
+                    NumericConstant,
+                    StringConstant
+            );
+
         public static Expression<Rule> ExpressionBrackets = () =>
             Sequence(BracketOpen, May(CommentOrWhitespace), Expression, May(CommentOrWhitespace), BracketClose);
 
         public static Expression<Rule> Null = () => Keyword("NULL");
-
-        public static Expression<Rule> AnyVariable = () =>
-            Must
-            (
-                ColumnIdentifier,
-                SystemVariable,
-                UserVariable
-            );
 
         public static Expression<Rule> UserVariable = () => Variable;
 
@@ -370,45 +424,19 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         #endregion
         #region Table and column names
 
-        public static Expression<Rule> TableOrViewName = () =>
+        public static Expression<Rule> TableOrViewIdentifier = () =>
             Sequence
             (
-                // Dataset prefix
-                May(Sequence(DatasetName, May(CommentOrWhitespace), Colon, May(CommentOrWhitespace))),
-                // Standard table name
-                Must
-                (
-                    Sequence(DatabaseName, May(CommentOrWhitespace), Dot, May(Sequence(May(CommentOrWhitespace), SchemaName)), May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), TableName),
-                    Sequence(SchemaName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), TableName),
-                    TableName
-                )
+                May(DatasetPrefix),
+                FourPartIdentifier
             );
 
         public static Expression<Rule> ColumnIdentifier = () =>
             Must
             (
-                Sequence
-                (
-                    // Optional dataset prefix
-                    May
-                    (
-                        Sequence
-                        (
-                            DatasetName,
-                            May(CommentOrWhitespace),
-                            Colon,
-                            May(CommentOrWhitespace)
-                        )
-                    ),
-                    // Original column name syntax
-                    Must
-                    (
-                        Sequence(DatabaseName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), May(Sequence(SchemaName, May(CommentOrWhitespace))), Dot, May(CommentOrWhitespace), TableName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Must(Mul, ColumnName)),
-                        Sequence(SchemaName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), TableName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Must(Mul, ColumnName)),
-                        Sequence(TableName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Must(Mul, ColumnName))
-                    )
-                ),
-                Must(Mul, ColumnName)
+                Mul,
+                Sequence(FourPartIdentifier, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Mul),
+                FourPartIdentifier
             );
 
         #endregion
@@ -424,18 +452,8 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> DataTypeIdentifier = () =>
             Sequence
             (
-                Must
-                (
-                    Sequence
-                    (
-                        SchemaName,
-                        May(CommentOrWhitespace),
-                        Dot,
-                        May(CommentOrWhitespace),
-                        DataTypeName
-                    ),
-                    DataTypeName
-                ),
+                May(DatasetPrefix),
+                FourPartIdentifier,
                 May
                 (
                     Sequence
@@ -455,11 +473,11 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             (
                 BracketOpen,
                 May(CommentOrWhitespace),
-                Number,
+                NumericConstant,
                 May(CommentOrWhitespace),
                 Comma,
                 May(CommentOrWhitespace),
-                Number,
+                NumericConstant,
                 May(CommentOrWhitespace),
                 BracketClose
             );
@@ -469,7 +487,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             (
                 BracketOpen,
                 May(CommentOrWhitespace),
-                Must(Literal("MAX"), Number),
+                Must(Literal("MAX"), NumericConstant),
                 May(CommentOrWhitespace),
                 BracketClose
             );
@@ -477,71 +495,12 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         #endregion
         #region Function call syntax
 
-        public static Expression<Rule> FunctionIdentifier = () => Must(UdfIdentifier, FunctionName);
-
-        // *** TODO: maybe add dataset support here to be able to call mydb functions?
-        public static Expression<Rule> UdfIdentifier = () =>
-            Sequence
-            (
-                May(Sequence(DatasetName, May(CommentOrWhitespace), Colon, May(CommentOrWhitespace))),
-                Must
-                (
-                    Sequence(DatabaseName, May(CommentOrWhitespace), Dot, May(Sequence(May(CommentOrWhitespace), SchemaName)), May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), FunctionName),
-                    Sequence(SchemaName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), FunctionName)
-                )
-            );
-
-        public static Expression<Rule> UdtFunctionIdentifier = () =>
-            Sequence
-            (
-                UserVariable,
-                May(CommentOrWhitespace),
-                Dot,        // Need to add :: ?
-                May(CommentOrWhitespace),
-                FunctionName
-            );
-
-        public static Expression<Rule> Argument = () => Expression;
-
-        public static Expression<Rule> ArgumentList = () =>
-            Sequence
-            (
-                Argument,
-                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ArgumentList))
-            );
-
-        public static Expression<Rule> UdtFunctionCall = () =>
-            Sequence
-            (
-                UdtFunctionIdentifier,
-                May(CommentOrWhitespace),
-                FunctionArguments
-            );
-
-        public static Expression<Rule> FunctionCall = () =>
+        public static Expression<Rule> ScalarFunctionCall = () =>
             Sequence
             (
                 FunctionIdentifier,
                 May(CommentOrWhitespace),
                 FunctionArguments
-            );
-
-        public static Expression<Rule> TableValuedFunctionCall = () =>
-            Sequence
-            (
-                FunctionIdentifier,
-                May(CommentOrWhitespace),
-                FunctionArguments
-            );
-
-        public static Expression<Rule> RankingFunctionCall = () =>
-            Sequence
-            (
-                FunctionName,
-                May(CommentOrWhitespace),
-                FunctionArguments,
-                May(CommentOrWhitespace),
-                OverClause
             );
 
         public static Expression<Rule> FunctionArguments = () =>
@@ -552,6 +511,69 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 May(ArgumentList),
                 May(CommentOrWhitespace),
                 BracketClose
+            );
+
+        public static Expression<Rule> ArgumentList = () =>
+            Sequence
+            (
+                Argument,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ArgumentList))
+            );
+
+        public static Expression<Rule> Argument = () => Expression;
+
+        public static Expression<Rule> FunctionIdentifier = () =>
+            Must
+            (
+                UdtVariableMethodIdentifier,         // @var.Function(arg1, arg2)
+                UdtStaticMethodIdentifier,           // dbo.UDT::Function(arg1, arg2)
+                UdfIdentifier                          // database.dbo.Function(arg1, arg2)
+            );
+
+        public static Expression<Rule> UdtVariableMethodIdentifier = () =>
+            Sequence
+            (
+                UserVariable,
+                May(CommentOrWhitespace),
+                Dot,
+                May(CommentOrWhitespace),
+                MethodName
+            );
+
+        public static Expression<Rule> UdtStaticMethodIdentifier = () =>
+            Sequence
+            (
+                DataTypeIdentifier,
+                May(CommentOrWhitespace),
+                DoubleColon,
+                May(CommentOrWhitespace),
+                MethodName
+            );
+
+        public static Expression<Rule> UdfIdentifier = () =>
+            Sequence
+            (
+                // Optional dataset prefix
+                May(DatasetPrefix),
+                FourPartIdentifier
+            );
+
+        public static Expression<Rule> TableValuedFunctionCall = () =>
+            Sequence
+            (
+                UdfIdentifier,
+                May(CommentOrWhitespace),
+                FunctionArguments
+            );
+
+        public static Expression<Rule> WindowedFunctionCall = () =>
+            Sequence
+            (
+                UdfIdentifier,
+                May(CommentOrWhitespace),
+                FunctionArguments,
+                May(CommentOrWhitespace),
+                OverClause
             );
 
         public static Expression<Rule> OverClause = () =>
@@ -577,7 +599,37 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             );
 
         #endregion
+        #region Property access syntax
 
+        public static Expression<Rule> PropertyAccess = () =>
+            Must
+            (
+                // NOTE: Column properties must be handle with ColumnIdentifier
+                UdtVariablePropertyIdentifier,
+                UdtStaticPropertyIdentifier
+            );
+
+        public static Expression<Rule> UdtVariablePropertyIdentifier = () =>
+            Sequence
+            (
+                UserVariable,
+                May(CommentOrWhitespace),
+                Dot,
+                May(CommentOrWhitespace),
+                PropertyName
+            );
+
+        public static Expression<Rule> UdtStaticPropertyIdentifier = () =>
+            Sequence
+            (
+                DataTypeIdentifier,
+                May(CommentOrWhitespace),
+                DoubleColon,
+                May(CommentOrWhitespace),
+                PropertyName
+            );
+
+        #endregion
         #region Statements
 
         public static Expression<Rule> StatementBlock = () =>
@@ -719,7 +771,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 May(
                     Sequence(
                         CommentOrWhitespace,
-                        Must(Number, UserVariable),
+                        Must(NumericConstant, UserVariable),
                         May(CommentOrWhitespace),
                         Comma,
                         May(CommentOrWhitespace),
@@ -727,7 +779,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                         May(CommentOrWhitespace),
                         Comma,
                         May(CommentOrWhitespace),
-                        Must(Number, UserVariable),
+                        Must(NumericConstant, UserVariable),
                         May(CommentOrWhitespace)
                     )
                 )
@@ -885,7 +937,7 @@ FOR select_statement
                         (
                             Must(Keyword("ABSOLUTE"), Keyword("RELATIVE")),
                             CommentOrWhitespace,
-                            Must(Number, UserVariable)
+                            Must(NumericConstant, UserVariable)
                         )
                     )
                 ),
@@ -910,7 +962,7 @@ FOR select_statement
             (
                 Keyword("DECLARE"),
                 May(CommentOrWhitespace),
-                TableVariable,
+                UserVariable,
                 May(CommentOrWhitespace),
                 Keyword("TABLE"),
                 May(CommentOrWhitespace),
@@ -920,7 +972,7 @@ FOR select_statement
                 May(CommentOrWhitespace),
                 BracketClose
             );
-        
+
         #endregion
 
         #region Common table expressions
@@ -944,7 +996,7 @@ FOR select_statement
             Sequence
             (
                 TableAlias,
-                May(Sequence(May(CommentOrWhitespace), ColumnListBrackets)),
+                May(Sequence(May(CommentOrWhitespace), ColumnAliasBrackets)),
                 May(CommentOrWhitespace),
                 Keyword("AS"),
                 May(CommentOrWhitespace),
@@ -1020,7 +1072,7 @@ FOR select_statement
             (
                 Keyword("TOP"),
                 May(CommentOrWhitespace),
-                Must(Number, ExpressionBrackets),
+                Must(NumericConstant, ExpressionBrackets),
                 May(Sequence(CommentOrWhitespace, Keyword("PERCENT"))),
                 May(Sequence(CommentOrWhitespace, Keyword("WITH"), CommentOrWhitespace, Keyword("TIES")))
             );
@@ -1060,7 +1112,7 @@ FOR select_statement
                 Must
                 (
                     UserVariable,
-                    TableOrViewName
+                    TableOrViewIdentifier
                 // TODO: temp table?
                 ),
                 May(Sequence(May(CommentOrWhitespace), TableHintClause))
@@ -1078,7 +1130,7 @@ FOR select_statement
 
         public static Expression<Rule> TableSourceExpression = () =>
             Sequence(
-                TableSource,
+                TableSourceSpecification,
                 May(Sequence(May(CommentOrWhitespace), JoinedTable))
             );
 
@@ -1087,10 +1139,10 @@ FOR select_statement
             (
                 Must
                 (
-                    Sequence(JoinType, May(CommentOrWhitespace), TableSource, May(CommentOrWhitespace), Keyword("ON"), May(CommentOrWhitespace), BooleanExpression),
-                    Sequence(Keyword("CROSS"), CommentOrWhitespace, Keyword("JOIN"), May(CommentOrWhitespace), TableSource),
-                    Sequence(Comma, May(CommentOrWhitespace), TableSource),
-                    Sequence(Must(Keyword("CROSS"), Keyword("OUTER")), CommentOrWhitespace, Keyword("APPLY"), May(CommentOrWhitespace), TableSource)
+                    Sequence(JoinType, May(CommentOrWhitespace), TableSourceSpecification, May(CommentOrWhitespace), Keyword("ON"), May(CommentOrWhitespace), BooleanExpression),
+                    Sequence(Keyword("CROSS"), CommentOrWhitespace, Keyword("JOIN"), May(CommentOrWhitespace), TableSourceSpecification),
+                    Sequence(Comma, May(CommentOrWhitespace), TableSourceSpecification),
+                    Sequence(Must(Keyword("CROSS"), Keyword("OUTER")), CommentOrWhitespace, Keyword("APPLY"), May(CommentOrWhitespace), TableSourceSpecification)
                 ),
                 May(Sequence(May(CommentOrWhitespace), JoinedTable))
             );
@@ -1121,7 +1173,7 @@ FOR select_statement
                 Keyword("LOOP"), Keyword("HASH"), Keyword("MERGE"), Keyword("REMOTE")
             );
 
-        public static Expression<Rule> TableSource = () =>
+        public static Expression<Rule> TableSourceSpecification = () =>
             Must
             (
                 FunctionTableSource,
@@ -1133,7 +1185,7 @@ FOR select_statement
         public static Expression<Rule> SimpleTableSource = () =>
             Sequence
             (
-                TableOrViewName,
+                TableOrViewIdentifier,
                 May(Sequence(CommentOrWhitespace, May(Sequence(Keyword("AS"), CommentOrWhitespace)), TableAlias)),   // Optional
                 May(Sequence(CommentOrWhitespace, TableSampleClause)),
                 May(Sequence(CommentOrWhitespace, TableHintClause)),
@@ -1147,17 +1199,15 @@ FOR select_statement
                 May(CommentOrWhitespace),
                 May(Sequence(Keyword("AS"), CommentOrWhitespace)),
                 TableAlias,     // Required
-                May(Sequence(May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), ColumnAliasList, May(CommentOrWhitespace), BracketClose))
+                May(Sequence(May(CommentOrWhitespace), ColumnAliasBrackets))
             );
 
         public static Expression<Rule> VariableTableSource = () =>
             Sequence
             (
-                TableVariable,
+                UserVariable,
                 May(Sequence(May(CommentOrWhitespace), May(Sequence(Keyword("AS"), May(CommentOrWhitespace))), TableAlias))
             );
-
-        public static Expression<Rule> TableVariable = () => Variable;
 
         public static Expression<Rule> SubqueryTableSource = () =>
             Sequence
@@ -1166,6 +1216,16 @@ FOR select_statement
                 May(CommentOrWhitespace),
                 May(Sequence(Keyword("AS"), CommentOrWhitespace)),
                 TableAlias     // Required
+            );
+
+        public static Expression<Rule> ColumnAliasBrackets = () =>
+            Sequence
+            (
+                BracketOpen,
+                May(CommentOrWhitespace),
+                ColumnAliasList,
+                May(CommentOrWhitespace),
+                BracketClose
             );
 
         public static Expression<Rule> ColumnAliasList = () =>
@@ -1321,8 +1381,8 @@ FOR select_statement
         public static Expression<Rule> QueryHint = () =>
             Must(
                 Sequence(Identifier, May(CommentOrWhitespace), FunctionArguments),
-                Sequence(Identifier, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Number),
-                Sequence(Identifier, CommentOrWhitespace, Number),
+                Sequence(Identifier, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), NumericConstant),
+                Sequence(Identifier, CommentOrWhitespace, NumericConstant),
                 QueryHintIdentifierList,
                 Identifier
             );
@@ -1530,7 +1590,7 @@ FOR select_statement
                 CommentOrWhitespace,
                 Keyword("TABLE"),
                 May(CommentOrWhitespace),
-                TableOrViewName,
+                TableOrViewIdentifier,
                 May(CommentOrWhitespace),
                 BracketOpen,
                 May(CommentOrWhitespace),
@@ -1621,14 +1681,14 @@ FOR select_statement
                 (
                     Sequence
                     (
-                        May(CommentOrWhitespace), 
+                        May(CommentOrWhitespace),
                         BracketOpen,
                         May(CommentOrWhitespace),
-                        Number,
+                        NumericConstant,
                         May(CommentOrWhitespace),
                         Comma,
                         May(CommentOrWhitespace),
-                        Number,
+                        NumericConstant,
                         May(CommentOrWhitespace),
                         BracketClose
                     )
@@ -1686,7 +1746,7 @@ FOR select_statement
                 IndexColumnDefinitionList,
                 May(CommentOrWhitespace),
                 BracketClose
-                // TODO: WITH, ON etc.
+            // TODO: WITH, ON etc.
             );
 
         public static Expression<Rule> IndexType = () => Must(Keyword("CLUSTERED"), Keyword("NONCLUSTERED"));
@@ -1700,7 +1760,7 @@ FOR select_statement
                 CommentOrWhitespace,
                 Keyword("TABLE"),
                 May(CommentOrWhitespace),
-                TableOrViewName
+                TableOrViewIdentifier
             );
 
         public static Expression<Rule> TruncateTableStatement = () =>
@@ -1710,7 +1770,7 @@ FOR select_statement
                 CommentOrWhitespace,
                 Keyword("TABLE"),
                 May(CommentOrWhitespace),
-                TableOrViewName
+                TableOrViewIdentifier
             );
 
         #endregion
@@ -1730,7 +1790,7 @@ FOR select_statement
                 May(CommentOrWhitespace),
                 Keyword("ON"),
                 May(CommentOrWhitespace),
-                TableOrViewName,
+                TableOrViewIdentifier,
                 May(CommentOrWhitespace),
                 BracketOpen,
                 May(CommentOrWhitespace),
@@ -1752,7 +1812,7 @@ FOR select_statement
                     )
                 )
 
-                // TODO: WITH, ON
+            // TODO: WITH, ON
             );
 
         public static Expression<Rule> IndexColumnDefinitionList = () =>
@@ -1789,7 +1849,7 @@ FOR select_statement
                 May(CommentOrWhitespace),
                 Keyword("ON"),
                 May(CommentOrWhitespace),
-                TableOrViewName
+                TableOrViewIdentifier
             );
 
         #endregion

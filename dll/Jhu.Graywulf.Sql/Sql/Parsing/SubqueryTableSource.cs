@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             base.Interpret();
 
-            TableReference = new TableReference(this);
+            TableReference = TableReference.Interpret(this);
         }
 
         public IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive)

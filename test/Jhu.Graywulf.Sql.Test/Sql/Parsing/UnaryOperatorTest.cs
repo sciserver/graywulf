@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "-1";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("-", exp.FindDescendantRecursive<Minus>().Value);
-            Assert.AreEqual("1", exp.FindDescendantRecursive<Number>().Value);
+            Assert.AreEqual("1", exp.FindDescendantRecursive<NumericConstant>().Value);
         }
 
         [TestMethod]
@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "+1";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("+", exp.FindDescendantRecursive<Plus>().Value);
-            Assert.AreEqual("1", exp.FindDescendantRecursive<Number>().Value);
+            Assert.AreEqual("1", exp.FindDescendantRecursive<NumericConstant>().Value);
         }
 
         [TestMethod]
@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "~1";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("~", exp.FindDescendantRecursive<BitwiseNot>().Value);
-            Assert.AreEqual("1", exp.FindDescendantRecursive<Number>().Value);
+            Assert.AreEqual("1", exp.FindDescendantRecursive<NumericConstant>().Value);
         }
 
         [TestMethod]
@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("+ 1", exp.Value);
             Assert.AreEqual("+", exp.FindDescendantRecursive<Plus>().Value);
-            Assert.AreEqual("1", exp.FindDescendantRecursive<Number>().Value);
+            Assert.AreEqual("1", exp.FindDescendantRecursive<NumericConstant>().Value);
         }
     
     }

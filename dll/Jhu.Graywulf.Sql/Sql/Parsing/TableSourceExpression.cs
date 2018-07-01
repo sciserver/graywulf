@@ -7,12 +7,12 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class TableSourceExpression
     {
-        public static TableSourceExpression Create(TableSource tableSource)
+        public static TableSourceExpression Create(TableSourceSpecification tableSource)
         {
             return Create(tableSource, null);
         }
 
-        public static TableSourceExpression Create(TableSource tableSource, JoinedTable joinedTable)
+        public static TableSourceExpression Create(TableSourceSpecification tableSource, JoinedTable joinedTable)
         {
             var tse = new TableSourceExpression();
 

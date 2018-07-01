@@ -6,12 +6,7 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public enum VariableReferenceType
+    public interface IMethodReference : IFunctionReference
     {
-        Unknown,
-        System,
-        Scalar,
-        Table,
-        Cursor,
     }
 }

@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class TableSource : ITableReference
+    public partial class TableSourceSpecification : ITableReference
     {
         public virtual ITableSource SpecificTableSource
         {
@@ -30,30 +30,30 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindAscendant<QuerySpecification>(); }
         }
 
-        public static TableSource Create(SimpleTableSource sts)
+        public static TableSourceSpecification Create(SimpleTableSource sts)
         {
-            var ts = new TableSource();
+            var ts = new TableSourceSpecification();
             ts.Stack.AddLast(sts);
             return ts;
         }
 
-        public static TableSource Create(FunctionTableSource fts)
+        public static TableSourceSpecification Create(FunctionTableSource fts)
         {
-            var ts = new TableSource();
+            var ts = new TableSourceSpecification();
             ts.Stack.AddLast(fts);
             return ts;
         }
 
-        public static TableSource Create(ComputedTableSource ts)
+        public static TableSourceSpecification Create(ComputedTableSource ts)
         {
-            var res = new TableSource();
+            var res = new TableSourceSpecification();
             res.Stack.AddLast(ts);
             return res;
         }
 
-        public static TableSource Create(TableReference tr)
+        public static TableSourceSpecification Create(TableReference tr)
         {
-            var ts = new TableSource();
+            var ts = new TableSourceSpecification();
             var sts = SimpleTableSource.Create(tr);
             ts.Stack.AddLast(sts);
             return ts;

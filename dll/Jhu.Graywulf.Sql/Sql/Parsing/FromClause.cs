@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             while (node != null)
             {
-                var ts = node.FindDescendant<TableSource>();
+                var ts = node.FindDescendant<TableSourceSpecification>();
                 yield return ts.SpecificTableSource;
 
                 // Enumerate recursively, if necessary
@@ -71,17 +71,17 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             // Find the last table source
             var tse = FindDescendant<TableSourceExpression>();
-            var ts = tse.EnumerateDescendantsRecursive<TableSource>(typeof(Subquery)).LastOrDefault();
+            var ts = tse.EnumerateDescendantsRecursive<TableSourceSpecification>(typeof(Subquery)).LastOrDefault();
 
             ts.Stack.AddLast(Whitespace.CreateNewLine());
             ts.Stack.AddLast(joinedTable);
         }
 
-        public void PrependJoinedTable(TableSource tableSource, JoinType joinType, BooleanExpression joinCondition)
+        public void PrependJoinedTable(TableSourceSpecification tableSource, JoinType joinType, BooleanExpression joinCondition)
         {
             // Find the first table source
             var tse = FindDescendant<TableSourceExpression>();
-            var ts = tse.FindDescendant<TableSource>();
+            var ts = tse.FindDescendant<TableSourceSpecification>();
 
             var jt = JoinedTable.Create(joinType, ts, joinCondition);
 

@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Sql.Parsing
                     }
                     else
                     {
-                        return int.Parse(s.FindDescendant<Number>(0).Value);
+                        return int.Parse(s.FindDescendant<NumericConstant>(0).Value);
                     }
                 }
             }
@@ -55,7 +55,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
                 if (sp != null)
                 {
-                    return byte.Parse(sp.FindDescendant<Number>(0).Value);
+                    return byte.Parse(sp.FindDescendant<NumericConstant>(0).Value);
                 }
                 else
                 {
@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
                 if (sp != null)
                 {
-                    return byte.Parse(sp.FindDescendant<Number>(1).Value);
+                    return byte.Parse(sp.FindDescendant<NumericConstant>(1).Value);
                 }
                 else
                 {

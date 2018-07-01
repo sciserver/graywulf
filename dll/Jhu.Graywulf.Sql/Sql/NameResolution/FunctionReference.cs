@@ -11,27 +11,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
     public class FunctionReference : DatabaseObjectReference
     {
         #region Property storage variables
-
-        private string systemFunctionName;
-        private bool isUdf;
-
         #endregion
         #region Properties
 
-        public string SystemFunctionName
+        public string FunctionName
         {
-            get { return systemFunctionName; }
-            set { systemFunctionName = value; }
-        }
-
-        public bool IsUdf
-        {
-            get { return isUdf; }
-        }
-
-        public bool IsSystem
-        {
-            get { return !isUdf; }
+            get { return DatabaseObjectName; }
+            set { DatabaseObjectName = value; }
         }
 
         /// <summary>
@@ -50,7 +36,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 else
                 {
-                    return systemFunctionName;
+                    return DatabaseObjectName;
                 }
             }
         }
@@ -63,40 +49,24 @@ namespace Jhu.Graywulf.Sql.NameResolution
             InitializeMembers();
         }
 
+        public FunctionReference(Node node)
+            :base(node)
+        {
+            InitializeMembers();
+        }
+
         public FunctionReference(FunctionReference old)
             : base(old)
         {
             CopyMembers(old);
         }
 
-        public FunctionReference(string functionName)
-        {
-            InitializeMembers();
-            InterpretSystemFunction(functionName);
-        }
-
-        public FunctionReference(FunctionName fn)
-        {
-            InitializeMembers();
-            InterpretFunctionName(fn);
-        }
-
-        public FunctionReference(UdfIdentifier fi)
-        {
-            InitializeMembers();
-            InterpretUdfIdentifier(fi);
-        }
-
         private void InitializeMembers()
         {
-            this.systemFunctionName = null;
-            this.isUdf = true;
         }
 
         private void CopyMembers(FunctionReference old)
         {
-            this.systemFunctionName = old.systemFunctionName;
-            this.isUdf = old.isUdf;
         }
 
         public override object Clone()
@@ -106,6 +76,42 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         #endregion
 
+        public static FunctionReference Interpret(UdfIdentifier fi)
+        {
+            var ds = fi.FindDescendant<DatasetPrefix>();
+            var fpi = fi.FindDescendant<FourPartIdentifier>();
+
+            var fr = new FunctionReference(fi)
+            {
+                DatasetName = Util.RemoveIdentifierQuotes(ds?.DatasetName),
+                DatabaseName = Util.RemoveIdentifierQuotes(fpi.NamePart3),
+                SchemaName = Util.RemoveIdentifierQuotes(fpi.NamePart2),
+                DatabaseObjectName = Util.RemoveIdentifierQuotes(fpi.NamePart1),
+                IsUserDefined = true
+            };
+
+            // This is a system function call
+            if (fr.DatasetName == null && fr.DatabaseName == null && fr.SchemaName == null)
+            {
+                fr.IsUserDefined = false;
+            }
+
+            return fr;
+        }
+
+        public static FunctionReference Interpret(UdtVariableMethodIdentifier fi)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
+        public static FunctionReference Interpret(UdtStaticMethodIdentifier fi)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
+        /* TODO: delete
         private void InterpretSystemFunction(string functionName)
         {
             DatasetName = null;
@@ -141,6 +147,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             isUdf = true;
         }
+        */
 
         /*
          * // TODO: not used now, but might be necessary in the future

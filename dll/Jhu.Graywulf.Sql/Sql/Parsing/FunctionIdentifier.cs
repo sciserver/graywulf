@@ -8,55 +8,23 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class FunctionIdentifier : IFunctionReference
     {
-        private FunctionReference functionReference;
+        // TODO: create enum that distinguished function types
 
-        public DatabaseObjectReference DatabaseObjectReference
-        {
-            get { return functionReference; }
-        }
+        private IFunctionReference specificFunctionIdentifier;
+
         public FunctionReference FunctionReference
         {
-            get { return functionReference; }
-            set { functionReference = value; }
+            get { return specificFunctionIdentifier.FunctionReference; }
+            set { specificFunctionIdentifier.FunctionReference = value; }
         }
-
-        public UdfIdentifier UdfIdentifier
-        {
-            get { return FindDescendant<UdfIdentifier>(); }
-        }
-
-        public FunctionName FunctionName
-        {
-            get { return FindDescendant<FunctionName>(); }
-        }
-
-        protected override void OnInitializeMembers()
-        {
-            base.OnInitializeMembers();
-        }
-
-        protected override void OnCopyMembers(object other)
-        {
-            base.OnCopyMembers(other);
-
-            var old = (FunctionIdentifier)other;
-
-            this.functionReference = old.functionReference; 
-        }
-
-        public static FunctionIdentifier Create(string functionName)
-        {
-            var fid = new FunctionIdentifier();
-            fid.functionReference = new FunctionReference(functionName);
-
-            var fn = FunctionName.Create(functionName);
-            fid.Stack.AddLast(fn);
-
-            return fid;
-        }
-
+        
         public static FunctionIdentifier Create(FunctionReference functionReference)
         {
+            // TODO: implement different types based on function type
+
+            throw new NotImplementedException();
+
+            /*
             if (functionReference.IsSystem)
             {
                 return Create(functionReference.SystemFunctionName);
@@ -71,27 +39,39 @@ namespace Jhu.Graywulf.Sql.Parsing
 
                 return fid;
             }
+            */
         }
 
         public override void Interpret()
         {
             base.Interpret();
 
-            var udf = UdfIdentifier;
-            var fn = FunctionName;
+            specificFunctionIdentifier = FindSpecificFunctionIdentifier();
+        }
 
-            if (udf != null)
+        protected virtual IFunctionReference FindSpecificFunctionIdentifier()
+        {
+            IFunctionReference fr;
+
+            fr = FindDescendant<UdtVariableMethodIdentifier>();
+            if (fr != null)
             {
-                this.functionReference = new FunctionReference(udf);
+                return fr;
             }
-            else if (fn != null)
+
+            fr = FindDescendant<UdtStaticMethodIdentifier>();
+            if (fr != null)
             {
-                this.functionReference = new FunctionReference(fn);
+                return fr;
             }
-            else
+
+            fr = FindDescendant<UdfIdentifier>();
+            if (fr != null)
             {
-                throw new NotImplementedException();
+                return fr;
             }
+
+            throw new NotImplementedException();
         }
     }
 }

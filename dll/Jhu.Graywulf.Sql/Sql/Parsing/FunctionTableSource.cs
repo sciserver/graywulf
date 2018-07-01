@@ -9,28 +9,24 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class FunctionTableSource : ITableSource
     {
-
+        private TableReference tableReference;
         private string uniqueKey;
+
+        public TableReference TableReference
+        {
+            get { return tableReference; }
+            set { tableReference = value; }
+        }
 
         public string UniqueKey
         {
             get { return uniqueKey; }
             set { uniqueKey = value; }
         }
+
         public TableValuedFunctionCall FunctionCall
         {
             get { return FindDescendant<TableValuedFunctionCall>(); }
-        }
-
-        public DatabaseObjectReference DatabaseObjectReference
-        {
-            get { return FunctionCall.TableReference; }
-        }
-
-        public TableReference TableReference
-        {
-            get { return FunctionCall.TableReference; }
-            set { FunctionCall.TableReference = value; }
         }
 
         public bool IsSubquery
@@ -41,6 +37,29 @@ namespace Jhu.Graywulf.Sql.Parsing
         public bool IsMultiTable
         {
             get { return false; }
+        }
+
+        protected override void OnInitializeMembers()
+        {
+            base.OnInitializeMembers();
+
+            this.tableReference = null;
+        }
+
+        protected override void OnCopyMembers(object other)
+        {
+            base.OnCopyMembers(other);
+
+            var old = (FunctionTableSource)other;
+
+            this.tableReference = old.tableReference;
+        }
+
+        public override void Interpret()
+        {
+            base.Interpret();
+
+            this.tableReference = TableReference.Interpret(this);
         }
 
         public static FunctionTableSource Create(TableValuedFunctionCall functionCall, string tableAlias)
@@ -56,13 +75,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             functionCall.TableReference.Alias = tableAlias;
 
             return fts;
-        }
-
-        public override void Interpret()
-        {
-            base.Interpret();
-
-            TableReference.InterpretTableSource(this);
         }
 
         public IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive)

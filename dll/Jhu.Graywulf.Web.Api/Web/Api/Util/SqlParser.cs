@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Web.Api.Util
                 try
                 {
                     var parser = new Jhu.Graywulf.Sql.Parsing.SqlParser();
-                    var tn = (Jhu.Graywulf.Sql.Parsing.TableOrViewName)parser.Execute(new Jhu.Graywulf.Sql.Parsing.TableOrViewName(), token);
+                    var tn = (Jhu.Graywulf.Sql.Parsing.TableOrViewIdentifier)parser.Execute(new Jhu.Graywulf.Sql.Parsing.TableOrViewIdentifier(), token);
 
                     tr = tn.TableReference;
                     tr.SubstituteDefaults(context.SchemaManager, dataset);

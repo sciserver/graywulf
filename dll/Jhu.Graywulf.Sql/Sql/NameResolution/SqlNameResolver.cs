@@ -826,9 +826,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             SubstituteFunctionDefaults(node);
 
-            if (!node.FunctionReference.IsUdf)
+            if (!node.FunctionReference.IsUndefined)
             {
-                if (!IsSystemFunctionName(node.FunctionReference.SystemFunctionName))
+                if (!IsSystemFunctionName(node.FunctionReference.FunctionName))
                 {
                     throw NameResolutionError.UnknownFunctionName(node);
                 }
@@ -840,7 +840,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     if (!schemaManager.Datasets.ContainsKey(node.FunctionReference.DatasetName))
                     {
-                        throw NameResolutionError.UnresolvableDatasetReference(node);
+                        throw NameResolutionError.UnresolvableDatasetReference(node.FunctionReference);
                     }
                 }
 
@@ -870,7 +870,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             // TODO: extend this to UDTs, including member access
 
-            if (vr.VariableReference.Type == VariableReferenceType.System)
+            if (!vr.VariableReference.IsUserDefined)
             {
                 var name = vr.VariableReference.VariableName.TrimStart('@');
 
@@ -883,7 +883,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 vr.VariableReference = details.VariableReferences[vr.VariableReference.VariableName];
 
-                if (vr.VariableReference.Type != VariableReferenceType.Scalar)
+                if (vr.VariableReference.VariableContext != VariableContext.Scalar)
                 {
                     throw NameResolutionError.ScalarVariableExpected(vr);
                 }
@@ -1374,7 +1374,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     {
                         if (!schemaManager.Datasets.ContainsKey(node.TableReference.DatasetName))
                         {
-                            throw NameResolutionError.UnresolvableDatasetReference(node);
+                            throw NameResolutionError.UnresolvableDatasetReference(node.TableReference);
                         }
                     }
 
@@ -1576,7 +1576,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 catch (KeyNotFoundException ex)
                 {
-                    throw NameResolutionError.UnresolvableDatasetReference(ex, node);
+                    throw NameResolutionError.UnresolvableDatasetReference(ex, node.FunctionReference);
                 }
             }
         }

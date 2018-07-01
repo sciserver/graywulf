@@ -14,9 +14,9 @@ namespace Jhu.Graywulf.Sql.Parsing
         private Expression partitioningKeyExpression;
         private Schema.DataType partitioningKeyDataType;
 
-        public TableOrViewName TableOrViewName
+        public TableOrViewIdentifier TableOrViewName
         {
-            get { return FindDescendant<TableOrViewName>(); }
+            get { return FindDescendant<TableOrViewIdentifier>(); }
         }
 
         public DatabaseObjectReference DatabaseObjectReference
@@ -108,7 +108,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         public static SimpleTableSource Create(TableReference tr)
         {
             var ts = new SimpleTableSource();
-            var name = TableOrViewName.Create(tr);
+            var name = TableOrViewIdentifier.Create(tr);
 
             ts.Stack.AddLast(name);
 
@@ -127,7 +127,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             base.Interpret();
 
-            TableReference.InterpretTableSource(this);
+            TableReference = TableReference.Interpret(this);
         }
 
         private void InterpretPartitioningKey()
