@@ -42,13 +42,13 @@ namespace Jhu.Graywulf.Parsing.Generator
         {
             var template = new StringBuilder(Templates.Parser);
 
-            template.Replace("[$Namespace]", grammar.Namespace);
-            template.Replace("[$LibNamespace]", typeof(Token).Namespace);
-            template.Replace("[$Name]", grammar.ParserClassName);
+            template.Replace("__Namespace__", grammar.Namespace);
+            template.Replace("__LibNamespace__", typeof(Token).Namespace);
+            template.Replace("__Name__", grammar.ParserClassName);
 
             if (grammar.InheritedGrammar != null)
             {
-                template.Replace("[$InheritedType]",
+                template.Replace("__InheritedType__",
                     String.Format(
                         "{0}.{1}",
                         grammar.InheritedGrammar.Namespace,
@@ -56,19 +56,19 @@ namespace Jhu.Graywulf.Parsing.Generator
             }
             else
             {
-                template.Replace("[$InheritedType]", typeof(Parser).FullName);
+                template.Replace("__InheritedType__", typeof(Parser).FullName);
             }
 
-            template.Replace("[$Comparer]", grammar.Attributes.Comparer ?? "StringComparer.InvariantCultureIgnoreCase");
-            template.Replace("[$RootToken]", grammar.Attributes.RootToken);
+            template.Replace("__Comparer__", grammar.Attributes.Comparer ?? "StringComparer.InvariantCultureIgnoreCase");
+            template.Replace("__RootToken__", grammar.Attributes.RootToken);
 
-            template.Replace("[$Symbols]", GenerateSymbolClasses(grammar));
-            template.Replace("[$Terminals]", GenerateTerminalClasses(grammar));
-            template.Replace("[$Whitespaces]", GenerateWhitespaceClasses(grammar));
-            template.Replace("[$Comments]", GenerateCommentClasses(grammar));
-            template.Replace("[$Rules]", GenerateRuleClasses(grammar));
+            template.Replace("__Symbols__", GenerateSymbolClasses(grammar));
+            template.Replace("__Terminals__", GenerateTerminalClasses(grammar));
+            template.Replace("__Whitespaces__", GenerateWhitespaceClasses(grammar));
+            template.Replace("__Comments__", GenerateCommentClasses(grammar));
+            template.Replace("__Rules__", GenerateRuleClasses(grammar));
 
-            template.Replace("[$Keywords]", GenerateKeywordList(grammar));
+            template.Replace("__Keywords__", GenerateKeywordList(grammar));
 
             return template.ToString();
         }
@@ -83,9 +83,9 @@ namespace Jhu.Graywulf.Parsing.Generator
         /// <returns></returns>
         private string GeneratePatternClass(StringBuilder template, string name, string pattern)
         {
-            template.Replace("[$LibNamespace]", typeof(Token).Namespace);
-            template.Replace("[$Name]", name);
-            template.Replace("[$Pattern]", pattern.Replace("\"", "\"\""));
+            template.Replace("__LibNamespace__", typeof(Token).Namespace);
+            template.Replace("__Name__", name);
+            template.Replace("__Pattern__", pattern.Replace("\"", "\"\""));
 
             return template.ToString();
         }
@@ -264,8 +264,8 @@ namespace Jhu.Graywulf.Parsing.Generator
                 // and in this case we have to use the class from the new namespace.
                 // Generate the new match logic
                 match = new StringBuilder(Templates.Match);
-                match.Replace("[$LibNamespace]", typeof(Token).Namespace);
-                match.Replace("[$Code]", GenerateRuleMatch(tabs, grammar, rule, resstr));
+                match.Replace("__LibNamespace__", typeof(Token).Namespace);
+                match.Replace("__Code__", GenerateRuleMatch(tabs, grammar, rule, resstr));
             }
             else
             {
@@ -284,11 +284,11 @@ namespace Jhu.Graywulf.Parsing.Generator
             // Load template and substitute tokens
             var template = new StringBuilder(Templates.Rule);
 
-            template.Replace("[$InheritedType]", inheritedType);
-            template.Replace("[$LibNamespace]", typeof(Token).Namespace);
-            template.Replace("[$Namespace]", grammar.Namespace);
-            template.Replace("[$Name]", name);
-            template.Replace("[$Match]", match == null? "" : match.ToString());
+            template.Replace("__InheritedType__", inheritedType);
+            template.Replace("__LibNamespace__", typeof(Token).Namespace);
+            template.Replace("__Namespace__", grammar.Namespace);
+            template.Replace("__Name__", name);
+            template.Replace("__Match__", match == null? "" : match.ToString());
 
             return template.ToString();
         }

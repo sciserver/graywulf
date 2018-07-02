@@ -1,30 +1,30 @@
-    public partial class [$Name] : [$LibNamespace].Symbol, ICloneable
+    public partial class __Name__ : __LibNamespace__.Symbol, ICloneable
     {
         protected override string Pattern
         {
-            get { return @"[$Pattern]"; }
+            get { return @"__Pattern__"; }
         }
 
-        public [$Name]()
+        public __Name__()
             :base()
         {
-            Value = @"[$Pattern]";
+            Value = @"__Pattern__";
         }
 
-        public [$Name]([$Name] old)
+        public __Name__(__Name__ old)
             :base(old)
         {
         }
 
-        public static [$Name] Create()
+        public static __Name__ Create()
         {
-            var s = new [$Name]();
-            s.Value = @"[$Pattern]";
+            var s = new __Name__();
+            s.Value = @"__Pattern__";
             return s;
         }
 
         public override object Clone()
         {
-            return new [$Name](this);
+            return new __Name__(this);
         }
     }

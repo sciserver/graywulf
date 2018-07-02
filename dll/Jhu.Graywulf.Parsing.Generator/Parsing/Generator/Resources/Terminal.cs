@@ -1,32 +1,32 @@
-    public partial class [$Name] : [$LibNamespace].Terminal, ICloneable
+    public partial class __Name__ : __LibNamespace__.Terminal, ICloneable
     {
-        private static Regex pattern = new Regex(@"[$Pattern]", RegexOptions.Compiled);
+        private static Regex pattern = new Regex(@"__Pattern__", RegexOptions.Compiled);
 
         protected override Regex Pattern
         {
             get { return pattern; }
         }
 
-        public [$Name]()
+        public __Name__()
             :base()
         {
-            Value = @"[$Pattern]";
+            Value = @"__Pattern__";
         }
 
-        public [$Name]([$Name] old)
+        public __Name__(__Name__ old)
             :base(old)
         {
         }
 
-        public static [$Name] Create(string value)
+        public static __Name__ Create(string value)
         {
-            var terminal = new [$Name]();
+            var terminal = new __Name__();
             terminal.Value = value;
             return terminal;
         }
 
         public override object Clone()
         {
-            return new [$Name](this);
+            return new __Name__(this);
         }
     }

@@ -78,6 +78,14 @@ namespace Jhu.Graywulf.Parsing
         {
         }
 
+        protected Node(params Token[] tokens)
+        {
+            for (int i = 0; i < tokens.Length; i ++)
+            {
+                stack.AddLast(tokens[i]);
+            }
+        }
+
         protected Node(Node old)
             :base(old)
         {

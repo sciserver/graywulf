@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace [$Namespace]
+namespace __Namespace__
 {
-    public partial class [$Name] : [$InheritedType]
+    public partial class __Name__ : __InheritedType__
     {
-        private static HashSet<string> keywords = new HashSet<string>([$Comparer])
+        private static HashSet<string> keywords = new HashSet<string>(__Comparer__)
         {
-[$Keywords]
+__Keywords__
         };
 
         public override HashSet<string> Keywords
@@ -19,23 +19,23 @@ namespace [$Namespace]
 
         public static StringComparer ComparerInstance
         {
-            get { return [$Comparer]; }
+            get { return __Comparer__; }
         }
 
         public override StringComparer Comparer
         {
-            get { return [$Comparer]; }
+            get { return __Comparer__; }
         }
 
-        public override [$LibNamespace].Token Execute(string code)
+        public override __LibNamespace__.Token Execute(string code)
         {
-            return Execute(new [$RootToken](), code);
+            return Execute(new __RootToken__(), code);
         }
     }
 
-[$Symbols]
-[$Terminals]
-[$Whitespaces]
-[$Comments]
-[$Rules]
+__Symbols__
+__Terminals__
+__Whitespaces__
+__Comments__
+__Rules__
 }
