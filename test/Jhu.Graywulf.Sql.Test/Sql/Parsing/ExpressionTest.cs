@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var sql = "alma";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("alma", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("alma", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
         }
 
         [TestMethod]
@@ -61,11 +61,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "dataset:database1.schema1.table1.column1";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("dataset:database1.schema1.table1.column1", exp.Value);
-            Assert.AreEqual("dataset", exp.FindDescendantRecursive<DatasetName>().Value);
-            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().Value);
-            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
-            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("dataset", exp.FindDescendantRecursive<ColumnIdentifier>().TableReference.DatasetName);
+            Assert.AreEqual("database1", exp.FindDescendantRecursive<ColumnIdentifier>().TableReference.DatabaseName);
+            Assert.AreEqual("schema1", exp.FindDescendantRecursive<ColumnIdentifier>().TableReference.SchemaName);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<ColumnIdentifier>().TableReference.TableName);
+            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnIdentifier>().ColumnReference.ColumnName);
         }
 
         [TestMethod]
@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var sql = "(alma)";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("alma", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("alma", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
         }
 
         [TestMethod]
@@ -100,8 +100,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("-table1.column1", exp.Value);
             Assert.AreEqual("-", exp.FindDescendantRecursive<UnaryOperator>().FindDescendantRecursive<Minus>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
-            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<ColumnIdentifier>().TableReference.TableName);
+            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnIdentifier>().ColumnReference.ColumnName);
         }
 
         [TestMethod]
@@ -133,7 +133,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "a+b";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("a+b", exp.Value);
-            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
             Assert.AreEqual("+", exp.FindDescendantRecursive<Plus>().Value);
         }
 
@@ -143,7 +143,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "a + b";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("a + b", exp.Value);
-            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
             Assert.AreEqual("+", exp.FindDescendantRecursive<Plus>().Value);
         }
 
@@ -163,7 +163,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "a | b";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("a | b", exp.Value);
-            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
             Assert.AreEqual("|", exp.FindDescendantRecursive<BitwiseOperator>().Value);
         }
 

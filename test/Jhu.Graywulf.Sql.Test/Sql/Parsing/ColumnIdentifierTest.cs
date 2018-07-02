@@ -20,7 +20,8 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var sql = "column";
             var exp = Parse(sql);
-            Assert.AreEqual("column", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.IsTrue(exp.TableReference.IsUndefined);
+            Assert.AreEqual("column", exp.ColumnReference.ColumnName);
         }
 
         [TestMethod]
@@ -43,8 +44,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "table1.column1";
             var exp = Parse(sql);
             Assert.AreEqual("table1.column1", exp.Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
-            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("table1", exp.TableReference.TableName);
+            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
         }
 
         [TestMethod]
@@ -53,9 +54,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "dataset:table1.column1";
             var exp = Parse(sql);
             Assert.AreEqual("dataset:table1.column1", exp.Value);
-            Assert.AreEqual("dataset", exp.FindDescendantRecursive<DatasetName>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
-            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("dataset", exp.TableReference.DatasetName);
+            Assert.AreEqual("table1", exp.TableReference.TableName);
+            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
         }
 
         [TestMethod]
@@ -64,9 +65,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "schema1.table1.column1";
             var exp = Parse(sql);
             Assert.AreEqual("schema1.table1.column1", exp.Value);
-            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
-            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("schema1", exp.TableReference.SchemaName);
+            Assert.AreEqual("table1", exp.TableReference.TableName);
+            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
         }
 
         [TestMethod]
@@ -75,10 +76,10 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "dataset:schema1.table1.column1";
             var exp = Parse(sql);
             Assert.AreEqual("dataset:schema1.table1.column1", exp.Value);
-            Assert.AreEqual("dataset", exp.FindDescendantRecursive<DatasetName>().Value);
-            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
-            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("dataset", exp.TableReference.DatasetName);
+            Assert.AreEqual("schema1", exp.TableReference.SchemaName);
+            Assert.AreEqual("table1", exp.TableReference.TableName);
+            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
         }
 
         [TestMethod]
@@ -101,10 +102,10 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "database1.schema1.table1.column1";
             var exp = Parse(sql);
             Assert.AreEqual("database1.schema1.table1.column1", exp.Value);
-            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().Value);
-            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
-            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("database1", exp.TableReference.DatabaseName);
+            Assert.AreEqual("schema1", exp.TableReference.SchemaName);
+            Assert.AreEqual("table1", exp.TableReference.TableName);
+            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
         }
 
         [TestMethod]
@@ -113,11 +114,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "dataset:database1.schema1.table1.column1";
             var exp = Parse(sql);
             Assert.AreEqual("dataset:database1.schema1.table1.column1", exp.Value);
-            Assert.AreEqual("dataset", exp.FindDescendantRecursive<DatasetName>().Value);
-            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().Value);
-            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
-            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("dataset", exp.TableReference.DatasetName);
+            Assert.AreEqual("database1", exp.TableReference.DatabaseName);
+            Assert.AreEqual("schema1", exp.TableReference.SchemaName);
+            Assert.AreEqual("table1", exp.TableReference.TableName);
+            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
         }
 
         [TestMethod]
@@ -126,11 +127,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "dataset : database1 . schema1 . table1 . column1";
             var exp = Parse(sql);
             Assert.AreEqual("dataset : database1 . schema1 . table1 . column1", exp.Value);
-            Assert.AreEqual("dataset", exp.FindDescendantRecursive<DatasetName>().Value);
-            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().Value);
-            Assert.AreEqual("schema1", exp.FindDescendantRecursive<SchemaName>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
-            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("dataset", exp.TableReference.DatasetName);
+            Assert.AreEqual("database1", exp.TableReference.DatabaseName);
+            Assert.AreEqual("schema1", exp.TableReference.SchemaName);
+            Assert.AreEqual("table1", exp.TableReference.TableName);
+            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
         }
 
         [TestMethod]
@@ -139,9 +140,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "database1..table1.column1";
             var exp = Parse(sql);
             Assert.AreEqual("database1..table1.column1", exp.Value);
-            Assert.AreEqual("database1", exp.FindDescendantRecursive<DatabaseName>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
-            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("database1", exp.TableReference.DatabaseName);
+            Assert.AreEqual("table1", exp.TableReference.TableName);
+            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
         }
 
     }

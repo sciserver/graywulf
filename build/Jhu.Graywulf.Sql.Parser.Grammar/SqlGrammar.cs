@@ -123,8 +123,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             (
                 DatasetName,
                 May(CommentOrWhitespace),
-                Colon,
-                May(CommentOrWhitespace)
+                Colon
             );
 
         public static Expression<Rule> FourPartIdentifier = () =>
@@ -427,7 +426,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> TableOrViewIdentifier = () =>
             Sequence
             (
-                May(DatasetPrefix),
+                May(Sequence(DatasetPrefix, May(CommentOrWhitespace))),
                 FourPartIdentifier
             );
 
@@ -435,8 +434,8 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             Must
             (
                 Mul,
-                Sequence(FourPartIdentifier, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Mul),
-                FourPartIdentifier
+                Sequence(May(Sequence(DatasetPrefix, May(CommentOrWhitespace))), FourPartIdentifier, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Mul),
+                Sequence(May(Sequence(DatasetPrefix, May(CommentOrWhitespace))), FourPartIdentifier)
             );
 
         #endregion
@@ -452,7 +451,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> DataTypeIdentifier = () =>
             Sequence
             (
-                May(DatasetPrefix),
+                May(Sequence(DatasetPrefix, May(CommentOrWhitespace))),
                 FourPartIdentifier,
                 May
                 (
@@ -554,7 +553,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             Sequence
             (
                 // Optional dataset prefix
-                May(DatasetPrefix),
+                May(Sequence(DatasetPrefix, May(CommentOrWhitespace))),
                 FourPartIdentifier
             );
 

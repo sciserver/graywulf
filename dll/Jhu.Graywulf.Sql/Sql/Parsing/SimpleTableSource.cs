@@ -14,20 +14,25 @@ namespace Jhu.Graywulf.Sql.Parsing
         private Expression partitioningKeyExpression;
         private Schema.DataType partitioningKeyDataType;
 
-        public TableOrViewIdentifier TableOrViewName
+        public TableOrViewIdentifier TableOrViewIdentifier
         {
             get { return FindDescendant<TableOrViewIdentifier>(); }
         }
 
+        public TableAlias Alias
+        {
+            get { return FindDescendant<TableAlias>(); }
+        }
+
         public DatabaseObjectReference DatabaseObjectReference
         {
-            get { return TableOrViewName.TableReference; }
+            get { return TableOrViewIdentifier.TableReference; }
         }
 
         public TableReference TableReference
         {
-            get { return TableOrViewName.TableReference; }
-            set { TableOrViewName.TableReference = value; }
+            get { return TableOrViewIdentifier.TableReference; }
+            set { TableOrViewIdentifier.TableReference = value; }
         }
 
         public bool IsSubquery

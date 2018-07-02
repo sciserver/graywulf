@@ -32,6 +32,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             set { alias = value; }
         }
 
+        public string TableName
+        {
+            get { return DatabaseObjectName; }
+            set { DatabaseObjectName = value; }
+        }
+
         public string VariableName
         {
             get { return variableName; }
@@ -173,6 +179,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             InitializeMembers();
         }
 
+        public TableReference(Node node)
+            : base(node)
+        {
+            InitializeMembers();
+        }
+
         public TableReference(TableReference old)
             : base(old)
         {
@@ -181,6 +193,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public TableReference(string alias)
         {
+            throw new NotImplementedException();
+
+            // TODO: review
+
             this.alias = alias;
             this.tableContext = TableContext.None;
             this.isComputed = false;
@@ -204,6 +220,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
+        /*
         public TableReference(QueryExpression qe)
         {
             InitializeMembers();
@@ -217,47 +234,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             this.Node = qs;
         }
+        */
 
-        /*public TableReference(VariableTableSource ts)
-        {
-            InterpretTableSource(ts);
-            InterpretVariableTableSource(ts);
-
-            this.Node = ts;
-        }
-
-        public TableReference(SubqueryTableSource ts)
-            : this()
-        {
-            InterpretTableSource(ts);
-
-            this.Node = ts;
-        }
-
-        public TableReference(CommonTableSpecification ts)
-            : this()
-        {
-            InterpretTableSource(ts);
-
-            this.Node = ts;
-        }
-
-        public TableReference(ColumnIdentifier ci)
-            : this()
-        {
-            InterpretColumnIdentifier(ci);
-
-            this.Node = ci;
-        }
-
-        public TableReference(TableOrViewName ti)
-            : this()
-        {
-            InterpretTableOrViewName(ti);
-
-            this.Node = ti;
-        }
-
+        /*
         public TableReference(TableValuedFunctionCall tvf)
             : this()
         {
@@ -300,143 +279,142 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         #endregion
 
-        public static TableReference Interpret(TableValuedFunctionCall tvf)
-        {
-            throw new NotImplementedException();
-        }
-
         public static TableReference Interpret(FunctionTableSource ts)
         {
-            // Should update existing
+            var alias = ts.Alias;
+            var fr = ts.FunctionReference;
 
-            throw new NotImplementedException();
+            var tr = new TableReference(ts)
+            {
+                alias = Util.RemoveIdentifierQuotes(alias?.Value),
+                DatasetName = fr.DatasetName,
+                DatabaseName = fr.DatabaseName,
+                SchemaName = fr.SchemaName,
+                DatabaseObjectName = fr.DatabaseObjectName,
+                tableContext = TableContext.UserDefinedFunction
+            };
+
+            // TODO: tvf calls can have and alias list
+
+            return tr;
         }
 
         public static TableReference Interpret(SimpleTableSource ts)
         {
-            // Should update existing
+            var tr = ts.TableReference;
+            var alias = ts.Alias;
 
-            throw new NotImplementedException();
+            tr.alias = Util.RemoveIdentifierQuotes(alias?.Value);
+
+            return tr;
         }
 
         public static TableReference Interpret(VariableTableSource ts)
         {
-            // Should update existing
+            var alias = ts.Alias;
+            var variable = ts.Variable;
 
-            throw new NotImplementedException();
+            var tr = new TableReference(ts)
+            {
+                alias = Util.RemoveIdentifierQuotes(alias?.Value),
+                variableName = variable.VariableName,
+                variableReference = variable.VariableReference,
+                tableContext = TableContext.Variable
+            };
+
+            return tr;
         }
 
         public static TableReference Interpret(SubqueryTableSource ts)
         {
-            // Should update existing
+            var alias = ts.Alias;
 
-            throw new NotImplementedException();
+            var tr = new TableReference(ts)
+            {
+                alias = Util.RemoveIdentifierQuotes(alias.Value),
+                tableContext = TableContext.Subquery,
+            };
+
+            // TODO: is subquery parsed at this point? Copy columns now?
+
+            return tr;
         }
 
         public static TableReference Interpret(CommonTableSpecification cts)
         {
-            // Should update existing
+            var alias = cts.Alias;
+            var subquery = cts.Subquery;
 
-            throw new NotImplementedException();
+            var tr = new TableReference(cts)
+            {
+                alias = Util.RemoveIdentifierQuotes(alias.Value),
+                tableContext = TableContext.Subquery | TableContext.CommonTable,
+            };
+
+            // TODO: is subquery parsed at this point? Copy columns now?
+            // What about column name aliases?
+
+            return tr;
         }
 
         public static TableReference Interpret(TableOrViewIdentifier ti)
         {
-            throw new NotImplementedException();
-        }
+            var ds = ti.FindDescendant<DatasetPrefix>();
+            var fpi = ti.FindDescendant<FourPartIdentifier>();
 
-        public static TableReference Interpret(ColumnIdentifier ci)
-        {
-            throw new NotImplementedException();
-        }
-
-        /*
-        public void InterpretTableSource(Node tableSource)
-        {
-            Node = tableSource.FindAscendant<TableSourceSpecification>();
-
-            TableAlias a = tableSource.FindDescendant<TableAlias>();
-            if (a != null)
+            var tr = new TableReference(ti)
             {
-                alias = Util.RemoveIdentifierQuotes(a.Value);
+                DatasetName = Util.RemoveIdentifierQuotes(ds?.DatasetName),
+                DatabaseName = Util.RemoveIdentifierQuotes(fpi.NamePart3),
+                SchemaName = Util.RemoveIdentifierQuotes(fpi.NamePart2),
+                DatabaseObjectName = Util.RemoveIdentifierQuotes(fpi.NamePart1),
+                IsUserDefined = true,
+                tableContext = TableContext.TableOrView
+            };
+
+            return tr;
+        }
+
+        public static TableReference Interpret(ColumnIdentifier ci, bool columnNameLast)
+        {
+            // At this point we have to make the assumption that the very last token
+            // in the four part identifier is the column name. If it is a property
+            // accessor of a CLR UDT, it will be handled by the name resolver.
+
+            TableReference tr;
+            var ds = ci.FindDescendant<DatasetPrefix>();
+            var fpi = ci.FindDescendant<FourPartIdentifier>();
+
+            if (columnNameLast)
+            {
+                tr = new TableReference(ci)
+                {
+                    DatasetName = Util.RemoveIdentifierQuotes(ds?.DatasetName),
+                    DatabaseName = Util.RemoveIdentifierQuotes(fpi.NamePart4),
+                    SchemaName = Util.RemoveIdentifierQuotes(fpi.NamePart3),
+                    DatabaseObjectName = Util.RemoveIdentifierQuotes(fpi.NamePart2),
+                };
             }
             else
             {
-                alias = null;
+                tr = new TableReference(ci)
+                {
+                    DatasetName = Util.RemoveIdentifierQuotes(ds?.DatasetName),
+                    DatabaseName = Util.RemoveIdentifierQuotes(fpi.NamePart3),
+                    SchemaName = Util.RemoveIdentifierQuotes(fpi.NamePart2),
+                    DatabaseObjectName = Util.RemoveIdentifierQuotes(fpi.NamePart1),
+                };
             }
 
-            if (tableSource is SubqueryTableSource ||
-                tableSource is CommonTableSpecification)
-            {
-                InterpretSubquery();
-            }
+            tr.IsUserDefined = true;
+            tr.tableContext |= TableContext.TableOrView;
+
+            return tr;
         }
-
-        private void InterpretColumnIdentifier(ColumnIdentifier ci)
-        {
-            var ds = ci.FindDescendant<DatasetName>();
-            DatasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
-
-            var dbn = ci.FindDescendant<DatabaseName>();
-            DatabaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
-
-            var sn = ci.FindDescendant<SchemaName>();
-            SchemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
-
-            var tn = ci.FindDescendant<TableName>();
-            DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
-        }
-
-        private void InterpretTableOrViewName(TableOrViewName ti)
-        {
-            var ds = ti.FindDescendant<DatasetName>();
-            DatasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
-
-            var dbn = ti.FindDescendant<DatabaseName>();
-            DatabaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
-
-            var sn = ti.FindDescendant<SchemaName>();
-            SchemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
-
-            var tn = ti.FindDescendant<TableName>();
-            DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
-
-            this.tableContext |= TableContext.TableOrView;
-        }
-
-        private void InterpretVariableTableSource(VariableTableSource vts)
-        {
-            var tv = vts.FindDescendant<TableVariable>();
-
-            variableName = tv.Value;
-            variableReference = tv.VariableReference;
-            tableContext |= TableContext.Variable;
-        }
-
+        /*
+        
         private void InterpretTableValuedFunctionCall(TableValuedFunctionCall tvf)
         {
-            var fi = tvf.FindDescendant<FunctionIdentifier>();
-            var udfi = fi.FindDescendant<UdfIdentifier>();
-
-            if (udfi != null)
-            {
-                var ds = udfi.FindDescendant<DatasetName>();
-                DatasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
-
-                var dbn = udfi.FindDescendant<DatabaseName>();
-                DatabaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
-
-                var sn = udfi.FindDescendant<SchemaName>();
-                SchemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
-
-                var tn = udfi.FindDescendant<FunctionName>();
-                DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
-
-                tableContext |= TableContext.UserDefinedFunction;
-            }
-            else
-            {
-                throw new NameResolverException(ExceptionMessages.FunctionCallNotAllowed);
             }
         }
                 

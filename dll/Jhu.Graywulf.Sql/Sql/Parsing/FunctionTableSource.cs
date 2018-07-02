@@ -7,11 +7,17 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class FunctionTableSource : ITableSource
+    public partial class FunctionTableSource : ITableSource, IFunctionReference
     {
         private TableReference tableReference;
         private string uniqueKey;
 
+        public FunctionReference FunctionReference
+        {
+            get { return FunctionCall.FunctionReference; }
+            set { FunctionCall.FunctionReference = value; }
+        }
+        
         public TableReference TableReference
         {
             get { return tableReference; }
@@ -22,6 +28,11 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return uniqueKey; }
             set { uniqueKey = value; }
+        }
+
+        public TableAlias Alias
+        {
+            get { return FindDescendant<TableAlias>(); }
         }
 
         public TableValuedFunctionCall FunctionCall
@@ -64,6 +75,9 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public static FunctionTableSource Create(TableValuedFunctionCall functionCall, string tableAlias)
         {
+            throw new NotImplementedException();
+
+            /*
             var fts = new FunctionTableSource();
 
             fts.Stack.AddLast(functionCall);
@@ -75,6 +89,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             functionCall.TableReference.Alias = tableAlias;
 
             return fts;
+            */
         }
 
         public IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive)

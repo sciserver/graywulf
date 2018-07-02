@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         private Expression ExpressionTestHelper(string query)
         {
             var p = new SqlParser();
-            return p.Execute< Expression>(query);
+            return p.Execute<Expression>(query);
         }
 
         [TestMethod]
@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("a+b", exp.Value);
             Assert.AreEqual("+", exp.FindDescendantRecursive<Plus>().Value);
-            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
         }
 
         // *** TODO: write rest of tests

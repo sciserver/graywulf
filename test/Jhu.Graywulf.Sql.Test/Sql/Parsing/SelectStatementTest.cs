@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableOrViewIdentifier>().Value);
         }
 
         [TestMethod]
@@ -32,8 +32,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
-            Assert.AreEqual("a", exp.FindDescendantRecursive<OrderByClause>().FindDescendantRecursive<ColumnName>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableOrViewIdentifier>().Value);
+            Assert.AreEqual("a", exp.FindDescendantRecursive<OrderByClause>().FindDescendantRecursive<ColumnIdentifier>().Value);
         }
 
         [TestMethod]
@@ -69,7 +69,7 @@ ORDER BY 1";
             var sql = "SELECT DISTINCT a FROM table1";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableOrViewIdentifier>().Value);
         }
 
         [TestMethod]
@@ -79,7 +79,7 @@ ORDER BY 1";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual("10", exp.FindDescendantRecursive<TopExpression>().FindDescendantRecursive<NumericConstant>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableName>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableOrViewIdentifier>().Value);
         }
 
         [TestMethod]
@@ -98,7 +98,7 @@ ORDER BY 1";
             var sql = "SELECT a, b, c, d INTO table1 FROM table2";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<IntoClause>().FindDescendantRecursive<TableName>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<IntoClause>().FindDescendantRecursive<TableOrViewIdentifier>().Value);
         }
 
         [TestMethod]

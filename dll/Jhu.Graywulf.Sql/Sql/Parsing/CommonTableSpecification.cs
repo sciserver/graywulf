@@ -18,6 +18,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { uniqueKey = value; }
         }
 
+        public TableAlias Alias
+        {
+            get { return FindDescendant<TableAlias>(); }
+        }
+
         public Subquery Subquery
         {
             get { return FindDescendant<Subquery>(); }

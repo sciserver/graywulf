@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         #endregion
         #region Properties
-        
+
         /// <summary>
         /// Gets or sets the reference to the table defining the column
         /// </summary>
@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             get { return columnName; }
             set { columnName = value; }
         }
-        
+
         public string ColumnAlias
         {
             get { return columnAlias; }
@@ -120,7 +120,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             this.parentTableReference = parentTableReference;
         }
-        
+
         public ColumnReference(TableReference parentTableReference, DataTypeReference parentDataTypeReference, ColumnReference old, DataTypeReference dataTypeReference)
         {
             CopyMembers(old);
@@ -167,7 +167,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             // TODO: copy metadata here
         }
-        
+
         private void InitializeMembers()
         {
             this.parentTableReference = null;
@@ -225,23 +225,40 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static ColumnReference Interpret(ColumnIdentifier ci)
         {
-            var cr = new ColumnReference();
-            cr.parentTableReference = TableReference.Interpret(ci);
-
+            ColumnReference cr;
+            var fpi = ci.FindDescendant<FourPartIdentifier>();
             var star = ci.FindDescendant<Mul>();
 
             if (star != null)
             {
-                cr.isStar = true;
-                cr.columnName = star.Value;
+                if (fpi == null)
+                {
+                    // No table part defined
+                    cr = new ColumnReference()
+                    {
+                        ParentTableReference = new TableReference(),
+                        IsStar = true,
+                        ColumnName = star.Value,
+                    };
+                }
+                else
+                {
+                    cr = new ColumnReference()
+                    {
+                        ParentTableReference = TableReference.Interpret(ci, false),
+                        IsStar = true,
+                        ColumnName = star.Value,
+                    };
+                }
             }
             else
             {
-                cr.isStar = false;
-                cr.columnName = Util.RemoveIdentifierQuotes(ci.FindDescendant<ColumnName>().Value);
+                cr = new ColumnReference()
+                {
+                    ParentTableReference = TableReference.Interpret(ci, true),
+                    ColumnName = Util.RemoveIdentifierQuotes(fpi.NamePart1)
+                };
             }
-
-            cr.isComplexExpression = false;
 
             return cr;
         }

@@ -23,6 +23,16 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { tableReference = value; }
         }
 
+        public TableAlias Alias
+        {
+            get { return FindDescendant<TableAlias>(); }
+        }
+
+        public UserVariable Variable
+        {
+            get { return FindDescendant<UserVariable>(); }
+        }
+
         public string UniqueKey
         {
             get { return uniqueKey; }

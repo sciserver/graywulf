@@ -7,50 +7,24 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class TableValuedFunctionCall : ITableReference
+    public partial class TableValuedFunctionCall : IFunctionReference
     {
-        private TableReference tableReference;
-
-        public TableReference TableReference
+        public FunctionReference FunctionReference
         {
-            get { return tableReference; }
-            set { tableReference = value; }
+            get { return UdfIdentifier.FunctionReference; }
+            set { UdfIdentifier.FunctionReference = value; }
         }
 
         public UdfIdentifier UdfIdentifier
         {
-            get
-            {
-                var fi = FindDescendant<FunctionIdentifier>();
-                var udfi = fi.FindDescendant<UdfIdentifier>();
-
-                return udfi;
-            }
-        }
-
-        public bool IsUdf
-        {
-            get { return UdfIdentifier != null; }
-        }
-
-        protected override void OnInitializeMembers()
-        {
-            base.OnInitializeMembers();
-
-            this.tableReference = null;
-        }
-
-        protected override void OnCopyMembers(object other)
-        {
-            base.OnCopyMembers(other);
-
-            var old = (TableValuedFunctionCall)other;
-
-            this.tableReference = old.tableReference;
+            get { return FindDescendant<UdfIdentifier>(); }
         }
 
         public static TableValuedFunctionCall Create(FunctionReference functionReference, params Expression[] arguments)
         {
+            throw new NotImplementedException();
+
+            /*
             var f = new TableValuedFunctionCall();
             var fun = FunctionIdentifier.Create(functionReference);
             var args = FunctionArguments.Create(arguments);
@@ -58,16 +32,10 @@ namespace Jhu.Graywulf.Sql.Parsing
             f.Stack.AddLast(fun);
             f.Stack.AddLast(args);
 
-            f.tableReference = TableReference.Interpret(f);
+            f.functionReference = TableReference.Interpret(f);
 
             return f;
-        }
-
-        public override void Interpret()
-        {
-            base.Interpret();
-
-            this.tableReference = TableReference.Interpret(this);
+            */
         }
     }
 }
