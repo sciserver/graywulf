@@ -220,31 +220,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        /*
-        public TableReference(QueryExpression qe)
-        {
-            InitializeMembers();
-
-            this.Node = qe;
-        }
-
-        public TableReference(QuerySpecification qs)
-        {
-            InitializeMembers();
-
-            this.Node = qs;
-        }
-        */
-
-        /*
-        public TableReference(TableValuedFunctionCall tvf)
-            : this()
-        {
-            InterpretTableValuedFunctionCall(tvf);
-
-            this.Node = tvf;
-        }*/
-
         private void InitializeMembers()
         {
             this.alias = null;
@@ -411,20 +386,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             return tr;
         }
-        /*
         
-        private void InterpretTableValuedFunctionCall(TableValuedFunctionCall tvf)
-        {
-            }
-        }
-                
-        private void InterpretSubquery()
-        {
-            this.tableContext |= TableContext.Subquery;
-            this.isComputed = false;
-        }
-        */
-
         public void LoadColumnReferences(SchemaManager schemaManager)
         {
             this.columnReferences.Clear();

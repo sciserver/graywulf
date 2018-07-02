@@ -826,7 +826,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             SubstituteFunctionDefaults(node);
 
-            if (!node.FunctionReference.IsUndefined)
+            if (!node.FunctionReference.IsUserDefined)
             {
                 if (!IsSystemFunctionName(node.FunctionReference.FunctionName))
                 {
