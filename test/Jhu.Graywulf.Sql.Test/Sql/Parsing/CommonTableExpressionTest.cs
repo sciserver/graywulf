@@ -27,6 +27,13 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         [TestMethod]
+        public void CommonTableSpecificationListWithColumnAliasesTest()
+        {
+            var sql = "q (a, b) AS (SELECT * FROM test), r (c, d) AS (SELECT * FROM test2)";
+            new SqlParser().Execute<CommonTableSpecificationList>(sql);
+        }
+
+        [TestMethod]
         public void SimpleCommonTableExpressionTest()
         {
             var sql = "WITH a AS (SELECT 1), b AS (SELECT 2)";

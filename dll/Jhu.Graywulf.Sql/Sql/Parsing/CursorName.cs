@@ -2,29 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class CursorOperationStatement : IStatement, ICursorReference
+    public partial class CursorName : ICursorReference
     {
         private CursorReference cursorReference;
-
-        public CursorName CursorName
-        {
-            get { return FindDescendant<CursorName>(); }
-        }
-
-        public UserVariable UserVariable
-        {
-            get { return FindDescendant<UserVariable>(); }
-        }
-
-        public CursorDefinition CursorDefinition
-        {
-            get { return FindDescendant<CursorDefinition>(); }
-        }
 
         public CursorReference CursorReference
         {
@@ -32,32 +16,18 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { cursorReference = value; }
         }
 
-        public bool IsResolvable
-        {
-            get { return true; }
-        }
-
-        public StatementType StatementType
-        {
-            get { return StatementType.Command; }
-        }
-
         protected override void OnInitializeMembers()
         {
             base.OnInitializeMembers();
+
             this.cursorReference = null;
         }
 
         protected override void OnCopyMembers(object other)
         {
             base.OnCopyMembers(other);
-            var old = (CursorOperationStatement)other;
+            var old = (CursorName)other;
             this.cursorReference = old.cursorReference;
-        }
-
-        public IEnumerable<Statement> EnumerateSubStatements()
-        {
-            yield break;
         }
 
         public override void Interpret()

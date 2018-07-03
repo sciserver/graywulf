@@ -137,5 +137,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             return CreateException(ExceptionMessages.TableDoesNotExists, null, null, node);
         }
+
+        public static NameResolverException TableNameTooManyParts(Node node)
+        {
+            return CreateException(ExceptionMessages.TableNameTooManyParts, null, null, node);
+        }
     }
 }

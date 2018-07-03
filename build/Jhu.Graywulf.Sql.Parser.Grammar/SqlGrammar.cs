@@ -71,7 +71,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Terminal> Identifier = () => @"\G([a-zA-Z_]+[0-9a-zA-Z_]*|\[[^\]]+\])";
         public static Expression<Terminal> Variable = () => @"\G(@[a-zA-Z_][0-9a-zA-Z_]*)";
         public static Expression<Terminal> Variable2 = () => @"\G(@@[a-zA-Z_][0-9a-zA-Z_]*)";
-        public static Expression<Terminal> Cursor = () => @"\G([$a-zA-Z_]+)";
 
         #endregion
         #region Arithmetic operators used in expressions
@@ -107,6 +106,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> MethodName = () => Identifier;
         public static Expression<Rule> ColumnName = () => Identifier;
         public static Expression<Rule> ColumnAlias = () => Identifier;
+        public static Expression<Rule> CursorName = () => Identifier;
         public static Expression<Rule> UdtColumnName = () => Identifier;
         public static Expression<Rule> PropertyName = () => Identifier;
         public static Expression<Rule> SampleNumber = () => NumericConstant;
@@ -871,17 +871,19 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             Sequence
             (
                 Keyword("DECLARE"),
-                CommentOrWhitespace,
-                Must(Cursor, UserVariable),
-                CommentOrWhitespace,
-                CursorDefinition
+                May(CommentOrWhitespace),
+                Must
+                (
+                    Sequence(CursorName, May(Sequence(May(CommentOrWhitespace), CursorDefinition))),
+                    Sequence(UserVariable, May(CommentOrWhitespace), Keyword("CURSOR"))
+                )
             );
 
         public static Expression<Rule> SetCursorStatement = () =>
             Sequence
             (
                 Keyword("SET"),
-                CommentOrWhitespace,
+                May(CommentOrWhitespace),
                 UserVariable,
                 May(CommentOrWhitespace),
                 Equals1,
@@ -890,6 +892,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             );
 
         public static Expression<Rule> CursorDefinition = () =>
+            // Yes, CTE is OK as cursor definition!
             Sequence
             (
                 Keyword("CURSOR"),
@@ -915,45 +918,52 @@ FOR select_statement
             Sequence
             (
                 Must(Keyword("OPEN"), Keyword("CLOSE"), Keyword("DEALLOCATE")),
-                CommentOrWhitespace,
-                Must(Cursor, UserVariable)
+                May(CommentOrWhitespace),
+                Must(UserVariable, CursorName)
             );
 
         public static Expression<Rule> FetchStatement = () =>
             Sequence
             (
                 Keyword("FETCH"),
-                CommentOrWhitespace,
-                May
+                May(Sequence(CommentOrWhitespace, FetchOriginSpecification)),
+                May(CommentOrWhitespace),
+                FetchFromClause,
+                May(Sequence(CommentOrWhitespace, FetchIntoClause))
+            );
+
+        public static Expression<Rule> FetchOriginSpecification = () =>
+            Must
+            (
+                Keyword("NEXT"),
+                Keyword("PRIOR"),
+                Keyword("FIRST"),
+                Keyword("LAST"),
+                Sequence
                 (
                     Must
                     (
-                        Keyword("NEXT"),
-                        Keyword("PRIOR"),
-                        Keyword("FIRST"),
-                        Keyword("LAST"),
-                        Sequence
-                        (
-                            Must(Keyword("ABSOLUTE"), Keyword("RELATIVE")),
-                            CommentOrWhitespace,
-                            Must(NumericConstant, UserVariable)
-                        )
-                    )
-                ),
-                CommentOrWhitespace,
-                Keyword("FROM"),
-                CommentOrWhitespace,
-                Must(Cursor, UserVariable),
-                May
-                (
-                    Sequence
-                    (
-                        CommentOrWhitespace,
-                        Keyword("INTO"),
-                        CommentOrWhitespace,
-                        VariableList
-                    )
+                        Keyword("ABSOLUTE"), 
+                        Keyword("RELATIVE")
+                    ),
+                    May(CommentOrWhitespace),
+                    Must(NumericConstant, UserVariable)
                 )
+            );
+
+        public static Expression<Rule> FetchFromClause = () =>
+            Sequence
+            (
+                May(Sequence(Keyword("FROM"), May(CommentOrWhitespace))),
+                Must(CursorName, UserVariable)
+            );
+
+        public static Expression<Rule> FetchIntoClause = () =>
+            Sequence
+            (
+                Keyword("INTO"),
+                May(CommentOrWhitespace),
+                VariableList
             );
 
         public static Expression<Rule> DeclareTableStatement = () =>

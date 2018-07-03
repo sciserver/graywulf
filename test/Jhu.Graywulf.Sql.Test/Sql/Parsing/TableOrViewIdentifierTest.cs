@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
-    public class TableOrViewNameTest
+    public class TableOrViewIdentifierTest
     {
         private TableOrViewIdentifier TablenameTestHelper(string query)
         {
@@ -77,6 +77,14 @@ namespace Jhu.Graywulf.Sql.Parsing
             Assert.AreEqual("database1", exp.TableReference.DatabaseName);
             Assert.AreEqual("schema1", exp.TableReference.SchemaName);
             Assert.AreEqual("table1", exp.TableReference.TableName);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NameResolution.NameResolverException))]
+        public void TooManyPartsTest()
+        {
+            var sql = "part1.part2.part3.part4";
+            var exp = TablenameTestHelper(sql);
         }
     }
 }

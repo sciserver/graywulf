@@ -227,6 +227,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.tableContext = TableContext.None;
             this.isComputed = false;
 
+            this.variableReference = null;
             this.columnReferences = new List<ColumnReference>();
         }
 
@@ -237,6 +238,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.tableContext = old.tableContext;
             this.isComputed = old.isComputed;
 
+            this.variableReference = old.variableReference;
             // Deep copy of column references
             this.columnReferences = new List<ColumnReference>();
 
@@ -336,6 +338,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var ds = ti.FindDescendant<DatasetPrefix>();
             var fpi = ti.FindDescendant<FourPartIdentifier>();
+
+            if (fpi.NamePart4 != null)
+            {
+                throw NameResolutionError.TableNameTooManyParts(ti);
+            }
 
             var tr = new TableReference(ti)
             {

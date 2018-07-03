@@ -226,10 +226,12 @@
     <Compile Include="Sql\NameResolution\ColumnReference.cs" />
     <Compile Include="Sql\NameResolution\ColumnReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\Constants.cs" />
+    <Compile Include="Sql\NameResolution\CursorReference.cs" />
     <Compile Include="Sql\NameResolution\DatabaseObjectReference.cs" />
     <Compile Include="Sql\NameResolution\DatabaseObjectReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\DataTypeReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\FunctionReferenceEqualityComparer.cs" />
+    <Compile Include="Sql\NameResolution\ICursorReference.cs" />
     <Compile Include="Sql\NameResolution\IDatabaseObjectReference.cs" />
     <Compile Include="Sql\NameResolution\IMethodReference.cs" />
     <Compile Include="Sql\NameResolution\IOutputTableProvider.cs" />
@@ -268,6 +270,8 @@
     <Compile Include="Sql\Parsing\ColumnConstraint.cs" />
     <Compile Include="Sql\Parsing\ColumnDefaultDefinition.cs" />
     <Compile Include="Sql\Parsing\ColumnDefinition.cs" />
+    <Compile Include="Sql\Parsing\CursorDefinition.cs" />
+    <Compile Include="Sql\Parsing\CursorName.cs" />
     <Compile Include="Sql\Parsing\CommonTableExpression.cs" />
     <Compile Include="Sql\Parsing\CommonTableSpecification.cs" />
     <Compile Include="Sql\Parsing\Constant.cs" />

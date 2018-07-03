@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-
 namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
@@ -17,13 +16,40 @@ namespace Jhu.Graywulf.Sql.Parsing
         public void SimpleCreateTableTest()
         {
             var sql = @"CREATE TABLE test1 (ID int)";
-            new SqlParser().Execute<CreateTableStatement>(sql);
+            var exp = new SqlParser().Execute<CreateTableStatement>(sql);
+            Assert.AreEqual("test1", exp.TableReference.TableName);
 
             sql = @"CREATE TABLE test1 ( ID int )";
-            new SqlParser().Execute<CreateTableStatement>(sql);
+            exp = new SqlParser().Execute<CreateTableStatement>(sql);
 
             sql = @"CREATE TABLE[test1](ID[int])";
-            new SqlParser().Execute<CreateTableStatement>(sql);
+            exp = new SqlParser().Execute<CreateTableStatement>(sql);
+        }
+
+        [TestMethod]
+        public void TableNameTest()
+        {
+            var sql = @"CREATE TABLE test1 (ID int)";
+            var exp = new SqlParser().Execute<CreateTableStatement>(sql);
+            Assert.AreEqual("test1", exp.TableReference.TableName);
+
+            sql = @"CREATE TABLE sch.test1 (ID int)";
+            exp = new SqlParser().Execute<CreateTableStatement>(sql);
+            Assert.AreEqual("sch", exp.TableReference.SchemaName);
+            Assert.AreEqual("test1", exp.TableReference.TableName);
+
+            sql = @"CREATE TABLE db.sch.test1 (ID int)";
+            exp = new SqlParser().Execute<CreateTableStatement>(sql);
+            Assert.AreEqual("db", exp.TableReference.DatabaseName);
+            Assert.AreEqual("sch", exp.TableReference.SchemaName);
+            Assert.AreEqual("test1", exp.TableReference.TableName);
+
+            sql = @"CREATE TABLE DS:db.sch.test1 (ID int)";
+            exp = new SqlParser().Execute<CreateTableStatement>(sql);
+            Assert.AreEqual("DS", exp.TableReference.DatasetName);
+            Assert.AreEqual("db", exp.TableReference.DatabaseName);
+            Assert.AreEqual("sch", exp.TableReference.SchemaName);
+            Assert.AreEqual("test1", exp.TableReference.TableName);
         }
 
         [TestMethod]

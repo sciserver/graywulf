@@ -205,6 +205,15 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The table name &apos;{0}&apos; specifies too many parts..
+        /// </summary>
+        internal static string TableNameTooManyParts {
+            get {
+                return ResourceManager.GetString("TableNameTooManyParts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The target dataset &apos;{0}&apos; specified at ({1},{2}) is read only..
         /// </summary>
         internal static string TargetDatasetReadOnly {

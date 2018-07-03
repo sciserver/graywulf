@@ -16,7 +16,8 @@ namespace Jhu.Graywulf.Sql.Parsing
         public void SimpleCreateIndexTest()
         {
             var sql = @"CREATE INDEX ix_test1 ON test1 (ID)";
-            new SqlParser().Execute<CreateIndexStatement>(sql);
+            var exp = new SqlParser().Execute<CreateIndexStatement>(sql);
+            Assert.AreEqual("test1", exp.TableReference.TableName);
 
             sql = @"CREATE INDEX ix_test1 ON test1 ( ID )";
             new SqlParser().Execute<CreateIndexStatement>(sql);
@@ -32,10 +33,11 @@ namespace Jhu.Graywulf.Sql.Parsing
     Data ASC,
     [Data2]DESC
 )";
-            new SqlParser().Execute<CreateIndexStatement>(sql);
+            var exp = new SqlParser().Execute<CreateIndexStatement>(sql);
 
             sql = @"CREATE INDEX[ix_test]ON[test](ID,Data,Data2)";
-            new SqlParser().Execute<CreateIndexStatement>(sql);
+            exp = new SqlParser().Execute<CreateIndexStatement>(sql);
+            Assert.AreEqual("test", exp.TableReference.TableName);
 
             sql = @"CREATE INDEX ix_test ON test( ID , Data , Data2 )";
             new SqlParser().Execute<CreateIndexStatement>(sql);
@@ -45,7 +47,8 @@ namespace Jhu.Graywulf.Sql.Parsing
         public void IndexTypesTest()
         {
             var sql = @"CREATE UNIQUE CLUSTERED INDEX ix_test ON test (ID)";
-            new SqlParser().Execute<CreateIndexStatement>(sql);
+            var exp = new SqlParser().Execute<CreateIndexStatement>(sql);
+            Assert.AreEqual("test", exp.TableReference.TableName);
 
             sql = @"CREATE NONCLUSTERED INDEX ix_test ON test (ID)";
             new SqlParser().Execute<CreateIndexStatement>(sql);

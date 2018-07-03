@@ -159,7 +159,7 @@
     <Compile Include="Sql\Parsing\StatementBlockTest.cs" />
     <Compile Include="Sql\Parsing\SubqueryTest.cs" />
     <Compile Include="Sql\Parsing\TableHintTest.cs" />
-    <Compile Include="Sql\Parsing\TableOrViewNameTest.cs" />
+    <Compile Include="Sql\Parsing\TableOrViewIdentifierTest.cs" />
     <Compile Include="Sql\Parsing\TableSourceExpressionTest.cs" />
     <Compile Include="Sql\Parsing\TableValuedFunctionTest.cs" />
     <Compile Include="Sql\Parsing\TableVariableTest.cs" />
