@@ -8,7 +8,7 @@ using Jhu.Graywulf.Parsing;
 namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
-    public class ColumnIdentifierTest
+    public class ColumnIdentifierTest : ParsingTestBase
     {
         private ColumnIdentifier Parse(string query)
         {
@@ -145,5 +145,57 @@ namespace Jhu.Graywulf.Sql.Parsing
             Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
         }
 
+        [TestMethod]
+        public void SingleStarTest()
+        {
+            var sql = "*";
+            var exp = Parse(sql);
+            Assert.AreEqual("*", exp.Value);
+            Assert.IsTrue(exp.ColumnReference.IsStar);
+        }
+
+        [TestMethod]
+        public void StarWithTablePrefixTest()
+        {
+            var sql = "dataset:database1.schema1.table1.*";
+            var exp = Parse(sql);
+            Assert.AreEqual("dataset:database1.schema1.table1.*", exp.Value);
+            Assert.AreEqual("dataset", exp.ColumnReference.ParentTableReference.DatasetName);
+            Assert.AreEqual("database1", exp.ColumnReference.ParentTableReference.DatabaseName);
+            Assert.AreEqual("schema1", exp.ColumnReference.ParentTableReference.SchemaName);
+            Assert.AreEqual("table1", exp.ColumnReference.ParentTableReference.TableName);
+            Assert.IsTrue(exp.ColumnReference.IsStar);
+        }
+
+        [TestMethod]
+        public void CreateSingleStarTest()
+        {
+            var ci = ColumnIdentifier.CreateStar();
+            Assert.AreEqual("*", ci.Value);
+            Assert.IsTrue(ci.ColumnReference.IsStar);
+
+            // TODO: this is fishy, this doesn't supposed to have a table reference
+            // because it is the exported column
+            Assert.IsTrue(ci.ColumnReference.ParentTableReference.IsUndefined);
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void CreateTableStarTest()
+        {
+            var cg = CreateCodeGenerator();
+            var tr = new NameResolution.TableReference()
+            {
+                TableName = "test"
+            };
+            var ci = ColumnIdentifier.CreateStar(tr);
+            Assert.AreEqual("[test].*", cg.Execute(ci));
+            Assert.IsTrue(ci.ColumnReference.IsStar);
+
+            // TODO: this is fishy, this doesn't supposed to have a table reference
+            // because it is the exported column
+            Assert.AreEqual("test", ci.ColumnReference.ParentTableReference.TableName);
+            Assert.Inconclusive();
+        }
     }
 }

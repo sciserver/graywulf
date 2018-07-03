@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
-    public class FunctionCallTest
+    public class ScalarFunctionCallTest
     {
         private ScalarFunctionCall ExpressionTestHelper(string query)
         {
@@ -57,5 +57,17 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         // TODO: add more test width UDF etc.
+
+        [TestMethod]
+        public void CreateSystemFunctionCallTest()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void CreateUdfCallTest()
+        {
+            Assert.Fail();
+        }
     }
 }

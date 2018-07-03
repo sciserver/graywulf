@@ -1091,7 +1091,8 @@ FOR select_statement
             (
                 Sequence(UserVariable, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Expression),
                 Sequence(ColumnAlias, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Expression),
-                Sequence(Expression, May(Sequence(May(Sequence(CommentOrWhitespace, Keyword("AS"))), CommentOrWhitespace, ColumnAlias)))
+                Sequence(Expression, May(CommentOrWhitespace), May(Sequence(Keyword("AS"), May(CommentOrWhitespace))), ColumnAlias),
+                Expression
             );
 
         #endregion
@@ -1228,7 +1229,7 @@ FOR select_statement
             );
 
         public static Expression<Rule> ColumnAliasList = () =>
-            Sequence(ColumnAlias, May(Sequence(May(CommentOrWhitespace), Comma, ColumnAliasList)));
+            Sequence(ColumnAlias, May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ColumnAliasList)));
 
         public static Expression<Rule> TableSampleClause = () =>
             Sequence

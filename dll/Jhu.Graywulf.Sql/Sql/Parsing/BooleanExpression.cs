@@ -19,18 +19,14 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         #region Instance creation
-
-        public static BooleanExpression Create()
-        {
-            return new BooleanExpression();
-        }
-
+        
         private static BooleanExpression CreateInternal(bool negated, Node n)
         {
             var sc = new BooleanExpression();
             if (negated)
             {
                 sc.Stack.AddLast(LogicalNot.Create());
+                sc.Stack.AddLast(Whitespace.Create());
             }
             sc.Stack.AddLast(n);
             return sc;

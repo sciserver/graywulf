@@ -9,11 +9,7 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         public static ArgumentList Create(Argument argument)
         {
-            var arglist = new ArgumentList();
-
-            arglist.Stack.AddLast(argument);
-
-            return arglist;
+            return new ArgumentList(argument);
         }
 
         public static ArgumentList Create(Expression expression)
@@ -61,6 +57,10 @@ namespace Jhu.Graywulf.Sql.Parsing
             return Create(arguments);
         }
 
+        public IEnumerable<Argument> EnumerateArguments()
+        {
+            return EnumerateDescendants<Argument>();
+        }
         
     }
 }

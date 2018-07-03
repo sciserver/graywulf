@@ -15,7 +15,68 @@ namespace Jhu.Graywulf.Sql.Parsing
             return p.Execute<Expression>(query);
         }
 
-        // *** TODO: write tests
+        [TestMethod]
+        public void SingleLineCommentTest()
+        {
+            var sql =
+@"a + --this is a comment
+b";
+            var exp = ExpressionTestHelper(sql);
+            var nodes = exp.Stack.ToArray();
 
+            Assert.IsInstanceOfType(nodes[0], typeof(ColumnIdentifier));
+
+            Assert.IsInstanceOfType(nodes[1], typeof(CommentOrWhitespace));
+            Assert.AreEqual(" ", nodes[1].Value);
+
+            Assert.IsInstanceOfType(nodes[2], typeof(ArithmeticOperator));
+            Assert.AreEqual("+", nodes[2].Value);
+
+            Assert.IsInstanceOfType(nodes[3], typeof(CommentOrWhitespace));
+            Assert.AreEqual(" --this is a comment\r\n", nodes[3].Value);
+
+            Assert.IsInstanceOfType(nodes[4], typeof(Expression));
+        }
+
+        [TestMethod]
+        public void MultiLineCommentTest()
+        {
+            var sql =
+@"a/*...*/+b";
+            var exp = ExpressionTestHelper(sql);
+            var nodes = exp.Stack.ToArray();
+
+            Assert.IsInstanceOfType(nodes[0], typeof(ColumnIdentifier));
+
+            Assert.IsInstanceOfType(nodes[1], typeof(CommentOrWhitespace));
+            Assert.AreEqual("/*...*/", nodes[1].Value);
+
+            Assert.IsInstanceOfType(nodes[2], typeof(ArithmeticOperator));
+            Assert.AreEqual("+", nodes[2].Value);
+
+            Assert.IsInstanceOfType(nodes[3], typeof(Expression));
+            Assert.AreEqual("b", nodes[3].Value);
+        }
+
+        [TestMethod]
+        public void MultiLineCommentTest2()
+        {
+            var sql =
+@"a/*...
+...*/+b";
+            var exp = ExpressionTestHelper(sql);
+            var nodes = exp.Stack.ToArray();
+
+            Assert.IsInstanceOfType(nodes[0], typeof(ColumnIdentifier));
+
+            Assert.IsInstanceOfType(nodes[1], typeof(CommentOrWhitespace));
+            Assert.AreEqual("/*...\r\n...*/", nodes[1].Value);
+
+            Assert.IsInstanceOfType(nodes[2], typeof(ArithmeticOperator));
+            Assert.AreEqual("+", nodes[2].Value);
+
+            Assert.IsInstanceOfType(nodes[3], typeof(Expression));
+            Assert.AreEqual("b", nodes[3].Value);
+        }
     }
 }

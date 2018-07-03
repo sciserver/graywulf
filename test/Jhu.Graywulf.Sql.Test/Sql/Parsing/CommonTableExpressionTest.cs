@@ -11,23 +11,6 @@ namespace Jhu.Graywulf.Sql.Parsing
     public class CommonTableExpressionTest
     {
         [TestMethod]
-        public void SubqueryTest()
-        {
-            var sql = @"(SELECT * FROM test ORDER BY ID)";
-            new SqlParser().Execute<Subquery>(sql);
-        }
-
-        [TestMethod]
-        public void CommonTableSpecificationTest()
-        {
-            var sql = "q AS (SELECT * FROM test)";
-            new SqlParser().Execute<CommonTableSpecification>(sql);
-
-            sql = "[q]AS(SELECT * FROM test)";
-            new SqlParser().Execute<CommonTableSpecification>(sql);
-        }
-
-        [TestMethod]
         public void CommonTableSpecificationListTest()
         {
             var sql = "a AS (SELECT 1), b AS (SELECT 2)";

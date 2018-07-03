@@ -209,7 +209,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var cr = new ColumnReference()
             {
                 IsStar = true,
-                ColumnName = "*"
+                ColumnName = "*",
+                parentTableReference = new TableReference()
             };
 
             return cr;
@@ -301,7 +302,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// <remarks></remarks>
         public static ColumnReference Interpret(ColumnExpression ce)
         {
-            var exp = ce.FindDescendant<Expression>();
+            var exp = ce.Expression;
+            var alias = ce.ColumnAlias;
 
             var cr = new ColumnReference();
             if (exp.IsSingleColumn)
@@ -314,10 +316,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 cr.isComplexExpression = true;
             }
 
-            ColumnAlias ca = ce.FindDescendant<ColumnAlias>();
-            if (ca != null)
+            if (alias != null)
             {
-                cr.columnAlias = ca.Value;
+                cr.columnAlias = Util.RemoveIdentifierQuotes(alias.Value);
             }
 
             return cr;

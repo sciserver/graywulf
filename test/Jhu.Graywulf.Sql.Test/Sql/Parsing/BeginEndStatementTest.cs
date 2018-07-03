@@ -48,5 +48,19 @@ END
             var sb = Parse(sql);
         }
 
+        [TestMethod]
+        public void CreateBeginEndTest()
+        {
+            var sql = "SELECT * FROM tab";
+            var sb = new SqlParser().Execute<StatementBlock>(sql);
+            var bb = BeginEndStatement.Create(sb);
+            var gt =
+@"BEGIN
+SELECT * FROM tab
+END";
+
+            Assert.AreEqual(gt, bb.Value);
+        }
+
     }
 }

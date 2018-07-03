@@ -38,6 +38,16 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<UserVariable>(); }
         }
 
+        public ColumnAlias ColumnAlias
+        {
+            get { return FindDescendant<ColumnAlias>(); }
+        }
+
+        public Expression Expression
+        {
+            get { return FindDescendant<Expression>(); }
+        }
+
         protected override void OnInitializeMembers()
         {
             base.OnInitializeMembers();
@@ -58,7 +68,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var ci = ColumnIdentifier.CreateStar();
             var exp = Expression.Create(ci);
-            var ce = Create(exp);
+            var ce = Create(exp, null);
 
             ce.columnReference = ci.ColumnReference;
 
@@ -69,18 +79,25 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var ci = ColumnIdentifier.CreateStar(tableReference);
             var exp = Expression.Create(ci);
-            var ce = Create(exp);
+            var ce = Create(exp, null);
 
             ce.columnReference = ci.ColumnReference;
 
             return ce;
         }
 
-        public static ColumnExpression Create(Expression exp)
+        public static ColumnExpression Create(Expression exp, string alias)
         {
             var ce = new ColumnExpression();
-
             ce.Stack.AddLast(exp);
+
+            if (!String.IsNullOrWhiteSpace(alias))
+            {
+                ce.Stack.AddLast(Whitespace.Create());
+                ce.Stack.AddLast(Keyword.Create("AS"));
+                ce.Stack.AddLast(Whitespace.Create());
+                ce.Stack.AddLast(ColumnAlias.Create(alias));
+            }
 
             return ce;
         }

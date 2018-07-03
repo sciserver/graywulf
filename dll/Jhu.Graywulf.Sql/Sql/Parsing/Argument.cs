@@ -14,9 +14,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public static Argument Create(Expression expression)
         {
-            var arg = new Argument();
-            arg.Stack.AddLast(expression);
-            return arg;
+            return new Argument(expression);
         }
     }
 }

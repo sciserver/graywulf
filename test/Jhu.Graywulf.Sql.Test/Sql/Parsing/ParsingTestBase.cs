@@ -21,6 +21,15 @@ namespace Jhu.Graywulf.Sql.Parsing
             return sm;
         }
 
+        protected CodeGeneration.CodeGeneratorBase CreateCodeGenerator()
+        {
+            return new CodeGeneration.SqlServer.SqlServerCodeGenerator()
+            {
+                ColumnNameRendering = CodeGeneration.NameRendering.FullyQualified,
+                TableNameRendering = CodeGeneration.NameRendering.FullyQualified
+            };
+        }
+
         protected SelectStatement CreateSelect(string query)
         {
             SqlParser p = new SqlParser();
