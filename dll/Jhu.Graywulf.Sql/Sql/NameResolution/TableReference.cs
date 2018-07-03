@@ -341,7 +341,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             if (fpi.NamePart4 != null)
             {
-                throw NameResolutionError.TableNameTooManyParts(ti);
+                throw NameResolutionError.TableIdentifierTooManyParts(ti);
             }
 
             var tr = new TableReference(ti)

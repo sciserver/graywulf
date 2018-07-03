@@ -220,10 +220,36 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "dbo.ClrUDT";
             var dt = Parse(sql);
             Assert.IsTrue(dt.DataTypeReference.IsUserDefined);
+            Assert.AreEqual("dbo", dt.DataTypeReference.SchemaName);
+            Assert.AreEqual("ClrUDT", dt.DataTypeReference.DatabaseObjectName);
 
             sql = "dbo.int";
             dt = Parse(sql);
             Assert.IsTrue(dt.DataTypeReference.IsUserDefined);
+            Assert.AreEqual("dbo", dt.DataTypeReference.SchemaName);
+            Assert.AreEqual("int", dt.DataTypeReference.DatabaseObjectName);
+        }
+
+        [TestMethod]
+        public void UdtWithFullNameTest()
+        {
+            // This is not standard T-SQL which doesn't support cross-database UDTs
+            var sql = "DS:database.schema.ClrUDT";
+            var dt = Parse(sql);
+            Assert.IsTrue(dt.DataTypeReference.IsUserDefined);
+            Assert.AreEqual("DS", dt.DataTypeReference.DatasetName);
+            Assert.AreEqual("database", dt.DataTypeReference.DatabaseName);
+            Assert.AreEqual("schema", dt.DataTypeReference.SchemaName);
+            Assert.AreEqual("ClrUDT", dt.DataTypeReference.DatabaseObjectName);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NameResolution.NameResolverException))]
+        public void UdtNameWithTooManyPartsTest()
+        {
+            // This is not standard T-SQL which doesn't support cross-database UDTs
+            var sql = "DS:test.database.schema.ClrUDT";
+            var dt = Parse(sql);
         }
     }
 }

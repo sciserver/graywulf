@@ -98,6 +98,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var ds = di.FindDescendant<DatasetPrefix>();
             var fpi = di.FindDescendant<FourPartIdentifier>();
 
+            if (fpi.NamePart4 != null)
+            {
+                throw NameResolutionError.DataTypeIdentifierTooManyParts(di);
+            }
+
             var dr = new DataTypeReference()
             {
                 DatasetName = Util.RemoveIdentifierQuotes(ds?.DatasetName),

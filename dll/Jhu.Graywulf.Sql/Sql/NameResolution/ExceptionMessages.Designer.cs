@@ -97,6 +97,15 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The data type identifier &apos;{0}&apos; specifies too many parts..
+        /// </summary>
+        internal static string DataTypeIdentifierTooManyParts {
+            get {
+                return ResourceManager.GetString("DataTypeIdentifierTooManyParts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reference to a different table &apos;{0}&apos; is not allowed in table hint expression but found at ({1},{2})..
         /// </summary>
         internal static string DifferentTableReferenceInHintNotAllowed {
@@ -205,11 +214,11 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The table name &apos;{0}&apos; specifies too many parts..
+        ///   Looks up a localized string similar to The table identifier &apos;{0}&apos; specifies too many parts..
         /// </summary>
-        internal static string TableNameTooManyParts {
+        internal static string TableIdentifierTooManyParts {
             get {
-                return ResourceManager.GetString("TableNameTooManyParts", resourceCulture);
+                return ResourceManager.GetString("TableIdentifierTooManyParts", resourceCulture);
             }
         }
         

@@ -138,9 +138,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return CreateException(ExceptionMessages.TableDoesNotExists, null, null, node);
         }
 
-        public static NameResolverException TableNameTooManyParts(Node node)
+        public static NameResolverException TableIdentifierTooManyParts(Node node)
         {
-            return CreateException(ExceptionMessages.TableNameTooManyParts, null, null, node);
+            return CreateException(ExceptionMessages.TableIdentifierTooManyParts, null, null, node);
+        }
+
+        public static NameResolverException DataTypeIdentifierTooManyParts(Node node)
+        {
+            return CreateException(ExceptionMessages.DataTypeIdentifierTooManyParts, null, null, node);
         }
     }
 }

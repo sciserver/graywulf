@@ -129,6 +129,9 @@
   <data name="DatabaseNameNotAllowed" xml:space="preserve">
     <value>Database name '{0}' illegally specified at ({1},{2}).</value>
   </data>
+  <data name="DataTypeIdentifierTooManyParts" xml:space="preserve">
+    <value>The data type identifier '{0}' specifies too many parts.</value>
+  </data>
   <data name="DifferentTableReferenceInHintNotAllowed" xml:space="preserve">
     <value>Reference to a different table '{0}' is not allowed in table hint expression but found at ({1},{2}).</value>
   </data>
@@ -165,8 +168,8 @@
   <data name="TableDoesNotExists" xml:space="preserve">
     <value>Table with name '{0}' found at ({1},{2}) does not exist.</value>
   </data>
-  <data name="TableNameTooManyParts" xml:space="preserve">
-    <value>The table name '{0}' specifies too many parts.</value>
+  <data name="TableIdentifierTooManyParts" xml:space="preserve">
+    <value>The table identifier '{0}' specifies too many parts.</value>
   </data>
   <data name="TargetDatasetReadOnly" xml:space="preserve">
     <value>The target dataset '{0}' specified at ({1},{2}) is read only.</value>
