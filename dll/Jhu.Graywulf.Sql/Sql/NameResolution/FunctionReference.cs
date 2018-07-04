@@ -79,14 +79,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public static FunctionReference Interpret(FunctionIdentifier fi)
         {
             var ds = fi.FindDescendant<DatasetPrefix>();
-            var fpi = fi.FindDescendant<MultiPartIdentifier>();
+            var mpi = fi.FindDescendant<MultiPartIdentifier>();
+
+            if (mpi.PartCount > 3)
+            {
+                throw NameResolutionError.FunctionIdentifierTooManyParts(fi);
+            }
 
             var fr = new FunctionReference(fi)
             {
                 DatasetName = Util.RemoveIdentifierQuotes(ds?.DatasetName),
-                DatabaseName = Util.RemoveIdentifierQuotes(fpi.NamePart3),
-                SchemaName = Util.RemoveIdentifierQuotes(fpi.NamePart2),
-                DatabaseObjectName = Util.RemoveIdentifierQuotes(fpi.NamePart1),
+                DatabaseName = Util.RemoveIdentifierQuotes(mpi.NamePart3),
+                SchemaName = Util.RemoveIdentifierQuotes(mpi.NamePart2),
+                DatabaseObjectName = Util.RemoveIdentifierQuotes(mpi.NamePart1),
                 IsUserDefined = true
             };
 

@@ -94,6 +94,7 @@
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerCodeGeneratorTest.cs" />
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerCodeGeneratorTestBase.cs" />
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerColumnListGeneratorTest.cs" />
+    <Compile Include="Sql\LogicalExpressions\DnfConverterTest.cs" />
     <Compile Include="Sql\LogicalExpressions\SearchConditionNormalizerTest.cs" />
     <Compile Include="Sql\NameResolution\UserDefinedTypeTest.cs" />
     <Compile Include="Sql\NameResolution\TableVariableTest.cs" />
@@ -131,11 +132,14 @@
     <Compile Include="Sql\Parsing\CreateIndexTest.cs" />
     <Compile Include="Sql\Parsing\CreateTableTest.cs" />
     <Compile Include="Sql\Parsing\CursorTest.cs" />
+    <Compile Include="Sql\Parsing\DeclareTableTest.cs" />
+    <Compile Include="Sql\Parsing\DeclareVariableTest.cs" />
     <Compile Include="Sql\Parsing\DataTypeTest.cs" />
     <Compile Include="Sql\Parsing\DeleteStatementTest.cs" />
-    <Compile Include="Sql\Parsing\DnfConverterTest.cs" />
     <Compile Include="Sql\Parsing\ExpressionTest.cs" />
+    <Compile Include="Sql\Parsing\FunctionArgumentsTest.cs" />
     <Compile Include="Sql\Parsing\FunctionIdentifierTest.cs" />
+    <Compile Include="Sql\Parsing\FunctionTableSourceTest.cs" />
     <Compile Include="Sql\Parsing\GroupByTest.cs" />
     <Compile Include="Sql\Parsing\HavingTest.cs" />
     <Compile Include="Sql\Parsing\IfStatementTest.cs" />
@@ -156,6 +160,7 @@
     <Compile Include="Sql\Parsing\SimpleCaseTest.cs" />
     <Compile Include="Sql\Parsing\SelectListTest.cs" />
     <Compile Include="Sql\Parsing\SelectStatementTest.cs" />
+    <Compile Include="Sql\Parsing\SimpleTableSourceTest.cs" />
     <Compile Include="Sql\Parsing\SqlParserTest.cs" />
     <Compile Include="Sql\Parsing\StatementBlockTest.cs" />
     <Compile Include="Sql\Parsing\SubqueryTest.cs" />

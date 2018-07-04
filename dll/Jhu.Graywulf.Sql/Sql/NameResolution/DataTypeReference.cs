@@ -97,7 +97,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var mpi = di.FindDescendant<MultiPartIdentifier>();
 
-            if (mpi.NamePart3 != null)
+            if (mpi.PartCount > 3)
             {
                 throw NameResolutionError.DataTypeIdentifierTooManyParts(di);
             }

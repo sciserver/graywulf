@@ -46,6 +46,18 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         [TestMethod]
+        public void UdfNameWithEverythingTest()
+        {
+            var sql = "dataset:database.schema.function(a)";
+            var exp = ExpressionTestHelper(sql);
+            Assert.AreEqual(sql, exp.Value);
+            Assert.AreEqual("dataset", exp.FunctionReference.DatasetName);
+            Assert.AreEqual("database", exp.FunctionReference.DatabaseName);
+            Assert.AreEqual("schema", exp.FunctionReference.SchemaName);
+            Assert.AreEqual("function", exp.FunctionReference.FunctionName);
+        }
+
+        [TestMethod]
         public void UdfNameWhitespaceTest()
         {
             var sql = "database . schema . function(a)";
@@ -57,10 +69,11 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         [TestMethod]
-        public void FunctionCallOnUdtTest()
+        [ExpectedException(typeof(NameResolution.NameResolverException))]
+        public void NameTooLongTest()
         {
-            //Assert.Inconclusive();
+            var sql = "dataset:database.schema.bla.bla.function(a)";
+            var exp = ExpressionTestHelper(sql);
         }
-
     }
 }

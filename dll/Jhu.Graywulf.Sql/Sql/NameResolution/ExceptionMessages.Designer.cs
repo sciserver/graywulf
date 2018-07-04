@@ -160,6 +160,15 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The function identifier &apos;{0}&apos; specifies too many parts..
+        /// </summary>
+        internal static string FunctionIdentifierTooManyParts {
+            get {
+                return ResourceManager.GetString("FunctionIdentifierTooManyParts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Alias not defined for subquery column at ({1},{2})..
         /// </summary>
         internal static string MissingColumnAlias {

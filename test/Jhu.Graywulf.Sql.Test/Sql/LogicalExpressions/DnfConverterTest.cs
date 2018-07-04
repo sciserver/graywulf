@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Jhu.Graywulf.Sql.Parsing;
 
-namespace Jhu.Graywulf.Sql.Parsing
+namespace Jhu.Graywulf.Sql.LogicalExpressions
 {
     [TestClass]
     public class DnfConverterTest

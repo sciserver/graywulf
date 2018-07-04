@@ -147,5 +147,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             return CreateException(ExceptionMessages.DataTypeIdentifierTooManyParts, null, null, node);
         }
+
+        public static NameResolverException FunctionIdentifierTooManyParts(Node node)
+        {
+            return CreateException(ExceptionMessages.FunctionIdentifierTooManyParts, null, null, node);
+        }
     }
 }

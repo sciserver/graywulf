@@ -78,5 +78,12 @@ b";
             Assert.IsInstanceOfType(nodes[3], typeof(Expression));
             Assert.AreEqual("b", nodes[3].Value);
         }
+
+        [TestMethod]
+        public void MultipleCommentsTest()
+        {
+            var sql = "/*c1*/ /*c2*/ -- c3";
+            var exp = new SqlParser().Execute<CommentOrWhitespace>(sql);
+        }
     }
 }

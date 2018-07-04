@@ -20,9 +20,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         public void SimpleTableTest()
         {
             var sql = "SELECT column1 FROM table1";
-
             var exp = ExpressionTestHelper(sql);
-
             Assert.AreEqual("table1", exp.Value);
         }
 
@@ -30,32 +28,41 @@ namespace Jhu.Graywulf.Sql.Parsing
         public void SimpleTableWithAliasTest()
         {
             var sql = "SELECT column1 FROM table1 t";
-
             var exp = ExpressionTestHelper(sql);
-
             Assert.AreEqual("table1 t", exp.Value);
             Assert.AreEqual("t", exp.FindDescendantRecursive<TableAlias>().Value);
+
+            sql = "SELECT column1 FROM table1 AS t";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT column1 FROM[table1]AS[t]";
+            exp = ExpressionTestHelper(sql);
         }
 
         [TestMethod]
         public void TableValuedFunctionTest()
         {
             var sql = "SELECT column FROM dbo.TableValuedFunction() f";
-
             var exp = ExpressionTestHelper(sql);
-
             Assert.AreEqual("dbo.TableValuedFunction() f", exp.Value);
             Assert.AreEqual("f", exp.FindDescendantRecursive<TableAlias>().Value);
+
+            sql = "SELECT column FROM dbo.TableValuedFunction() AS f";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT column FROM dbo.TableValuedFunction()AS[f]";
+            exp = ExpressionTestHelper(sql);
         }
 
         [TestMethod]
         public void TableValuedVariableTest()
         {
             var sql = "SELECT column FROM @table";
-
             var exp = ExpressionTestHelper(sql);
-
             Assert.AreEqual("@table", exp.Value);
+
+            sql = "SELECT column FROM@table";
+            exp = ExpressionTestHelper(sql);
         }
 
         [TestMethod]

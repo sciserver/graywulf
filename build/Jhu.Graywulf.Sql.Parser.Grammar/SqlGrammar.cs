@@ -952,6 +952,7 @@ FOR select_statement
                 May(CommentOrWhitespace),
                 UserVariable,
                 May(CommentOrWhitespace),
+                May(Sequence(Keyword("AS"), CommentOrWhitespace)),
                 Keyword("TABLE"),
                 May(CommentOrWhitespace),
                 BracketOpen,
@@ -1175,10 +1176,10 @@ FOR select_statement
             Sequence
             (
                 TableOrViewIdentifier,
-                May(Sequence(CommentOrWhitespace, May(Sequence(Keyword("AS"), CommentOrWhitespace)), TableAlias)),   // Optional
-                May(Sequence(CommentOrWhitespace, TableSampleClause)),
-                May(Sequence(CommentOrWhitespace, TableHintClause)),
-                May(Sequence(CommentOrWhitespace, TablePartitionClause))
+                May(Sequence(May(CommentOrWhitespace), May(Sequence(Keyword("AS"), May(CommentOrWhitespace))), TableAlias)),   // Optional
+                May(Sequence(May(CommentOrWhitespace), TableSampleClause)),
+                May(Sequence(May(CommentOrWhitespace), TableHintClause)),
+                May(Sequence(May(CommentOrWhitespace), TablePartitionClause))
             );
 
         public static Expression<Rule> FunctionTableSource = () =>
@@ -1186,9 +1187,10 @@ FOR select_statement
             (
                 TableValuedFunctionCall,
                 May(CommentOrWhitespace),
-                May(Sequence(Keyword("AS"), CommentOrWhitespace)),
-                TableAlias,     // Required
-                May(Sequence(May(CommentOrWhitespace), ColumnAliasBrackets))
+                May(Sequence(Keyword("AS"), May(CommentOrWhitespace))),
+                TableAlias     // Required
+                // CLR TVF calls can't have column aliases specified
+                //May(Sequence(May(CommentOrWhitespace), ColumnAliasBrackets))
             );
 
         public static Expression<Rule> VariableTableSource = () =>
@@ -1330,7 +1332,7 @@ FOR select_statement
                 May(CommentOrWhitespace),
                 BracketOpen,
                 May(CommentOrWhitespace),
-                TableHintList,
+                May(TableHintList),
                 May(CommentOrWhitespace),
                 BracketClose
             );
