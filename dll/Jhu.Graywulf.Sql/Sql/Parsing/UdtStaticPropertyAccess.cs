@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class UdtStaticPropertyIdentifier : IDataTypeReference, IPropertyReference
+    public partial class UdtStaticPropertyAccess : IDataTypeReference, IPropertyReference
     {
         public DataTypeIdentifier DataTypeIdentifier
         {

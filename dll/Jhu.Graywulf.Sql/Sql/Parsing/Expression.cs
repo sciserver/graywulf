@@ -80,14 +80,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             nex.Stack.AddLast(fun);
             return nex;
         }
-
-        public static Expression Create(PropertyAccess pa)
-        {
-            var nex = new Expression();
-            nex.Stack.AddLast(pa);
-            return nex;
-        }
-
+        
         public static Expression CreateNumber(string number)
         {
             var nex = new Expression();

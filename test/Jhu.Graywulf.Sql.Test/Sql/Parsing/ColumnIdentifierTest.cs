@@ -25,36 +25,11 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         [TestMethod]
-        public void SingleColumnNameWithDatasetPrefixTest()
-        {
-            try
-            {
-                var sql = "dataset:column";
-                var exp = Parse(sql);
-            }
-            catch (ParserException ex)
-            {
-                Assert.AreEqual(8, ex.Pos);
-            }
-        }
-
-        [TestMethod]
         public void ColumnNameWithTableNameTest()
         {
             var sql = "table1.column1";
             var exp = Parse(sql);
             Assert.AreEqual("table1.column1", exp.Value);
-            Assert.AreEqual("table1", exp.TableReference.TableName);
-            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
-        }
-
-        [TestMethod]
-        public void ColumnNameWithTableNameAndDatasetPrefixTest()
-        {
-            var sql = "dataset:table1.column1";
-            var exp = Parse(sql);
-            Assert.AreEqual("dataset:table1.column1", exp.Value);
-            Assert.AreEqual("dataset", exp.TableReference.DatasetName);
             Assert.AreEqual("table1", exp.TableReference.TableName);
             Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
         }
@@ -69,82 +44,18 @@ namespace Jhu.Graywulf.Sql.Parsing
             Assert.AreEqual("table1", exp.TableReference.TableName);
             Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
         }
-
+        
         [TestMethod]
-        public void ColumnNameWithSchemaAndTableNameAndDatasetPrefixTest()
+        public void ColumnNameWithWhitespacesTest()
         {
-            var sql = "dataset:schema1.table1.column1";
+            var sql = "schema1 . table1 . column1";
             var exp = Parse(sql);
-            Assert.AreEqual("dataset:schema1.table1.column1", exp.Value);
-            Assert.AreEqual("dataset", exp.TableReference.DatasetName);
+            Assert.AreEqual("schema1 . table1 . column1", exp.Value);
             Assert.AreEqual("schema1", exp.TableReference.SchemaName);
             Assert.AreEqual("table1", exp.TableReference.TableName);
             Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
         }
-
-        [TestMethod]
-        public void ColumnNameWithMissingTableNameTest()
-        {
-            try
-            {
-                var sql = "schema1..column1";
-                var exp = Parse(sql);
-            }
-            catch (ParserException ex)
-            {
-                Assert.AreEqual(9, ex.Pos);
-            }
-        }
-
-        [TestMethod]
-        public void ColumnNameFourPartNameTest()
-        {
-            var sql = "database1.schema1.table1.column1";
-            var exp = Parse(sql);
-            Assert.AreEqual("database1.schema1.table1.column1", exp.Value);
-            Assert.AreEqual("database1", exp.TableReference.DatabaseName);
-            Assert.AreEqual("schema1", exp.TableReference.SchemaName);
-            Assert.AreEqual("table1", exp.TableReference.TableName);
-            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
-        }
-
-        [TestMethod]
-        public void ColumnNameFourPartNameAndDatasetPrefixTest()
-        {
-            var sql = "dataset:database1.schema1.table1.column1";
-            var exp = Parse(sql);
-            Assert.AreEqual("dataset:database1.schema1.table1.column1", exp.Value);
-            Assert.AreEqual("dataset", exp.TableReference.DatasetName);
-            Assert.AreEqual("database1", exp.TableReference.DatabaseName);
-            Assert.AreEqual("schema1", exp.TableReference.SchemaName);
-            Assert.AreEqual("table1", exp.TableReference.TableName);
-            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
-        }
-
-        [TestMethod]
-        public void ColumnNameFourPartNameAndDatasetPrefixWhitespacesTest()
-        {
-            var sql = "dataset : database1 . schema1 . table1 . column1";
-            var exp = Parse(sql);
-            Assert.AreEqual("dataset : database1 . schema1 . table1 . column1", exp.Value);
-            Assert.AreEqual("dataset", exp.TableReference.DatasetName);
-            Assert.AreEqual("database1", exp.TableReference.DatabaseName);
-            Assert.AreEqual("schema1", exp.TableReference.SchemaName);
-            Assert.AreEqual("table1", exp.TableReference.TableName);
-            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
-        }
-
-        [TestMethod]
-        public void ColumnNameFourPartNameWithMissingSchemaNameTest()
-        {
-            var sql = "database1..table1.column1";
-            var exp = Parse(sql);
-            Assert.AreEqual("database1..table1.column1", exp.Value);
-            Assert.AreEqual("database1", exp.TableReference.DatabaseName);
-            Assert.AreEqual("table1", exp.TableReference.TableName);
-            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
-        }
-
+        
         [TestMethod]
         public void SingleStarTest()
         {
@@ -157,11 +68,9 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void StarWithTablePrefixTest()
         {
-            var sql = "dataset:database1.schema1.table1.*";
+            var sql = "schema1.table1.*";
             var exp = Parse(sql);
-            Assert.AreEqual("dataset:database1.schema1.table1.*", exp.Value);
-            Assert.AreEqual("dataset", exp.ColumnReference.ParentTableReference.DatasetName);
-            Assert.AreEqual("database1", exp.ColumnReference.ParentTableReference.DatabaseName);
+            Assert.AreEqual("schema1.table1.*", exp.Value);
             Assert.AreEqual("schema1", exp.ColumnReference.ParentTableReference.SchemaName);
             Assert.AreEqual("table1", exp.ColumnReference.ParentTableReference.TableName);
             Assert.IsTrue(exp.ColumnReference.IsStar);

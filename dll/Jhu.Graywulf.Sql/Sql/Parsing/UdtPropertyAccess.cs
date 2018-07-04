@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class UdtVariablePropertyIdentifier : IVariableReference, IPropertyReference
+    public partial class UdtPropertyAccess : IVariableReference, IPropertyReference
     {
         public UserVariable UserVariable
         {

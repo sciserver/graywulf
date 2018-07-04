@@ -248,7 +248,7 @@ namespace Jhu.Graywulf.Parsing
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public IEnumerable<T> EnumerateDescendants<T>()
-            where T : Node
+            where T : Token
         {
             return EnumerateDescendants<T>(true);
         }

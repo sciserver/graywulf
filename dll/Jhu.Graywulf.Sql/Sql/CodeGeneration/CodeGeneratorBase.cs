@@ -553,7 +553,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                 case IndexColumnDefinition cd:
                     WriteIndexColumnDefinition(cd);
                     break;
-                case UdfIdentifier fi:
+                case FunctionIdentifier fi:
                     WriteUdfIdentifier(fi);
                     break;
                 /* TODO: implement these
@@ -762,7 +762,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             }
         }
 
-        public virtual void WriteUdfIdentifier(UdfIdentifier node)
+        public virtual void WriteUdfIdentifier(FunctionIdentifier node)
         {
             switch (functionNameRendering)
             {

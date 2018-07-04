@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NameResolution.NameResolverException))]
+        [ExpectedException(typeof(Jhu.Graywulf.Parsing.ParserException))]
         public void TooManyPartsTest()
         {
             var sql = "part1.part2.part3.part4";

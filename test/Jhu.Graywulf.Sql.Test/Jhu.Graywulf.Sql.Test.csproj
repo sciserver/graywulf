@@ -142,6 +142,7 @@
     <Compile Include="Sql\Parsing\InsertStatementTest.cs" />
     <Compile Include="Sql\Parsing\LabelAndGotoTest.cs" />
     <Compile Include="Sql\Parsing\BooleanExpressionTest.cs" />
+    <Compile Include="Sql\Parsing\MultiPartIdentifierTest.cs" />
     <Compile Include="Sql\Parsing\ParsingTestBase.cs" />
     <Compile Include="Sql\Parsing\PredicateTest.cs" />
     <Compile Include="Sql\Parsing\QueryHintTest.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="Sql\Parsing\ThrowStatementTest.cs" />
     <Compile Include="Sql\Parsing\TopExpressionTest.cs" />
     <Compile Include="Sql\Parsing\TryCatchStatementTest.cs" />
+    <Compile Include="Sql\Parsing\UdtMemberListTest.cs" />
     <Compile Include="Sql\Parsing\UnaryOperatorTest.cs" />
     <Compile Include="Sql\Parsing\UpdateStatementTest.cs" />
     <Compile Include="Sql\Parsing\WhileStatementTest.cs" />

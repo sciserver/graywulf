@@ -227,12 +227,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public static ColumnReference Interpret(ColumnIdentifier ci)
         {
             ColumnReference cr;
-            var fpi = ci.FindDescendant<FourPartIdentifier>();
+            var mpi = ci.FindDescendant<MultiPartIdentifier>();
             var star = ci.FindDescendant<Mul>();
 
             if (star != null)
             {
-                if (fpi == null)
+                // The entire multi-part identifier must be a table identifier
+
+                if (mpi == null)
                 {
                     // No table part defined
                     cr = new ColumnReference()
@@ -254,11 +256,23 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
             else
             {
-                cr = new ColumnReference()
+                // Depending on the number of parts, the column identifier can be
+                // first, second or third; all the rest is property access of UDT columns
+
+                switch (mpi.PartCount)
                 {
-                    ParentTableReference = TableReference.Interpret(ci, true),
-                    ColumnName = Util.RemoveIdentifierQuotes(fpi.NamePart1)
-                };
+                    case 1:     // column
+                    case 2:     // table.column
+                    case 3:     // schema.table.column
+                        cr = new ColumnReference()
+                        {
+                            ParentTableReference = TableReference.Interpret(ci, true),
+                            ColumnName = Util.RemoveIdentifierQuotes(mpi.NamePart1)
+                        };
+                        break;
+                    default:    // tricky case, need to find column by name resolution
+                        throw new NotImplementedException();
+                }
             }
 
             return cr;

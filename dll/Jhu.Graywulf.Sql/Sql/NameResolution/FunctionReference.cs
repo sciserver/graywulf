@@ -76,10 +76,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         #endregion
 
-        public static FunctionReference Interpret(UdfIdentifier fi)
+        public static FunctionReference Interpret(FunctionIdentifier fi)
         {
             var ds = fi.FindDescendant<DatasetPrefix>();
-            var fpi = fi.FindDescendant<FourPartIdentifier>();
+            var fpi = fi.FindDescendant<MultiPartIdentifier>();
 
             var fr = new FunctionReference(fi)
             {
@@ -97,18 +97,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
 
             return fr;
-        }
-
-        public static FunctionReference Interpret(UdtVariableMethodIdentifier fi)
-        {
-            // TODO
-            throw new NotImplementedException();
-        }
-
-        public static FunctionReference Interpret(UdtStaticMethodIdentifier fi)
-        {
-            // TODO
-            throw new NotImplementedException();
         }
     }
 }

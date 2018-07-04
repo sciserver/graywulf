@@ -15,9 +15,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { UdfIdentifier.FunctionReference = value; }
         }
 
-        public UdfIdentifier UdfIdentifier
+        public FunctionIdentifier UdfIdentifier
         {
-            get { return FindDescendant<UdfIdentifier>(); }
+            get { return FindDescendant<FunctionIdentifier>(); }
         }
 
         public static TableValuedFunctionCall Create(FunctionReference functionReference, params Expression[] arguments)

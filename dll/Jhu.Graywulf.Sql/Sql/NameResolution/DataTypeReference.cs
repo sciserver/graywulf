@@ -95,20 +95,17 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static DataTypeReference Interpret(DataTypeIdentifier di)
         {
-            var ds = di.FindDescendant<DatasetPrefix>();
-            var fpi = di.FindDescendant<FourPartIdentifier>();
+            var mpi = di.FindDescendant<MultiPartIdentifier>();
 
-            if (fpi.NamePart4 != null)
+            if (mpi.NamePart3 != null)
             {
                 throw NameResolutionError.DataTypeIdentifierTooManyParts(di);
             }
 
             var dr = new DataTypeReference()
             {
-                DatasetName = Util.RemoveIdentifierQuotes(ds?.DatasetName),
-                DatabaseName = Util.RemoveIdentifierQuotes(fpi.NamePart3),
-                SchemaName = Util.RemoveIdentifierQuotes(fpi.NamePart2),
-                DatabaseObjectName = Util.RemoveIdentifierQuotes(fpi.NamePart1),
+                SchemaName = Util.RemoveIdentifierQuotes(mpi.NamePart2),
+                DatabaseObjectName = Util.RemoveIdentifierQuotes(mpi.NamePart1),
             };
 
             if (dr.DatasetName == null &&  dr.DatabaseName == null && dr.SchemaName == null &&

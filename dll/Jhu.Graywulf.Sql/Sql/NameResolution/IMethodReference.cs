@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public interface IMethodReference : IFunctionReference
+    public interface IMethodReference
     {
+        MethodReference MethodReference { get; set; }
     }
 }

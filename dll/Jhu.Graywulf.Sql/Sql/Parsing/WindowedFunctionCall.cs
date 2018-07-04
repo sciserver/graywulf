@@ -9,9 +9,9 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class WindowedFunctionCall : IFunctionReference
     {
-        public UdfIdentifier UdfIdentifier
+        public FunctionIdentifier UdfIdentifier
         {
-            get { return FindDescendant<UdfIdentifier>(); }
+            get { return FindDescendant<FunctionIdentifier>(); }
         }
 
         public FunctionReference FunctionReference

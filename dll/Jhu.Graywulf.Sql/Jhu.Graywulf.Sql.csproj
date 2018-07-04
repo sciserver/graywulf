@@ -277,14 +277,14 @@
     <Compile Include="Sql\Parsing\Constant.cs" />
     <Compile Include="Sql\Parsing\DatasetPrefix.cs" />
     <Compile Include="Sql\Parsing\DataTypeIdentifier.cs" />
-    <Compile Include="Sql\Parsing\FourPartIdentifier.cs" />
+    <Compile Include="Sql\Parsing\FunctionIdentifier.cs" />
     <Compile Include="Sql\Parsing\IncludedColumnDefinition.cs" />
     <Compile Include="Sql\Parsing\IndexColumnDefinition.cs" />
     <Compile Include="Sql\Parsing\MethodName.cs" />
+    <Compile Include="Sql\Parsing\MultiPartIdentifier.cs" />
     <Compile Include="Sql\Parsing\Null.cs" />
     <Compile Include="Sql\Parsing\NumericConstant.cs" />
     <Compile Include="Sql\Parsing\PrintStatement.cs" />
-    <Compile Include="Sql\Parsing\PropertyAccess.cs" />
     <Compile Include="Sql\Parsing\ScalarFunctionCall.cs" />
     <Compile Include="Sql\Parsing\StatementSeparator.cs" />
     <Compile Include="Sql\Parsing\StatementType.cs" />
@@ -295,10 +295,10 @@
     <Compile Include="Sql\Parsing\TableOrViewIdentifier.cs" />
     <Compile Include="Sql\Parsing\TableSourceSpecification.cs" />
     <Compile Include="Sql\Parsing\TargetTableSpecification.cs" />
-    <Compile Include="Sql\Parsing\UdtStaticMethodIdentifier.cs" />
-    <Compile Include="Sql\Parsing\UdtStaticPropertyIdentifier.cs" />
-    <Compile Include="Sql\Parsing\UdtVariableMethodIdentifier.cs" />
-    <Compile Include="Sql\Parsing\UdtVariablePropertyIdentifier.cs" />
+    <Compile Include="Sql\Parsing\UdtMethodCall.cs" />
+    <Compile Include="Sql\Parsing\UdtPropertyAccess.cs" />
+    <Compile Include="Sql\Parsing\UdtStaticMethodCall.cs" />
+    <Compile Include="Sql\Parsing\UdtStaticPropertyAccess.cs" />
     <Compile Include="Sql\Parsing\UpdateSetColumn.cs" />
     <Compile Include="Sql\Parsing\UpdateSetLeftHandSide.cs" />
     <Compile Include="Sql\Parsing\UpdateSetList.cs" />
@@ -341,7 +341,6 @@
     <Compile Include="Sql\Parsing\Expression.cs" />
     <Compile Include="Sql\Parsing\FromClause.cs" />
     <Compile Include="Sql\Parsing\FunctionArguments.cs" />
-    <Compile Include="Sql\Parsing\FunctionIdentifier.cs" />
     <Compile Include="Sql\Parsing\FunctionTableSource.cs" />
     <Compile Include="Sql\Parsing\BeginEndStatement.cs" />
     <Compile Include="Sql\Parsing\IntoClause.cs" />
@@ -375,7 +374,6 @@
     <Compile Include="Sql\Parsing\TableName.cs" />
     <Compile Include="Sql\Parsing\TableSourceExpression.cs" />
     <Compile Include="Sql\Parsing\TableValuedFunctionCall.cs" />
-    <Compile Include="Sql\Parsing\UdfIdentifier.cs" />
     <Compile Include="Sql\Parsing\VariableTableSource.cs" />
     <Compile Include="Sql\Parsing\WhereClause.cs" />
     <Compile Include="Sql\Parsing\Whitespace.cs" />

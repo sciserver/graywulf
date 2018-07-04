@@ -25,20 +25,15 @@ namespace Jhu.Graywulf.Sql.Parsing
             */
         }
 
-        public FunctionIdentifier FunctionIdentifier
+        public FunctionIdentifier UdfIdentifier
         {
             get { return FindDescendant<FunctionIdentifier>(); }
         }
-
-        public DatabaseObjectReference DatabaseObjectReference
-        {
-            get { return FunctionIdentifier.FunctionReference; }
-        }
-
+        
         public FunctionReference FunctionReference
         {
-            get { return FunctionIdentifier.FunctionReference; }
-            set { FunctionIdentifier.FunctionReference = value; }
+            get { return UdfIdentifier.FunctionReference; }
+            set { UdfIdentifier.FunctionReference = value; }
         }
 
         public static ScalarFunctionCall Create(string functionName, params Expression[] arguments)
@@ -61,6 +56,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             throw new NotImplementedException();
 
+            /*
             var f = new ScalarFunctionCall();
             var fun = FunctionIdentifier.Create(functionReference);
             var args = FunctionArguments.Create(arguments);
@@ -69,6 +65,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             f.Stack.AddLast(args);
 
             return f;
+            */
         }
     }
 }

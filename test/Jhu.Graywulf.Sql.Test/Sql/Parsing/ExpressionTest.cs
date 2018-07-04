@@ -56,11 +56,11 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         [TestMethod]
-        public void FullColumnNameTest()
+        public void LongColumnNameTest()
         {
-            var sql = "dataset:database1.schema1.table1.column1";
+            var sql = "schema1.table1.column1.property1.property2";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("dataset:database1.schema1.table1.column1", exp.Value);
+            Assert.AreEqual("schema1.table1.column1.property1.property2", exp.Value);
             Assert.AreEqual("dataset", exp.FindDescendantRecursive<ColumnIdentifier>().TableReference.DatasetName);
             Assert.AreEqual("database1", exp.FindDescendantRecursive<ColumnIdentifier>().TableReference.DatabaseName);
             Assert.AreEqual("schema1", exp.FindDescendantRecursive<ColumnIdentifier>().TableReference.SchemaName);
@@ -112,21 +112,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             Assert.AreEqual("'string'", exp.Value);
             Assert.AreEqual("'string'", exp.FindDescendantRecursive<StringConstant>().Value);
         }
-
-        [TestMethod]
-        public void SimpleCaseTest()
-        {
-            // *** TODO
-            //Assert.Inconclusive();
-        }
-
-        [TestMethod]
-        public void SearchedCaseTest()
-        {
-            // *** TODO
-            //Assert.Inconclusive();
-        }
-
+        
         [TestMethod]
         public void ArithmeticOperatorTest()
         {
@@ -175,5 +161,74 @@ namespace Jhu.Graywulf.Sql.Parsing
             Assert.AreEqual(sql, exp.Value);
         }
 
+        [TestMethod]
+        public void SingleColumnSubqueryTest()
+        {
+            var sql = "(SELECT 1)";
+            var exp = ExpressionTestHelper(sql);
+        }
+
+        [TestMethod]
+        public void RankingFunctionTest()
+        {
+            var sql = "ROW_NUMBER() OVER (PARTITION BY a, b ORDER BY c)";
+            var exp = ExpressionTestHelper(sql);
+        }
+
+        [TestMethod]
+        public void WindowedAggregateFunctionTest()
+        {
+            var sql = "AVG(x) OVER (PARTITION BY a, b)";
+            var exp = ExpressionTestHelper(sql);
+        }
+
+        [TestMethod]
+        public void UdtVariablePropertyAccessTest()
+        {
+            var sql = "@var.prop";
+            var exp = ExpressionTestHelper(sql);
+
+            sql = "@var . prop";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "@var.prop1.prop2.prop3";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "@var1.prop1 + @var2.prop2";
+            exp = ExpressionTestHelper(sql);
+        }
+
+        [TestMethod]
+        public void UdtVariableMethodCallTest()
+        {
+            var sql = "@var.method(a)";
+            var exp = ExpressionTestHelper(sql);
+
+            sql = "@var.method(a).mathod(b, c)";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "@var.method(a).mathod(b, c) + @var2.method2()";
+            exp = ExpressionTestHelper(sql);
+        }
+
+        [TestMethod]
+        public void UdtStaticMethodCallTest()
+        {
+            var sql = "udt::method(a,b)";
+            var exp = ExpressionTestHelper(sql);
+
+            sql = "dbo . udt :: method ( 1 , 2 )";
+            exp = ExpressionTestHelper(sql);
+        }
+
+        [TestMethod]
+        public void UdtStaticPropertyAccessTest()
+        {
+            var sql = "udt::prop";
+            var exp = ExpressionTestHelper(sql);
+
+            sql = "dbo.udt::prop";
+            exp = ExpressionTestHelper(sql);
+        }
     }
 }

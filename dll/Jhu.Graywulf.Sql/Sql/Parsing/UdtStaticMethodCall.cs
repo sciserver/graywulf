@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class UdtStaticMethodIdentifier : IDataTypeReference, IMethodReference
+    public partial class UdtStaticMethodCall : IDataTypeReference, IMethodReference
     {
         private MethodReference methodReference;
 
@@ -26,32 +26,31 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return DataTypeIdentifier.DataTypeReference; }
             set { DataTypeIdentifier.DataTypeReference = value; }
         }
-
-        public DatabaseObjectReference DatabaseObjectReference
-        {
-            get { return methodReference; }
-        }
-
-        public FunctionReference FunctionReference
-        {
-            get { return methodReference; }
-            set { methodReference = (MethodReference)value; }
-        }
-
+        
         public MethodReference MethodReference
         {
             get { return methodReference; }
             set { methodReference = value; }
         }
 
-        // TODO: implement create, if necessary, to access UDT static methods in
-        // the form dbo.Udt::Method()
+        protected override void OnInitializeMembers()
+        {
+            base.OnInitializeMembers();
+            this.methodReference = null;
+        }
+
+        protected override void OnCopyMembers(object other)
+        {
+            base.OnCopyMembers(other);
+            var old = (UdtStaticMethodCall)other;
+            this.methodReference = old.methodReference;
+        }
 
         public override void Interpret()
         {
             base.Interpret();
 
-            throw new NotImplementedException();
+            methodReference = MethodReference.Interpret(this);
         }
     }
 }

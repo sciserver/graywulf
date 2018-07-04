@@ -337,19 +337,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public static TableReference Interpret(TableOrViewIdentifier ti)
         {
             var ds = ti.FindDescendant<DatasetPrefix>();
-            var fpi = ti.FindDescendant<FourPartIdentifier>();
-
-            if (fpi.NamePart4 != null)
-            {
-                throw NameResolutionError.TableIdentifierTooManyParts(ti);
-            }
+            var database = ti.FindDescendant<DatabaseName>()?.Value;
+            var schema = ti.FindDescendant<SchemaName>()?.Value;
+            var table = ti.FindDescendant<TableName>()?.Value;
 
             var tr = new TableReference(ti)
             {
                 DatasetName = Util.RemoveIdentifierQuotes(ds?.DatasetName),
-                DatabaseName = Util.RemoveIdentifierQuotes(fpi.NamePart3),
-                SchemaName = Util.RemoveIdentifierQuotes(fpi.NamePart2),
-                DatabaseObjectName = Util.RemoveIdentifierQuotes(fpi.NamePart1),
+                DatabaseName = Util.RemoveIdentifierQuotes(database),
+                SchemaName = Util.RemoveIdentifierQuotes(schema),
+                DatabaseObjectName = Util.RemoveIdentifierQuotes(table),
                 IsUserDefined = true,
                 tableContext = TableContext.TableOrView
             };
@@ -363,16 +360,17 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // in the four part identifier is the column name. If it is a property
             // accessor of a CLR UDT, it will be handled by the name resolver.
 
+            // TODO: this is more complex than this, multi-part identifiers
+            // can be very long due to the varying number of property accessors
+            // of UDT columns
+
             TableReference tr;
-            var ds = ci.FindDescendant<DatasetPrefix>();
-            var fpi = ci.FindDescendant<FourPartIdentifier>();
+            var fpi = ci.FindDescendant<MultiPartIdentifier>();
 
             if (columnNameLast)
             {
                 tr = new TableReference(ci)
                 {
-                    DatasetName = Util.RemoveIdentifierQuotes(ds?.DatasetName),
-                    DatabaseName = Util.RemoveIdentifierQuotes(fpi.NamePart4),
                     SchemaName = Util.RemoveIdentifierQuotes(fpi.NamePart3),
                     DatabaseObjectName = Util.RemoveIdentifierQuotes(fpi.NamePart2),
                 };
@@ -381,7 +379,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 tr = new TableReference(ci)
                 {
-                    DatasetName = Util.RemoveIdentifierQuotes(ds?.DatasetName),
                     DatabaseName = Util.RemoveIdentifierQuotes(fpi.NamePart3),
                     SchemaName = Util.RemoveIdentifierQuotes(fpi.NamePart2),
                     DatabaseObjectName = Util.RemoveIdentifierQuotes(fpi.NamePart1),
