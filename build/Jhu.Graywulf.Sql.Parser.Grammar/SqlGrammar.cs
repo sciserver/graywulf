@@ -162,6 +162,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
                     WindowedFunctionCall,           // OVER () syntax
                     ScalarFunctionCall,             // function()
+                    CountStar,
 
                     ColumnIdentifier                // This parses all name.name.name ...
                 ),
@@ -193,6 +194,18 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                     HexLiteral,
                     NumericConstant,
                     StringConstant
+            );
+
+        public static Expression<Rule> CountStar = () =>
+            Sequence
+            (
+                Keyword("COUNT"),
+                May(CommentOrWhitespace),
+                BracketOpen,
+                May(CommentOrWhitespace),
+                Mul,
+                May(CommentOrWhitespace),
+                BracketClose
             );
 
         public static Expression<Rule> ExpressionBrackets = () =>
@@ -423,12 +436,13 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 )
             );
 
-        public static Expression<Rule> ColumnIdentifier = () =>
+        public static Expression<Rule> ColumnIdentifier = () => MultiPartIdentifier;
+
+        public static Expression<Rule> StarColumnIdentifier = () =>
             Must
             (
                 Mul,
-                Sequence(MultiPartIdentifier, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Mul),
-                Sequence(MultiPartIdentifier)
+                Sequence(TableOrViewIdentifier, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Mul)
             );
 
         #endregion
@@ -1084,10 +1098,11 @@ FOR select_statement
             (
                 Sequence(UserVariable, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Expression),
                 Sequence(ColumnAlias, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Expression),
+                StarColumnIdentifier,
                 Sequence(Expression, May(CommentOrWhitespace), May(Sequence(Keyword("AS"), May(CommentOrWhitespace))), ColumnAlias),
                 Expression
             );
-
+        
         #endregion
         #region Into clause
 

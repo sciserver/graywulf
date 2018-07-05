@@ -40,11 +40,6 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public static TableOrViewIdentifier Create(TableReference tr)
         {
-            // TODO: use four part identifier
-
-            throw new NotImplementedException();
-
-            /*
             var res = new TableOrViewIdentifier();
             res.tableReference = tr;
 
@@ -66,7 +61,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             res.Stack.AddLast(TableName.Create(tr.DatabaseObjectName));
 
             return res;
-            */
         }
 
         public override void Interpret()

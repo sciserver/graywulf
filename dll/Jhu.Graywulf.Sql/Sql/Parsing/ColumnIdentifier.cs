@@ -39,31 +39,21 @@ namespace Jhu.Graywulf.Sql.Parsing
             this.columnReference = old.columnReference;
         }
 
-        public static ColumnIdentifier CreateStar()
-        {
-            var ci = new ColumnIdentifier();
-
-            ci.columnReference = ColumnReference.CreateStar();
-            ci.Stack.AddLast(Mul.Create());
-
-            return ci;
-        }
-
-        public static ColumnIdentifier CreateStar(TableReference tableReference)
-        {
-            var ci = new ColumnIdentifier();
-
-            ci.columnReference = ColumnReference.CreateStar(tableReference);
-            ci.Stack.AddLast(Mul.Create());
-
-            return ci;
-        }
-
         public static ColumnIdentifier Create(ColumnReference cr)
         {
+            if (cr.IsStar)
+            {
+                throw new InvalidOperationException();
+            }
+
             var nci = new ColumnIdentifier();
             nci.ColumnReference = cr;
 
+            throw new NotImplementedException();
+
+            // TODO: review
+
+            /*
             if (cr.ParentTableReference != null && !cr.ParentTableReference.IsUndefined)
             {
                 if (String.IsNullOrEmpty(cr.ParentTableReference.Alias))
@@ -81,6 +71,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             nci.Stack.AddLast(ColumnName.Create(cr.ColumnName));
 
             return nci;
+            */
         }
 
         public override void Interpret()

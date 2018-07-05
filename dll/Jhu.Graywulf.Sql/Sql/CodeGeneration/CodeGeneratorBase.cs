@@ -550,6 +550,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                 case ColumnIdentifier ci:
                     WriteColumnIdentifier(ci);
                     break;
+                case StarColumnIdentifier ci:
+                    WriteStarColumnIdentifier(ci);
+                    break;
                 case IndexColumnDefinition cd:
                     WriteIndexColumnDefinition(cd);
                     break;
@@ -651,6 +654,11 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                     base.WriteNode(node);
                     break;
             }
+        }
+
+        public void WriteStarColumnIdentifier(StarColumnIdentifier node)
+        {
+            base.WriteNode(node);
         }
 
         public void WriteColumnDefinition(ColumnDefinition node)

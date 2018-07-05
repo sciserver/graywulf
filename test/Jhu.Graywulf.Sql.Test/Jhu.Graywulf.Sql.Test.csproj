@@ -162,6 +162,7 @@
     <Compile Include="Sql\Parsing\SelectStatementTest.cs" />
     <Compile Include="Sql\Parsing\SimpleTableSourceTest.cs" />
     <Compile Include="Sql\Parsing\SqlParserTest.cs" />
+    <Compile Include="Sql\Parsing\StarColumnIdentifierTest.cs" />
     <Compile Include="Sql\Parsing\StatementBlockTest.cs" />
     <Compile Include="Sql\Parsing\SubqueryTest.cs" />
     <Compile Include="Sql\Parsing\TableHintTest.cs" />

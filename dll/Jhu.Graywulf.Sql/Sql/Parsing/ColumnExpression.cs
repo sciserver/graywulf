@@ -48,6 +48,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<Expression>(); }
         }
 
+        public StarColumnIdentifier StarColumnIdentifier
+        {
+            get { return FindDescendant<StarColumnIdentifier>(); }
+        }
+
         protected override void OnInitializeMembers()
         {
             base.OnInitializeMembers();
@@ -66,9 +71,8 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public static ColumnExpression CreateStar()
         {
-            var ci = ColumnIdentifier.CreateStar();
-            var exp = Expression.Create(ci);
-            var ce = Create(exp, null);
+            var ci = StarColumnIdentifier.Create();
+            var ce = Create(ci);
 
             ce.columnReference = ci.ColumnReference;
 
@@ -77,9 +81,8 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public static ColumnExpression CreateStar(TableReference tableReference)
         {
-            var ci = ColumnIdentifier.CreateStar(tableReference);
-            var exp = Expression.Create(ci);
-            var ce = Create(exp, null);
+            var ci = StarColumnIdentifier.Create(tableReference);
+            var ce = Create(ci);
 
             ce.columnReference = ci.ColumnReference;
 
@@ -98,6 +101,14 @@ namespace Jhu.Graywulf.Sql.Parsing
                 ce.Stack.AddLast(Whitespace.Create());
                 ce.Stack.AddLast(ColumnAlias.Create(alias));
             }
+
+            return ce;
+        }
+
+        public static ColumnExpression Create(StarColumnIdentifier ci)
+        {
+            var ce = new ColumnExpression();
+            ce.Stack.AddLast(ci);
 
             return ce;
         }

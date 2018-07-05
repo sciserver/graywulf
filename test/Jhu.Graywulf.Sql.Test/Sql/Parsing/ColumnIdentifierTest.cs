@@ -55,48 +55,5 @@ namespace Jhu.Graywulf.Sql.Parsing
             Assert.AreEqual("table1", exp.TableReference.TableName);
             Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
         }
-        
-        [TestMethod]
-        public void SingleStarTest()
-        {
-            var sql = "*";
-            var exp = Parse(sql);
-            Assert.AreEqual("*", exp.Value);
-            Assert.IsTrue(exp.ColumnReference.IsStar);
-        }
-
-        [TestMethod]
-        public void StarWithTablePrefixTest()
-        {
-            var sql = "schema1.table1.*";
-            var exp = Parse(sql);
-            Assert.AreEqual("schema1.table1.*", exp.Value);
-            Assert.AreEqual("schema1", exp.ColumnReference.ParentTableReference.SchemaName);
-            Assert.AreEqual("table1", exp.ColumnReference.ParentTableReference.TableName);
-            Assert.IsTrue(exp.ColumnReference.IsStar);
-        }
-
-        [TestMethod]
-        public void CreateSingleStarTest()
-        {
-            var ci = ColumnIdentifier.CreateStar();
-            Assert.AreEqual("*", ci.Value);
-            Assert.IsTrue(ci.ColumnReference.IsStar);
-            Assert.IsTrue(ci.ColumnReference.ParentTableReference.IsUndefined);
-        }
-
-        [TestMethod]
-        public void CreateTableStarTest()
-        {
-            var cg = CreateCodeGenerator();
-            var tr = new NameResolution.TableReference()
-            {
-                TableName = "test"
-            };
-            var ci = ColumnIdentifier.CreateStar(tr);
-            Assert.AreEqual("[test].*", cg.Execute(ci));
-            Assert.IsTrue(ci.ColumnReference.IsStar);
-            Assert.AreEqual("test", ci.ColumnReference.ParentTableReference.TableName);
-        }
     }
 }

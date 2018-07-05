@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public class ColumnReference
+    public class ColumnReference : ReferenceBase
     {
         #region Private member variables
 
@@ -22,7 +23,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private bool isComplexExpression;
         private int selectListIndex;
 
-        private bool isResolved;
         private ColumnContext columnContext;
 
         #endregion
@@ -80,13 +80,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             get { return selectListIndex; }
             set { selectListIndex = value; }
         }
-
-        public bool IsResolved
-        {
-            get { return isResolved; }
-            set { isResolved = value; }
-        }
-
+        
         public ColumnContext ColumnContext
         {
             get { return columnContext; }
@@ -101,12 +95,23 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
+        public override string UniqueName
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
+
         #endregion
         #region Constructors and initializers
 
         public ColumnReference()
         {
             InitializeMembers();
+        }
+
+        public ColumnReference(Node node)
+            : base(node)
+        {
         }
 
         public ColumnReference(ColumnReference old)
@@ -137,7 +142,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.parentDataTypeReference = parentDataTypeReference;
         }
 
-        public ColumnReference(TableReference tableReference, string columnName, DataTypeReference dataTypeReference)
+        public ColumnReference(Node node, TableReference tableReference, string columnName, DataTypeReference dataTypeReference)
+            :base(node)
         {
             InitializeMembers();
 
@@ -181,7 +187,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.isComplexExpression = false;
             this.selectListIndex = -1;
 
-            this.IsResolved = false;
             this.columnContext = ColumnContext.None;
         }
 
@@ -198,8 +203,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.isComplexExpression = old.isComplexExpression;
             this.selectListIndex = old.selectListIndex;
 
-            this.isResolved = old.isResolved;
             this.columnContext = old.columnContext;
+        }
+
+        public override object Clone()
+        {
+            return new ColumnReference(this);
         }
 
         #endregion
@@ -228,52 +237,37 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             ColumnReference cr;
             var mpi = ci.FindDescendant<MultiPartIdentifier>();
-            var star = ci.FindDescendant<Mul>();
 
-            if (star != null)
+            // Depending on the number of parts, the column identifier can be
+            // first, second or third; all the rest is property access of UDT columns
+            switch (mpi.PartCount)
             {
-                // The entire multi-part identifier must be a table identifier
-
-                if (mpi == null)
-                {
-                    // No table part defined
-                    cr = new ColumnReference()
+                case 1:     // column
+                case 2:     // table.column
+                case 3:     // schema.table.column
+                    cr = new ColumnReference(ci)
                     {
-                        ParentTableReference = new TableReference(),
-                        IsStar = true,
-                        ColumnName = star.Value,
+                        ParentTableReference = TableReference.Interpret(ci, true),
+                        ColumnName = Util.RemoveIdentifierQuotes(mpi.NamePart1)
                     };
-                }
-                else
-                {
-                    cr = new ColumnReference()
-                    {
-                        ParentTableReference = TableReference.Interpret(ci, false),
-                        IsStar = true,
-                        ColumnName = star.Value,
-                    };
-                }
+                    break;
+                default:    // tricky case, need to find column by name resolution
+                    throw new NotImplementedException();
             }
-            else
+
+
+            return cr;
+        }
+
+        public static ColumnReference Interpret(StarColumnIdentifier ci)
+        {
+            var ti = ci.TableOrViewIdentifier;
+            var cr = new ColumnReference(ci)
             {
-                // Depending on the number of parts, the column identifier can be
-                // first, second or third; all the rest is property access of UDT columns
-
-                switch (mpi.PartCount)
-                {
-                    case 1:     // column
-                    case 2:     // table.column
-                    case 3:     // schema.table.column
-                        cr = new ColumnReference()
-                        {
-                            ParentTableReference = TableReference.Interpret(ci, true),
-                            ColumnName = Util.RemoveIdentifierQuotes(mpi.NamePart1)
-                        };
-                        break;
-                    default:    // tricky case, need to find column by name resolution
-                        throw new NotImplementedException();
-                }
-            }
+                ParentTableReference = ti?.TableReference ?? new TableReference(),
+                isStar = true,
+                columnName = "*"
+            };
 
             return cr;
         }
@@ -281,6 +275,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public static ColumnReference Interpret(ColumnDefinition cd)
         {
             var cr = new ColumnReference(
+                cd,
                 null,
                 Util.RemoveIdentifierQuotes(cd.ColumnName.Value),
                 cd.DataTypeIdentifier.DataTypeReference);
@@ -290,7 +285,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static ColumnReference Interpret(IndexColumnDefinition ic)
         {
-            var cr = new ColumnReference()
+            var cr = new ColumnReference(ic)
             {
                 columnName = Util.RemoveIdentifierQuotes(ic.ColumnName.Value)
             };
@@ -300,7 +295,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static ColumnReference Interpret(IncludedColumnDefinition ic)
         {
-            var cr = new ColumnReference()
+            var cr = new ColumnReference(ic)
             {
                 columnName = Util.RemoveIdentifierQuotes(ic.ColumnName.Value)
             };
@@ -316,18 +311,29 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// <remarks></remarks>
         public static ColumnReference Interpret(ColumnExpression ce)
         {
+            ColumnReference cr;
             var exp = ce.Expression;
+            var star = ce.StarColumnIdentifier;
             var alias = ce.ColumnAlias;
 
-            var cr = new ColumnReference();
-            if (exp.IsSingleColumn)
+            if (exp != null)
             {
-                cr.isComplexExpression = false;
-                cr = Interpret(exp.FindDescendantRecursive<ColumnIdentifier>());
+                if (exp.IsSingleColumn)
+                {
+                    var ci = exp.FindDescendantRecursive<ColumnIdentifier>();
+                    cr = new ColumnReference(ci.ColumnReference);
+                }
+                else
+                {
+                    cr = new ColumnReference(ce)
+                    {
+                        isComplexExpression = true
+                    };
+                }
             }
             else
             {
-                cr.isComplexExpression = true;
+                cr = new ColumnReference(star.ColumnReference);
             }
 
             if (alias != null)
