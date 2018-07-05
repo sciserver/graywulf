@@ -1528,22 +1528,25 @@ FOR select_statement
         public static Expression<Rule> UpdateSetList = () =>
             Sequence
             (
-                UpdateSetItem,
+                Must
+                (
+                    UpdateSetColumn,
+                    UpdateSetMutator    // This also covers column.WRITE(...)
+                ),
                 May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), UpdateSetList))
             );
 
-        public static Expression<Rule> UpdateSetItem = () =>
+        public static Expression<Rule> UpdateSetColumn = () =>
             Sequence
             (
-                UpdateSetLeftHandSide,
-                // TODO: add support for WRITE
+                UpdateSetColumnLeftHandSide,
                 May(CommentOrWhitespace),
                 ValueAssignmentOperator,
                 May(CommentOrWhitespace),
-                UpdateSetRightHandSide
+                UpdateSetColumnRightHandSide
             );
 
-        public static Expression<Rule> UpdateSetLeftHandSide = () =>
+        public static Expression<Rule> UpdateSetColumnLeftHandSide = () =>
             Must
             (
                 Sequence
@@ -1555,16 +1558,23 @@ FOR select_statement
                     ColumnIdentifier
                 ),
                 UserVariable,
-                ColumnIdentifier
-
-            // TODO: add support for UDT fields
+                ColumnIdentifier        // This covers UDT fields and properties
             );
 
-        public static Expression<Rule> UpdateSetRightHandSide = () =>
+        public static Expression<Rule> UpdateSetColumnRightHandSide = () =>
             Must
             (
                 Keyword("DEFAULT"),
                 Expression
+            );
+
+        public static Expression<Rule> UpdateSetMutator = () =>
+            Sequence
+            (
+                // TODO: A column identifier megeszi a metódus nevét is
+                ColumnName,
+                May(CommentOrWhitespace),
+                UdtMethodCall
             );
 
         #endregion

@@ -7,7 +7,7 @@ using Jhu.Graywulf.Parsing;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class UpdateSetRightHandSide
+    public partial class UpdateSetColumnRightHandSide
     {
         public bool isDefault
         {

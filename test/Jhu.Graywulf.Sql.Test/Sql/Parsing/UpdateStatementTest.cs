@@ -51,7 +51,9 @@ SET ID = 1,
     col += 12,
     col = (SELECT 1),
     @var = col = 8,
-    @var = col -= 12";
+    @var = col -= 12,
+    col.property = 'test',
+    col.mutator(1, 2)";
             new SqlParser().Execute<UpdateStatement>(sql);
         }
 

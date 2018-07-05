@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class UpdateSetLeftHandSide
+    public partial class UpdateSetColumnLeftHandSide
     {
         public UserVariable UserVariable
         {

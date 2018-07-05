@@ -302,7 +302,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             return cr;
         }
-
+        
         /// <summary>
         /// 
         /// </summary>
@@ -340,6 +340,17 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 cr.columnAlias = Util.RemoveIdentifierQuotes(alias.Value);
             }
+
+            return cr;
+        }
+
+        public static ColumnReference Interpret(UpdateSetMutator usm)
+        {
+            var cr = new ColumnReference()
+            {
+                columnName = usm.ColumnName.Value,
+                parentTableReference = new TableReference(),
+            };
 
             return cr;
         }

@@ -8,9 +8,9 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class UpdateSetList
     {
-        public IEnumerable<UpdateSetItem> EnumerateSetColumns()
+        public IEnumerable<UpdateSetColumn> EnumerateSetColumns()
         {
-            return EnumerateDescendants<UpdateSetItem>();
+            return EnumerateDescendants<UpdateSetColumn>();
         }
     }
 }

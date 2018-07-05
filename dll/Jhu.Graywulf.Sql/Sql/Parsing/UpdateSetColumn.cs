@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class UpdateSetItem
+    public partial class UpdateSetColumn
     {
-        public UpdateSetLeftHandSide LeftHandSide
+        public UpdateSetColumnLeftHandSide LeftHandSide
         {
-            get { return FindDescendant<UpdateSetLeftHandSide>(); }
+            get { return FindDescendant<UpdateSetColumnLeftHandSide>(); }
         }
 
-        public UpdateSetRightHandSide RightHandSide
+        public UpdateSetColumnRightHandSide RightHandSide
         {
-            get { return FindDescendant<UpdateSetRightHandSide>(); }
+            get { return FindDescendant<UpdateSetColumnRightHandSide>(); }
         }
 
         public ValueAssignmentOperator Operator
