@@ -61,11 +61,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "schema1.table1.column1.property1.property2";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("schema1.table1.column1.property1.property2", exp.Value);
-            Assert.AreEqual("dataset", exp.FindDescendantRecursive<ColumnIdentifier>().TableReference.DatasetName);
-            Assert.AreEqual("database1", exp.FindDescendantRecursive<ColumnIdentifier>().TableReference.DatabaseName);
-            Assert.AreEqual("schema1", exp.FindDescendantRecursive<ColumnIdentifier>().TableReference.SchemaName);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<ColumnIdentifier>().TableReference.TableName);
-            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnIdentifier>().ColumnReference.ColumnName);
+            Assert.IsTrue(exp.FindDescendantRecursive<ColumnIdentifier>().ColumnReference.IsMultiPartIdentifier);
         }
 
         [TestMethod]
@@ -100,8 +96,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("-table1.column1", exp.Value);
             Assert.AreEqual("-", exp.FindDescendantRecursive<UnaryOperator>().FindDescendantRecursive<Minus>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<ColumnIdentifier>().TableReference.TableName);
-            Assert.AreEqual("column1", exp.FindDescendantRecursive<ColumnIdentifier>().ColumnReference.ColumnName);
+            Assert.IsTrue(exp.FindDescendantRecursive<ColumnIdentifier>().ColumnReference.IsMultiPartIdentifier);
         }
 
         [TestMethod]

@@ -23,6 +23,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             // TODO: this won't work due to changes in predicate filtering logic
             // Figure out how to fix test
+            // Move teste from parsing tests
 
             string sql;
             SelectStatement select;

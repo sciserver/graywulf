@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "column";
             var exp = Parse(sql);
             Assert.IsTrue(exp.TableReference.IsUndefined);
-            Assert.AreEqual("column", exp.ColumnReference.ColumnName);
+            Assert.IsTrue(exp.ColumnReference.IsMultiPartIdentifier);
         }
 
         [TestMethod]
@@ -30,8 +30,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "table1.column1";
             var exp = Parse(sql);
             Assert.AreEqual("table1.column1", exp.Value);
-            Assert.AreEqual("table1", exp.TableReference.TableName);
-            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
+            Assert.IsTrue(exp.ColumnReference.IsMultiPartIdentifier);
         }
 
         [TestMethod]
@@ -40,9 +39,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "schema1.table1.column1";
             var exp = Parse(sql);
             Assert.AreEqual("schema1.table1.column1", exp.Value);
-            Assert.AreEqual("schema1", exp.TableReference.SchemaName);
-            Assert.AreEqual("table1", exp.TableReference.TableName);
-            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
+            Assert.IsTrue(exp.ColumnReference.IsMultiPartIdentifier);
         }
         
         [TestMethod]
@@ -51,9 +48,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "schema1 . table1 . column1";
             var exp = Parse(sql);
             Assert.AreEqual("schema1 . table1 . column1", exp.Value);
-            Assert.AreEqual("schema1", exp.TableReference.SchemaName);
-            Assert.AreEqual("table1", exp.TableReference.TableName);
-            Assert.AreEqual("column1", exp.ColumnReference.ColumnName);
+            Assert.IsTrue(exp.ColumnReference.IsMultiPartIdentifier);
         }
     }
 }

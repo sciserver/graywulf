@@ -20,6 +20,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private DataTypeReference dataTypeReference;
 
         private bool isStar;
+        private bool isMultiPartIdentifier;
         private bool isComplexExpression;
         private int selectListIndex;
 
@@ -68,6 +69,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get { return isStar; }
             set { isStar = value; }
+        }
+
+        public bool IsMultiPartIdentifier
+        {
+            get { return isMultiPartIdentifier; }
+            set { isMultiPartIdentifier = value; }
         }
 
         public bool IsComplexExpression
@@ -184,6 +191,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.dataTypeReference = null;
 
             this.isStar = false;
+            this.isMultiPartIdentifier = false;
             this.isComplexExpression = false;
             this.selectListIndex = -1;
 
@@ -200,6 +208,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.dataTypeReference = old.dataTypeReference;
 
             this.isStar = old.isStar;
+            this.isMultiPartIdentifier = old.isMultiPartIdentifier;
             this.isComplexExpression = old.isComplexExpression;
             this.selectListIndex = old.selectListIndex;
 
@@ -235,26 +244,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static ColumnReference Interpret(ColumnIdentifier ci)
         {
-            ColumnReference cr;
-            var mpi = ci.FindDescendant<MultiPartIdentifier>();
-
             // Depending on the number of parts, the column identifier can be
             // first, second or third; all the rest is property access of UDT columns
-            switch (mpi.PartCount)
+            var mpi = ci.FindDescendant<MultiPartIdentifier>();
+            var cr = new ColumnReference(ci)
             {
-                case 1:     // column
-                case 2:     // table.column
-                case 3:     // schema.table.column
-                    cr = new ColumnReference(ci)
-                    {
-                        ParentTableReference = TableReference.Interpret(ci, true),
-                        ColumnName = Util.RemoveIdentifierQuotes(mpi.NamePart1)
-                    };
-                    break;
-                default:    // tricky case, need to find column by name resolution
-                    throw new NotImplementedException();
-            }
-
+                parentTableReference = new TableReference(),
+                isMultiPartIdentifier = true
+            };
 
             return cr;
         }
