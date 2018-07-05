@@ -9,7 +9,6 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class ScalarFunctionCall : IFunctionReference
     {
-
         public FunctionIdentifier UdfIdentifier
         {
             get { return FindDescendant<FunctionIdentifier>(); }
