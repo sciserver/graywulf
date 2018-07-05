@@ -55,6 +55,22 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         [TestMethod]
+        public void CrossApplyTest()
+        {
+            var sql = "SELECT * FROM tab CROSS APPLY dbo.TableValuedFunction() f";
+            var exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM [tab]CROSS APPLY[dbo].TableValuedFunction() f";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM tab OUTER APPLY dbo.TableValuedFunction() f";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM [tab]OUTER APPLY[dbo].TableValuedFunction() f";
+            exp = ExpressionTestHelper(sql);
+        }
+
+        [TestMethod]
         public void TableValuedVariableTest()
         {
             var sql = "SELECT column FROM @table";
@@ -121,6 +137,73 @@ INNER JOIN table3 t3 ON t1.ID = t3.ID";
 @"table1 t1
 INNER JOIN table2 t2 ON t1.ID = t2.ID
 INNER JOIN table3 t3 ON t1.ID = t3.ID", exp.Value);
+        }
+
+        [TestMethod]
+        public void VariousJoinsTest()
+        {
+            var sql = "SELECT * FROM t1 JOIN t2 ON t1.ID = t2.ID";
+            var exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM[t1]JOIN[t2]ON[t1].ID=t2.ID";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM t1 INNER JOIN t2 ON t1.ID = t2.ID";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM[t1]INNER JOIN[t2]ON[t1].ID=t2.ID";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM t1 LEFT OUTER JOIN t2 ON t1.ID = t2.ID";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM[t1]LEFT OUTER JOIN[t2]ON[t1].ID=t2.ID";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM t1 LEFT JOIN t2 ON t1.ID = t2.ID";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM[t1]LEFT JOIN[t2]ON[t1].ID=t2.ID";
+            exp = ExpressionTestHelper(sql);
+
+            //
+
+            sql = "SELECT * FROM t1 CROSS JOIN t2";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM[t1]CROSS JOIN[t2]";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM t1 , t2";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM[t1],[t2]";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM t1 CROSS APPLY t2() AS t";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM[t1]CROSS APPLY[t2]()AS[t]";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM t1 OUTER APPLY t2() AS t";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM[t1]OUTER APPLY[t2]()AS[t]";
+            exp = ExpressionTestHelper(sql);
+        }
+
+        [TestMethod]
+        public void JoinHintsTest()
+        {
+            var sql = "SELECT * FROM t1 INNER LOOP JOIN t2 ON t1.ID = t2.ID";
+            var exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM t1 INNER HASH JOIN t2 ON t1.ID = t2.ID";
+            exp = ExpressionTestHelper(sql);
+
+            sql = "SELECT * FROM t1 INNER MERGE JOIN t2 ON t1.ID = t2.ID";
+            exp = ExpressionTestHelper(sql);
         }
     }
 }
