@@ -48,71 +48,63 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public static MultiPartIdentifier Create(string namePart4, string namePart3, string namePart2, string namePart1)
         {
-            throw new NotImplementedException();
-
-            /*
             var fpi = new MultiPartIdentifier();
 
-            fpi.Append<NamePart4>(namePart4);
-            fpi.Stack.AddLast(Dot.Create());
-            fpi.Append<NamePart3>(namePart3);
-            fpi.Stack.AddLast(Dot.Create());
-            fpi.Append<NamePart2>(namePart2);
-            fpi.Stack.AddLast(Dot.Create());
-            fpi.Append<NamePart1>(namePart1);
+            var npl = fpi.Append(null, namePart4);
+            npl = fpi.Append(npl, namePart3);
+            npl = fpi.Append(npl, namePart2);
+            npl = fpi.Append(npl, namePart1);
 
             return fpi;
-            */
         }
 
         public static MultiPartIdentifier Create(string namePart3, string namePart2, string namePart1)
         {
-
-            throw new NotImplementedException();
-            /*
             var fpi = new MultiPartIdentifier();
 
-            fpi.Append<NamePart3>(namePart3);
-            fpi.Stack.AddLast(Dot.Create());
-            fpi.Append<NamePart2>(namePart2);
-            fpi.Stack.AddLast(Dot.Create());
-            fpi.Append<NamePart1>(namePart1);
+            var npl = fpi.Append(null, namePart3);
+            npl = fpi.Append(npl, namePart2);
+            npl = fpi.Append(npl, namePart1);
 
-            return fpi;*/
+            return fpi;
         }
 
         public static MultiPartIdentifier Create(string namePart2, string namePart1)
         {
-            throw new NotImplementedException();
+            var fpi = new MultiPartIdentifier();
+            
+            var npl = fpi.Append(null, namePart2);
+            npl = fpi.Append(npl, namePart1);
 
-            /*var fpi = new MultiPartIdentifier();
-
-            fpi.Append<NamePart2>(namePart2);
-            fpi.Stack.AddLast(Dot.Create());
-            fpi.Append<NamePart1>(namePart1);
-
-            return fpi;*/
+            return fpi;
         }
 
         public static MultiPartIdentifier Create(string namePart1)
         {
-            throw new NotImplementedException();
-            /*var fpi = new MultiPartIdentifier();
+            var fpi = new MultiPartIdentifier();
 
-            fpi.Append<NamePart1>(namePart1);
+            var npl = fpi.Append(null, namePart1);
 
-            return fpi;*/
+            return fpi;
         }
 
-        public void Append<T>(string namePart)
-            where T : Node, new()
+        public NamePartList Append(NamePartList npl, string identifier)
         {
-            if (namePart != null)
+            var nn = new NamePartList();
+
+            if (npl == null)
             {
-                var np = new T();
-                np.Stack.AddLast(Identifier.Create(namePart));
-                this.Stack.AddLast(np);
+                Stack.AddLast(nn);
             }
+            else
+            {
+                npl.Stack.AddLast(Dot.Create());
+                npl.Stack.AddLast(nn);
+            }
+
+            nn.Stack.AddLast(Identifier.Create(identifier));
+
+            return nn;
         }
 
         public override void Interpret()

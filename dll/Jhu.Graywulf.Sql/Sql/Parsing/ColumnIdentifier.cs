@@ -46,32 +46,30 @@ namespace Jhu.Graywulf.Sql.Parsing
                 throw new InvalidOperationException();
             }
 
-            var nci = new ColumnIdentifier();
-            nci.ColumnReference = cr;
+            MultiPartIdentifier mpi;
 
-            throw new NotImplementedException();
-
-            // TODO: review
-
-            /*
             if (cr.ParentTableReference != null && !cr.ParentTableReference.IsUndefined)
             {
                 if (String.IsNullOrEmpty(cr.ParentTableReference.Alias))
                 {
-                    nci.Stack.AddLast(TableName.Create(cr.ParentTableReference.DatabaseObjectName));
-                    nci.Stack.AddLast(Dot.Create());
+                    // TODO: maybe add schema too?
+                    mpi = MultiPartIdentifier.Create(cr.ParentTableReference.DatabaseObjectName, cr.ColumnName);
                 }
                 else
                 {
-                    nci.Stack.AddLast(TableName.Create(cr.ParentTableReference.Alias));
-                    nci.Stack.AddLast(Dot.Create());
+                    mpi = MultiPartIdentifier.Create(cr.ParentTableReference.Alias, cr.ColumnName);
                 }
             }
+            else
+            {
+                mpi = MultiPartIdentifier.Create(cr.ColumnName);
+            }
 
-            nci.Stack.AddLast(ColumnName.Create(cr.ColumnName));
+            var nci = new ColumnIdentifier();
+            nci.ColumnReference = cr;
+            nci.Stack.AddLast(mpi);
 
             return nci;
-            */
         }
 
         public override void Interpret()
