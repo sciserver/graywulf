@@ -299,7 +299,7 @@
     <Compile Include="Sql\Parsing\UdtPropertyAccess.cs" />
     <Compile Include="Sql\Parsing\UdtStaticMethodCall.cs" />
     <Compile Include="Sql\Parsing\UdtStaticPropertyAccess.cs" />
-    <Compile Include="Sql\Parsing\UpdateSetColumn.cs" />
+    <Compile Include="Sql\Parsing\UpdateSetItem.cs" />
     <Compile Include="Sql\Parsing\UpdateSetLeftHandSide.cs" />
     <Compile Include="Sql\Parsing\UpdateSetList.cs" />
     <Compile Include="Sql\Parsing\UpdateSetRightHandSide.cs" />

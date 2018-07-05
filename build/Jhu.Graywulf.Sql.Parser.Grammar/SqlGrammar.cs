@@ -217,9 +217,12 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> BooleanExpression = () =>
             Sequence
             (
-                May(LogicalNot),
-                May(CommentOrWhitespace),
-                Must(Predicate, BooleanExpressionBrackets),
+                May(Sequence(LogicalNot, May(CommentOrWhitespace))),
+                Must
+                (
+                    Predicate, 
+                    BooleanExpressionBrackets
+                ),
                 May(Sequence(May(CommentOrWhitespace), LogicalOperator, May(CommentOrWhitespace), BooleanExpression))
             );
 
@@ -1170,6 +1173,11 @@ FOR select_statement
                 SimpleTableSource,
                 VariableTableSource,
                 SubqueryTableSource
+
+                // TODO:
+                // - derived table with the VALUES clause of INSERT
+                // - PIVOT
+                // - UNPIVOT
             );
 
         public static Expression<Rule> SimpleTableSource = () =>
@@ -1189,8 +1197,6 @@ FOR select_statement
                 May(CommentOrWhitespace),
                 May(Sequence(Keyword("AS"), May(CommentOrWhitespace))),
                 TableAlias     // Required
-                // CLR TVF calls can't have column aliases specified
-                //May(Sequence(May(CommentOrWhitespace), ColumnAliasBrackets))
             );
 
         public static Expression<Rule> VariableTableSource = () =>
@@ -1507,11 +1513,11 @@ FOR select_statement
         public static Expression<Rule> UpdateSetList = () =>
             Sequence
             (
-                UpdateSetColumn,
+                UpdateSetItem,
                 May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), UpdateSetList))
             );
 
-        public static Expression<Rule> UpdateSetColumn = () =>
+        public static Expression<Rule> UpdateSetItem = () =>
             Sequence
             (
                 UpdateSetLeftHandSide,
