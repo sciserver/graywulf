@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             udfi.functionReference = functionReference;
             return udfi;
         }
-
+        
         public override void Interpret()
         {
             base.Interpret();

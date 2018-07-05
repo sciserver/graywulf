@@ -39,27 +39,19 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
         }
 
-        public static ScalarFunctionCall Create(string functionName, params Expression[] arguments)
+        public static ScalarFunctionCall CreateSystem(string functionName, params Expression[] arguments)
         {
-            throw new NotImplementedException();
+            var fr = new FunctionReference()
+            {
+                FunctionName = functionName,
+                IsSystem = true,
+            };
 
-            /*
-            var f = new ScalarFunctionCall();
-            var fun = FunctionIdentifier.Create(functionName);
-            var args = FunctionArguments.Create(arguments);
-
-            f.Stack.AddLast(fun);
-            f.Stack.AddLast(args);
-
-            return f;
-            */
+            return Create(fr, arguments);
         }
 
         public static ScalarFunctionCall Create(FunctionReference functionReference, params Expression[] arguments)
         {
-            throw new NotImplementedException();
-
-            /*
             var f = new ScalarFunctionCall();
             var fun = FunctionIdentifier.Create(functionReference);
             var args = FunctionArguments.Create(arguments);
@@ -68,23 +60,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             f.Stack.AddLast(args);
 
             return f;
-            */
-        }
-
-        public static ScalarFunctionCall CreateVariableMethodCall(string variableName, string functionName)
-        {
-            throw new NotImplementedException();
-
-            /*
-            var udtf = new UdtFunctionCall();
-            var fun = UdtFunctionIdentifier.Create(variableName, functionName);
-            var args = FunctionArguments.Create(arguments);
-
-            udtf.Stack.AddLast(fun);
-            udtf.Stack.AddLast(args);
-
-            return udtf;
-            */
         }
     }
 }

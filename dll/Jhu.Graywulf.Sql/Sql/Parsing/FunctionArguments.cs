@@ -10,10 +10,15 @@ namespace Jhu.Graywulf.Sql.Parsing
         public static FunctionArguments Create(params Expression[] expressions)
         {
             var args = new FunctionArguments();
-            var arglist = ArgumentList.Create(expressions);
-            
+
             args.Stack.AddLast(BracketOpen.Create());
-            args.Stack.AddLast(arglist);
+
+            if (expressions != null)
+            {
+                var arglist = ArgumentList.Create(expressions);
+                args.Stack.AddLast(arglist);
+            }
+
             args.Stack.AddLast(BracketClose.Create());
 
             return args;

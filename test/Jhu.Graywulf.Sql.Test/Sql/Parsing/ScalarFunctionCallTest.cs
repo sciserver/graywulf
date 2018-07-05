@@ -3,11 +3,12 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
-    public class ScalarFunctionCallTest
+    public class ScalarFunctionCallTest : ParsingTestBase
     {
         private ScalarFunctionCall ExpressionTestHelper(string query)
         {
@@ -61,13 +62,33 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void CreateSystemFunctionCallTest()
         {
-            Assert.Fail();
+            var cg = CreateCodeGenerator();
+            var fun = ScalarFunctionCall.CreateSystem("SIN", Expression.CreateNumber("1.1"));
+            Assert.AreEqual("SIN(1.1)", cg.Execute(fun));
+
+            fun = ScalarFunctionCall.CreateSystem("GETDATE", null);
+            Assert.AreEqual("GETDATE()", cg.Execute(fun));
         }
 
         [TestMethod]
         public void CreateUdfCallTest()
         {
-            Assert.Fail();
+            var cg = CreateCodeGenerator();
+            var fr = new FunctionReference()
+            {
+                SchemaName = "dbo",
+                FunctionName = "test",
+                IsUserDefined = true
+            };
+
+            var fun = ScalarFunctionCall.Create(fr, Expression.CreateNumber("1.1"));
+            Assert.AreEqual("[dbo].[test](1.1)", cg.Execute(fun));
+
+            fun = ScalarFunctionCall.Create(fr, new[] { Expression.CreateNumber("1.1"), Expression.CreateString("'test'") });
+            Assert.AreEqual("[dbo].[test](1.1, 'test')", cg.Execute(fun));
+
+            fun = ScalarFunctionCall.Create(fr, null);
+            Assert.AreEqual("[dbo].[test]()", cg.Execute(fun));
         }
     }
 }

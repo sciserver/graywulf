@@ -26,7 +26,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             return new CodeGeneration.SqlServer.SqlServerCodeGenerator()
             {
                 ColumnNameRendering = CodeGeneration.NameRendering.FullyQualified,
-                TableNameRendering = CodeGeneration.NameRendering.FullyQualified
+                TableNameRendering = CodeGeneration.NameRendering.FullyQualified,
+                FunctionNameRendering = CodeGeneration.NameRendering.FullyQualified,
             };
         }
 
