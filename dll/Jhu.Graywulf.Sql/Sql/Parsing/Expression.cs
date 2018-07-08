@@ -80,6 +80,24 @@ namespace Jhu.Graywulf.Sql.Parsing
             nex.Stack.AddLast(fun);
             return nex;
         }
+
+        public static Expression Create(FunctionReference fr, Expression[] args)
+        {
+            var exp = new Expression();
+            exp.Stack.AddLast(ScalarFunctionCall.Create(fr, args));
+            return exp;
+        }
+
+        public static Expression Create(VariableReference vr, MethodReference mr, Expression[] args)
+        {
+            var exp = new Expression();
+            var m = UdtMethodCall.Create(mr, args);
+
+            exp.Stack.AddLast(UserVariable.Create(vr));
+            exp.Stack.AddLast(UdtMemberList.Create(m));
+
+            return exp;
+        }
         
         public static Expression CreateNumber(string number)
         {

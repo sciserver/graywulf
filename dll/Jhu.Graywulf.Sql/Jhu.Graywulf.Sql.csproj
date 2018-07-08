@@ -297,6 +297,7 @@
     <Compile Include="Sql\Parsing\TableOrViewIdentifier.cs" />
     <Compile Include="Sql\Parsing\TableSourceSpecification.cs" />
     <Compile Include="Sql\Parsing\TargetTableSpecification.cs" />
+    <Compile Include="Sql\Parsing\UdtMemberList.cs" />
     <Compile Include="Sql\Parsing\UdtMethodCall.cs" />
     <Compile Include="Sql\Parsing\UdtPropertyAccess.cs" />
     <Compile Include="Sql\Parsing\UdtStaticMethodCall.cs" />

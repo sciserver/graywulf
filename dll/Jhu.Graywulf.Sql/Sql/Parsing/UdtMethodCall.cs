@@ -22,29 +22,24 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { methodReference = value; }
         }
 
+        public static UdtMethodCall Create(MethodReference mr, Expression[] args)
+        {
+            var mc = new UdtMethodCall()
+            {
+                methodReference = mr
+            };
+            mc.Stack.AddLast(Dot.Create());
+            mc.Stack.AddLast(MethodName.Create(mr.MethodName));
+            mc.Stack.AddLast(FunctionArguments.Create(args));
+
+            return mc;
+        }
+
         public override void Interpret()
         {
             base.Interpret();
 
             methodReference = MethodReference.Interpret(this);
         }
-
-        public static UdtMethodCall Create(string variableName, string methodName)
-        {
-            throw new NotImplementedException();
-
-            /* TODO: review
-
-            var uv = UserVariable.Create(variableName);
-            var fn = MethodName.Create(methodName);
-            var mi = new UdtVariableMethodIdentifier();
-            mi.Stack.AddLast(uv);
-            mi.Stack.AddLast(Dot.Create());
-            mi.Stack.AddLast(mi);
-            return mi;
-
-    */
-        }
-
     }
 }

@@ -526,7 +526,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         private void SubstituteSystemDatabaseName(FunctionReference fr)
         {
-            if (fr != null && !fr.IsSystem && fr.IsUdf)
+            if (fr != null && !fr.IsSystem && fr.IsUndefined)
             {
                 fr.DatabaseName = CodeDataset.DatabaseName;
             }
@@ -723,7 +723,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <returns></returns>
         private BooleanExpression GetPartitioningKeyMinCondition(Expression partitioningKeyExpression)
         {
-            var a = Expression.Create(Sql.Parsing.Variable.Create(partitionKeyMinParameterName));
+            var a = Expression.Create(UserVariable.Create(partitionKeyMinParameterName));
             var p = Predicate.CreateLessThanOrEqual(a, partitioningKeyExpression);
             return BooleanExpression.Create(false, p);
         }
@@ -735,7 +735,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <returns></returns>
         private BooleanExpression GetPartitioningKeyMaxCondition(Expression partitioningKeyExpression)
         {
-            var b = Expression.Create(Sql.Parsing.Variable.Create(partitionKeyMaxParameterName));
+            var b = Expression.Create(UserVariable.Create(partitionKeyMaxParameterName));
             var p = Predicate.CreateLessThan(partitioningKeyExpression, b);
             return BooleanExpression.Create(false, p);
         }
