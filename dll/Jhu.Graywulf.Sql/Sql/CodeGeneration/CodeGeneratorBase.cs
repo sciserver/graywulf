@@ -403,7 +403,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         public string GetResolvedColumnName(ColumnReference column)
         {
             column = MapColumnReference(column);
-            var table = MapTableReference(column.ParentTableReference);
+            var table = MapTableReference(column.TableReference);
 
             string tablename;
 
@@ -542,7 +542,10 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                     WriteTableAlias(ta);
                     break;
                 case TableOrViewIdentifier t:
-                    WriteTableOrViewName(t);
+                    WriteTableOrViewIdentifier(t);
+                    break;
+                case TableSourceIdentifier t:
+                    WriteTableSourceIdentifier(t);
                     break;
                 case ColumnDefinition cd:
                     WriteColumnDefinition(cd);
@@ -618,7 +621,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         /// table appears in the FROM clause. In all other cases it's
         /// WriteColumnIdentifier that generates the output
         /// </remarks>
-        public void WriteTableOrViewName(TableOrViewIdentifier node)
+        public void WriteTableOrViewIdentifier(TableOrViewIdentifier node)
         {
             switch (tableNameRendering)
             {
@@ -631,6 +634,38 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                 default:
                     base.WriteNode(node);
                     break;
+            }
+        }
+
+        public void WriteTableSourceIdentifier(TableSourceIdentifier node)
+        {
+            if (!String.IsNullOrWhiteSpace(node.TableReference.Alias))
+            {
+                switch (tableNameRendering)
+                {
+                    case NameRendering.FullyQualified:
+                    case NameRendering.IdentifierOnly:
+                        Writer.Write(GetQuotedIdentifier(node.TableReference.Alias));
+                        break;
+                    default:
+                        base.WriteNode(node);
+                        break;
+                }
+            }
+            else
+            {
+                switch (tableNameRendering)
+                {
+                    case NameRendering.FullyQualified:
+                        Writer.Write(GetResolvedTableName(node.TableReference));
+                        break;
+                    case NameRendering.IdentifierOnly:
+                        Writer.Write(GetQuotedIdentifier(node.TableReference.DatabaseObjectName));
+                        break;
+                    default:
+                        base.WriteNode(node);
+                        break;
+                }
             }
         }
 
@@ -719,26 +754,42 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             // TODO: test with @v = column AND alias = column syntax
 
             var variable = node.AssignedVariable;
+            var exp = node.Expression;
+            var star = node.StarColumnIdentifier;
 
-            if (variable == null)
+            if (variable != null)
+            {
+                base.WriteNode(node);
+            }
+            else if (star != null)
+            {
+                WriteNode(star);
+            }
+            else
             {
                 if (columnAliasRendering == AliasRendering.Always)
                 {
                     // Write the expression first as it is
-                    var exp = node.FindDescendant<Parsing.Expression>();
-                    WriteNode(exp);
-
-                    // If it's not a * column and there's an alias, write it
-                    if (!node.ColumnReference.IsStar && !String.IsNullOrEmpty(node.ColumnReference.ColumnAlias))
+                    if (exp != null)
                     {
-                        Writer.Write(
-                            " AS {0}",
-                            GetQuotedIdentifier(node.ColumnReference.ColumnAlias));
+                        WriteNode(exp);
+
+                        // If it's not a * column and there's an alias, write it
+                        if (!node.ColumnReference.IsStar && !String.IsNullOrEmpty(node.ColumnReference.ColumnAlias))
+                        {
+                            Writer.Write(
+                                " AS {0}",
+                                GetQuotedIdentifier(node.ColumnReference.ColumnAlias));
+                        }
+                    }
+                    else
+                    {
+                        // This is likely a *
+                        base.WriteNode(node);
                     }
                 }
                 else if (columnAliasRendering == AliasRendering.Never)
                 {
-                    var exp = node.FindDescendant<Parsing.Expression>();
                     WriteNode(exp);
                 }
                 else
@@ -746,11 +797,6 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                     // Fall back to original behavior
                     base.WriteNode(node);
                 }
-            }
-            else
-            {
-                // Fall back to original behavior
-                base.WriteNode(node);
             }
         }
 

@@ -293,6 +293,7 @@
     <Compile Include="Sql\Parsing\TableConstraint.cs" />
     <Compile Include="Sql\Parsing\TableDefinitionItem.cs" />
     <Compile Include="Sql\Parsing\TableDefinitionList.cs" />
+    <Compile Include="Sql\Parsing\TableSourceIdentifier.cs" />
     <Compile Include="Sql\Parsing\TableOrViewIdentifier.cs" />
     <Compile Include="Sql\Parsing\TableSourceSpecification.cs" />
     <Compile Include="Sql\Parsing\TargetTableSpecification.cs" />

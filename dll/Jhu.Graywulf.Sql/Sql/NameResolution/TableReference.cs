@@ -113,7 +113,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get
             {
-                // TODO: review this and make sure kez is unique even if table
+                // TODO: review this and make sure key is unique even if table
                 // is referenced deep down in CTEs
 
                 if (!String.IsNullOrWhiteSpace(variableName))
@@ -127,35 +127,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 else
                 {
                     return base.UniqueName;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Returns the exported name of a subquery or a table
-        /// </summary>
-        public string ExportedName
-        {
-            get
-            {
-                if (tableContext.HasFlag(TableContext.Subquery) ||
-                    tableContext.HasFlag(TableContext.CommonTable) ||
-                    tableContext.HasFlag(TableContext.UserDefinedFunction) ||
-                    isComputed ||
-                    alias != null)
-                {
-                    return alias;
-                }
-                else if (tableContext.HasFlag(TableContext.Variable))
-                {
-                    return variableName;
-                }
-                else
-                {
-                    // If no alias is used then use table name
-                    // SQL Server doesn't allow two tables with the same name without alias
-                    // so this behavior is fine
-                    return DatabaseObjectName;
                 }
             }
         }
@@ -185,31 +156,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
             InitializeMembers();
         }
 
-        public TableReference(TableReference old)
-            : base(old)
-        {
-            CopyMembers(old);
-        }
-
         public TableReference(string alias)
         {
-            throw new NotImplementedException();
-
-            // TODO: review
+            InitializeMembers();
 
             this.alias = alias;
-            this.tableContext = TableContext.None;
-            this.isComputed = false;
         }
 
         public TableReference(TableOrView table, string alias, bool copyColumns)
             : base(table)
         {
-            this.alias = alias;
-            this.tableContext = TableContext.None;
-            this.isComputed = false;
+            InitializeMembers();
 
-            this.columnReferences = new List<ColumnReference>();
+            this.alias = alias;
 
             if (copyColumns)
             {
@@ -218,6 +177,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     columnReferences.Add(new ColumnReference(c, this, new DataTypeReference(c.DataType)));
                 }
             }
+        }
+
+        public TableReference(TableReference old)
+            : base(old)
+        {
+            CopyMembers(old);
         }
 
         private void InitializeMembers()
@@ -239,9 +204,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.isComputed = old.isComputed;
 
             this.variableReference = old.variableReference;
+
             // Deep copy of column references
             this.columnReferences = new List<ColumnReference>();
-
             foreach (var cr in old.columnReferences)
             {
                 var ncr = new ColumnReference(this, cr);
@@ -271,8 +236,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 tableContext = TableContext.UserDefinedFunction
             };
 
-            // TODO: tvf calls can have and alias list
-
             return tr;
         }
 
@@ -293,7 +256,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var tr = new TableReference(ts)
             {
-                alias = Util.RemoveIdentifierQuotes(alias?.Value),
+                alias = Util.RemoveIdentifierQuotes(alias?.Value ?? variable?.Value),
                 variableName = variable.VariableName,
                 variableReference = variable.VariableReference,
                 tableContext = TableContext.Variable
@@ -334,6 +297,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return tr;
         }
 
+        // TODO: add derived table source logic (VALUES part with column alias list)
+
         public static TableReference Interpret(TableOrViewIdentifier ti)
         {
             var ds = ti.FindDescendant<DatasetPrefix>();
@@ -354,43 +319,41 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return tr;
         }
 
-        public static TableReference Interpret(ColumnIdentifier ci, bool columnNameLast)
+        public static TableReference Interpret(TableSourceIdentifier ti)
         {
-            // At this point we have to make the assumption that the very last token
-            // in the four part identifier is the column name. If it is a property
-            // accessor of a CLR UDT, it will be handled by the name resolver.
+            var schema = ti.FindDescendant<SchemaName>()?.Value;
+            var table = ti.FindDescendant<TableName>()?.Value;
 
-            // TODO: this is more complex than this, multi-part identifiers
-            // can be very long due to the varying number of property accessors
-            // of UDT columns
-
-            TableReference tr;
-            var fpi = ci.FindDescendant<MultiPartIdentifier>();
-
-            if (columnNameLast)
+            var tr = new TableReference(ti)
             {
-                tr = new TableReference(ci)
-                {
-                    SchemaName = Util.RemoveIdentifierQuotes(fpi.NamePart3),
-                    DatabaseObjectName = Util.RemoveIdentifierQuotes(fpi.NamePart2),
-                };
-            }
-            else
-            {
-                tr = new TableReference(ci)
-                {
-                    DatabaseName = Util.RemoveIdentifierQuotes(fpi.NamePart3),
-                    SchemaName = Util.RemoveIdentifierQuotes(fpi.NamePart2),
-                    DatabaseObjectName = Util.RemoveIdentifierQuotes(fpi.NamePart1),
-                };
-            }
-
-            tr.IsUserDefined = true;
-            tr.tableContext |= TableContext.TableOrView;
+                SchemaName = Util.RemoveIdentifierQuotes(schema),
+                DatabaseObjectName = Util.RemoveIdentifierQuotes(table),
+                IsUserDefined = true,
+                tableContext = TableContext.TableOrView
+            };
 
             return tr;
         }
-        
+
+        public void CopyColumnReferences(IEnumerable<IColumnReference> other)
+        {
+            CopyColumnReferences(other.Select(cr => cr.ColumnReference));
+        }
+
+        public void CopyColumnReferences(IEnumerable<ColumnReference> other)
+        {
+            this.columnReferences.Clear();
+
+            foreach (var cr in other)
+            {
+                var ncr = new ColumnReference(cr)
+                {
+                    TableReference = this
+                };
+                this.columnReferences.Add(ncr);
+            }
+        }
+
         public void LoadColumnReferences(SchemaManager schemaManager)
         {
             this.columnReferences.Clear();
@@ -407,6 +370,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             else if (tableContext.HasFlag(TableContext.TableOrView))
             {
                 LoadTableOrViewColumnReferences(schemaManager);
+            }
+            else if (tableContext.HasFlag(TableContext.Variable))
+            {
+                CopyColumnReferences(variableReference.DataTypeReference.ColumnReferences);
             }
             else
             {
@@ -435,6 +402,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableDatasetReference, DatasetName, Node.Line, Node.Col), ex);
             }
 
+            // TODO: at this points the database object have had to be loaded by the name resolver
             int q = 0;
             TableValuedFunction tvf;
             if (ds.TableValuedFunctions.ContainsKey(DatabaseName, SchemaName, DatabaseObjectName))
@@ -503,9 +471,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </remarks>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Compare(TableReference other)
+        public bool TryMatch(TableReference other)
         {
-            // If object are the same
+            // If object are the same reference
             if (this == other)
             {
                 return true;
@@ -530,9 +498,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // if no alias, nor table name is specified but
             // the two aliases, if specified, must always match
 
+            // TODO: use exported name here instead of alias?
+            // this needs testing
+
             res = res &&
-                (this.DatasetName == null && this.DatabaseName == null && this.SchemaName == null && this.DatabaseObjectName == null && this.alias == null ||
-                 other.DatasetName == null && other.DatabaseName == null && other.SchemaName == null && other.DatabaseObjectName == null && other.alias == null ||
+                (this.IsUndefined || other.IsUndefined ||
                  this.alias == null && other.alias == null ||
                  this.alias != null && other.alias != null && SchemaManager.Comparer.Compare(this.alias, other.alias) == 0);
 

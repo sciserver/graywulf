@@ -436,13 +436,20 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 )
             );
 
+        public static Expression<Rule> TableSourceIdentifier = () =>
+            Must
+            (
+                Sequence(SchemaName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), TableName),
+                TableName
+            );
+
         public static Expression<Rule> ColumnIdentifier = () => MultiPartIdentifier;
 
         public static Expression<Rule> StarColumnIdentifier = () =>
             Must
             (
                 Mul,
-                Sequence(TableOrViewIdentifier, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Mul)
+                Sequence(TableSourceIdentifier, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Mul)
             );
 
         #endregion

@@ -96,6 +96,8 @@
     <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerColumnListGeneratorTest.cs" />
     <Compile Include="Sql\LogicalExpressions\DnfConverterTest.cs" />
     <Compile Include="Sql\LogicalExpressions\SearchConditionNormalizerTest.cs" />
+    <Compile Include="Sql\NameResolution\ColumnReferenceTest.cs" />
+    <Compile Include="Sql\NameResolution\TableReferenceTest.cs" />
     <Compile Include="Sql\NameResolution\UserDefinedTypeTest.cs" />
     <Compile Include="Sql\NameResolution\TableVariableTest.cs" />
     <Compile Include="Sql\NameResolution\TruncateTableTest.cs" />
@@ -154,7 +156,6 @@
     <Compile Include="Sql\Parsing\RankingFunctionCallTest.cs" />
     <Compile Include="Sql\Parsing\ScalarFunctionCallTest.cs" />
     <Compile Include="Sql\Parsing\ScalarVariableTest.cs" />
-    <Compile Include="Sql\Parsing\SearchConditionNormalizerTest.cs" />
     <Compile Include="Sql\Parsing\SearchConditionTest.cs" />
     <Compile Include="Sql\Parsing\SearchedCaseTest.cs" />
     <Compile Include="Sql\Parsing\SimpleCaseTest.cs" />

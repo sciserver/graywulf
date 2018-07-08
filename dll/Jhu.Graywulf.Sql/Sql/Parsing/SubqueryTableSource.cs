@@ -31,12 +31,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return Subquery.QueryExpression; }
         }
-
-        public DatabaseObjectReference DatabaseObjectReference
-        {
-            get { return QueryExpression.ResultsTableReference; }
-        }
-
+        
         public TableReference TableReference
         {
             get { return QueryExpression.ResultsTableReference; }

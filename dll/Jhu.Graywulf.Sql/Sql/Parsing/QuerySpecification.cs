@@ -29,6 +29,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         public TableReference ResultsTableReference
         {
             get { return resultsTableReference; }
+            set { resultsTableReference = value; }
         }
 
         public SelectList SelectList

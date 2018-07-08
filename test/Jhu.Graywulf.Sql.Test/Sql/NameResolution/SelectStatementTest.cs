@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var qs = Parse<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
 
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
@@ -29,7 +29,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             Assert.AreEqual(1, cs.Length);
             Assert.AreEqual("Name", cs[0].ColumnName);
-            Assert.AreEqual(ts[0], cs[0].ParentTableReference);
         }
 
         [TestMethod]
@@ -51,10 +50,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             Assert.AreEqual(1, cs.Length);
             Assert.AreEqual("Name", cs[0].ColumnName);
-            Assert.AreEqual(ts[0], cs[0].ParentTableReference);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author] INNER JOIN [Graywulf_Schema_Test].[dbo].[Book] ON [Graywulf_Schema_Test].[dbo].[Author].[ID] = 5", res);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] INNER JOIN [Graywulf_Schema_Test].[dbo].[Book] ON [Graywulf_Schema_Test].[dbo].[Author].[ID] = 5", res);
         }
 
         [TestMethod]
@@ -65,7 +63,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var qs = Parse<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author] WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 1", res);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 1", res);
 
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
@@ -79,7 +77,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             Assert.AreEqual(1, cs.Length);
             Assert.AreEqual("Name", cs[0].ColumnName);
-            Assert.AreEqual(ts[0], cs[0].ParentTableReference);
         }
 
         [TestMethod]
@@ -101,10 +98,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             Assert.AreEqual(2, cs.Length);
             Assert.AreEqual("ID", cs[0].ColumnName);
-            Assert.AreEqual(ts[0], cs[0].ParentTableReference);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID], MAX([Graywulf_Schema_Test].[dbo].[Author].[Name]) AS [Col_1] FROM [Graywulf_Schema_Test].[dbo].[Author] GROUP BY [Graywulf_Schema_Test].[dbo].[Author].[ID]", res);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], MAX([Graywulf_Schema_Test].[dbo].[Author].[Name]) FROM [Graywulf_Schema_Test].[dbo].[Author] GROUP BY [Graywulf_Schema_Test].[dbo].[Author].[ID]", res);
         }
 
         [TestMethod]
@@ -126,10 +122,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             Assert.AreEqual(2, cs.Length);
             Assert.AreEqual("ID", cs[0].ColumnName);
-            Assert.AreEqual(ts[0], cs[0].ParentTableReference);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID], MAX([Graywulf_Schema_Test].[dbo].[Author].[Name]) AS [Col_1] FROM [Graywulf_Schema_Test].[dbo].[Author] GROUP BY [Graywulf_Schema_Test].[dbo].[Author].[ID] HAVING MAX([Graywulf_Schema_Test].[dbo].[Author].[Name]) > 5", res);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], MAX([Graywulf_Schema_Test].[dbo].[Author].[Name]) FROM [Graywulf_Schema_Test].[dbo].[Author] GROUP BY [Graywulf_Schema_Test].[dbo].[Author].[ID] HAVING MAX([Graywulf_Schema_Test].[dbo].[Author].[Name]) > 5", res);
         }
 
         [TestMethod]
@@ -141,7 +136,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a]", res);
+            Assert.AreEqual("SELECT [a].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a]", res);
 
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual("a", ts[0].Alias);
@@ -156,7 +151,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
         }
 
         [TestMethod]
@@ -168,7 +163,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[Name] AS [a_Name], [b].[Name] AS [b_Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a], [Graywulf_Schema_Test].[dbo].[Author] [b]", res);
+            Assert.AreEqual("SELECT [a].[Name], [b].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a], [Graywulf_Schema_Test].[dbo].[Author] [b]", res);
 
             Assert.AreEqual(2, ts.Length);
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
@@ -179,9 +174,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
 
             Assert.AreEqual(2, cs.Length);
-            Assert.AreEqual(cs[0].ParentTableReference, ts[0]);
-            Assert.AreEqual(cs[1].ParentTableReference, ts[1]);
-            Assert.AreNotEqual(ts[0], ts[1]);
         }
 
         [TestMethod]
@@ -193,7 +185,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[ID] AS [a_ID], [b].[ID] AS [b_ID] FROM [Graywulf_Schema_Test].[dbo].[Author] [a], [Graywulf_Schema_Test].[dbo].[Book] [b]", res);
+            Assert.AreEqual("SELECT [a].[ID], [b].[ID] FROM [Graywulf_Schema_Test].[dbo].[Author] [a], [Graywulf_Schema_Test].[dbo].[Book] [b]", res);
 
             Assert.AreEqual(2, ts.Length);
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
@@ -204,8 +196,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
 
             Assert.AreEqual(2, cs.Length);
-            Assert.AreEqual(cs[0].ParentTableReference, ts[0]);
-            Assert.AreEqual(cs[1].ParentTableReference, ts[1]);
         }
 
         [TestMethod]
@@ -217,7 +207,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID], [Graywulf_Schema_Test].[dbo].[Book].[ID] AS [ID_0] FROM [Graywulf_Schema_Test].[dbo].[Author], [Graywulf_Schema_Test].[dbo].[Book]", res);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Book].[ID] FROM [Graywulf_Schema_Test].[dbo].[Author], [Graywulf_Schema_Test].[dbo].[Book]", res);
 
             Assert.AreEqual(2, ts.Length);
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
@@ -228,8 +218,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
 
             Assert.AreEqual(2, cs.Length);
-            Assert.AreEqual(cs[0].ParentTableReference, ts[0]);
-            Assert.AreEqual(cs[1].ParentTableReference, ts[1]);
 
         }
 
@@ -333,20 +321,23 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual(2, qs.ResultsTableReference.ColumnReferences.Count);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
+            Assert.AreEqual("SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
         }
 
         [TestMethod]
         public void AliasStarQueryTest()
         {
             var sql = "SELECT * FROM Author AS a";
-
             var qs = Parse<QuerySpecification>(sql);
-
-            Assert.AreEqual(2, qs.ResultsTableReference.ColumnReferences.Count);
-
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[ID] AS [a_ID], [a].[Name] AS [a_Name] FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]", res);
+            Assert.AreEqual(2, qs.ResultsTableReference.ColumnReferences.Count);           
+            Assert.AreEqual("SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]", res);
+
+            sql = "SELECT a.* FROM Author AS a";
+            qs = Parse<QuerySpecification>(sql);
+            res = GenerateCode(qs);
+            Assert.AreEqual(2, qs.ResultsTableReference.ColumnReferences.Count);
+            Assert.AreEqual("SELECT [a].* FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]", res);
         }
 
         [TestMethod]
@@ -357,49 +348,98 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var qs = Parse<QuerySpecification>(sql);
 
             Assert.AreEqual(5, qs.ResultsTableReference.ColumnReferences.Count);
-            Assert.AreEqual("[TEST]:[Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID]", qs.ResultsTableReference.ColumnReferences[0].ToString());
-            Assert.AreEqual("[TEST]:[Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name]", qs.ResultsTableReference.ColumnReferences[1].ToString());
-            Assert.AreEqual("[TEST]:[Graywulf_Schema_Test].[dbo].[Book].[ID] AS [ID_0]", qs.ResultsTableReference.ColumnReferences[2].ToString());
-            Assert.AreEqual("[TEST]:[Graywulf_Schema_Test].[dbo].[Book].[Title] AS [Title]", qs.ResultsTableReference.ColumnReferences[3].ToString());
-            Assert.AreEqual("[TEST]:[Graywulf_Schema_Test].[dbo].[Book].[Year] AS [Year]", qs.ResultsTableReference.ColumnReferences[4].ToString());
+            Assert.AreEqual("ID", qs.ResultsTableReference.ColumnReferences[0].ColumnName);
+            Assert.AreEqual("Name", qs.ResultsTableReference.ColumnReferences[1].ColumnName);
+            Assert.AreEqual("ID", qs.ResultsTableReference.ColumnReferences[2].ColumnName);
+            Assert.AreEqual("Title", qs.ResultsTableReference.ColumnReferences[3].ColumnName);
+            Assert.AreEqual("Year", qs.ResultsTableReference.ColumnReferences[4].ColumnName);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name], [Graywulf_Schema_Test].[dbo].[Book].[ID] AS [ID_0], [Graywulf_Schema_Test].[dbo].[Book].[Title] AS [Title], [Graywulf_Schema_Test].[dbo].[Book].[Year] AS [Year] FROM [Graywulf_Schema_Test].[dbo].[Author] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Book]", res);
+            Assert.AreEqual("SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Book]", res);
         }
 
         [TestMethod]
         public void AliasTwoTableStarQueryTest()
         {
             var sql = "SELECT * FROM Author AS a CROSS JOIN Book AS b";
-
             var qs = Parse<QuerySpecification>(sql);
+            var res = GenerateCode(qs);
+
+            Assert.AreEqual("SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Book] AS [b]", res);
 
             Assert.AreEqual(5, qs.ResultsTableReference.ColumnReferences.Count);
-            Assert.AreEqual("[a].[ID] AS [a_ID]", qs.ResultsTableReference.ColumnReferences[0].ToString());
-            Assert.AreEqual("[a].[Name] AS [a_Name]", qs.ResultsTableReference.ColumnReferences[1].ToString());
-            Assert.AreEqual("[b].[ID] AS [b_ID]", qs.ResultsTableReference.ColumnReferences[2].ToString());
-            Assert.AreEqual("[b].[Title] AS [b_Title]", qs.ResultsTableReference.ColumnReferences[3].ToString());
-            Assert.AreEqual("[b].[Year] AS [b_Year]", qs.ResultsTableReference.ColumnReferences[4].ToString());
+            Assert.AreEqual("ID", qs.ResultsTableReference.ColumnReferences[0].ColumnName);
+            Assert.AreEqual("Name", qs.ResultsTableReference.ColumnReferences[1].ColumnName);
+            Assert.AreEqual("ID", qs.ResultsTableReference.ColumnReferences[2].ColumnName);
+            Assert.AreEqual("Title", qs.ResultsTableReference.ColumnReferences[3].ColumnName);
+            Assert.AreEqual("Year", qs.ResultsTableReference.ColumnReferences[4].ColumnName);
+        }
 
+        [TestMethod]
+        public void AliasTwoTableStarQueryTest2()
+        {
+            var sql = "SELECT a.*, b.* FROM Author AS a CROSS JOIN Book AS b";
+            var qs = Parse<QuerySpecification>(sql);
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[ID] AS [a_ID], [a].[Name] AS [a_Name], [b].[ID] AS [b_ID], [b].[Title] AS [b_Title], [b].[Year] AS [b_Year] FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Book] AS [b]", res);
+
+            Assert.AreEqual("SELECT [a].*, [b].* FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Book] AS [b]", res);
+
+            Assert.AreEqual(5, qs.ResultsTableReference.ColumnReferences.Count);
+            Assert.AreEqual("ID", qs.ResultsTableReference.ColumnReferences[0].ColumnName);
+            Assert.AreEqual("Name", qs.ResultsTableReference.ColumnReferences[1].ColumnName);
+            Assert.AreEqual("ID", qs.ResultsTableReference.ColumnReferences[2].ColumnName);
+            Assert.AreEqual("Title", qs.ResultsTableReference.ColumnReferences[3].ColumnName);
+            Assert.AreEqual("Year", qs.ResultsTableReference.ColumnReferences[4].ColumnName);
+
         }
 
         [TestMethod]
         public void SameTableNameTest()
         {
             var sql = "SELECT * FROM dbo.Author a CROSS JOIN test.Author b";
-
             var qs = Parse<QuerySpecification>(sql);
+            var res = GenerateCode(qs);
 
             Assert.AreEqual(4, qs.ResultsTableReference.ColumnReferences.Count);
-            Assert.AreEqual("[a].[ID] AS [a_ID]", qs.ResultsTableReference.ColumnReferences[0].ToString());
-            Assert.AreEqual("[a].[Name] AS [a_Name]", qs.ResultsTableReference.ColumnReferences[1].ToString());
-            Assert.AreEqual("[b].[ID] AS [b_ID]", qs.ResultsTableReference.ColumnReferences[2].ToString());
-            Assert.AreEqual("[b].[Name] AS [b_Name]", qs.ResultsTableReference.ColumnReferences[3].ToString());
+            Assert.AreEqual("ID", qs.ResultsTableReference.ColumnReferences[0].ColumnName);
+            Assert.AreEqual("Name", qs.ResultsTableReference.ColumnReferences[1].ColumnName);
+            Assert.AreEqual("ID", qs.ResultsTableReference.ColumnReferences[2].ColumnName);
+            Assert.AreEqual("Name", qs.ResultsTableReference.ColumnReferences[3].ColumnName);
+            
+            Assert.AreEqual("SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[test].[Author] [b]", res);
+        }
 
+        [TestMethod]
+        public void SameTableNameTest2()
+        {
+            var sql = "SELECT a.*, b.* FROM dbo.Author a CROSS JOIN test.Author b";
+            var qs = Parse<QuerySpecification>(sql);
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[ID] AS [a_ID], [a].[Name] AS [a_Name], [b].[ID] AS [b_ID], [b].[Name] AS [b_Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[test].[Author] [b]", res);
+
+            Assert.AreEqual(4, qs.ResultsTableReference.ColumnReferences.Count);
+            Assert.AreEqual("ID", qs.ResultsTableReference.ColumnReferences[0].ColumnName);
+            Assert.AreEqual("Name", qs.ResultsTableReference.ColumnReferences[1].ColumnName);
+            Assert.AreEqual("ID", qs.ResultsTableReference.ColumnReferences[2].ColumnName);
+            Assert.AreEqual("Name", qs.ResultsTableReference.ColumnReferences[3].ColumnName);
+
+            Assert.AreEqual("SELECT [a].*, [b].* FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[test].[Author] [b]", res);
+        }
+
+        [TestMethod]
+        public void SameTableNameTest4()
+        {
+            var sql = "SELECT b.*, a.* FROM dbo.Author a CROSS JOIN test.Author b";
+            var qs = Parse<QuerySpecification>(sql);
+            var res = GenerateCode(qs);
+
+            Assert.AreEqual(4, qs.ResultsTableReference.ColumnReferences.Count);
+            Assert.AreEqual("ID", qs.ResultsTableReference.ColumnReferences[0].ColumnName);
+            Assert.AreEqual("Name", qs.ResultsTableReference.ColumnReferences[1].ColumnName);
+            Assert.AreEqual("ID", qs.ResultsTableReference.ColumnReferences[2].ColumnName);
+            Assert.AreEqual("Name", qs.ResultsTableReference.ColumnReferences[3].ColumnName);
+            
+
+            Assert.AreEqual("SELECT [b].*, [a].* FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[test].[Author] [b]", res);
         }
 
         [TestMethod]
@@ -411,7 +451,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var res = GenerateCode(qs);
 
-            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
         }
 
         [TestMethod]
@@ -422,7 +462,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var qs = Parse<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
+            Assert.AreEqual("SELECT [a].[Name] FROM (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
         }
 
         [TestMethod]
@@ -437,9 +477,9 @@ CROSS JOIN (SELECT * FROM Author) b";
 
             var res = GenerateCode(qs);
             Assert.AreEqual(
-@"SELECT [a].[Name] AS [a_Name], [b].[Name] AS [b_Name]
-FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]
-CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
+@"SELECT [a].[Name], [b].[Name]
+FROM (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]
+CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         }
 
         [TestMethod]
@@ -450,7 +490,7 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
             var qs = Parse<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[ID] AS [a_ID], [a].[Name] AS [a_Name], [b].[ID] AS [b_ID], [b].[Name] AS [b_Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Author] [b]", res);
+            Assert.AreEqual("SELECT [a].*, [b].* FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Author] [b]", res);
         }
 
         [TestMethod]
@@ -483,7 +523,7 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
             var qs = Parse<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID], [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID_0] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[ID] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
         }
 
         [TestMethod]
@@ -494,7 +534,7 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
             var qs = Parse<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[ID] AS [a_ID], [a].[Name] AS [a_Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a]", res);
+            Assert.AreEqual("SELECT [a].* FROM [Graywulf_Schema_Test].[dbo].[Author] [a]", res);
         }
 
         [TestMethod]
@@ -505,7 +545,7 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
             var qs = Parse<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[ID] AS [a_ID], [a].[Name] AS [a_Name], [b].[ID] AS [q] FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Author] [b]", res);
+            Assert.AreEqual("SELECT [a].*, [b].[ID] AS [q] FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Author] [b]", res);
         }
 
         [TestMethod]
@@ -516,7 +556,7 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
             var qs = Parse<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[ID] AS [a_ID], [a].[Name] AS [a_Name], [a].[ID] AS [a_ID_0], [a].[Name] AS [a_Name_0] FROM [Graywulf_Schema_Test].[dbo].[Author] [a]", res);
+            Assert.AreEqual("SELECT [a].*, [a].* FROM [Graywulf_Schema_Test].[dbo].[Author] [a]", res);
         }
 
         [TestMethod]
@@ -527,7 +567,7 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
             var qs = Parse<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[ID] AS [q], [b].[ID] AS [b_ID], [b].[Name] AS [b_Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Author] [b]", res);
+            Assert.AreEqual("SELECT [a].[ID] AS [q], [b].* FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Author] [b]", res);
         }
 
         #region Function tests
@@ -540,7 +580,7 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
             var qs = Parse<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT SIN(1) AS [Col_0]", res);
+            Assert.AreEqual("SELECT SIN(1)", res);
         }
 
         [TestMethod]
@@ -551,18 +591,24 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
             var qs = Parse<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[TestScalarFunction](1) AS [Col_0]", res);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[TestScalarFunction](1)", res);
         }
 
         [TestMethod]
         public void ScalarFunctionInSubqueryTest()
         {
             var sql = "SELECT * FROM (SELECT dbo.TestScalarFunction(1) t) a";
-
             var qs = Parse<QuerySpecification>(sql);
-
+            var sq = qs.FindDescendantRecursive<Subquery>().QueryExpression.FirstQuerySpecification;
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[t] AS [a_t] FROM (SELECT [Graywulf_Schema_Test].[dbo].[TestScalarFunction](1) AS [t]) [a]", res);
+
+            Assert.AreEqual("SELECT * FROM (SELECT [Graywulf_Schema_Test].[dbo].[TestScalarFunction](1) AS [t]) [a]", res);
+
+            Assert.AreEqual(1, sq.ResultsTableReference.ColumnReferences.Count);
+            Assert.AreEqual("t", sq.ResultsTableReference.ColumnReferences[0].ColumnName);
+            Assert.AreEqual("a", sq.ResultsTableReference.ColumnReferences[0].TableReference.Alias);
+            Assert.AreEqual(1, qs.ResultsTableReference.ColumnReferences.Count);
+            Assert.AreEqual("t", qs.ResultsTableReference.ColumnReferences[0].ColumnName);
         }
 
         [TestMethod]
@@ -580,7 +626,7 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
             Assert.AreEqual("[f]", tables[0].ToString());
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [f].[b] AS [f_b], [f].[a] AS [f_a] FROM [Graywulf_Schema_Test].[dbo].[TestTableValuedFunction](0) AS [f]", res);
+            Assert.AreEqual("SELECT * FROM [Graywulf_Schema_Test].[dbo].[TestTableValuedFunction](0) AS [f]", res);
         }
 
         #endregion

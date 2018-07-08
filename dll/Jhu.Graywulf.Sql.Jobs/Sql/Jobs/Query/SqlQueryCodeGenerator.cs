@@ -497,7 +497,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
 
             var trnode = node as ITableReference;
-            if (trnode != null && trnode.TableReference.Compare(old))
+            if (trnode != null && trnode.TableReference.TryMatch(old))
             {
                 trnode.TableReference = other;
             }
@@ -549,10 +549,10 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             {
                 var cr = ci.ColumnReference;
 
-                if (original.Compare(cr.ParentTableReference) && !ColumnReferenceMap.ContainsKey(cr))
+                if (original.TryMatch(cr.TableReference) && !ColumnReferenceMap.ContainsKey(cr))
                 {
                     var ncr = new ColumnReference(cr);
-                    ncr.ParentTableReference = other;
+                    ncr.TableReference = other;
                     ColumnReferenceMap.Add(cr, ncr);
                 }
             }

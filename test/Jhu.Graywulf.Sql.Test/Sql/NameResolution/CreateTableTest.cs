@@ -169,7 +169,7 @@ SELECT * FROM test
     [Data] [float]
 )
 
-SELECT [Graywulf_Schema_Test].[dbo].[test].[Data] AS [Data], [Graywulf_Schema_Test].[dbo].[test].[ID] AS [ID] FROM [Graywulf_Schema_Test].[dbo].[test]
+SELECT * FROM [Graywulf_Schema_Test].[dbo].[test]
 ";
 
             var ss = Parse<StatementBlock>(sql);

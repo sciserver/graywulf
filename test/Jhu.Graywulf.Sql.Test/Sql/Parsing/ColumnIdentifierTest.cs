@@ -20,7 +20,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var sql = "column";
             var exp = Parse(sql);
-            Assert.IsTrue(exp.TableReference.IsUndefined);
             Assert.IsTrue(exp.ColumnReference.IsMultiPartIdentifier);
         }
 

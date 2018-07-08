@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class StarColumnIdentifier : ITableReference, IColumnReference
+    public partial class StarColumnIdentifier :  IColumnReference
     {
         private ColumnReference columnReference;
 
@@ -16,16 +16,10 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return columnReference; }
             set { columnReference = value; }
         }
-
-        public TableReference TableReference
+        
+        public TableSourceIdentifier TableSourceIdentifier
         {
-            get { return columnReference.ParentTableReference; }
-            set { columnReference.ParentTableReference = value; }
-        }
-
-        public TableOrViewIdentifier TableOrViewIdentifier
-        {
-            get { return FindDescendant<TableOrViewIdentifier>(); }
+            get { return FindDescendant<TableSourceIdentifier>(); }
         }
 
         protected override void OnInitializeMembers()
@@ -59,7 +53,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var ci = new StarColumnIdentifier();
             ci.columnReference = ColumnReference.CreateStar(tableReference);
 
-            var ti = TableOrViewIdentifier.Create(tableReference);
+            var ti = TableSourceIdentifier.Create(tableReference);
             ci.Stack.AddLast(ti);
             ci.Stack.AddLast(Dot.Create());
             ci.Stack.AddLast(Mul.Create());

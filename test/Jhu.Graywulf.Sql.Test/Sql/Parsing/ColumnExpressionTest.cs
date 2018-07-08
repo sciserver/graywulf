@@ -72,11 +72,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var ce = ColumnExpression.CreateStar();
             Assert.AreEqual("*", ce.Value);
             Assert.IsTrue(ce.ColumnReference.IsStar);
-
-            // TODO: this is fishy, this doesn't supposed to have a table reference
-            // because it is the exported column
-            Assert.IsTrue(ce.ColumnReference.ParentTableReference.IsUndefined);
-            Assert.Inconclusive();
+            Assert.IsTrue(ce.ColumnReference.TableReference.IsUndefined);
         }
 
         [TestMethod]
@@ -90,11 +86,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var ce = ColumnExpression.CreateStar(tr);
             Assert.AreEqual("[test].*", cg.Execute(ce));
             Assert.IsTrue(ce.ColumnReference.IsStar);
-
-            // TODO: this is fishy, this doesn't supposed to have a table reference
-            // because it is the exported column
-            Assert.AreEqual("test", ce.ColumnReference.ParentTableReference.TableName);
-            Assert.Inconclusive();
+            Assert.AreEqual("test", ce.ColumnReference.TableReference.TableName);
         }
 
         [TestMethod]

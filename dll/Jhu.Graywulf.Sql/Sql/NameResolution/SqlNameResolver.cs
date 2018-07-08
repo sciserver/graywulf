@@ -394,7 +394,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             statement.VariableReference.TableReference = tr;
             statement.VariableReference.DataTypeReference = dr;
-            
+
             var variable = CreateVariable(vr);
             var dataType = CreateDataType(dr);
 
@@ -639,7 +639,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     ResolveColumnReference(null, new[] { target.TableReference }, ColumnContext.Insert, column);
 
                     // Make sure column belongs to the target table
-                    if (!column.ColumnReference.ParentTableReference.Compare(target.TableReference))
+                    if (!column.ColumnReference.TableReference.TryMatch(target.TableReference))
                     {
                         throw NameResolutionError.ColumnNotPartOfTargetTable(column);
                     }
@@ -718,13 +718,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var from = statement.FromClause;
             if (from != null)
             {
-                ResolveTableAndColumnReferences(cte, statement, from, from, 0, QueryContext.DeleteStatement);
+                ResolveTableAndColumnReferences(cte, statement, from, from, 0, QueryContext.UpdateStatement);
             }
 
             var where = statement.WhereClause;
             if (where != null)
             {
-                ResolveTableAndColumnReferences(cte, statement, where, where, 0, QueryContext.DeleteStatement);
+                ResolveTableAndColumnReferences(cte, statement, where, where, 0, QueryContext.UpdateStatement);
             }
 
             // Resolve target table
@@ -902,15 +902,17 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 ColumnReference ncr = null;
                 int q = 0;
 
-                if (cr.ColumnReference.ParentTableReference.IsUndefined)
+                if (cr.ColumnReference.TableReference == null || cr.ColumnReference.TableReference.IsUndefined)
                 {
-                    // This has an empty table reference (only column name specified)
+                    // This has an empty table reference (only column name specified),
+                    // or column is referenced by a multi-part identifier which needs to be resolved now
+
                     // Look for a match based on column name only
                     foreach (var tr in sourceTables)
                     {
                         foreach (var ccr in tr.ColumnReferences)
                         {
-                            if (cr.ColumnReference.Compare(ccr))
+                            if (cr.ColumnReference.TryMatch(tr, ccr))
                             {
                                 if (q != 0)
                                 {
@@ -927,15 +929,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     // This has a table reference already so only check
                     // columns of that particular table
-                    foreach (var ccr in cr.ColumnReference.ParentTableReference.ColumnReferences)
+                    foreach (var ccr in cr.ColumnReference.TableReference.ColumnReferences)
                     {
-                        if (cr.ColumnReference.Compare(ccr))
+                        if (cr.ColumnReference.TryMatch(cr.ColumnReference.TableReference, ccr))
                         {
                             if (q != 0)
                             {
                                 throw NameResolutionError.AmbigousColumnReference(cr);
                             }
 
+                            ccr.IsResolved = true;
                             ncr = ccr;
                             q++;
                         }
@@ -956,9 +959,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // Update column context of the referenced column
             ncr.ColumnContext |= context;
 
+            if (ncr.IsMultiPartIdentifier)
+            {
+                ncr.ColumnName = ncr.NameParts[ncr.ColumnNamePartIndex];
+            }
+
             // Make copy here
-            ncr = new ColumnReference(ncr);
-            ncr.IsResolved = true;
+            ncr = new ColumnReference(ncr)
+            {
+                IsResolved = true
+            };
 
             if (ncr.ColumnAlias != null)
             {
@@ -1047,13 +1057,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // and make sure it's set as ResultsTableReference
             // This is necessary for CTE evaluation which can be recursive
 
-            int q = 0;
+            // TODO: delete int q = 0;
 
             // Resolve query specifications in the FROM clause
             foreach (var qs in qe.EnumerateDescendants<QuerySpecification>())
             {
                 ResolveQuerySpecification(cte, qs, depth, queryContext);
 
+                /* TODO: delete if works, the two table references are already the same, no
+                 * need to copy the columns
                 if (q == 0)
                 {
                     // Copy select list columns from the very first query specification.
@@ -1062,7 +1074,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     qe.ResultsTableReference.ColumnReferences.AddRange(qs.ResultsTableReference.ColumnReferences);
                 }
 
+
                 q++;
+                */
             }
         }
 
@@ -1080,11 +1094,64 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // same TableReference and ColumnReference instances.
             ResolveTableAndColumnReferences(cte, qs, qs, qs, depth, queryContext);
 
-            // Copy resultset columns to the appropriate collection
-            CopyResultsColumns(qs);
-
+            // ColumnExpression are rendered with original table name by the code generator
+            // but are referenced by outer queries by table alias. For this reason, at
+            // this point we need to make a copy of all column references and update the
+            // table reference
+            CopyResultTableColumns(cte, qs);
+            
             // Add default aliases to column expressions in the form of tablealias_columnname
-            AssignDefaultColumnAliases(qs, depth != 0, (queryContext & QueryContext.SemiJoin) != 0);
+            // TODO: move this to code generator
+            // AssignDefaultColumnAliases(qs, depth != 0, (queryContext & QueryContext.SemiJoin) != 0);
+        }
+
+        protected void CopyResultTableColumns(CommonTableExpression cte, QuerySpecification qs)
+        {
+            var tr = qs.ResultsTableReference;
+            int index = 0;
+            foreach (var ce in qs.EnumerateSelectListColumnExpressions())
+            {
+                var cr = ce.ColumnReference;
+
+                if (cr.IsStar)
+                {
+                    if (cr.TableReference.IsUndefined)
+                    {
+                        foreach (var ts in qs.EnumerateSourceTables(false))
+                        {
+                            foreach (var ccr in ts.TableReference.ColumnReferences)
+                            {
+                                CopyResultTableColumn(ccr, tr, index++);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var ts = qs.ResolvedSourceTableReferences[cr.TableReference.Alias ?? cr.TableReference.TableName];
+                        foreach (var ccr in ts.ColumnReferences)
+                        {
+                            CopyResultTableColumn(ccr, tr, index++);
+                        }
+                    }
+                }
+                else
+                {
+                    CopyResultTableColumn(cr, tr, index++);
+                }
+            }
+        }
+
+        protected ColumnReference CopyResultTableColumn(ColumnReference cr, TableReference tr, int index)
+        {
+            cr.ColumnContext |= ColumnContext.SelectList;
+            var ncr = new ColumnReference(tr, cr)
+            {
+                SelectListIndex = index++,
+                ColumnAlias = null,
+                ColumnName = cr.ColumnAlias ?? cr.ColumnName
+            };
+            tr.ColumnReferences.Add(ncr);
+            return ncr;
         }
 
         protected void ResolveTableAndColumnReferences(CommonTableExpression cte, ISourceTableCollection resolvedSourceTables, ISourceTableConsumer sourceTables, Node node, int depth, QueryContext queryContext)
@@ -1097,12 +1164,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             SubstituteSourceTableDefaults(cte, resolvedSourceTables, sourceTables);
             CollectSourceTableReferences(cte, resolvedSourceTables, sourceTables);
 
+            // TODO: This is when we can resolve semi-join constructs
+
             // Column identifiers can contain table names, aliases or nothing,
             // resolve them now
             ResolveTableReferences(cte, resolvedSourceTables, TableContext.None, ColumnContext.None, node);
-
-            // Substitute SELECT * expressions
-            SubstituteStars(node);
 
             // Resolve variables and column references of each occurance
             ResolveExpressionReferences(cte, resolvedSourceTables, ColumnContext.None, node);
@@ -1145,7 +1211,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void CollectSourceTableReference(CommonTableExpression cte, ISourceTableCollection resolvedSourceTables, ITableSource ts)
         {
             var tr = ts.TableReference;
-            var exportedName = tr.ExportedName;
+            var exportedName = tr.Alias ?? tr.VariableName ?? tr.TableName;
 
             // Make sure that table key is used only once
             if (exportedName != null && resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(exportedName))
@@ -1185,28 +1251,29 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             if (tr.TableContext.HasFlag(TableContext.Variable))
             {
-                ntr = new TableReference(details.VariableReferences[tr.VariableName].TableReference);
-                ntr.Alias = tr.Alias;
-                ntr.TableContext |= TableContext.Variable;
+                tr.VariableReference = details.VariableReferences[tr.VariableName];
+                tr.LoadColumnReferences(null);
+                ntr = tr;
             }
-            else if (tr.IsPossiblyAlias && cte != null && cte.CommonTableReferences.ContainsKey(tr.ExportedName))
+            else if (tr.TableContext.HasFlag(TableContext.Subquery))
+            {
+                ntr = tr;
+                ntr.TableContext |= TableContext.Subquery;
+            }
+            else if (tr.IsPossiblyAlias && cte != null && cte.CommonTableReferences.ContainsKey(tr.TableName))
             {
                 // This is a reference to a CTE query
-
-                ntr = new TableReference(cte.CommonTableReferences[tr.DatabaseObjectName]);
-                ntr.TableContext |= TableContext.CommonTable;
+                ntr = cte.CommonTableReferences[tr.DatabaseObjectName];
             }
-            else if (tr.IsPossiblyAlias && resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(tr.ExportedName))
+            else if (tr.IsPossiblyAlias && resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(tr.TableName))
             {
                 // This a reference from a target table to an already resolved source table
-                // TODO: test this with other cases
-
-                ntr = new TableReference(tr);
+                // This happens with UPDATE etc.
+                ntr = resolvedSourceTables.ResolvedSourceTableReferences[tr.TableName];
             }
-            else if (!tr.TableContext.HasFlag(TableContext.Subquery) && !tr.IsComputed)
+            else if (!tr.IsComputed)
             {
                 // This is a direct reference to a table or a view but not to a function or subquery
-
                 ntr = tr;
 
                 // Load table description from underlying schema
@@ -1382,7 +1449,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     int q = 0;
                     foreach (var tr in resolvedSourceTables.ResolvedSourceTableReferences.Values)
                     {
-                        if (tr.Compare(node.TableReference))
+                        if (tr.TryMatch(node.TableReference))
                         {
                             if (q != 0)
                             {
@@ -1479,6 +1546,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         private void SubstituteStars(Node node)
         {
+            throw new NotImplementedException();
+
+            // TODO: move this to code generator instead
+
+            /*
             if (node != null)
             {
                 var n = node.Stack.First;
@@ -1492,7 +1564,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                     n = n.Next;
                 }
-            }
+            }*/
         }
 
         #region Default substitution logic
@@ -1598,6 +1670,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public SelectList SubstituteStars(SelectList selectList)
         {
+            throw new NotImplementedException();
+
+            // TODO: move to code generator instead
+
             var ce = selectList.FindDescendant<ColumnExpression>();
             var subsl = selectList.FindDescendant<SelectList>();
 
@@ -1642,6 +1718,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// <param name="qs"></param>
         private void AssignDefaultColumnAliases(QuerySpecification qs, bool subquery, bool singleColumnSubquery)
         {
+            // TODO: move this to code generator
+
+            throw new NotImplementedException();
+
             var aliases = new HashSet<string>(SchemaManager.Comparer);
 
             var cnt = qs.EnumerateSelectListColumnExpressions().Count();
@@ -1672,9 +1752,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     }
                     else if (!subquery)
                     {
-                        if (cr.ParentTableReference != null && cr.ParentTableReference.Alias != null)
+                        if (cr.TableReference != null && cr.TableReference.Alias != null)
                         {
-                            alias = GetUniqueColumnAlias(aliases, String.Format("{0}_{1}", cr.ParentTableReference.Alias, cr.ColumnName));
+                            alias = GetUniqueColumnAlias(aliases, String.Format("{0}_{1}", cr.TableReference.Alias, cr.ColumnName));
                         }
                         else
                         {
@@ -1720,19 +1800,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
 
             return alias2;
-        }
-
-        private void CopyResultsColumns(QuerySpecification qs)
-        {
-            int index = 0;
-
-            foreach (var ce in qs.EnumerateSelectListColumnExpressions())
-            {
-                var cr = ce.ColumnReference;
-
-                cr.SelectListIndex = index++;
-                qs.ResultsTableReference.ColumnReferences.Add(cr);
-            }
         }
 
         #endregion

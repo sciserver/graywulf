@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var qs = Parse<QuerySpecification>(sql);
             var res = GenerateCode(qs);
 
-            Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
+            Assert.AreEqual("SELECT [a].[Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
             Assert.IsTrue(qs.ResolvedSourceTableReferences["a"].TableContext.HasFlag(TableContext.Subquery));
         }
 
@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var qs = Parse<QuerySpecification>(sql);
             var res = GenerateCode(qs);
 
-            Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
+            Assert.AreEqual("SELECT [a].[Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
             Assert.IsTrue(qs.ResolvedSourceTableReferences["a"].TableContext.HasFlag(TableContext.Subquery));
         }
 
@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var qs = Parse<QuerySpecification>(sql);
             var res = GenerateCode(qs);
 
-            Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
+            Assert.AreEqual("SELECT [a].[Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
         }
 
         [TestMethod]
@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var qs = Parse<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM (SELECT TOP 10 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[Name]) [a]", res);
+            Assert.AreEqual("SELECT [a].[Name] FROM (SELECT TOP 10 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[Name]) [a]", res);
         }
 
         [TestMethod]
@@ -85,7 +85,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var qs = Parse<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
-            Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM (SELECT TOP 10 [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[Name]) [a]", res);
+            Assert.AreEqual("SELECT [a].[Name] FROM (SELECT TOP 10 [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[Name]) [a]", res);
         }
 
         [TestMethod]
@@ -106,7 +106,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var qs = Parse<QuerySpecification>(sql);
             var res = GenerateCode(qs);
 
-            Assert.AreEqual("SELECT [a].[Name] AS [a_Name] FROM (SELECT [q].[Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [q]) [a]", res);
+            Assert.AreEqual("SELECT [a].[Name] FROM (SELECT [q].[Name] FROM (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [q]) [a]", res);
             Assert.AreEqual(1, qs.ResolvedSourceTableReferences.Count);
             Assert.IsTrue(qs.ResolvedSourceTableReferences["a"].TableContext.HasFlag(TableContext.Subquery));
         }
@@ -121,9 +121,9 @@ INNER JOIN (SELECT * FROM Book) b
     ON a.ID = b.ID";
 
             var gt =
-@"SELECT [a].[Name] AS [a_Name], [b].[Title] AS [b_Title]
-FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]
-INNER JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID], [Graywulf_Schema_Test].[dbo].[Book].[Title], [Graywulf_Schema_Test].[dbo].[Book].[Year] FROM [Graywulf_Schema_Test].[dbo].[Book]) [b]
+@"SELECT [a].[Name], [b].[Title]
+FROM (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]
+INNER JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Book]) [b]
     ON [a].[ID] = [b].[ID]";
 
             var qs = Parse<QuerySpecification>(sql);
@@ -140,7 +140,7 @@ INNER JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID], [Graywulf_Schema_Te
         {
             var sql = @"SELECT a.Name FROM (SELECT * FROM (SELECT * FROM Author) b) a";
 
-            var gt = @"SELECT [a].[Name] AS [a_Name] FROM (SELECT [b].[ID], [b].[Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]) [a]";
+            var gt = @"SELECT [a].[Name] FROM (SELECT * FROM (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]) [a]";
 
             var qs = Parse<QuerySpecification>(sql);
             var res = GenerateCode(qs);

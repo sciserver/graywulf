@@ -106,7 +106,7 @@ SELECT * FROM @test";
     [Data] [float]
 )
 
-SELECT [@test].[ID] AS [ID], [@test].[Data] AS [Data] FROM @test";
+SELECT * FROM @test";
 
             var ss = Parse<StatementBlock>(sql);
 
@@ -133,7 +133,7 @@ SELECT * FROM @test a";
     [Data] [float]
 )
 
-SELECT [a].[ID] AS [a_ID], [a].[Data] AS [a_Data] FROM @test [a]";
+SELECT * FROM @test [a]";
 
             var ss = Parse<StatementBlock>(sql);
 
@@ -160,7 +160,7 @@ SELECT * FROM (SELECT * FROM @test) AS q";
     [Data] [float]
 )
 
-SELECT [q].[ID] AS [q_ID], [q].[Data] AS [q_Data] FROM (SELECT [@test].[ID], [@test].[Data] FROM @test) AS [q]";
+SELECT * FROM (SELECT * FROM @test) AS [q]";
 
             var ss = Parse<StatementBlock>(sql);
 

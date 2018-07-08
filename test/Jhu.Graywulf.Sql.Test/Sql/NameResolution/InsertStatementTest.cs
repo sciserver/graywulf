@@ -72,7 +72,7 @@ VALUES
 @"INSERT [Graywulf_Schema_Test].[dbo].[Author]
 ([Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name])
 VALUES
-((SELECT 1 AS [Col_0]), (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[ID]))";
+((SELECT 1), (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[ID]))";
 
             var ds = Parse<InsertStatement>(sql);
             var res = GenerateCode(ds);
@@ -174,7 +174,7 @@ VALUES
 @"INSERT [Graywulf_Schema_Test].[dbo].[Author]
 ([Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name])
 VALUES
-((SELECT TOP 1 [q].[Title] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID], [Graywulf_Schema_Test].[dbo].[Book].[Title], [Graywulf_Schema_Test].[dbo].[Book].[Year] FROM [Graywulf_Schema_Test].[dbo].[Book]) [q] ORDER BY [q].[ID]), (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[ID]))";
+((SELECT TOP 1 [q].[Title] FROM (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Book]) [q] ORDER BY [q].[ID]), (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[ID]))";
 
             var ds = Parse<InsertStatement>(sql);
             var res = GenerateCode(ds);
@@ -207,7 +207,7 @@ SELECT TOP 100 * FROM Author";
 
             var gt =
 @"INSERT [Graywulf_Schema_Test].[dbo].[Author]
-SELECT TOP 100 [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name] FROM [Graywulf_Schema_Test].[dbo].[Author]";
+SELECT TOP 100 * FROM [Graywulf_Schema_Test].[dbo].[Author]";
 
             var ds = Parse<InsertStatement>(sql);
             var res = GenerateCode(ds);

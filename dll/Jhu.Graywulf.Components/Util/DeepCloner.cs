@@ -68,6 +68,25 @@ namespace Jhu.Graywulf.Util
             }
         }
 
+        public static List<T> CloneList<T>(List<T> source)
+            where T:ICloneable
+        {
+            if (source == null)
+            {
+                return null;
+            }
+            else
+            {
+                var res = new List<T>(source.Count);
+                foreach (var i in source)
+                {
+                    res.Add((T)i.Clone());
+                }
+
+                return res;
+            }
+        }
+
         public static IEnumerable<T> CloneCollection<T>(IEnumerable<T> source)
             where T : ICloneable
         {

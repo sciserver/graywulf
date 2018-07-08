@@ -19,8 +19,8 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public TableReference TableReference
         {
-            get { return columnReference.ParentTableReference; }
-            set { columnReference.ParentTableReference = value;  }
+            get { return columnReference.TableReference; }
+            set { columnReference.TableReference = value;  }
         }
 
         protected override void OnInitializeMembers()
@@ -48,16 +48,16 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             MultiPartIdentifier mpi;
 
-            if (cr.ParentTableReference != null && !cr.ParentTableReference.IsUndefined)
+            if (cr.TableReference != null && !cr.TableReference.IsUndefined)
             {
-                if (String.IsNullOrEmpty(cr.ParentTableReference.Alias))
+                if (String.IsNullOrEmpty(cr.TableReference.Alias))
                 {
                     // TODO: maybe add schema too?
-                    mpi = MultiPartIdentifier.Create(cr.ParentTableReference.DatabaseObjectName, cr.ColumnName);
+                    mpi = MultiPartIdentifier.Create(cr.TableReference.DatabaseObjectName, cr.ColumnName);
                 }
                 else
                 {
-                    mpi = MultiPartIdentifier.Create(cr.ParentTableReference.Alias, cr.ColumnName);
+                    mpi = MultiPartIdentifier.Create(cr.TableReference.Alias, cr.ColumnName);
                 }
             }
             else

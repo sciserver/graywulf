@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 x.IsComplexExpression == y.IsComplexExpression &&
                 SchemaManager.Comparer.Compare(x.ColumnName, y.ColumnName) == 0 &&
                 SchemaManager.Comparer.Compare(x.ColumnAlias, y.ColumnAlias) == 0 &&
-                TableReferenceEqualityComparer.Default.Equals(x.ParentTableReference, y.ParentTableReference);
+                TableReferenceEqualityComparer.Default.Equals(x.TableReference, y.TableReference);
             return res;
         }
 
@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 obj.IsComplexExpression.GetHashCode() +
                 (obj.ColumnName == null ? 0 : obj.ColumnName.GetHashCode()) +
                 (obj.ColumnAlias == null ? 0 : obj.ColumnAlias.GetHashCode()) +
-                (obj.ParentTableReference == null ? 0 : TableReferenceEqualityComparer.Default.GetHashCode(obj.ParentTableReference));
+                (obj.TableReference == null ? 0 : TableReferenceEqualityComparer.Default.GetHashCode(obj.TableReference));
 
             return res;
         }

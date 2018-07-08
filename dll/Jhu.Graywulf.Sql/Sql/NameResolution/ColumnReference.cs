@@ -12,9 +12,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
     {
         #region Private member variables
 
-        private TableReference parentTableReference;
+        private TableReference tableReference;
         private DataTypeReference parentDataTypeReference;
 
+        private List<string> nameParts;
+        private int columnNamePartIndex;
         private string columnName;
         private string columnAlias;
         private DataTypeReference dataTypeReference;
@@ -32,10 +34,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// <summary>
         /// Gets or sets the reference to the table defining the column
         /// </summary>
-        public TableReference ParentTableReference
+        public TableReference TableReference
         {
-            get { return parentTableReference; }
-            set { parentTableReference = value; }
+            get { return tableReference; }
+            set { tableReference = value; }
         }
 
         /// <summary>
@@ -45,6 +47,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get { return parentDataTypeReference; }
             set { parentDataTypeReference = value; }
+        }
+
+        public List<string> NameParts
+        {
+            get { return nameParts; }
+        }
+
+        public int ColumnNamePartIndex
+        {
+            get { return columnNamePartIndex; }
         }
 
         public string ColumnName
@@ -87,7 +99,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             get { return selectListIndex; }
             set { selectListIndex = value; }
         }
-        
+
         public ColumnContext ColumnContext
         {
             get { return columnContext; }
@@ -126,18 +138,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
             CopyMembers(old);
         }
 
-        public ColumnReference(TableReference parentTableReference, ColumnReference old)
+        public ColumnReference(TableReference tableReference, ColumnReference old)
         {
             CopyMembers(old);
 
-            this.parentTableReference = parentTableReference;
+            this.tableReference = tableReference;
         }
 
-        public ColumnReference(TableReference parentTableReference, DataTypeReference parentDataTypeReference, ColumnReference old, DataTypeReference dataTypeReference)
+        public ColumnReference(TableReference tableReference, DataTypeReference parentDataTypeReference, ColumnReference old, DataTypeReference dataTypeReference)
         {
             CopyMembers(old);
 
-            this.parentTableReference = parentTableReference;
+            this.tableReference = tableReference;
             this.parentDataTypeReference = parentDataTypeReference;
             this.dataTypeReference = dataTypeReference;
         }
@@ -150,11 +162,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         public ColumnReference(Node node, TableReference tableReference, string columnName, DataTypeReference dataTypeReference)
-            :base(node)
+            : base(node)
         {
             InitializeMembers();
 
-            this.parentTableReference = tableReference;
+            this.tableReference = tableReference;
             this.dataTypeReference = dataTypeReference;
             this.columnName = columnName;
         }
@@ -163,7 +175,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             InitializeMembers();
 
-            this.parentTableReference = tableReference;
+            this.tableReference = tableReference;
             this.dataTypeReference = dataTypeReference;
 
             this.columnName = column.Name;
@@ -183,9 +195,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void InitializeMembers()
         {
-            this.parentTableReference = null;
+            this.tableReference = null;
             this.parentDataTypeReference = null;
 
+            this.nameParts = null;
+            this.columnNamePartIndex = -1;
             this.columnName = null;
             this.columnAlias = null;
             this.dataTypeReference = null;
@@ -200,9 +214,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void CopyMembers(ColumnReference old)
         {
-            this.parentTableReference = old.parentTableReference;
+            this.tableReference = old.tableReference;
             this.parentDataTypeReference = old.parentDataTypeReference;
 
+            this.nameParts = Jhu.Graywulf.Util.DeepCloner.CloneList(old.nameParts);
+            this.columnNamePartIndex = old.columnNamePartIndex;
             this.columnName = old.columnName;
             this.columnAlias = old.columnAlias;
             this.dataTypeReference = old.dataTypeReference;
@@ -228,7 +244,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 IsStar = true,
                 ColumnName = "*",
-                parentTableReference = new TableReference()
+                tableReference = new TableReference()
             };
 
             return cr;
@@ -237,7 +253,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public static ColumnReference CreateStar(TableReference tableReference)
         {
             var cr = CreateStar();
-            cr.parentTableReference = tableReference;
+            cr.tableReference = tableReference;
 
             return cr;
         }
@@ -249,19 +265,24 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var mpi = ci.FindDescendant<MultiPartIdentifier>();
             var cr = new ColumnReference(ci)
             {
-                parentTableReference = new TableReference(),
                 isMultiPartIdentifier = true
             };
+
+            cr.nameParts = new List<string>(mpi.PartCount);
+            for (int i = 0; i < mpi.NameParts.Length; i++)
+            {
+                cr.nameParts.Add(mpi.NameParts[i].Value);
+            }
 
             return cr;
         }
 
         public static ColumnReference Interpret(StarColumnIdentifier ci)
         {
-            var ti = ci.TableOrViewIdentifier;
+            var ti = ci.TableSourceIdentifier;
             var cr = new ColumnReference(ci)
             {
-                ParentTableReference = ti?.TableReference ?? new TableReference(),
+                TableReference = ti?.TableReference ?? new TableReference(),
                 isStar = true,
                 columnName = "*"
             };
@@ -299,7 +320,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             return cr;
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -313,30 +334,25 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var star = ce.StarColumnIdentifier;
             var alias = ce.ColumnAlias;
 
-            if (exp != null)
+            if (exp != null && exp.IsSingleColumn)
             {
-                if (exp.IsSingleColumn)
-                {
-                    var ci = exp.FindDescendantRecursive<ColumnIdentifier>();
-                    cr = new ColumnReference(ci.ColumnReference);
-                }
-                else
-                {
-                    cr = new ColumnReference(ce)
-                    {
-                        isComplexExpression = true
-                    };
-                }
+                var ci = exp.FindDescendantRecursive<ColumnIdentifier>();
+                cr = ci.ColumnReference;
+            }
+            else if (star != null)
+            {
+                cr = star.ColumnReference;
             }
             else
             {
-                cr = new ColumnReference(star.ColumnReference);
+                // This is a variable assignment or a complex expression
+                cr = new ColumnReference(ce)
+                {
+                    isComplexExpression = true,
+                };
             }
 
-            if (alias != null)
-            {
-                cr.columnAlias = Util.RemoveIdentifierQuotes(alias.Value);
-            }
+            cr.columnAlias = Util.RemoveIdentifierQuotes(alias?.Value);
 
             return cr;
         }
@@ -346,58 +362,140 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var cr = new ColumnReference()
             {
                 columnName = usm.ColumnName.Value,
-                parentTableReference = new TableReference(),
+                tableReference = new TableReference(),
             };
 
             return cr;
         }
 
-        public bool Compare(ColumnReference other)
+        public bool TryMatch(TableReference tr, ColumnReference other)
         {
-            // other must be a direct column reference, ie having a TableReference set
-            // or must be a complex expression with an alias set
-            if (other.parentTableReference == null && !other.isComplexExpression)
+            if (tr == null && !other.isComplexExpression)
             {
+                // other must be a direct column reference, ie resolved and having a TableReference set
+                // or must be a complex expression with an alias set
                 throw new InvalidOperationException();
             }
-
-            bool res = true;
-
-            if ((this.parentTableReference == null || this.parentTableReference.IsUndefined) && !this.isComplexExpression)
+            else if ((tableReference == null || tableReference.IsUndefined) && !isComplexExpression)
             {
-                // No table is specified, only compare by column name
-                res &= this.CompareByName(other);
+                if (!String.IsNullOrWhiteSpace(columnName))
+                {
+                    // No table is specified, only compare by column name
+                    return CompareByColumnName(columnName, other.columnName, other.columnAlias);
+                }
+                else if (isMultiPartIdentifier)
+                {
+                    // This is a real multi-part identifier with at least two parts
+                    // Matching logic is as follows:
+                    // 1) if first part matches column name or alias, the rest is properties
+                    // 2) if first part doesn't match a column name or alias, try as table name and
+                    //    then the column names must match
+                    // 3) if first part doesn't match as table name, try as a schema, etc.
+
+                    if (CompareByColumnName(nameParts[0], other.columnName, other.columnAlias))
+                    {
+                        // 1)
+                        columnNamePartIndex = 0;
+                        return true;
+                    }
+                    else if (
+                        nameParts.Count > 1 &&
+                        CompareByTableName(nameParts[0], tr.TableName, tr.Alias) &&
+                        CompareByColumnName(nameParts[1], other.columnName, other.columnAlias))
+                    {
+                        // 2)
+                        columnNamePartIndex = 1;
+                        return true;
+                    }
+                    else if (
+                        nameParts.Count > 2 &&
+                        CompareByTableName(nameParts[0], nameParts[1], tr.SchemaName, tr.TableName, tr.Alias) &&
+                        CompareByColumnName(nameParts[2], other.columnName, other.columnAlias))
+                    {
+                        // 3)
+                        columnNamePartIndex = 2;
+                        return true;
+                    }
+                    else
+                    {
+                        // Multi-part identifier cannot be bound
+                        return false;
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
             }
-            else if (other.parentTableReference == null || other.parentTableReference.IsUndefined)
+            else if (tr == null || tr.IsUndefined)
             {
+                throw new NotImplementedException();
+
                 // TODO: verify if this can happen
                 // if this is an alias
-                res &= this.parentTableReference == null && SchemaManager.Comparer.Compare(this.columnName, other.columnAlias) == 0;
+
+                //res &= this.tableReference == null && SchemaManager.Comparer.Compare(this.columnName, other.columnAlias) == 0;
             }
             else
             {
-                // Now both have the table reference set, make sure they are equal
-
-                // compare the two table references
-                res &= (this.parentTableReference.Compare(other.parentTableReference));
-
-                // compare the two names
-                res &= this.CompareByName(other);
+                if (isMultiPartIdentifier)
+                {
+                    throw new InvalidOperationException();
+                }
+                else
+                {
+                    // Now both have the table reference set, make sure they are equal
+                    if (tableReference.TryMatch(tr) &&
+                    CompareByColumnName(columnName, other.columnName, other.columnAlias))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
             }
-
-            return res;
         }
 
-        private bool CompareByName(ColumnReference other)
+        private static bool CompareByColumnName(string columnName, string otherName, string otherAlias)
         {
             // If the other column is aliased, always compare by alias, otherwise fall back to compare by name
-            if (other.columnAlias != null)
+            if (otherAlias != null)
             {
-                return SchemaManager.Comparer.Compare(this.columnName, other.columnAlias) == 0;
+                return SchemaManager.Comparer.Compare(columnName, otherAlias) == 0;
             }
             else
             {
-                return SchemaManager.Comparer.Compare(this.columnName, other.columnName) == 0;
+                return SchemaManager.Comparer.Compare(columnName, otherName) == 0;
+            }
+        }
+
+        private static bool CompareByTableName(string tableName, string otherName, string otherAlias)
+        {
+            // If the other table is aliased, always compare by alias, otherwise fall back to compare by name
+            if (otherAlias != null)
+            {
+                return SchemaManager.Comparer.Compare(tableName, otherAlias) == 0;
+            }
+            else
+            {
+                return SchemaManager.Comparer.Compare(tableName, otherName) == 0;
+            }
+        }
+
+        private bool CompareByTableName(string schemaName, string tableName, string otherSchema, string otherName, string otherAlias)
+        {
+            // If other is aliased matching by schema is not possible. Otherwise match both schame and table name
+            if (otherAlias != null)
+            {
+                return false;
+            }
+            else
+            {
+                return
+                    SchemaManager.Comparer.Compare(schemaName, otherSchema) == 0 &&
+                    SchemaManager.Comparer.Compare(tableName, otherName) == 0;
             }
         }
 
@@ -412,9 +510,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var res = String.Empty;
 
-            if (parentTableReference != null && !ParentTableReference.IsUndefined)
+            if (tableReference != null && !TableReference.IsUndefined)
             {
-                res += parentTableReference.ToString();
+                res += tableReference.ToString();
                 res += ".";
             }
 

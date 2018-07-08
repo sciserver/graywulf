@@ -9,12 +9,10 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class QueryExpression
     {
-        private TableReference resultsTableReference;
-        
         public TableReference ResultsTableReference
         {
-            get { return resultsTableReference; }
-            set { resultsTableReference = value; }
+            get { return FirstQuerySpecification.ResultsTableReference; }
+            set { FirstQuerySpecification.ResultsTableReference = value; }
         }
 
         public QuerySpecification FirstQuerySpecification
@@ -22,41 +20,17 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<QuerySpecification>(); }
         }
 
-        protected override void OnInitializeMembers()
-        {
-            base.OnInitializeMembers();
-
-            this.resultsTableReference = null;
-        }
-
-        protected override void OnCopyMembers(object other)
-        {
-            base.OnCopyMembers(other);
-
-            var old = (QueryExpression)other;
-
-            this.resultsTableReference = old.resultsTableReference;
-        }
-
         public static QueryExpression Create(QuerySpecification qs)
         {
             var qe = new QueryExpression();
-
             qe.Stack.AddLast(qs);
-
-            qe.resultsTableReference = new TableReference(qe);
-
             return qe;
         }
 
         public static QueryExpression Create(QueryExpressionBrackets qeb)
         {
             var qe = new QueryExpression();
-
             qe.Stack.AddLast(qeb);
-
-            qe.resultsTableReference = new TableReference(qe);
-
             return qe;
         }
 
@@ -74,16 +48,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             qe.Stack.AddLast(Whitespace.CreateNewLine());
             qe.Stack.AddLast(qe2);
 
-            qe.resultsTableReference = new TableReference(qe);
-
             return qe;
-        }
-
-        public override void Interpret()
-        {
-            base.Interpret();
-
-            this.resultsTableReference = new TableReference(this);
         }
 
         public IEnumerable<QuerySpecification> EnumerateQuerySpecifications()

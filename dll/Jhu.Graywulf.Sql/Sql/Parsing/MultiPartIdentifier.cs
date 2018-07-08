@@ -10,18 +10,23 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class MultiPartIdentifier
     {
-        private Identifier[] parts;
+        private Identifier[] nameParts;
+
+        public Identifier[] NameParts
+        {
+            get { return nameParts; }
+        }
 
         public int PartCount
         {
-            get { return parts?.Length ?? 0; }
+            get { return nameParts?.Length ?? 0; }
         }
-        
+                
         public string NamePart3
         {
             get
             {
-                return (parts.Length > 2) ? parts[parts.Length - 3].Value : null;
+                return (nameParts.Length > 2) ? nameParts[nameParts.Length - 3].Value : null;
             }
         }
 
@@ -29,7 +34,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get
             {
-                return (parts.Length > 1) ? parts[parts.Length - 2].Value : null;
+                return (nameParts.Length > 1) ? nameParts[nameParts.Length - 2].Value : null;
             }
         }
 
@@ -37,15 +42,10 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get
             {
-                return (parts.Length > 0) ? parts[parts.Length - 1].Value : null;
+                return (nameParts.Length > 0) ? nameParts[nameParts.Length - 1].Value : null;
             }
         }
-
-        public Identifier GetPart(int index)
-        {
-            return parts?[index];
-        }
-
+        
         public static MultiPartIdentifier Create(string namePart4, string namePart3, string namePart2, string namePart1)
         {
             var fpi = new MultiPartIdentifier();
@@ -111,7 +111,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             base.Interpret();
 
-            parts = FindDescendant<NamePartList>().EnumerateDescendants<Identifier>().ToArray();
+            nameParts = FindDescendant<NamePartList>().EnumerateDescendants<Identifier>().ToArray();
         }
     }
 }

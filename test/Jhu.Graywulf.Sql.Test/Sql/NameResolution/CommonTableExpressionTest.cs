@@ -23,9 +23,9 @@ SELECT Name FROM a";
             var gt =
 @"WITH [a] AS
 (
-    SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]
+    SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]
 )
-SELECT [a].[Name] AS [a_Name] FROM [a]";
+SELECT [a].[Name] FROM [a]";
 
             var ss = Parse<SelectStatement>(sql);
 
@@ -57,9 +57,9 @@ SELECT a.Name FROM a";
             var gt =
 @"WITH [a] AS
 (
-    SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]
+    SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]
 )
-SELECT [a].[Name] AS [a_Name] FROM [a]";
+SELECT [a].[Name] FROM [a]";
 
             var ss = Parse<SelectStatement>(sql);
 
@@ -89,9 +89,9 @@ SELECT Name, Title FROM a INNER JOIN b ON a.ID = b.ID";
 
             var gt =
 @"WITH
-    [a] AS (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]),
-    [b] AS (SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID], [Graywulf_Schema_Test].[dbo].[Book].[Title], [Graywulf_Schema_Test].[dbo].[Book].[Year] FROM [Graywulf_Schema_Test].[dbo].[Book])
-SELECT [a].[Name] AS [a_Name], [b].[Title] AS [b_Title] FROM [a] INNER JOIN [b] ON [a].[ID] = [b].[ID]";
+    [a] AS (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]),
+    [b] AS (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Book])
+SELECT [a].[Name], [b].[Title] FROM [a] INNER JOIN [b] ON [a].[ID] = [b].[ID]";
 
             var ss = Parse<SelectStatement>(sql);
 
@@ -114,11 +114,11 @@ SELECT Name FROM a";
             var gt =
 @"WITH [a] AS
 (
-    SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]
+    SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]
     UNION ALL
-    SELECT [a].[ID], [a].[Name] FROM [a]
+    SELECT * FROM [a]
 )
-SELECT [a].[Name] AS [a_Name] FROM [a]";
+SELECT [a].[Name] FROM [a]";
 
             var ss = Parse<SelectStatement>(sql);
 
@@ -145,7 +145,7 @@ WHERE rn <= 10";
     SELECT ROW_NUMBER() OVER (PARTITION BY FLOOR([a].[ID]) ORDER BY [a].[ID]) AS [rn], [a].[ID], [a].[Name]
     FROM [Graywulf_Schema_Test].[dbo].[Author] [a]
 )
-SELECT [q].[rn] AS [q_rn], [q].[ID] AS [q_ID], [q].[Name] AS [q_Name]
+SELECT *
 FROM [q]
 WHERE [q].[rn] <= 10";
 

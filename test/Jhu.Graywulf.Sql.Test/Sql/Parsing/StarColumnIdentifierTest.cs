@@ -25,8 +25,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "schema1.table1.*";
             var exp = new SqlParser().Execute<StarColumnIdentifier>(sql);
             Assert.AreEqual("schema1.table1.*", exp.Value);
-            Assert.AreEqual("schema1", exp.ColumnReference.ParentTableReference.SchemaName);
-            Assert.AreEqual("table1", exp.ColumnReference.ParentTableReference.TableName);
+            Assert.AreEqual("schema1", exp.ColumnReference.TableReference.SchemaName);
+            Assert.AreEqual("table1", exp.ColumnReference.TableReference.TableName);
             Assert.IsTrue(exp.ColumnReference.IsStar);
         }
 
@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var ci = StarColumnIdentifier.Create();
             Assert.AreEqual("*", ci.Value);
             Assert.IsTrue(ci.ColumnReference.IsStar);
-            Assert.IsTrue(ci.ColumnReference.ParentTableReference.IsUndefined);
+            Assert.IsTrue(ci.ColumnReference.TableReference.IsUndefined);
         }
 
         [TestMethod]
@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var ci = StarColumnIdentifier.Create(tr);
             Assert.AreEqual("[test].*", cg.Execute(ci));
             Assert.IsTrue(ci.ColumnReference.IsStar);
-            Assert.AreEqual("test", ci.ColumnReference.ParentTableReference.TableName);
+            Assert.AreEqual("test", ci.ColumnReference.TableReference.TableName);
         }
     }
 }
