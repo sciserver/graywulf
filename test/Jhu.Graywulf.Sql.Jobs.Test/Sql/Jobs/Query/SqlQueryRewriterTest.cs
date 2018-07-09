@@ -56,7 +56,7 @@ PRINT '<graywulf><destinationName>Table2</destinationName></graywulf>';
 SELECT *  FROM Table1 
 END";
 
-            RewriteQueryHelper(sql, gt, false, false);
+            RewriteQueryHelper(sql, gt);
         }
 
         [TestMethod]
@@ -70,7 +70,7 @@ PRINT '<graywulf><destinationSchema>dbo</destinationSchema><destinationName>Tabl
 SELECT *  FROM Table1 
 END";
 
-            RewriteQueryHelper(sql, gt, false, false);
+            RewriteQueryHelper(sql, gt);
         }
 
         [TestMethod]
@@ -124,7 +124,7 @@ END";
             var gt = @"SELECT * FROM Table1 
 WHERE @__partKeyMin <= id";
 
-            RewriteQueryHelper(sql, gt, true, false);
+            RewritePartitioningTestHelper(sql, gt, true, false);
         }
 
         [TestMethod]
@@ -134,7 +134,7 @@ WHERE @__partKeyMin <= id";
             var sql = "SELECT * FROM Table1 PARTITION BY id WHERE x < 5";
             var gt = "SELECT * FROM Table1  WHERE (@__partKeyMin <= id) AND (x < 5)";
 
-            RewriteQueryHelper(sql, gt, true, false);
+            RewritePartitioningTestHelper(sql, gt, true, false);
         }
 
         [TestMethod]
@@ -145,7 +145,7 @@ WHERE @__partKeyMin <= id";
             var gt = @"SELECT * FROM Table1 
 WHERE id < @__partKeyMax";
 
-            RewriteQueryHelper(sql, gt, false, true);
+            RewritePartitioningTestHelper(sql, gt, false, true);
         }
 
         [TestMethod]
@@ -156,7 +156,7 @@ WHERE id < @__partKeyMax";
             var gt = @"SELECT * FROM Table1 
 WHERE @__partKeyMin <= id AND id < @__partKeyMax";
 
-            RewriteQueryHelper(sql, gt, true, true);
+            RewritePartitioningTestHelper(sql, gt, true, true);
         }
 
         [TestMethod]
@@ -166,7 +166,7 @@ WHERE @__partKeyMin <= id AND id < @__partKeyMax";
             var sql = "SELECT * FROM Table1 PARTITION BY id WHERE x < 5";
             var gt = @"SELECT * FROM Table1  WHERE (@__partKeyMin <= id AND id < @__partKeyMax) AND (x < 5)";
 
-            RewriteQueryHelper(sql, gt, true, true);
+            RewritePartitioningTestHelper(sql, gt, true, true);
         }
 
         [TestMethod]
@@ -177,7 +177,7 @@ WHERE @__partKeyMin <= id AND id < @__partKeyMax";
             var gt = @"SELECT * FROM Table1  CROSS JOIN Table2
 WHERE @__partKeyMin <= id AND id < @__partKeyMax";
 
-            RewriteQueryHelper(sql, gt, true, true);
+            RewritePartitioningTestHelper(sql, gt, true, true);
         }
 
         [TestMethod]
@@ -187,9 +187,33 @@ WHERE @__partKeyMin <= id AND id < @__partKeyMax";
             var sql = "SELECT * FROM Table1 PARTITION BY id CROSS JOIN Table2 WHERE x < 5";
             var gt = "SELECT * FROM Table1  CROSS JOIN Table2 WHERE (@__partKeyMin <= id AND id < @__partKeyMax) AND (x < 5)";
 
-            RewriteQueryHelper(sql, gt, true, true);
+            RewritePartitioningTestHelper(sql, gt, true, true);
         }
 
+        #endregion
+        #region Star column substitution
+
+        [TestMethod]
+        public void SubstituteStarTest()
+        {
+            var sql = "SELECT * FROM Author";
+            var gt = "SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]";
+
+            SubstituteStarsTestHelper(sql, gt);
+        }
+
+        #endregion
+        #region Assign column aliases
+
+        [TestMethod]
+        public void AssignColumnAliasesTest()
+        {
+            var sql = "SELECT * FROM Author a";
+            var gt = "SELECT [a].[ID] AS [a_ID], [a].[Name] AS [a_Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a]";
+
+            AssignColumnAliasesTestHelper(sql, gt);
+        }
+        
         #endregion
     }
 }

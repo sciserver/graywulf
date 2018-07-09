@@ -38,6 +38,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             set { assignColumnAliases = value; }
         }
 
+        public bool RemoveOrderBy
+        {
+            get { return removeOrderyBy; }
+            set { removeOrderyBy = value; }
+        }
+
         public SqlQueryRewriterOptions()
         {
             InitializeMembers();
@@ -54,6 +60,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             this.removePartitioning = true;
             this.substituteStars = true;
             this.assignColumnAliases = true;
+            this.removeOrderyBy = false;
     }
 
         private void CopyMembers(SqlQueryRewriterOptions old)
@@ -62,6 +69,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             this.removePartitioning = old.removePartitioning;
             this.substituteStars = old.substituteStars;
             this.assignColumnAliases = old.assignColumnAliases;
+            this.removeOrderyBy = old.removeOrderyBy;
         }
     }
 }

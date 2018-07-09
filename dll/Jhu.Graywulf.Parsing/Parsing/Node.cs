@@ -397,7 +397,7 @@ namespace Jhu.Graywulf.Parsing
 
         #endregion
 
-        public void ExchangeWith(Node other)
+        public void ReplaceWith(Node other)
         {
             this.Parent.Stack.Exchange(this, other);
         }

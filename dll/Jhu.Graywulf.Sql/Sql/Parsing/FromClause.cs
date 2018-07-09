@@ -89,7 +89,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             tableSource.Stack.AddLast(jt);
 
             // Exchange table sources so that the joined table comes first
-            ts.ExchangeWith(tableSource);
+            ts.ReplaceWith(tableSource);
         }
 
 

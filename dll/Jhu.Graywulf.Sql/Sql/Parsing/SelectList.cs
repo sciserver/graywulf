@@ -8,6 +8,11 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class SelectList
     {
+        public IEnumerable<ColumnExpression> EnumerateColumnExpressions()
+        {
+            return EnumerateDescendantsRecursive<ColumnExpression>();
+        }
+
         public static SelectList CreateStar()
         {
             var sl = new SelectList();

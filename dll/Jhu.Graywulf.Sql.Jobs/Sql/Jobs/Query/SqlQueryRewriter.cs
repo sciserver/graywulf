@@ -100,22 +100,23 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             if (options.SubstituteStars)
             {
-                SubstituteStars(selectList);
+                var nsl = SubstituteStars(qs, selectList, depth);
+                selectList.ReplaceWith(nsl);
+                selectList = nsl;
             }
 
             if (options.AssignColumnAliases)
             {
-                AssignDefaultColumnAliases(qs, depth != 0, (queryContext & QueryContext.SemiJoin) != 0);
+                AssignDefaultColumnAliases(qs, selectList, depth, depth != 0, (queryContext & QueryContext.SemiJoin) != 0);
             }
         }
 
-        public SelectList SubstituteStars(SelectList selectList)
+        public SelectList SubstituteStars(QuerySpecification qs, SelectList selectList, int depth)
         {
             var ce = selectList.FindDescendant<ColumnExpression>();
             var subsl = selectList.FindDescendant<SelectList>();
 
             SelectList sl = null;
-            QuerySpecification qs = null;
 
             if (ce.ColumnReference.IsStar)
             {
@@ -123,7 +124,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 // the referenced table, then replace current node
                 if (ce.TableReference.IsUndefined)
                 {
-                    qs = selectList.FindAscendant<QuerySpecification>();
                     sl = SelectList.Create(qs);
                 }
                 else
@@ -133,7 +133,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                 if (subsl != null)
                 {
-                    sl.Append(SubstituteStars(subsl));
+                    sl.Append(SubstituteStars(qs, subsl, depth));
                 }
 
                 return sl;
@@ -142,46 +142,24 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             {
                 if (subsl != null)
                 {
-                    selectList.Replace(SubstituteStars(subsl));
+                    selectList.Replace(SubstituteStars(qs, subsl, depth));
                 }
 
                 return selectList;
             }
         }
-
-        /// <summary>
-        /// Replace SELECT * and SELECT alias.* with explicit column lists
-        /// </summary>
-        private void SubstituteStars(Node node)
-        {
-            if (node != null)
-            {
-                var n = node.Stack.First;
-
-                while (n != null)
-                {
-                    if (n.Value is SelectList)
-                    {
-                        n.Value = SubstituteStars((SelectList)n.Value);
-                    }
-
-                    n = n.Next;
-                }
-            }
-        }
-
+        
         /// <summary>
         /// Adds default aliases to columns with no aliases specified in the query
         /// </summary>
         /// <param name="qs"></param>
-        private void AssignDefaultColumnAliases(QuerySpecification qs, bool subquery, bool singleColumnSubquery)
+        private void AssignDefaultColumnAliases(QuerySpecification qs, SelectList selectList, int depth, bool subquery, bool singleColumnSubquery)
         {
             var aliases = new HashSet<string>(SchemaManager.Comparer);
-
-            var cnt = qs.EnumerateSelectListColumnExpressions().Count();
+            var cnt = selectList.EnumerateColumnExpressions().Count();
 
             int q = 0;
-            foreach (var ce in qs.EnumerateSelectListColumnExpressions())
+            foreach (var ce in selectList.EnumerateColumnExpressions())
             {
                 var cr = ce.ColumnReference;
                 string alias;
@@ -269,7 +247,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             var sb = StatementBlock.Create(magic, selectStatement);
             var be = BeginEndStatement.Create(sb);
-            selectStatement.ExchangeWith(be);
+            selectStatement.ReplaceWith(be);
 
             into.Remove();
         }

@@ -133,16 +133,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             return EnumerateSourceTables(recursive).Select(ts => ts.TableReference);
         }
 
-        public virtual IEnumerable<ColumnExpression> EnumerateSelectListColumnExpressions()
-        {
-            return SelectList.EnumerateDescendantsRecursive<ColumnExpression>();
-        }
-
-        public virtual IEnumerable<ColumnIdentifier> EnumerateSelectListColumnIdentifiers()
-        {
-            return SelectList.EnumerateDescendantsRecursive<ColumnIdentifier>();
-        }
-
         #region Query construction functions
 
         public void AppendWhereClause(WhereClause where)

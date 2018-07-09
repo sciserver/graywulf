@@ -76,23 +76,59 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         protected void RewriteQueryHelper(string sql, string gt)
         {
             var qrw = CreateQueryRewriter(false, false);
-            var cg = CreateCodeGenerator(false, false);
-            var parsingTree = Parse(sql);
+            qrw.Options.SubstituteStars = false;
 
+            var cg = CreateCodeGenerator(false, false);
+            cg.ColumnNameRendering = CodeGeneration.NameRendering.Original;
+            cg.TableNameRendering = CodeGeneration.NameRendering.Original;
+
+            var parsingTree = Parse(sql);
+            qrw.Execute(parsingTree);
+            var res = cg.Execute(parsingTree);
+
+            Assert.AreEqual(gt, res);
+        }
+        
+        protected void RewritePartitioningTestHelper(string sql, string gt, bool partitioningKeyMin, bool partitioningKeyMax)
+        {
+            var qrw = CreateQueryRewriter(partitioningKeyMin, partitioningKeyMax);
+            qrw.Options.SubstituteStars = false;
+            qrw.Options.AssignColumnAliases = false;
+
+            var cg = CreateCodeGenerator(partitioningKeyMin, partitioningKeyMax);
+            cg.TableNameRendering = CodeGeneration.NameRendering.Original;
+            cg.ColumnNameRendering = CodeGeneration.NameRendering.Original;
+
+            var parsingTree = Parse(sql);
             qrw.Execute(parsingTree);
             var res = cg.Execute(parsingTree);
 
             Assert.AreEqual(gt, res);
         }
 
-        protected void RewriteQueryHelper(string sql, string gt, bool partitioningKeyMin, bool partitioningKeyMax)
+        protected void SubstituteStarsTestHelper(string sql, string gt)
         {
-            var qrw = CreateQueryRewriter(partitioningKeyMin, partitioningKeyMax);
-            var cg = CreateCodeGenerator(partitioningKeyMin, partitioningKeyMax);
-            var parsingTree = Parse(sql);
+            var qd = ParseAndResolveNames(sql);
+            var qrw = CreateQueryRewriter(false, false);
+            var cg = CreateCodeGenerator(false, false);
 
-            qrw.Execute(parsingTree);
-            var res = cg.Execute(parsingTree);
+            qrw.Execute(qd.ParsingTree);
+            var res = cg.Execute(qd.ParsingTree);
+
+            Assert.AreEqual(gt, res);
+        }
+
+        protected void AssignColumnAliasesTestHelper(string sql, string gt)
+        {
+            var qd = ParseAndResolveNames(sql);
+            var qrw = CreateQueryRewriter(false, false);
+
+            var cg = CreateCodeGenerator(false, false);
+            cg.ColumnAliasRendering = CodeGeneration.AliasRendering.Always;
+            cg.TableAliasRendering = CodeGeneration.AliasRendering.Always;
+
+            qrw.Execute(qd.ParsingTree);
+            var res = cg.Execute(qd.ParsingTree);
 
             Assert.AreEqual(gt, res);
         }

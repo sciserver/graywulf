@@ -1089,7 +1089,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var tr = qs.ResultsTableReference;
             int index = 0;
-            foreach (var ce in qs.EnumerateSelectListColumnExpressions())
+            foreach (var ce in qs.SelectList.EnumerateColumnExpressions())
             {
                 var cr = ce.ColumnReference;
 
