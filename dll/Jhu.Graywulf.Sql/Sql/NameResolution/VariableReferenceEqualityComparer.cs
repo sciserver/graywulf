@@ -27,9 +27,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public override bool Equals(VariableReference x, VariableReference y)
         {
             bool res =
-                x.VariableContext == y.VariableContext &&
-                SchemaManager.Comparer.Compare(x.VariableName, y.VariableName) == 0 &&
-                DataTypeReferenceEqualityComparer.Default.Equals(x.DataTypeReference, y.DataTypeReference);
+                SchemaManager.Comparer.Compare(x.VariableName, y.VariableName) == 0;
 
             return res;
         }
@@ -37,9 +35,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public override int GetHashCode(VariableReference obj)
         {
             var res =
-                obj.VariableContext.GetHashCode() +
-                (obj.VariableName == null ? 0 : obj.VariableName.GetHashCode()) +
-                (obj.DataTypeReference == null ? 0 : DataTypeReferenceEqualityComparer.Default.GetHashCode(obj.DataTypeReference));
+                (obj.VariableName == null ? 0 : obj.VariableName.GetHashCode());
 
             return res;
         }

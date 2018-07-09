@@ -23,6 +23,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         private AliasRendering columnAliasRendering;
         private NameRendering dataTypeNameRendering;
         private NameRendering functionNameRendering;
+        private VariableRendering variableRendering;
 
         private Lazy<Dictionary<DatasetBase, DatasetBase>> datasetMap;
         private Lazy<Dictionary<TableReference, TableReference>> tableReferenceMap;
@@ -79,6 +80,12 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             set { functionNameRendering = value; }
         }
 
+        public VariableRendering VariableRendering
+        {
+            get { return variableRendering; }
+            set { variableRendering = value; }
+        }
+
         public Dictionary<DatasetBase, DatasetBase> DatasetMap
         {
             get { return datasetMap.Value; }
@@ -127,6 +134,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             this.columnAliasRendering = AliasRendering.Default;
             this.dataTypeNameRendering = NameRendering.Default;
             this.functionNameRendering = NameRendering.Default;
+            this.variableRendering = VariableRendering.Default;
 
             // TODO: how to compare datasets?
             this.datasetMap = new Lazy<Dictionary<DatasetBase, DatasetBase>>(() => new Dictionary<DatasetBase, DatasetBase>());
@@ -521,6 +529,28 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         protected abstract string GetResolvedFunctionName(string databaseName, string schemaName, string functionName);
 
         #endregion
+        #region Variable name substitution
+
+        protected VariableReference MapVariableReference(VariableReference variable)
+        {
+            if (variableReferenceMap.IsValueCreated && variableReferenceMap.Value.ContainsKey(variable))
+            {
+                return variableReferenceMap.Value[variable];
+            }
+            else
+            {
+                return variable;
+            }
+        }
+
+        private string GetResolvedVariableName(VariableReference variable)
+        {
+            variable = MapVariableReference(variable);
+
+            return variable.VariableName;
+        }
+
+        #endregion
         #region Specialized node writer functions
 
         /// <summary>
@@ -578,6 +608,12 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                     break;
                 case DataTypeIdentifier dt:
                     WriteDataTypeIdentifier(dt);
+                    break;
+                case UserVariable v:
+                    WriteUserVariable(v);
+                    break;
+                case SystemVariable v:
+                    WriteSystemVariable(v);
                     break;
                 default:
                     base.WriteNode(token);
@@ -836,6 +872,29 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                     throw new InvalidOperationException();
                 default:
                     base.WriteNode(node);
+                    break;
+            }
+        }
+
+        public virtual void WriteUserVariable(UserVariable node)
+        {
+            WriteVariableImpl(node.VariableReference);
+        }
+
+        public virtual void WriteSystemVariable(SystemVariable node)
+        {
+            WriteVariableImpl(node.VariableReference);
+        }
+
+        private void WriteVariableImpl(VariableReference variable)
+        {
+            switch (variableRendering)
+            {
+                case VariableRendering.Substitute:
+                    Writer.Write(GetResolvedVariableName(variable));
+                    break;
+                default:
+                    base.WriteNode(variable.Node);
                     break;
             }
         }

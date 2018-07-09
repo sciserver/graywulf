@@ -59,7 +59,18 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         protected virtual SqlQueryCodeGenerator CreateCodeGenerator(bool partitioningKeyMin, bool partitioningKeyMax)
         {
-            return new SqlQueryCodeGenerator(CreatePartition(partitioningKeyMin, partitioningKeyMax));
+            var cg = new SqlQueryCodeGenerator(CreatePartition(partitioningKeyMin, partitioningKeyMax))
+            {
+                TableNameRendering = CodeGeneration.NameRendering.FullyQualified,
+                ColumnNameRendering = CodeGeneration.NameRendering.FullyQualified,
+                DataTypeNameRendering = CodeGeneration.NameRendering.FullyQualified,
+                FunctionNameRendering = CodeGeneration.NameRendering.FullyQualified,
+                VariableRendering = CodeGeneration.VariableRendering.Substitute,
+            };
+
+            cg.AddSystemVariableMappings();
+
+            return cg;
         }
 
         protected void RewriteQueryHelper(string sql, string gt)

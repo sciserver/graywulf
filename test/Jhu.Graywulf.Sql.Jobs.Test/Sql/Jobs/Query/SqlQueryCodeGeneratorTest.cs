@@ -147,7 +147,6 @@ WHERE ([p].[ra] > 2);";
         #endregion
         #region System variables
 
-
         [TestMethod]
         public void PartitionVariablesTest()
         {

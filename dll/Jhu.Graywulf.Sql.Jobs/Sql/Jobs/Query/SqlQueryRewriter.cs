@@ -344,44 +344,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             return BooleanExpression.Create(false, p);
         }
 
-        #endregion
-
-
-
-
-
-
-
-
-        //------------------------------------------------
-
-
-        protected virtual void RewriteNodes(Node node)
-        {
-            if (node is SystemVariable)
-            {
-                var name = node.Value.TrimStart('@');
-                if (Constants.SystemVariableMap.ContainsKey(name))
-                {
-                    var nn = UserVariable.Create(Constants.SystemVariableMap[name]);
-                    node.ExchangeWith(nn);
-                }
-            }
-            else
-            {
-                var n = node.Stack.First;
-                while (n != null)
-                {
-                    if (n.Value is Node)
-                    {
-                        RewriteNodes((Node)n.Value);
-                    }
-
-                    n = n.Next;
-                }
-            }
-        }
-
-        
+        #endregion        
     }
 }

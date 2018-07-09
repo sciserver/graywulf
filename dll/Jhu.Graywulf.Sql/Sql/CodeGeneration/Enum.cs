@@ -27,6 +27,14 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         Never,
     }
 
+    public enum VariableRendering
+    {
+        Original,
+        Substitute,
+        
+        Default = Original
+    }
+
 
     /// <summary>
     /// Column list nullable type.

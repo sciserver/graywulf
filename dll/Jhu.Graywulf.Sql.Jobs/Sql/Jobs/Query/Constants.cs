@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         public const string PartitionKeyMinParameterName = "@__partKeyMin";
         public const string PartitionKeyMaxParameterName = "@__partKeyMax";
 
-        public static readonly Dictionary<string, string> SystemVariableMap = new Dictionary<string, string>(SqlParser.ComparerInstance)
+        public static readonly Dictionary<string, string> SystemVariableMappings = new Dictionary<string, string>(SqlParser.ComparerInstance)
         {
             { NameResolution.Constants.SystemVariableNamePartCount, PartitionCountParameterName },
             { NameResolution.Constants.SystemVariableNamePartId, PartitionIdParameterName},

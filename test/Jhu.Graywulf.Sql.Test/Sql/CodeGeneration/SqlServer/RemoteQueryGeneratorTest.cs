@@ -74,7 +74,7 @@ WHERE b1.ID = 1 AND b2.ID = 2";
             var res = GenerateCode(sql, true, true, false);
 
             Assert.AreEqual(
-@"SELECT [b1].[Title] AS [b1_Title], [b2].[Title] AS [b2_Title]
+@"SELECT [b1].[Title], [b2].[Title]
 FROM [Graywulf_Schema_Test].[dbo].[Book] [b1], [Graywulf_Schema_Test].[dbo].[Book] [b2]
 WHERE [b1].[ID] = 1 AND [b2].[ID] = 2", res);
 
