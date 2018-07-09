@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
     [Data3] [nvarchar](50) NOT NULL
 )";
 
-            var ss = Parse<DeclareTableStatement>(sql);
+            var ss = ParseAndResolveNames<DeclareTableStatement>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
@@ -70,7 +70,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
     [Data4] [dbo].[ClrUDT] NOT NULL
 )";
 
-            var ss = Parse<DeclareTableStatement>(sql);
+            var ss = ParseAndResolveNames<DeclareTableStatement>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
@@ -108,7 +108,7 @@ SELECT * FROM @test";
 
 SELECT * FROM @test";
 
-            var ss = Parse<StatementBlock>(sql);
+            var ss = ParseAndResolveNames<StatementBlock>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
@@ -135,7 +135,7 @@ SELECT * FROM @test a";
 
 SELECT * FROM @test [a]";
 
-            var ss = Parse<StatementBlock>(sql);
+            var ss = ParseAndResolveNames<StatementBlock>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
@@ -162,7 +162,7 @@ SELECT * FROM (SELECT * FROM @test) AS q";
 
 SELECT * FROM (SELECT * FROM @test) AS [q]";
 
-            var ss = Parse<StatementBlock>(sql);
+            var ss = ParseAndResolveNames<StatementBlock>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);

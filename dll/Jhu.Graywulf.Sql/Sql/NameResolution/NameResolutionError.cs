@@ -8,7 +8,7 @@ using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    static class NameResolutionError
+    public static class NameResolutionError
     {
         /// <summary>
         /// Creates and parameterizes and exception to be thrown by the name resolver.

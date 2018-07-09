@@ -73,6 +73,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sql\Jobs\Query\RemoteQueryTest.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryCodeGeneratorTest.cs" />
+    <Compile Include="Sql\Jobs\Query\SqlQueryRewriterTest.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryTest.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryTestBase.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryTestException.cs" />
@@ -140,6 +141,10 @@
     <ProjectReference Include="..\Jhu.Graywulf.Logging.Test\Jhu.Graywulf.Logging.Test.csproj">
       <Project>{d152dc9a-004c-4851-b0e7-b81a4325c9b7}</Project>
       <Name>Jhu.Graywulf.Logging.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Sql.Test\Jhu.Graywulf.Sql.Test.csproj">
+      <Project>{c006350e-76d3-4584-8162-646566b6133c}</Project>
+      <Name>Jhu.Graywulf.Sql.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Test\Jhu.Graywulf.Test.csproj">
       <Project>{ea6164ba-b283-46c2-874b-348d6bad41ad}</Project>

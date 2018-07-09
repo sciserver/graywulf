@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "UPDATE Author SET Name = 'new_name'";
 
-            var ds = Parse<UpdateStatement>(sql);
+            var ds = ParseAndResolveNames<UpdateStatement>(sql);
 
             var res = GenerateCode(ds);
             Assert.AreEqual("UPDATE [Graywulf_Schema_Test].[dbo].[Author] SET [Graywulf_Schema_Test].[dbo].[Author].[Name] = 'new_name'", res);
@@ -44,7 +44,7 @@ FROM Author";
 SET [Graywulf_Schema_Test].[dbo].[Author].[Name] = 'new_name'
 FROM [Graywulf_Schema_Test].[dbo].[Author]";
 
-            var ds = Parse<UpdateStatement>(sql);
+            var ds = ParseAndResolveNames<UpdateStatement>(sql);
 
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
@@ -68,7 +68,7 @@ FROM Author AS a";
 SET [a].[Name] = 'new_name'
 FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]";
 
-            var ds = Parse<UpdateStatement>(sql);
+            var ds = ParseAndResolveNames<UpdateStatement>(sql);
 
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
@@ -92,7 +92,7 @@ FROM Author AS a";
 SET [Graywulf_Schema_Test].[dbo].[Author].[Name] = 'new_name'
 FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]";
 
-            var ds = Parse<UpdateStatement>(sql);
+            var ds = ParseAndResolveNames<UpdateStatement>(sql);
 
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);

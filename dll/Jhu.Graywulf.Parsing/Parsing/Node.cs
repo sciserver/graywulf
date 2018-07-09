@@ -401,5 +401,10 @@ namespace Jhu.Graywulf.Parsing
         {
             this.Parent.Stack.Exchange(this, other);
         }
+
+        public void Remove()
+        {
+            this.Parent.Stack.Remove(this);
+        }
     }
 }

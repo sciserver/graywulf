@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "DELETE Author";
 
-            var ds = Parse<DeleteStatement>(sql);
+            var ds = ParseAndResolveNames<DeleteStatement>(sql);
 
             var res = GenerateCode(ds);
             Assert.AreEqual("DELETE [Graywulf_Schema_Test].[dbo].[Author]", res);
@@ -37,7 +37,7 @@ FROM Author";
 @"DELETE [Graywulf_Schema_Test].[dbo].[Author]
 FROM [Graywulf_Schema_Test].[dbo].[Author]";
 
-            var ds = Parse<DeleteStatement>(sql);
+            var ds = ParseAndResolveNames<DeleteStatement>(sql);
 
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
@@ -61,7 +61,7 @@ INNER JOIN Book ON Book.ID = Book.ID";
 FROM [Graywulf_Schema_Test].[dbo].[Author]
 INNER JOIN [Graywulf_Schema_Test].[dbo].[Book] ON [Graywulf_Schema_Test].[dbo].[Book].[ID] = [Graywulf_Schema_Test].[dbo].[Book].[ID]";
 
-            var ds = Parse<DeleteStatement>(sql);
+            var ds = ParseAndResolveNames<DeleteStatement>(sql);
 
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
@@ -83,7 +83,7 @@ WHERE ID IN (SELECT ID FROM Book)";
 @"DELETE [Graywulf_Schema_Test].[dbo].[Author]
 WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] IN (SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID] FROM [Graywulf_Schema_Test].[dbo].[Book])";
 
-            var ds = Parse<DeleteStatement>(sql);
+            var ds = ParseAndResolveNames<DeleteStatement>(sql);
 
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);

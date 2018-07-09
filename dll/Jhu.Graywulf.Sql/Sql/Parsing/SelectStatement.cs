@@ -40,6 +40,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<QueryExpression>(); }
         }
 
+        public IntoClause IntoClause
+        {
+            get { return FindDescendantRecursive<IntoClause>(); }
+        }
+
         public OrderByClause OrderByClause
         {
             get { return FindDescendant<OrderByClause>(); }

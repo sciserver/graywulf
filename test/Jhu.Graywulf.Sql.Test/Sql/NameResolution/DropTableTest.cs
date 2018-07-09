@@ -31,7 +31,7 @@ DROP TABLE test";
 
 DROP TABLE [Graywulf_Schema_Test].[dbo].[test]";
 
-            var ss = Parse<StatementBlock>(sql);
+            var ss = ParseAndResolveNames<StatementBlock>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);

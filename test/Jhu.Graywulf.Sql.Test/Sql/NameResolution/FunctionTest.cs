@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public void ScalarUdfTest()
         {
             var sql = "SELECT dbo.ScalarFunction()";
-            var q = Parse(sql);
+            var q = ParseAndResolveNames(sql);
 
             Assert.AreEqual(1, q.FunctionReferences.Count);
         }
@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public void UdtTest()
         {
             var sql = "SELECT * FROM dbo.TestTableValuedFunction() q";
-            var q = Parse(sql);
+            var q = ParseAndResolveNames(sql);
 
             Assert.AreEqual(1, q.FunctionReferences.Count);
         }

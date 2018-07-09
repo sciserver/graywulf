@@ -382,6 +382,9 @@
     <Compile Include="Sql\Parsing\WhereClause.cs" />
     <Compile Include="Sql\Parsing\Whitespace.cs" />
     <Compile Include="Sql\Parsing\WindowedFunctionCall.cs" />
+    <Compile Include="Sql\QueryRewriting\QueryRewriterBase.cs" />
+    <Compile Include="Sql\CodeGeneration\MagicTokenBase.cs" />
+    <Compile Include="Sql\QueryRewriting\SqlServer\SqlServerQueryRewriter.cs" />
     <Compile Include="Sql\Schema\Column.cs" />
     <Compile Include="Sql\Schema\Constants.cs" />
     <Compile Include="Sql\Schema\DatabaseObject.cs" />

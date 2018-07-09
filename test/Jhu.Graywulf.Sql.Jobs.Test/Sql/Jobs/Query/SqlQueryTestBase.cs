@@ -28,6 +28,64 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             return qf;
         }
 
+        protected SqlQueryPartition CreatePartition()
+        {
+            return CreatePartition(false, false);
+        }
+
+        protected SqlQueryPartition CreatePartition(bool partitioningKeyMin, bool partitioningKeyMax)
+        {
+            return new SqlQueryPartition()
+            {
+                CodeDataset = new Graywulf.Sql.Schema.SqlServer.SqlServerDataset()
+                {
+                    Name = Jhu.Graywulf.Registry.Constants.CodeDbName,
+                    ConnectionString = "data source=localhost;initial catalog=SkyQuery_Code",
+                },
+                TemporaryDataset = new Graywulf.Sql.Schema.SqlServer.SqlServerDataset()
+                {
+                    Name = Jhu.Graywulf.Registry.Constants.TempDbName,
+                    ConnectionString = "data source=localhost;initial catalog=Graywulf_Temp",
+                },
+                PartitioningKeyMin = partitioningKeyMin ? (IComparable)(1.0) : null,
+                PartitioningKeyMax = partitioningKeyMax ? (IComparable)(1.0) : null,
+            };
+        }
+
+        protected virtual SqlQueryRewriter CreateQueryRewriter(bool partitioningKeyMin, bool partitioningKeyMax)
+        {
+            return new SqlQueryRewriter(CreatePartition(partitioningKeyMin, partitioningKeyMax));
+        }
+
+        protected virtual SqlQueryCodeGenerator CreateCodeGenerator(bool partitioningKeyMin, bool partitioningKeyMax)
+        {
+            return new SqlQueryCodeGenerator(CreatePartition(partitioningKeyMin, partitioningKeyMax));
+        }
+
+        protected void RewriteQueryHelper(string sql, string gt)
+        {
+            var qrw = CreateQueryRewriter(false, false);
+            var cg = CreateCodeGenerator(false, false);
+            var parsingTree = Parse(sql);
+
+            qrw.Execute(parsingTree);
+            var res = cg.Execute(parsingTree);
+
+            Assert.AreEqual(gt, res);
+        }
+
+        protected void RewriteQueryHelper(string sql, string gt, bool partitioningKeyMin, bool partitioningKeyMax)
+        {
+            var qrw = CreateQueryRewriter(partitioningKeyMin, partitioningKeyMax);
+            var cg = CreateCodeGenerator(partitioningKeyMin, partitioningKeyMax);
+            var parsingTree = Parse(sql);
+
+            qrw.Execute(parsingTree);
+            var res = cg.Execute(parsingTree);
+
+            Assert.AreEqual(gt, res);
+        }
+
         protected virtual SqlQuery CreateQuery(string query)
         {
             using (var context = ContextManager.Instance.CreateReadOnlyContext())

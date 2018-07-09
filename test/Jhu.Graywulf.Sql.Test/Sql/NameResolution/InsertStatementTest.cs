@@ -21,7 +21,7 @@ VALUES (1, 'test')";
 @"INSERT [Graywulf_Schema_Test].[dbo].[Author]
 VALUES (1, 'test')";
 
-            var ds = Parse<InsertStatement>(sql);
+            var ds = ParseAndResolveNames<InsertStatement>(sql);
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
@@ -44,7 +44,7 @@ VALUES (1, 'test')";
 ([Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name])
 VALUES (1, 'test')";
 
-            var ds = Parse<InsertStatement>(sql);
+            var ds = ParseAndResolveNames<InsertStatement>(sql);
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
@@ -74,7 +74,7 @@ VALUES
 VALUES
 ((SELECT 1), (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[ID]))";
 
-            var ds = Parse<InsertStatement>(sql);
+            var ds = ParseAndResolveNames<InsertStatement>(sql);
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
@@ -104,7 +104,7 @@ VALUES
 VALUES
 ((SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Book].[Title] FROM [Graywulf_Schema_Test].[dbo].[Book] ORDER BY [Graywulf_Schema_Test].[dbo].[Book].[ID]), (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[ID]))";
 
-            var ds = Parse<InsertStatement>(sql);
+            var ds = ParseAndResolveNames<InsertStatement>(sql);
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
@@ -139,7 +139,7 @@ VALUES
 VALUES
 ((SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Book].[Title] FROM [Graywulf_Schema_Test].[dbo].[Book] ORDER BY [Graywulf_Schema_Test].[dbo].[Book].[ID]) + (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[ID]), (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[ID]))";
 
-            var ds = Parse<InsertStatement>(sql);
+            var ds = ParseAndResolveNames<InsertStatement>(sql);
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
@@ -176,7 +176,7 @@ VALUES
 VALUES
 ((SELECT TOP 1 [q].[Title] FROM (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Book]) [q] ORDER BY [q].[ID]), (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[ID]))";
 
-            var ds = Parse<InsertStatement>(sql);
+            var ds = ParseAndResolveNames<InsertStatement>(sql);
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
@@ -209,7 +209,7 @@ SELECT TOP 100 * FROM Author";
 @"INSERT [Graywulf_Schema_Test].[dbo].[Author]
 SELECT TOP 100 * FROM [Graywulf_Schema_Test].[dbo].[Author]";
 
-            var ds = Parse<InsertStatement>(sql);
+            var ds = ParseAndResolveNames<InsertStatement>(sql);
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 

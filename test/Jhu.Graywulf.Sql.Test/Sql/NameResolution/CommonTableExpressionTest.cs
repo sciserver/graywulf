@@ -27,7 +27,7 @@ SELECT Name FROM a";
 )
 SELECT [a].[Name] FROM [a]";
 
-            var ss = Parse<SelectStatement>(sql);
+            var ss = ParseAndResolveNames<SelectStatement>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
@@ -61,7 +61,7 @@ SELECT a.Name FROM a";
 )
 SELECT [a].[Name] FROM [a]";
 
-            var ss = Parse<SelectStatement>(sql);
+            var ss = ParseAndResolveNames<SelectStatement>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
@@ -93,7 +93,7 @@ SELECT Name, Title FROM a INNER JOIN b ON a.ID = b.ID";
     [b] AS (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Book])
 SELECT [a].[Name], [b].[Title] FROM [a] INNER JOIN [b] ON [a].[ID] = [b].[ID]";
 
-            var ss = Parse<SelectStatement>(sql);
+            var ss = ParseAndResolveNames<SelectStatement>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
@@ -120,7 +120,7 @@ SELECT Name FROM a";
 )
 SELECT [a].[Name] FROM [a]";
 
-            var ss = Parse<SelectStatement>(sql);
+            var ss = ParseAndResolveNames<SelectStatement>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
@@ -149,7 +149,7 @@ SELECT *
 FROM [q]
 WHERE [q].[rn] <= 10";
 
-            var ss = Parse<SelectStatement>(sql);
+            var ss = ParseAndResolveNames<SelectStatement>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);

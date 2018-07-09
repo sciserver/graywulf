@@ -217,11 +217,11 @@ namespace Jhu.Graywulf.Web.Api.V1
                 default:
                 case JobQueue.Quick:
                     q.Parameters.Destination.Options = TableInitializationOptions.Drop | TableInitializationOptions.Create;
-                    q.Parameters.Destination.TableNamePattern = Jhu.Graywulf.Sql.Jobs.Constants.DefaultQuickResultsTableNamePattern;
+                    q.Parameters.Destination.TableNamePattern = Jhu.Graywulf.Sql.Jobs.Query.Constants.DefaultQuickResultsTableNamePattern;
                     break;
                 case JobQueue.Long:
                     q.Parameters.Destination.Options = TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName;
-                    q.Parameters.Destination.TableNamePattern = Jhu.Graywulf.Sql.Jobs.Constants.DefaultLongResultsTableNamePattern;
+                    q.Parameters.Destination.TableNamePattern = Jhu.Graywulf.Sql.Jobs.Query.Constants.DefaultLongResultsTableNamePattern;
                     break;
             }
 

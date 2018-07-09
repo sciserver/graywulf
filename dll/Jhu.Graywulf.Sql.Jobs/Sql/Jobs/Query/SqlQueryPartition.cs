@@ -138,6 +138,14 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         #endregion
 
+        protected virtual SqlQueryRewriter CreateQueryRewriter()
+        {
+            return new SqlQueryRewriter(this)
+            {
+                // TODO: add settings if necessary
+            };
+        }
+
         protected virtual SqlQueryCodeGenerator CreateCodeGenerator()
         {
             return new SqlQueryCodeGenerator(this)
@@ -153,6 +161,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         protected override void OnNamesResolved(bool forceReinitialize)
         {
+        }
+
+        public bool IsPartitioningKeyUnbound(object key)
+        {
+            return key == null;
         }
 
         #region Remote table caching functions
@@ -426,9 +439,14 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             // explicit table names should be directed to the temp database
             // Outputs from simple selects will be dealt with later in ExecuteQueryAsync
 
-            var cg = CreateCodeGenerator();
+            // Make a clone so that the parsing tree can be modified
+            var details = new QueryDetails(QueryDetails);
 
-            sourceQuery = cg.GetExecuteQuery();
+            var qrw = CreateQueryRewriter();
+            qrw.Execute(details.ParsingTree);
+
+            var cg = CreateCodeGenerator();
+            sourceQuery = cg.GetExecuteQuery(details);
             sourceQuery.Dataset = CodeDataset;
 
             // Destination tables go to the local temp database first and will

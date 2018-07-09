@@ -188,7 +188,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             return identifier.Replace(".", "_");
         }
 
-        protected T MapDataset<T>(T databaseObjectReference)
+        public T MapDataset<T>(T databaseObjectReference)
             where T : DatabaseObjectReference
         {
             var ds = databaseObjectReference?.DatabaseObject?.Dataset;
@@ -206,7 +206,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             }
         }
 
-        protected TableReference MapTableReference(TableReference table)
+        public TableReference MapTableReference(TableReference table)
         {
             if (tableReferenceMap.IsValueCreated && tableReferenceMap.Value.ContainsKey(table))
             {
@@ -535,6 +535,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         {
             switch (token)
             {
+                case MagicTokenBase mt:
+                    WriteMagicToken(mt);
+                    break;
                 case TargetTableSpecification tts:
                     WriteTargetTableSpecification(tts);
                     break;
@@ -580,6 +583,11 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                     base.WriteNode(token);
                     break;
             }
+        }
+
+        private void WriteMagicToken(MagicTokenBase mt)
+        {
+            mt.Write(this, Writer);
         }
 
         public void WriteTargetTableSpecification(TargetTableSpecification tts)

@@ -674,7 +674,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 var orderBy = statement.OrderByClause;
                 if (orderBy != null)
                 {
-                    var qs = query.EnumerateQuerySpecifications().FirstOrDefault();
+                    var qs = query.FirstQuerySpecification;
                     ResolveOrderByClause(cte, orderBy, qs, QueryContext.InsertStatement | QueryContext.SelectStatement);
                 }
             }
@@ -1057,26 +1057,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // and make sure it's set as ResultsTableReference
             // This is necessary for CTE evaluation which can be recursive
 
-            // TODO: delete int q = 0;
-
             // Resolve query specifications in the FROM clause
             foreach (var qs in qe.EnumerateDescendants<QuerySpecification>())
             {
                 ResolveQuerySpecification(cte, qs, depth, queryContext);
-
-                /* TODO: delete if works, the two table references are already the same, no
-                 * need to copy the columns
-                if (q == 0)
-                {
-                    // Copy select list columns from the very first query specification.
-                    // All subsequent query specifications combined with set operators
-                    // (UNION, UNION ALL etc.) must mach the column list.
-                    qe.ResultsTableReference.ColumnReferences.AddRange(qs.ResultsTableReference.ColumnReferences);
-                }
-
-
-                q++;
-                */
             }
         }
 
@@ -1099,10 +1083,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // this point we need to make a copy of all column references and update the
             // table reference
             CopyResultTableColumns(cte, qs);
-            
-            // Add default aliases to column expressions in the form of tablealias_columnname
-            // TODO: move this to code generator
-            // AssignDefaultColumnAliases(qs, depth != 0, (queryContext & QueryContext.SemiJoin) != 0);
         }
 
         protected void CopyResultTableColumns(CommonTableExpression cte, QuerySpecification qs)
@@ -1541,32 +1521,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return context;
         }
 
-        /// <summary>
-        /// Replace SELECT * and SELECT alias.* with explicit column lists
-        /// </summary>
-        private void SubstituteStars(Node node)
-        {
-            throw new NotImplementedException();
-
-            // TODO: move this to code generator instead
-
-            /*
-            if (node != null)
-            {
-                var n = node.Stack.First;
-
-                while (n != null)
-                {
-                    if (n.Value is SelectList)
-                    {
-                        n.Value = SubstituteStars((SelectList)n.Value);
-                    }
-
-                    n = n.Next;
-                }
-            }*/
-        }
-
+        #endregion
         #region Default substitution logic
 
         /// <summary>
@@ -1666,140 +1621,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     throw NameResolutionError.UnresolvableDatasetReference(ex, dr);
                 }
             }
-        }
-
-        public SelectList SubstituteStars(SelectList selectList)
-        {
-            throw new NotImplementedException();
-
-            // TODO: move to code generator instead
-
-            var ce = selectList.FindDescendant<ColumnExpression>();
-            var subsl = selectList.FindDescendant<SelectList>();
-
-            SelectList sl = null;
-            QuerySpecification qs = null;
-
-            if (ce.ColumnReference.IsStar)
-            {
-                // Build select list from the column list of
-                // the referenced table, then replace current node
-                if (ce.TableReference.IsUndefined)
-                {
-                    qs = selectList.FindAscendant<QuerySpecification>();
-                    sl = SelectList.Create(qs);
-                }
-                else
-                {
-                    sl = SelectList.Create(ce.TableReference);
-                }
-
-                if (subsl != null)
-                {
-                    sl.Append(SubstituteStars(subsl));
-                }
-
-                return sl;
-            }
-            else
-            {
-                if (subsl != null)
-                {
-                    selectList.Replace(SubstituteStars(subsl));
-                }
-
-                return selectList;
-            }
-        }
-
-        /// <summary>
-        /// Adds default aliases to columns with no aliases specified in the query
-        /// </summary>
-        /// <param name="qs"></param>
-        private void AssignDefaultColumnAliases(QuerySpecification qs, bool subquery, bool singleColumnSubquery)
-        {
-            // TODO: move this to code generator
-
-            throw new NotImplementedException();
-
-            var aliases = new HashSet<string>(SchemaManager.Comparer);
-
-            var cnt = qs.EnumerateSelectListColumnExpressions().Count();
-
-            int q = 0;
-            foreach (var ce in qs.EnumerateSelectListColumnExpressions())
-            {
-                var cr = ce.ColumnReference;
-                string alias;
-
-                if (singleColumnSubquery && q > 0)
-                {
-                    throw NameResolutionError.SingleColumnSubqueryRequired(ce);
-                }
-
-                if (cr.ColumnAlias == null)
-                {
-                    if (cr.ColumnName == null)
-                    {
-                        if (subquery && !singleColumnSubquery && cnt > 1)
-                        {
-                            throw NameResolutionError.MissingColumnAlias(ce);
-                        }
-                        else
-                        {
-                            alias = GetUniqueColumnAlias(aliases, String.Format("Col_{0}", cr.SelectListIndex));
-                        }
-                    }
-                    else if (!subquery)
-                    {
-                        if (cr.TableReference != null && cr.TableReference.Alias != null)
-                        {
-                            alias = GetUniqueColumnAlias(aliases, String.Format("{0}_{1}", cr.TableReference.Alias, cr.ColumnName));
-                        }
-                        else
-                        {
-                            alias = GetUniqueColumnAlias(aliases, cr.ColumnName);
-                        }
-                    }
-                    else
-                    {
-                        alias = null;
-                    }
-                }
-                else
-                {
-                    // Alias is set explicitly, so do not make it unique forcibly
-                    alias = cr.ColumnAlias;
-                }
-
-                if (alias != null)
-                {
-                    if (aliases.Contains(alias))
-                    {
-                        throw NameResolutionError.DuplicateColumnAlias(alias, ce);
-                    }
-
-                    aliases.Add(alias);
-                    cr.ColumnAlias = alias;
-                }
-
-                q++;
-            }
-        }
-
-        #endregion
-
-        private string GetUniqueColumnAlias(HashSet<string> aliases, string alias)
-        {
-            int q = 0;
-            var alias2 = alias;
-            while (aliases.Contains(alias2))
-            {
-                alias2 = String.Format("{0}_{1}", alias, q);
-                q++;
-            }
-
-            return alias2;
         }
 
         #endregion

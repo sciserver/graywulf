@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         [TestMethod]
         public void DeclareSingleVariableTest()
         {
-            var query = Parse("DECLARE @var dbo.ClrUDT");
+            var query = ParseAndResolveNames("DECLARE @var dbo.ClrUDT");
             var d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
             Assert.AreEqual(1, query.VariableReferences.Count);
             Assert.IsTrue(query.VariableReferences.ContainsKey("@var"));

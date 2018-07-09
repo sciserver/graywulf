@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         [TestMethod]
         public void DeclareSingleVariableTest()
         {
-            var query = Parse("DECLARE @var int");
+            var query = ParseAndResolveNames("DECLARE @var int");
             var d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
             Assert.AreEqual(1, query.VariableReferences.Count);
             Assert.IsTrue(query.VariableReferences.ContainsKey("@var"));
@@ -23,12 +23,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         [TestMethod]
         public void DeclareSimpleUDTVariableTest()
         {
-            var query = Parse("DECLARE @var SimpleUDT");
+            var query = ParseAndResolveNames("DECLARE @var SimpleUDT");
             var d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
             Assert.AreEqual(1, query.VariableReferences.Count);
             Assert.IsTrue(query.VariableReferences.ContainsKey("@var"));
 
-            query = Parse("DECLARE @var dbo.SimpleUDT");
+            query = ParseAndResolveNames("DECLARE @var dbo.SimpleUDT");
             d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
             Assert.AreEqual(1, query.VariableReferences.Count);
             Assert.IsTrue(query.VariableReferences.ContainsKey("@var"));
@@ -37,12 +37,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         [TestMethod]
         public void DeclareClrUDTVariableTest()
         {
-            var query = Parse("DECLARE @var ClrUDT");
+            var query = ParseAndResolveNames("DECLARE @var ClrUDT");
             var d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
             Assert.AreEqual(1, query.VariableReferences.Count);
             Assert.IsTrue(query.VariableReferences.ContainsKey("@var"));
 
-            query = Parse("DECLARE @var dbo.ClrUDT");
+            query = ParseAndResolveNames("DECLARE @var dbo.ClrUDT");
             d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
             Assert.AreEqual(1, query.VariableReferences.Count);
             Assert.IsTrue(query.VariableReferences.ContainsKey("@var"));
@@ -51,13 +51,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
         [TestMethod]
         public void DeclareMultipleVariableTest()
         {
-            var query = Parse("DECLARE @var1 int, @var2 float");
+            var query = ParseAndResolveNames("DECLARE @var1 int, @var2 float");
             var d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
             Assert.AreEqual(2, query.VariableReferences.Count);
             Assert.IsTrue(query.VariableReferences.ContainsKey("@var1"));
             Assert.IsTrue(query.VariableReferences.ContainsKey("@var2"));
 
-            query = Parse(
+            query = ParseAndResolveNames(
 @"DECLARE @var1 int
 DECLARE @var2 float");
             d = query.ParsingTree.FindDescendantRecursive<VariableDeclaration>();
@@ -70,12 +70,12 @@ DECLARE @var2 float");
         [ExpectedException(typeof(NameResolverException))]
         public void DuplicateVariableTest()
         {
-            var script = Parse("DECLARE @var1 int, @var1 float");
+            var script = ParseAndResolveNames("DECLARE @var1 int, @var1 float");
         }
 
         private void ReferencedVariableHelper(string name, string sql)
         {
-            var query = Parse(sql);
+            var query = ParseAndResolveNames(sql);
             var s = query.ParsingTree.FindDescendantRecursive<SelectStatement>();
             var v = s.FindDescendantRecursive<UserVariable>();
             Assert.AreEqual(query.VariableReferences[name], v.VariableReference);
@@ -136,7 +136,7 @@ SELECT 1 ORDER BY @var1");
 @"DECLARE @var int
 SET @var = 5";
 
-            var ss = Parse(sql);
+            var ss = ParseAndResolveNames(sql);
         }
 
         [TestMethod]
@@ -146,14 +146,14 @@ SET @var = 5";
 @"DECLARE @var nvarchar(50)
 SET @var = 'this is a text'";
 
-            var ss = Parse(sql);
+            var ss = ParseAndResolveNames(sql);
         }
 
         [TestMethod]
         public void InitFromQueryTest()
         {
             var sql = @"DECLARE @var int = (SELECT TOP 1 ID FROM Author a)";
-            var query = Parse(sql);
+            var query = ParseAndResolveNames(sql);
 
             var sq = query.ParsingTree.FindDescendantRecursive<Subquery>();
             var qs = sq.QueryExpression.EnumerateQuerySpecifications().FirstOrDefault();
@@ -167,7 +167,7 @@ SET @var = 'this is a text'";
         public void InitFromQueryTest2()
         {
             var sql = @"DECLARE @var int = (SELECT TOP 1 ID FROM (SELECT * FROM Author) a)";
-            var query = Parse(sql);
+            var query = ParseAndResolveNames(sql);
             
             var sq = query.ParsingTree.FindDescendantRecursive<Subquery>();
             var qs = sq.QueryExpression.EnumerateQuerySpecifications().FirstOrDefault();
@@ -184,7 +184,7 @@ SET @var = 'this is a text'";
 @"DECLARE @var int
 SET @var = (SELECT 1)";
 
-            var ss = Parse(sql);
+            var ss = ParseAndResolveNames(sql);
         }
 
         [TestMethod]
@@ -194,7 +194,7 @@ SET @var = (SELECT 1)";
 @"DECLARE @var int
 SELECT @var = 1";
 
-            var ss = Parse(sql);
+            var ss = ParseAndResolveNames(sql);
         }
     }
 }

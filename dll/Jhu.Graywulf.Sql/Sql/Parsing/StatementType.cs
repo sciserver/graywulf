@@ -17,5 +17,8 @@ namespace Jhu.Graywulf.Sql.Parsing
         Query = 16,
         Modify = 32,
         Schema = 64,
+
+
+        Magic = 0x7000
     }
 }

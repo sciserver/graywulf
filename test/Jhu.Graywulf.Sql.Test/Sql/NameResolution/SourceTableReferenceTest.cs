@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var sql =
 @"SELECT * FROM Author a
 SELECT * FROM Book b";
-            var details = Parse(sql);
+            var details = ParseAndResolveNames(sql);
 
             Assert.AreEqual(2, details.SourceTableReferences.Count);
         }
@@ -33,7 +33,7 @@ SELECT * FROM Book b";
         {
             // Test is tables are correctly collected from all select statements
             var sql = @"SELECT * FROM (SELECT * FROM Author) a";
-            var details = Parse(sql);
+            var details = ParseAndResolveNames(sql);
 
             Assert.AreEqual(1, details.SourceTableReferences.Count);
         }
@@ -45,7 +45,7 @@ SELECT * FROM Book b";
             var sql =
 @"DECLARE @v int = (SELECT TOP 1 ID FROM Author)
 SELECT * FROM Book";
-            var details = Parse(sql);
+            var details = ParseAndResolveNames(sql);
 
             Assert.AreEqual(2, details.SourceTableReferences.Count);
         }
@@ -55,7 +55,7 @@ SELECT * FROM Book";
         {
             // Test is tables are correctly collected from all select statements
             var sql = @"SELECT ID FROM Author";
-            var details = Parse(sql);
+            var details = ParseAndResolveNames(sql);
             var tr = details.SourceTableReferences.Values.First()[0];
 
             Assert.AreEqual(1, details.SourceTableReferences.Count);
@@ -73,7 +73,7 @@ SELECT * FROM Book";
             var sql =
 @"SELECT ID FROM Author
 SELECT Name FROM Author";
-            var details = Parse(sql);
+            var details = ParseAndResolveNames(sql);
 
             var tr = details.SourceTableReferences.Values.First()[0];
             Assert.AreEqual(1, details.SourceTableReferences.Count);
@@ -93,7 +93,7 @@ SELECT Name FROM Author";
             var sql =
 @"SELECT ID FROM Author
 SELECT Name FROM Author WHERE ID = 2";
-            var details = Parse(sql);
+            var details = ParseAndResolveNames(sql);
 
             var tr = details.SourceTableReferences.Values.First()[0];
             Assert.AreEqual(1, details.SourceTableReferences.Count);
@@ -118,7 +118,7 @@ SELECT Name FROM Author WHERE ID = 2";
 @"SELECT TOP 1 * 
 INTO newtable
 FROM Author";
-            var details = Parse(sql);
+            var details = ParseAndResolveNames(sql);
 
             Assert.AreEqual(1, details.OutputTableReferences.Count);
         }
@@ -128,7 +128,7 @@ FROM Author";
 
         private List<Column> GetColumnListTestHelper(string sql, ColumnContext context)
         {
-            var details = Parse(sql);
+            var details = ParseAndResolveNames(sql);
             var ts = details.ParsingTree.FindDescendantRecursive<SelectStatement>().QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
             var table = (IColumns)ts.TableReference.DatabaseObject;
             var cr = ts.TableReference.FilterColumnReferences(context);

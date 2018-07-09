@@ -79,6 +79,7 @@
     <Compile Include="Sql\Jobs\Query\AssignServerInstance.cs" />
     <Compile Include="Sql\Jobs\Query\CheckDestinationTable.cs" />
     <Compile Include="Sql\Jobs\Query\ComputeTableStatistics.cs" />
+    <Compile Include="Sql\Jobs\Query\Constants.cs" />
     <Compile Include="Sql\Jobs\Query\CopyOutputTable.cs" />
     <Compile Include="Sql\Jobs\Query\CopySourceTable.cs" />
     <Compile Include="Sql\Jobs\Query\CreateOutputTableIndexes.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Sql\Jobs\Query\RemoteOutputTable.cs" />
     <Compile Include="Sql\Jobs\Query\RemoteSourceTable.cs" />
     <Compile Include="Sql\Jobs\Query\RemoteTable.cs" />
+    <Compile Include="Sql\Jobs\Query\ServerMessageMagicToken.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQuery.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryCodeGenerator.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryFactory.cs" />
@@ -110,6 +112,8 @@
     <Compile Include="Sql\Jobs\Query\SqlQueryJobSettings.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryParameters.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryPartition.cs" />
+    <Compile Include="Sql\Jobs\Query\SqlQueryRewriter.cs" />
+    <Compile Include="Sql\Jobs\Query\SqlQueryRewriterOptions.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryScripts.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

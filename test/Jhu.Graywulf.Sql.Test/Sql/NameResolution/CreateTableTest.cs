@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
     [Data3] [nvarchar](50) NULL
 )";
 
-            var ss = Parse<CreateTableStatement>(sql);
+            var ss = ParseAndResolveNames<CreateTableStatement>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
     [Data4] [dbo].[ClrUDT] NOT NULL
 )";
 
-            var ss = Parse<CreateTableStatement>(sql);
+            var ss = ParseAndResolveNames<CreateTableStatement>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
@@ -105,7 +105,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
     [Data2] [float] DEFAULT [Graywulf_Schema_Test].[dbo].[ScalarFunction]()
 )";
 
-            var ss = Parse<CreateTableStatement>(sql);
+            var ss = ParseAndResolveNames<CreateTableStatement>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
@@ -139,7 +139,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
     INDEX IX_text ([ID], [Data])
 )";
 
-            var ss = Parse<CreateTableStatement>(sql);
+            var ss = ParseAndResolveNames<CreateTableStatement>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
@@ -172,7 +172,7 @@ SELECT * FROM test
 SELECT * FROM [Graywulf_Schema_Test].[dbo].[test]
 ";
 
-            var ss = Parse<StatementBlock>(sql);
+            var ss = ParseAndResolveNames<StatementBlock>(sql);
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);

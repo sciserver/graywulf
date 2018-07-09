@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "SELECT Name FROM Author";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "SELECT Name FROM Author INNER JOIN Book ON Author.ID = 5";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
@@ -60,7 +60,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "SELECT Name FROM Author WHERE ID = 1";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 1", res);
@@ -84,7 +84,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "SELECT ID, MAX(Name) FROM Author GROUP BY ID";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
@@ -108,7 +108,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "SELECT ID, MAX(Name) FROM Author GROUP BY ID HAVING MAX(Name) > 5";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
@@ -132,7 +132,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "SELECT Name FROM Author a";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
@@ -147,7 +147,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "SELECT Author.Name FROM Author";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
@@ -159,7 +159,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "SELECT a.Name, b.Name FROM Author a, Author b";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
@@ -181,7 +181,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "SELECT a.ID, b.ID FROM Author a, Book b";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
@@ -203,7 +203,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "SELECT Author.ID, Book.ID FROM Author, Book";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
@@ -228,7 +228,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             try
             {
-                var qs = Parse<QuerySpecification>(sql);
+                var qs = ParseAndResolveNames<QuerySpecification>(sql);
                 Assert.Fail();
             }
             catch (NameResolverException)
@@ -243,7 +243,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             try
             {
-                var qs = Parse<QuerySpecification>(sql);
+                var qs = ParseAndResolveNames<QuerySpecification>(sql);
                 Assert.Fail();
             }
             catch (NameResolverException)
@@ -258,7 +258,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             try
             {
-                var qs = Parse<QuerySpecification>(sql);
+                var qs = ParseAndResolveNames<QuerySpecification>(sql);
                 Assert.Fail();
             }
             catch (NameResolverException)
@@ -273,7 +273,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             try
             {
-                var qs = Parse<QuerySpecification>(sql);
+                var qs = ParseAndResolveNames<QuerySpecification>(sql);
                 Assert.Fail();
             }
             catch (NameResolverException)
@@ -288,7 +288,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             try
             {
-                var qs = Parse<QuerySpecification>(sql);
+                var qs = ParseAndResolveNames<QuerySpecification>(sql);
                 Assert.Fail();
             }
             catch (NameResolverException)
@@ -303,7 +303,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             try
             {
-                var qs = Parse<QuerySpecification>(sql);
+                var qs = ParseAndResolveNames<QuerySpecification>(sql);
                 Assert.Fail();
             }
             catch (NameResolverException)
@@ -316,7 +316,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "SELECT * FROM Author";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             Assert.AreEqual(2, qs.ResultsTableReference.ColumnReferences.Count);
 
@@ -328,13 +328,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public void AliasStarQueryTest()
         {
             var sql = "SELECT * FROM Author AS a";
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
             var res = GenerateCode(qs);
             Assert.AreEqual(2, qs.ResultsTableReference.ColumnReferences.Count);           
             Assert.AreEqual("SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]", res);
 
             sql = "SELECT a.* FROM Author AS a";
-            qs = Parse<QuerySpecification>(sql);
+            qs = ParseAndResolveNames<QuerySpecification>(sql);
             res = GenerateCode(qs);
             Assert.AreEqual(2, qs.ResultsTableReference.ColumnReferences.Count);
             Assert.AreEqual("SELECT [a].* FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]", res);
@@ -345,7 +345,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "SELECT * FROM Author CROSS JOIN Book";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             Assert.AreEqual(5, qs.ResultsTableReference.ColumnReferences.Count);
             Assert.AreEqual("ID", qs.ResultsTableReference.ColumnReferences[0].ColumnName);
@@ -362,7 +362,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public void AliasTwoTableStarQueryTest()
         {
             var sql = "SELECT * FROM Author AS a CROSS JOIN Book AS b";
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
             var res = GenerateCode(qs);
 
             Assert.AreEqual("SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Book] AS [b]", res);
@@ -379,7 +379,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public void AliasTwoTableStarQueryTest2()
         {
             var sql = "SELECT a.*, b.* FROM Author AS a CROSS JOIN Book AS b";
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
             var res = GenerateCode(qs);
 
             Assert.AreEqual("SELECT [a].*, [b].* FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Book] AS [b]", res);
@@ -397,7 +397,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public void SameTableNameTest()
         {
             var sql = "SELECT * FROM dbo.Author a CROSS JOIN test.Author b";
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
             var res = GenerateCode(qs);
 
             Assert.AreEqual(4, qs.ResultsTableReference.ColumnReferences.Count);
@@ -413,7 +413,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public void SameTableNameTest2()
         {
             var sql = "SELECT a.*, b.* FROM dbo.Author a CROSS JOIN test.Author b";
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
             var res = GenerateCode(qs);
 
             Assert.AreEqual(4, qs.ResultsTableReference.ColumnReferences.Count);
@@ -429,7 +429,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public void SameTableNameTest4()
         {
             var sql = "SELECT b.*, a.* FROM dbo.Author a CROSS JOIN test.Author b";
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
             var res = GenerateCode(qs);
 
             Assert.AreEqual(4, qs.ResultsTableReference.ColumnReferences.Count);
@@ -447,7 +447,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "SELECT ID FROM Author ORDER BY Name";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
 
@@ -459,7 +459,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var sql = "SELECT Name FROM (SELECT * FROM Author) a";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [a].[Name] FROM (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
@@ -473,7 +473,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 FROM (SELECT * FROM Author) a
 CROSS JOIN (SELECT * FROM Author) b";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
             Assert.AreEqual(
@@ -487,7 +487,7 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         {
             var sql = "SELECT a.*, b.* FROM Author a CROSS JOIN Author b";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [a].*, [b].* FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Author] [b]", res);
@@ -498,7 +498,7 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         {
             var sql = "SELECT ID a FROM Author";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [a] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
@@ -509,7 +509,7 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         {
             var sql = "SELECT ID a, ID b FROM Author";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [a], [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [b] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
@@ -520,7 +520,7 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         {
             var sql = "SELECT ID, ID FROM Author";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[ID] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
@@ -531,7 +531,7 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         {
             var sql = "SELECT a.* FROM Author a";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [a].* FROM [Graywulf_Schema_Test].[dbo].[Author] [a]", res);
@@ -542,7 +542,7 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         {
             var sql = "SELECT a.*, b.ID AS q FROM Author a CROSS JOIN Author b";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [a].*, [b].[ID] AS [q] FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Author] [b]", res);
@@ -553,7 +553,7 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         {
             var sql = "SELECT a.*, a.* FROM Author a";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [a].*, [a].* FROM [Graywulf_Schema_Test].[dbo].[Author] [a]", res);
@@ -564,7 +564,7 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         {
             var sql = "SELECT a.ID q, b.* FROM Author a CROSS JOIN Author b";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [a].[ID] AS [q], [b].* FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Author] [b]", res);
@@ -577,7 +577,7 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         {
             var sql = "SELECT SIN(1)";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT SIN(1)", res);
@@ -588,7 +588,7 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         {
             var sql = "SELECT dbo.TestScalarFunction(1)";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[TestScalarFunction](1)", res);
@@ -598,7 +598,7 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         public void ScalarFunctionInSubqueryTest()
         {
             var sql = "SELECT * FROM (SELECT dbo.TestScalarFunction(1) t) a";
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
             var sq = qs.FindDescendantRecursive<Subquery>().QueryExpression.FirstQuerySpecification;
             var res = GenerateCode(qs);
 
@@ -616,7 +616,7 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         {
             var sql = "SELECT * FROM dbo.TestTableValuedFunction(0) AS f";
 
-            var qs = Parse<QuerySpecification>(sql);
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
             var tables = qs.EnumerateSourceTableReferences(false).ToArray();
 
