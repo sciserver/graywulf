@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.Sql.CodeGeneration;
+using Jhu.Graywulf.Sql.QueryGeneration;
 using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             throw new NotImplementedException();
         }
 
-        public override void Write(CodeGeneratorBase cg, TextWriter writer)
+        public override void Write(QueryGeneratorBase cg, TextWriter writer)
         {
             var tr = cg.MapTableReference(destinationTable);
 

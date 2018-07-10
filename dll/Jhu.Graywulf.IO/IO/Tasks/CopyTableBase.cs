@@ -11,7 +11,7 @@ using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Sql.Schema;
-using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
+using Jhu.Graywulf.Sql.QueryRendering.SqlServer;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Data;
 
@@ -394,7 +394,7 @@ namespace Jhu.Graywulf.IO.Tasks
             // writing the data into the transaction log prior to copying it to
             // the table. The database recovery model needs to be set to simple.
 
-            var cg = new SqlServerCodeGenerator();
+            var cg = new SqlServerQueryRenderer();
             var dr = (DbDataReader)sdr;
 
             // Turn on TABLOCK and other important options

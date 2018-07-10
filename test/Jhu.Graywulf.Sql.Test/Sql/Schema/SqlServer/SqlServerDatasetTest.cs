@@ -6,7 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Data;
-using Jhu.Graywulf.Sql.CodeGeneration;
+using Jhu.Graywulf.Sql.QueryGeneration;
 
 namespace Jhu.Graywulf.Sql.Schema.SqlServer
 {
@@ -505,7 +505,7 @@ namespace Jhu.Graywulf.Sql.Schema.SqlServer
         {
             var ds = CreateTestDataset();
             var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithAllTypes"];
-            var codegen = CodeGeneratorFactory.CreateCodeGenerator(ds);
+            var codegen = QueryGeneratorFactory.CreateCodeGenerator(ds);
             var sql = codegen.GenerateSelectStarQuery(t, 100);
 
             using (var cn = t.Dataset.OpenConnection())

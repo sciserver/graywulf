@@ -92,6 +92,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
         }
 
+        #region Table source rewrite
+
+        protected override void 
+
+        #endregion
         #region Select list rewrite
 
         protected override void RewriteSelectList(QuerySpecification qs, SelectList selectList, int depth, int index, QueryContext queryContext)

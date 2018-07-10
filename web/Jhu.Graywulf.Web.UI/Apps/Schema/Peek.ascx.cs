@@ -10,7 +10,7 @@ using System.Web.UI;
 using Jhu.Graywulf.Sql.Schema;
 using schema = Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Sql.CodeGeneration;
+using Jhu.Graywulf.Sql.QueryGeneration;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Data;
 
@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         private async Task ExecuteQuery(CancellationToken cancellationToken)
         {
             var tableOrView = Item;
-            var codegen = CodeGeneratorFactory.CreateCodeGenerator(tableOrView.Dataset);
+            var codegen = QueryGeneratorFactory.CreateCodeGenerator(tableOrView.Dataset);
             var sql = codegen.GenerateSelectStarQuery(tableOrView, 100);
 
             // To peek into data, pick a server

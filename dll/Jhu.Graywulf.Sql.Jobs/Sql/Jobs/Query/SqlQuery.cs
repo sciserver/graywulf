@@ -13,7 +13,7 @@ using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
-using Jhu.Graywulf.Sql.CodeGeneration;
+using Jhu.Graywulf.Sql.QueryGeneration;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.IO.Tasks;
 

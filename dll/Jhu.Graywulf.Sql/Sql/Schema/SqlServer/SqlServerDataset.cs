@@ -1581,7 +1581,7 @@ END",
         {
             EnsureMutable(table);
 
-            var codegen = new Jhu.Graywulf.Sql.CodeGeneration.SqlServer.SqlServerCodeGenerator();
+            var codegen = new Jhu.Graywulf.Sql.QueryGeneration.SqlServer.SqlServerQueryGenerator();
             var sql = codegen.GenerateCreateTableScript(table, createPrimaryKey, createIndexes);
 
             using (var cn = OpenConnectionInternal())
@@ -1605,7 +1605,7 @@ END",
             EnsureMutable(index);
 
             string sql;
-            var codegen = new Jhu.Graywulf.Sql.CodeGeneration.SqlServer.SqlServerCodeGenerator();
+            var codegen = new Jhu.Graywulf.Sql.QueryGeneration.SqlServer.SqlServerQueryGenerator();
 
             if (index.IsPrimaryKey)
             {
@@ -1630,7 +1630,7 @@ END",
             EnsureMutable(index);
 
             string sql;
-            var codegen = new Jhu.Graywulf.Sql.CodeGeneration.SqlServer.SqlServerCodeGenerator();
+            var codegen = new Jhu.Graywulf.Sql.QueryGeneration.SqlServer.SqlServerQueryGenerator();
 
             if (index.IsPrimaryKey)
             {

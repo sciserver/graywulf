@@ -8,8 +8,10 @@ using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.LogicalExpressions;
+using Jhu.Graywulf.Sql.QueryRendering;
+using Jhu.Graywulf.Sql.QueryRendering.SqlServer;
 
-namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
+namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
 {
     [TestClass]
     public class SqlServerCodeGeneratorTest : SqlServerCodeGeneratorTestBase
@@ -19,7 +21,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
             var ss = CreateSelect(query);
             var w = new StringWriter();
 
-            var cg = new SqlServerCodeGenerator();
+            var cg = new SqlServerQueryRenderer();
 
             cg.TableNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.ColumnNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
@@ -129,7 +131,7 @@ WHERE [b1].[ID] = 1 AND [b2].[ID] = 2", res);
         {
             var ds = CreateTestDataset();
             var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithPrimaryKey"];
-            var cg = new SqlServerCodeGenerator();
+            var cg = new SqlServerQueryGenerator();
 
             var sql = cg.GenerateCreatePrimaryKeyScript(t);
 
@@ -148,7 +150,7 @@ ADD CONSTRAINT [PK_TableWithPrimaryKey] PRIMARY KEY CLUSTERED (
         {
             var ds = CreateTestDataset();
             var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithPrimaryKey"];
-            var cg = new SqlServerCodeGenerator();
+            var cg = new SqlServerQueryGenerator();
 
             var sql = cg.GenerateDropPrimaryKeyScript(t);
 

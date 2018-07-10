@@ -116,6 +116,7 @@
     <Compile Include="Parsing\Node.cs" />
     <Compile Include="Parsing\Parser.cs" />
     <Compile Include="Parsing\ParserException.cs" />
+    <Compile Include="Parsing\ParsingTreeVisitorBase.cs" />
     <Compile Include="Parsing\Symbol.cs" />
     <Compile Include="Parsing\Terminal.cs" />
     <Compile Include="Parsing\Token.cs" />

@@ -148,7 +148,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 (
                     Constant,
 
-                    Subquery,
+                    ExpressionSubquery,
                     ExpressionBrackets,
 
                     SystemVariable,
@@ -207,6 +207,8 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 May(CommentOrWhitespace),
                 BracketClose
             );
+
+        public static Expression<Rule> ExpressionSubquery = () => Inherit(Subquery);
 
         public static Expression<Rule> ExpressionBrackets = () =>
             Sequence(BracketOpen, May(CommentOrWhitespace), Expression, May(CommentOrWhitespace), BracketClose);
@@ -320,7 +322,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 May(CommentOrWhitespace),
                 Must
                 (
-                    Subquery,
+                    SemiJoinSubquery,
                     Sequence
                     (
                         BracketOpen,
@@ -341,7 +343,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 May(CommentOrWhitespace),
                 Must(Keyword("ALL"), Keyword("SOME"), Keyword("ANY")),
                 May(CommentOrWhitespace),
-                Subquery
+                SemiJoinSubquery
             );
 
         public static Expression<Rule> ExistsSemiJoinPredicate = () =>
@@ -349,8 +351,10 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             (
                 Keyword("EXISTS"),
                 May(CommentOrWhitespace),
-                Subquery
+                SemiJoinSubquery
             );
+
+        public static Expression<Rule> SemiJoinSubquery = () => Inherit(Subquery);
 
         #endregion
         #region Case-When constructs
@@ -1013,8 +1017,10 @@ FOR select_statement
                 May(CommentOrWhitespace),
                 Keyword("AS"),
                 May(CommentOrWhitespace),
-                Subquery
+                CommonTableSubquery
             );
+
+        public static Expression<Rule> CommonTableSubquery = () => Inherit(Subquery);
 
         #endregion
 

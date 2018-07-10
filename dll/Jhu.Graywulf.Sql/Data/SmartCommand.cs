@@ -233,7 +233,7 @@ namespace Jhu.Graywulf.Data
             // TODO: this only works with single SELECTs now
             // and can count only records from query, SPs don't work
 
-            var cg = Sql.CodeGeneration.CodeGeneratorFactory.CreateCodeGenerator(dataset.ProviderName);
+            var cg = Sql.QueryGeneration.QueryGeneratorFactory.CreateCodeGenerator(dataset.ProviderName);
             var sql = cg.GenerateCountStarQuery(command.CommandText);
 
             var res = new List<long>();

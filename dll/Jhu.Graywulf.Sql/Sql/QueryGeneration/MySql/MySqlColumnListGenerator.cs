@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Sql.NameResolution;
-using Jhu.Graywulf.Sql.Schema;
+using Jhu.Graywulf.Sql.QueryRendering;
+using Jhu.Graywulf.Sql.QueryRendering.MySql;
 
-namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
+namespace Jhu.Graywulf.Sql.QueryGeneration.MySql
 {
     public class MySqlColumnListGenerator : ColumnListGeneratorBase
     {
@@ -24,9 +25,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
         {
         }
 
-        protected override string QuoteIdentifier(string identifier)
+        protected override QueryRendererBase CreateQueryRenderer()
         {
-            return MySqlCodeGenerator.QuoteIdentifier(identifier);
+            return new MySqlQueryRenderer();
         }
 
         // TODO: add this function to the select list generation loop somehow

@@ -11,7 +11,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Sql.Jobs.Query;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
-using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
+using Jhu.Graywulf.Sql.QueryGeneration.SqlServer;
 using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Sql.Schema;
 
@@ -44,10 +44,10 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             var cg = new SqlQueryCodeGenerator(q)
             {
-                TableNameRendering = CodeGeneration.NameRendering.FullyQualified,
-                ColumnNameRendering = CodeGeneration.NameRendering.FullyQualified,
-                DataTypeNameRendering = CodeGeneration.NameRendering.FullyQualified,
-                FunctionNameRendering = CodeGeneration.NameRendering.FullyQualified,
+                TableNameRendering = QueryGeneration.NameRendering.FullyQualified,
+                ColumnNameRendering = QueryGeneration.NameRendering.FullyQualified,
+                DataTypeNameRendering = QueryGeneration.NameRendering.FullyQualified,
+                FunctionNameRendering = QueryGeneration.NameRendering.FullyQualified,
             };
             var ts = q.QueryDetails.ParsingTree.FindDescendantRecursive<SelectStatement>().QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
 

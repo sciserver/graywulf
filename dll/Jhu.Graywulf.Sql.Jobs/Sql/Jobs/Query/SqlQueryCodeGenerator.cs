@@ -9,14 +9,14 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
-using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
+using Jhu.Graywulf.Sql.QueryGeneration.SqlServer;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
-    public class SqlQueryCodeGenerator : SqlServerCodeGenerator
+    public class SqlQueryCodeGenerator : SqlServerQueryGenerator
     {
         #region Private member variables
 
@@ -109,6 +109,79 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             AppendPartitionParameters(source);
 
             return source;
+        }
+
+        #endregion
+        #region Identifier formatting functions
+
+        /// <summary>
+        /// Puts quotes around an identifier.
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// The quoting characters used depends on the flavor of SQL
+        /// </remarks>
+        protected abstract string GetQuotedIdentifier(string identifier);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Unquoting depends on the actual input and not on the
+        /// code generator, so this function is implemented as non-
+        /// virtual
+        /// </remarks>
+        public string UnquoteIdentifier(string identifier)
+        {
+            if (identifier[0] == '[' && identifier[identifier.Length - 1] == ']')
+            {
+                return identifier.Substring(1, identifier.Length - 2);
+            }
+            else
+            {
+                return identifier;
+            }
+        }
+
+        public string EscapeIdentifier(string identifier)
+        {
+            return identifier.Replace(".", "_");
+        }
+
+        public string GenerateEscapedUniqueName(DatabaseObject dbobj, string alias)
+        {
+            string res = String.Empty;
+
+            if (!String.IsNullOrWhiteSpace(dbobj.DatasetName))
+            {
+                res += String.Format("{0}_", EscapeIdentifier(dbobj.DatasetName));
+            }
+
+            if (!String.IsNullOrWhiteSpace(dbobj.DatabaseName))
+            {
+                res += String.Format("{0}_", EscapeIdentifier(dbobj.DatabaseName));
+            }
+
+            if (!String.IsNullOrWhiteSpace(dbobj.SchemaName))
+            {
+                res += String.Format("{0}_", EscapeIdentifier(dbobj.SchemaName));
+            }
+
+            if (!String.IsNullOrWhiteSpace(dbobj.ObjectName))
+            {
+                res += String.Format("{0}", EscapeIdentifier(dbobj.ObjectName));
+            }
+
+            // If a table is referenced more than once we need an alias to distinguish them
+            if (!String.IsNullOrWhiteSpace(alias))
+            {
+                res += String.Format("_{0}", EscapeIdentifier(alias));
+            }
+
+            return res;
         }
 
         #endregion

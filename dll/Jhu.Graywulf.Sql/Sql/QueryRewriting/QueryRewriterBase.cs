@@ -76,32 +76,6 @@ namespace Jhu.Graywulf.Sql.QueryRewriting
             {
                 RewriteQuerySpecification(qs, depth, index++, queryContext);
             }
-
-            /*
-             * // QueryExpressionBrackets
-            var qeb = qe.FindDescendant<QueryExpressionBrackets>();
-
-            if (qeb != null)
-            {
-                var qee = qeb.FindDescendant<QueryExpression>();
-                RemoveNonStandardTokens(qee);
-            }
-
-            // QueryExpression
-            var qer = qe.FindDescendant<QueryExpression>();
-
-            if (qer != null)
-            {
-                RemoveNonStandardTokens(qer);
-            }
-
-            // QuerySpecification
-            var qs = qe.FindDescendant<QuerySpecification>();
-
-            if (qs != null)
-            {
-                RemoveNonStandardTokens(qs);
-            }*/
         }
 
         protected virtual void RewriteQuerySpecification(QuerySpecification qs, int depth, int index, QueryContext queryContext)
@@ -111,6 +85,11 @@ namespace Jhu.Graywulf.Sql.QueryRewriting
             if (selectList != null)
             {
                 RewriteSelectList(qs, selectList, depth, index, queryContext);
+            }
+
+            foreach (var ts in qs.FromClause.EnumerateSourceTables(false))
+            {
+
             }
         }
 

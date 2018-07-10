@@ -11,7 +11,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Sql.Jobs.Query;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
-using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
+using Jhu.Graywulf.Sql.QueryGeneration.SqlServer;
 using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Sql.Schema;
 

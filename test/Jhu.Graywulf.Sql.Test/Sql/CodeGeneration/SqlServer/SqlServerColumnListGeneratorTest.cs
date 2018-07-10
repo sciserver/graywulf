@@ -8,10 +8,10 @@ using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
-using Jhu.Graywulf.Sql.CodeGeneration;
-using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
+using Jhu.Graywulf.Sql.QueryGeneration;
+using Jhu.Graywulf.Sql.QueryGeneration.SqlServer;
 
-namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
+namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
 {
     [TestClass]
     public class SqlServerColumnListGeneratorTest :SqlServerCodeGeneratorTestBase

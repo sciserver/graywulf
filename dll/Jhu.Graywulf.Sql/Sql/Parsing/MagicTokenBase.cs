@@ -5,10 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.Sql.Parsing;
-using Jhu.Graywulf.Sql.CodeGeneration;
 
-namespace Jhu.Graywulf.Sql.CodeGeneration
+namespace Jhu.Graywulf.Sql.Parsing
 {
     public abstract class MagicTokenBase : Node, IStatement
     {
@@ -27,6 +25,6 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             yield break;
         }
 
-        public abstract void Write(CodeGeneratorBase cg, TextWriter writer);
+        public abstract void Write(QueryRendering.QueryRendererBase renderer, TextWriter writer);
     }
 }

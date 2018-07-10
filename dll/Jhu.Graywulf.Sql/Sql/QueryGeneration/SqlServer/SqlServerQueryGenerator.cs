@@ -8,28 +8,26 @@ using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
+using Jhu.Graywulf.Sql.QueryRendering;
+using Jhu.Graywulf.Sql.QueryRendering.SqlServer;
 using Jhu.Graywulf.Sql.LogicalExpressions;
 
-namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
+namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
 {
-    public class SqlServerCodeGenerator : CodeGeneratorBase
+    public class SqlServerQueryGenerator : QueryGeneratorBase
     {
-        public static string GetCode(Node node, bool resolvedNames)
+        public SqlServerQueryGenerator()
         {
-            var sw = new StringWriter();
-            var cg = new SqlServerCodeGenerator();
-
-            cg.TableNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.ColumnNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.DataTypeNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.FunctionNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.Execute(sw, node);
-
-            return sw.ToString();
         }
 
-        public SqlServerCodeGenerator()
+        public override ColumnListGeneratorBase CreateColumnListGenerator()
         {
+            return new SqlServerColumnListGenerator();
+        }
+
+        public override QueryRendererBase CreateQueryRenderer()
+        {
+            return new SqlServerQueryRenderer();
         }
 
         #region Identifier formatting functions
@@ -37,105 +35,6 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
         public static string QuoteIdentifier(string identifier)
         {
             return String.Format("[{0}]", identifier);
-        }
-
-        protected override string GetQuotedIdentifier(string identifier)
-        {
-            return QuoteIdentifier(identifier);
-        }
-
-        protected override string GetResolvedTableName(string databaseName, string schemaName, string tableName)
-        {
-            string res = String.Empty;
-
-            if (!String.IsNullOrWhiteSpace(databaseName))
-            {
-                res += GetQuotedIdentifier(databaseName) + ".";
-            }
-
-            if (!String.IsNullOrWhiteSpace(schemaName))
-            {
-                res += GetQuotedIdentifier(schemaName);
-            }
-
-            if (!String.IsNullOrWhiteSpace(tableName))
-            {
-                // If no schema name is specified but there's a database name,
-                // SQL Server uses the database..table syntax
-                if (res != String.Empty)
-                {
-                    res += ".";
-                }
-
-                res += GetQuotedIdentifier(tableName);
-            }
-
-            return res;
-        }
-
-        protected override string GetResolvedDataTypeName(DataType dataType)
-        {
-            // TODO: This is a duplicate with DataType.TypeNameWithLength, merge
-
-            var name = GetQuotedIdentifier(dataType.ObjectName.ToLowerInvariant());
-
-            if (!dataType.HasLength)
-            {
-                return name;
-            }
-            else if (dataType.HasPrecision && !dataType.HasScale)
-            {
-                return String.Format("{0}({1})", name, dataType.Precision);
-            }
-            else if (dataType.HasScale && !dataType.HasPrecision)
-            {
-                return String.Format("{0}({1})", name, dataType.Scale);
-            }
-            else if (dataType.HasScale && dataType.HasPrecision)
-            {
-                return String.Format("{0}({1}, {2})", name, dataType.Precision, dataType.Scale);
-            }
-            else if (dataType.IsMaxLength)
-            {
-                return String.Format("{0}(max)", name);
-            }
-            else
-            {
-                return String.Format("{0}({1})", name, dataType.Length);
-            }
-        }
-
-        protected override string GetResolvedDataTypeName(string databaseName, string schemaName, string dataTypeName)
-        {
-            string res = String.Empty;
-
-            // SQL Server UDTs can never have a database name but might have a schema name
-
-            if (schemaName != null)
-            {
-                res += GetQuotedIdentifier(schemaName) + ".";
-            }
-
-            res += GetQuotedIdentifier(dataTypeName);
-
-            return res;
-        }
-
-        protected override string GetResolvedFunctionName(string databaseName, string schemaName, string functionName)
-        {
-            string res = String.Empty;
-
-
-            if (databaseName != null)
-            {
-                res += GetQuotedIdentifier(databaseName) + ".";
-            }
-
-            // SQL Server function must always have the schema name specified
-            res += GetQuotedIdentifier(schemaName) + ".";
-            res += GetQuotedIdentifier(functionName);
-
-            return res;
         }
 
         #endregion
@@ -146,7 +45,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
             return String.Format(
                 "SELECT {0} * FROM {1}",
                 GenerateTopExpression(top),
-                GetResolvedTableName(tableReference.DatabaseName, tableReference.SchemaName, tableReference.DatabaseObjectName));
+                Renderer.GetResolvedTableName(tableReference.DatabaseName, tableReference.SchemaName, tableReference.DatabaseObjectName));
         }
 
         public override string GenerateSelectStarQuery(TableReference tableReference, string orderBy, long from, long max)
@@ -155,7 +54,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 
             return String.Format(
                 "SELECT * FROM {0} {1} {2}",
-                GetResolvedTableName(tableReference.DatabaseName, tableReference.SchemaName, tableReference.DatabaseObjectName),
+                Renderer.GetResolvedTableName(tableReference.DatabaseName, tableReference.SchemaName, tableReference.DatabaseObjectName),
                 orderBy,
                 offset);
         }
@@ -165,7 +64,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
             return String.Format(
                 "SELECT {0} * FROM {1}",
                 GenerateTopExpression(top),
-                GetResolvedTableName(tableOrView.DatabaseName, tableOrView.SchemaName, tableOrView.ObjectName));
+                Renderer.GetResolvedTableName(tableOrView.DatabaseName, tableOrView.SchemaName, tableOrView.ObjectName));
         }
 
         public override string GenerateSelectStarQuery(TableOrView tableOrView, string orderBy, long from, long max)
@@ -174,7 +73,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 
             return String.Format(
                 "SELECT * FROM {0} {1} {2}",
-                GetResolvedTableName(tableOrView.DatabaseName, tableOrView.SchemaName, tableOrView.ObjectName),
+                Renderer.GetResolvedTableName(tableOrView.DatabaseName, tableOrView.SchemaName, tableOrView.ObjectName),
                 orderBy,
                 offset);
         }
@@ -228,7 +127,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 
             if (!String.IsNullOrWhiteSpace(tableAlias))
             {
-                sql.AppendFormat("AS {0} ", GetQuotedIdentifier(tableAlias));
+                sql.AppendFormat("AS {0} ", Renderer.GetQuotedIdentifier(tableAlias));
             }
 
             if (!String.IsNullOrWhiteSpace(where))
@@ -242,11 +141,6 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
         }
 
         #endregion
-
-        public override ColumnListGeneratorBase CreateColumnListGenerator()
-        {
-            return new SqlServerColumnListGenerator();
-        }
 
         private void GenerateIndexColumns(StringBuilder sql, Index index)
         {
@@ -281,7 +175,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
             sql.Append(" INDEX ");
             sql.AppendLine(QuoteIdentifier(index.IndexName));
             sql.Append("ON ");
-            sql.AppendLine(GetResolvedTableName((TableOrView)index.DatabaseObject));
+            sql.AppendLine(Renderer.GetResolvedTableName((TableOrView)index.DatabaseObject));
 
             GenerateIndexColumns(sql, index);
             GenerateIndexOptions(sql, index, sortInTempDb);
@@ -319,7 +213,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
             };
 
             sql.Append("CREATE TABLE ");
-            sql.Append(GetResolvedTableName(table));
+            sql.Append(Renderer.GetResolvedTableName(table));
             sql.AppendLine(" (");
             columns.Execute(sql);
 
@@ -374,7 +268,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 
             var sql = new StringBuilder();
 
-            sql.AppendFormat("ALTER TABLE {0}", GetResolvedTableName(table));
+            sql.AppendFormat("ALTER TABLE {0}", Renderer.GetResolvedTableName(table));
             sql.AppendLine();
             sql.Append("ADD ");
             GeneratePrimaryKeyConstraint(sql, table, sortInTempDb);
@@ -415,8 +309,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
 DROP CONSTRAINT {1}";
 
             sql = String.Format(sql,
-                GetResolvedTableName(table),
-                GetQuotedIdentifier(table.PrimaryKey.ObjectName));
+                Renderer.GetResolvedTableName(table),
+                Renderer.GetQuotedIdentifier(table.PrimaryKey.ObjectName));
 
             return sql;
         }
@@ -428,7 +322,7 @@ DROP CONSTRAINT {1}";
 
             sql = String.Format(sql,
                 QuoteIdentifier(index.IndexName),
-                GetResolvedTableName((TableOrView)index.DatabaseObject));
+                Renderer.GetResolvedTableName((TableOrView)index.DatabaseObject));
 
             return sql;
         }
@@ -446,7 +340,7 @@ DROP CONSTRAINT {1}";
         {
             var sql = new StringBuilder();
 
-            sql.AppendFormat("ALTER TABLE {0}", GetResolvedTableName(table));
+            sql.AppendFormat("ALTER TABLE {0}", Renderer.GetResolvedTableName(table));
             sql.AppendLine();
 
             foreach (var column in columns)

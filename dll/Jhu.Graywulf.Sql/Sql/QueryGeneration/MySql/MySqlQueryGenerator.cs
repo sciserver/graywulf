@@ -8,12 +8,14 @@ using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.LogicalExpressions;
+using Jhu.Graywulf.Sql.QueryRendering;
+using Jhu.Graywulf.Sql.QueryRendering.MySql;
 
-namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
+namespace Jhu.Graywulf.Sql.QueryGeneration.MySql
 {
-    public class MySqlCodeGenerator : CodeGeneratorBase
+    public class MySqlQueryGenerator : QueryGeneratorBase
     {
-        public MySqlCodeGenerator()
+        public MySqlQueryGenerator()
         {
         }
 
@@ -22,74 +24,11 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
             return new MySqlColumnListGenerator();
         }
 
-        #region Identifier formatting functions
-
-        public static string QuoteIdentifier(string identifier)
+        public override QueryRendererBase CreateQueryRenderer()
         {
-            return String.Format("`{0}`", identifier);
+            return new MySqlQueryRenderer();
         }
 
-        protected override string GetQuotedIdentifier(string identifier)
-        {
-            return QuoteIdentifier(UnquoteIdentifier(identifier));
-        }
-
-        protected override string GetResolvedTableName(string databaseName, string schemaName, string tableName)
-        {
-            string res = String.Empty;
-
-            if (!String.IsNullOrWhiteSpace(databaseName))
-            {
-                res += GetQuotedIdentifier(databaseName) + ".";
-            }
-
-            // MySQL doesn't have the equivalent of SQL Server schame name
-
-            res += GetQuotedIdentifier(tableName);
-
-            return res;
-        }
-
-        protected override string GetResolvedDataTypeName(DataType dataType)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override string GetResolvedDataTypeName(string databaseName, string schemaName, string functionName)
-        {
-            string res = String.Empty;
-
-
-            if (databaseName != null)
-            {
-                res += GetQuotedIdentifier(databaseName) + ".";
-            }
-
-            // MySQL doesn't have the equivalent of SQL Server schame name
-
-            res += GetQuotedIdentifier(functionName);
-
-            return res;
-        }
-
-        protected override string GetResolvedFunctionName(string databaseName, string schemaName, string functionName)
-        {
-            string res = String.Empty;
-
-
-            if (databaseName != null)
-            {
-                res += GetQuotedIdentifier(databaseName) + ".";
-            }
-
-            // MySQL doesn't have the equivalent of SQL Server schame name
-
-            res += GetQuotedIdentifier(functionName);
-
-            return res;
-        }
-
-        #endregion
         #region Complete query generators
 
         public override string GenerateSelectStarQuery(TableReference tableReference, int top)
@@ -97,7 +36,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
             return String.Format(
                 "SELECT t.* FROM {1} AS t {0}",
                 GenerateTopExpression(top),
-                GetResolvedTableName(tableReference.DatabaseName, tableReference.SchemaName, tableReference.DatabaseObjectName));
+                Renderer.GetResolvedTableName(tableReference.DatabaseName, tableReference.SchemaName, tableReference.DatabaseObjectName));
         }
 
         public override string GenerateSelectStarQuery(TableReference tableReference, string orderBy, long from, long max)
@@ -110,7 +49,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
             return String.Format(
                 "SELECT t.* FROM {1} AS t {0}",
                 GenerateTopExpression(top),
-                GetResolvedTableName(tableOrView.DatabaseName, tableOrView.SchemaName, tableOrView.ObjectName));
+                Renderer.GetResolvedTableName(tableOrView.DatabaseName, tableOrView.SchemaName, tableOrView.ObjectName));
         }
 
         public override string GenerateSelectStarQuery(TableOrView tableOrView, string orderBy, long from, long max)

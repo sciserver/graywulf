@@ -10,7 +10,7 @@ using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Sql.Jobs.Query;
 using Jhu.Graywulf.Sql.NameResolution;
-using Jhu.Graywulf.Sql.CodeGeneration;
+using Jhu.Graywulf.Sql.QueryGeneration;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {

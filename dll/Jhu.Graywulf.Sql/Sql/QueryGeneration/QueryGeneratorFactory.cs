@@ -5,42 +5,42 @@ using System.Text;
 using System.Data.Common;
 using Jhu.Graywulf.Sql.Schema;
 
-namespace Jhu.Graywulf.Sql.CodeGeneration
+namespace Jhu.Graywulf.Sql.QueryGeneration
 {
-    public static class CodeGeneratorFactory
+    public static class QueryGeneratorFactory
     {
-        public static CodeGeneratorBase CreateCodeGenerator(string providerName)
+        public static QueryGeneratorBase CreateCodeGenerator(string providerName)
         {
             switch (providerName)
             {
                 case Schema.SqlServer.Constants.SqlServerProviderName:
-                    return new SqlServer.SqlServerCodeGenerator();
+                    return new SqlServer.SqlServerQueryGenerator();
                 case Schema.MySql.Constants.MySqlProviderName:
-                    return new MySql.MySqlCodeGenerator();
+                    return new MySql.MySqlQueryGenerator();
                 case Schema.PostgreSql.Constants.PostgreSqlProviderName:
-                    return new PostgreSql.PostgreSqlCodeGenerator();
+                    return new PostgreSql.PostgreSqlQueryGenerator();
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        public static CodeGeneratorBase CreateCodeGenerator(Type t)
+        public static QueryGeneratorBase CreateCodeGenerator(Type t)
         {
             if (t == typeof(Schema.SqlServer.SqlServerDataset) || t.IsSubclassOf(typeof(Schema.SqlServer.SqlServerDataset)))
             {
-                return new SqlServer.SqlServerCodeGenerator();
+                return new SqlServer.SqlServerQueryGenerator();
             }
             else if (t == typeof(Schema.MySql.MySqlDataset) || t.IsSubclassOf(typeof(Schema.MySql.MySqlDataset)))
             {
-                return new MySql.MySqlCodeGenerator();
+                return new MySql.MySqlQueryGenerator();
             }
             else
             {
-                return new PostgreSql.PostgreSqlCodeGenerator();
+                return new PostgreSql.PostgreSqlQueryGenerator();
             }
         }
 
-        public static CodeGeneratorBase CreateCodeGenerator(DatasetBase ds)
+        public static QueryGeneratorBase CreateCodeGenerator(DatasetBase ds)
         {
             return CreateCodeGenerator(ds.GetType());
         }

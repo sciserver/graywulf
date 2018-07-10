@@ -219,6 +219,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Sql\CodeGeneration\MySql\" />
+    <Folder Include="Sql\QueryGeneration\SqlServer\" />
+    <Folder Include="Sql\QueryRendering\SqlServer\" />
+    <Folder Include="Sql\QueryRewriting\SqlServer\" />
     <Folder Include="Sql\Schema\MySql\" />
     <Folder Include="Sql\Schema\PostgreSql\" />
   </ItemGroup>

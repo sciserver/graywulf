@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Parser.Test
             }
 
             RefreshNodeTree(null, rootNode);
-            parsed.Text = Jhu.Graywulf.Sql.CodeGeneration.SqlServer.SqlServerCodeGenerator.GetCode(rootNode, false);
+            parsed.Text = Jhu.Graywulf.Sql.QueryGeneration.SqlServer.SqlServerQueryGenerator.GetCode(rootNode, false);
         }
 
         private void toolbuttonResolve_Click(object sender, EventArgs e)
@@ -89,7 +89,7 @@ namespace Jhu.Graywulf.Parser.Test
                     SelectList sl = qs.FindDescendant<SelectList>();
                     List<ColumnExpression> ce = new List<ColumnExpression>(sl.EnumerateDescendants<ColumnExpression>());
 
-                    parsed.Text = Jhu.Graywulf.Sql.CodeGeneration.SqlServer.SqlServerCodeGenerator.GetCode(rootNode, true);
+                    parsed.Text = Jhu.Graywulf.Sql.QueryGeneration.SqlServer.SqlServerQueryGenerator.GetCode(rootNode, true);
                     //}
                     //catch (Exception ex)
                     //{

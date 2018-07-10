@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Schema.SqlServer;
-using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
+using Jhu.Graywulf.Sql.QueryGeneration.SqlServer;
 using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.NameResolution

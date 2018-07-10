@@ -21,13 +21,13 @@ namespace Jhu.Graywulf.Sql.Parsing
             return sm;
         }
 
-        protected CodeGeneration.CodeGeneratorBase CreateCodeGenerator()
+        protected QueryRendering.QueryRendererBase CreateCodeGenerator()
         {
-            return new CodeGeneration.SqlServer.SqlServerCodeGenerator()
+            return new QueryRendering.SqlServer.SqlServerQueryRenderer()
             {
-                ColumnNameRendering = CodeGeneration.NameRendering.FullyQualified,
-                TableNameRendering = CodeGeneration.NameRendering.FullyQualified,
-                FunctionNameRendering = CodeGeneration.NameRendering.FullyQualified,
+                ColumnNameRendering = QueryRendering.NameRendering.FullyQualified,
+                TableNameRendering = QueryRendering.NameRendering.FullyQualified,
+                FunctionNameRendering = QueryRendering.NameRendering.FullyQualified,
             };
         }
 

@@ -9,29 +9,27 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class ColumnDefinition : IColumnReference, ITableReference, IDataTypeReference
     {
-        private ColumnReference columnReference;
-
         public ColumnReference ColumnReference
         {
-            get { return columnReference; }
-            set { columnReference = value; }
+            get { return ColumnName.ColumnReference; }
+            set { ColumnName.ColumnReference = value; }
         }
 
         public DatabaseObjectReference DatabaseObjectReference
         {
-            get { return columnReference.TableReference; }
+            get { return ColumnReference.TableReference; }
         }
 
         public TableReference TableReference
         {
-            get { return columnReference.TableReference; }
-            set { columnReference.TableReference = value; }
+            get { return ColumnReference.TableReference; }
+            set { ColumnReference.TableReference = value; }
         }
 
         public DataTypeReference DataTypeReference
         {
-            get { return columnReference.ParentDataTypeReference; }
-            set { columnReference.ParentDataTypeReference = value; }
+            get { return DataTypeIdentifier.DataTypeReference; }
+            set { DataTypeIdentifier.DataTypeReference = value; }
         }
 
         public ColumnName ColumnName
@@ -75,27 +73,10 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<ColumnConstraint>(); }
         }
 
-        protected override void OnInitializeMembers()
-        {
-            base.OnInitializeMembers();
-
-            this.columnReference = null;
-        }
-
-        protected override void OnCopyMembers(object other)
-        {
-            base.OnCopyMembers(other);
-
-            var old = (ColumnDefinition)other;
-
-            this.columnReference = old.columnReference;
-        }
-
         public override void Interpret()
         {
             base.Interpret();
-
-            this.columnReference = ColumnReference.Interpret(this);
+            ColumnReference = ColumnReference.Interpret(this);
         }
     }
 }

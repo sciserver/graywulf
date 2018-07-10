@@ -86,12 +86,12 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 
                     if (where != null)
                     {
-                        var cg = new CodeGeneration.SqlServer.SqlServerCodeGenerator();
+                        var cg = new QueryRendering.SqlServer.SqlServerQueryRenderer();
 
-                        cg.TableNameRendering = CodeGeneration.NameRendering.FullyQualified;
-                        cg.ColumnNameRendering = CodeGeneration.NameRendering.IdentifierOnly;
-                        cg.DataTypeNameRendering = CodeGeneration.NameRendering.FullyQualified;
-                        cg.FunctionNameRendering = CodeGeneration.NameRendering.FullyQualified;
+                        cg.TableNameRendering = QueryRendering.NameRendering.FullyQualified;
+                        cg.ColumnNameRendering = QueryRendering.NameRendering.IdentifierOnly;
+                        cg.DataTypeNameRendering = QueryRendering.NameRendering.FullyQualified;
+                        cg.FunctionNameRendering = QueryRendering.NameRendering.FullyQualified;
 
                         var sw = new StringWriter();
                         cg.Execute(sw, where);

@@ -13,8 +13,8 @@ using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.Parsing;
-using Jhu.Graywulf.Sql.CodeGeneration;
-using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
+using Jhu.Graywulf.Sql.QueryRendering;
+using Jhu.Graywulf.Sql.QueryRendering.SqlServer;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Scheduler;
@@ -180,7 +180,7 @@ namespace Jhu.Graywulf.Test
 
         protected string GenerateCode(Jhu.Graywulf.Parsing.Node node)
         {
-            var cg = new SqlServerCodeGenerator();
+            var cg = new SqlServerQueryRenderer();
 
             cg.TableNameRendering = NameRendering.FullyQualified;
             cg.ColumnNameRendering = NameRendering.FullyQualified;

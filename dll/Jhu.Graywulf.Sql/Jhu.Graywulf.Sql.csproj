@@ -200,16 +200,6 @@
     <Compile Include="Data\SmartDataReader.cs" />
     <Compile Include="Data\TypeMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sql\CodeGeneration\CodeGeneratorBase.cs" />
-    <Compile Include="Sql\CodeGeneration\CodeGeneratorFactory.cs" />
-    <Compile Include="Sql\CodeGeneration\ColumnListGeneratorBase.cs" />
-    <Compile Include="Sql\CodeGeneration\Enum.cs" />
-    <Compile Include="Sql\CodeGeneration\MySql\MySqlCodeGenerator.cs" />
-    <Compile Include="Sql\CodeGeneration\MySql\MySqlColumnListGenerator.cs" />
-    <Compile Include="Sql\CodeGeneration\PostgreSql\PostgreSqlCodeGenerator.cs" />
-    <Compile Include="Sql\CodeGeneration\PostgreSql\PostgreSqlColumnListGenerator.cs" />
-    <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerCodeGenerator.cs" />
-    <Compile Include="Sql\CodeGeneration\SqlServer\SqlServerColumnListGenerator.cs" />
     <Compile Include="Sql\LogicalExpressions\BinaryExpression.cs" />
     <Compile Include="Sql\LogicalExpressions\Brackets.cs" />
     <Compile Include="Sql\LogicalExpressions\CnfConverter.cs" />
@@ -263,6 +253,8 @@
     <Compile Include="Sql\NameResolution\TableReference.cs" />
     <Compile Include="Sql\NameResolution\Util.cs" />
     <Compile Include="Sql\NameResolution\VariableReferenceEqualityComparer.cs" />
+    <Compile Include="Sql\Parsing\MagicTokenBase.cs" />
+    <Compile Include="Sql\Parsing\SqlParsingTreeVisitor.cs" />
     <Compile Include="Sql\Parsing\StarColumnIdentifier.cs" />
     <Compile Include="Sql\Parsing\Argument.cs" />
     <Compile Include="Sql\Parsing\ArgumentList.cs" />
@@ -382,8 +374,22 @@
     <Compile Include="Sql\Parsing\WhereClause.cs" />
     <Compile Include="Sql\Parsing\Whitespace.cs" />
     <Compile Include="Sql\Parsing\WindowedFunctionCall.cs" />
+    <Compile Include="Sql\QueryGeneration\ColumnListGeneratorBase.cs" />
+    <Compile Include="Sql\QueryGeneration\Enum.cs" />
+    <Compile Include="Sql\QueryGeneration\MySql\MySqlColumnListGenerator.cs" />
+    <Compile Include="Sql\QueryGeneration\MySql\MySqlQueryGenerator.cs" />
+    <Compile Include="Sql\QueryGeneration\PostgreSql\PostgreSqlColumnListGenerator.cs" />
+    <Compile Include="Sql\QueryGeneration\PostgreSql\PostgreSqlQueryGenerator.cs" />
+    <Compile Include="Sql\QueryGeneration\QueryGeneratorBase.cs" />
+    <Compile Include="Sql\QueryGeneration\QueryGeneratorFactory.cs" />
+    <Compile Include="Sql\QueryGeneration\SqlServer\SqlServerColumnListGenerator.cs" />
+    <Compile Include="Sql\QueryGeneration\SqlServer\SqlServerQueryGenerator.cs" />
+    <Compile Include="Sql\QueryRendering\Enum.cs" />
+    <Compile Include="Sql\QueryRendering\MySql\MySqlQueryRenderer.cs" />
+    <Compile Include="Sql\QueryRendering\PostgreSql\PostgreSqlQueryRenderer.cs" />
+    <Compile Include="Sql\QueryRendering\QueryRendererBase.cs" />
+    <Compile Include="Sql\QueryRendering\SqlServer\SqlServerQueryRenderer.cs" />
     <Compile Include="Sql\QueryRewriting\QueryRewriterBase.cs" />
-    <Compile Include="Sql\CodeGeneration\MagicTokenBase.cs" />
     <Compile Include="Sql\QueryRewriting\SqlServer\SqlServerQueryRewriter.cs" />
     <Compile Include="Sql\Schema\Column.cs" />
     <Compile Include="Sql\Schema\Constants.cs" />
@@ -491,6 +497,7 @@
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\build\Jhu.Graywulf.Build.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

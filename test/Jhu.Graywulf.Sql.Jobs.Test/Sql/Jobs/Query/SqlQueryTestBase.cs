@@ -61,11 +61,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             var cg = new SqlQueryCodeGenerator(CreatePartition(partitioningKeyMin, partitioningKeyMax))
             {
-                TableNameRendering = CodeGeneration.NameRendering.FullyQualified,
-                ColumnNameRendering = CodeGeneration.NameRendering.FullyQualified,
-                DataTypeNameRendering = CodeGeneration.NameRendering.FullyQualified,
-                FunctionNameRendering = CodeGeneration.NameRendering.FullyQualified,
-                VariableRendering = CodeGeneration.VariableRendering.Substitute,
+                TableNameRendering = QueryGeneration.NameRendering.FullyQualified,
+                ColumnNameRendering = QueryGeneration.NameRendering.FullyQualified,
+                DataTypeNameRendering = QueryGeneration.NameRendering.FullyQualified,
+                FunctionNameRendering = QueryGeneration.NameRendering.FullyQualified,
+                VariableRendering = QueryGeneration.VariableRendering.Substitute,
             };
 
             cg.AddSystemVariableMappings();
@@ -79,8 +79,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             qrw.Options.SubstituteStars = false;
 
             var cg = CreateCodeGenerator(false, false);
-            cg.ColumnNameRendering = CodeGeneration.NameRendering.Original;
-            cg.TableNameRendering = CodeGeneration.NameRendering.Original;
+            cg.ColumnNameRendering = QueryGeneration.NameRendering.Original;
+            cg.TableNameRendering = QueryGeneration.NameRendering.Original;
 
             var parsingTree = Parse(sql);
             qrw.Execute(parsingTree);
@@ -96,8 +96,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             qrw.Options.AssignColumnAliases = false;
 
             var cg = CreateCodeGenerator(partitioningKeyMin, partitioningKeyMax);
-            cg.TableNameRendering = CodeGeneration.NameRendering.Original;
-            cg.ColumnNameRendering = CodeGeneration.NameRendering.Original;
+            cg.TableNameRendering = QueryGeneration.NameRendering.Original;
+            cg.ColumnNameRendering = QueryGeneration.NameRendering.Original;
 
             var parsingTree = Parse(sql);
             qrw.Execute(parsingTree);
@@ -124,8 +124,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var qrw = CreateQueryRewriter(false, false);
 
             var cg = CreateCodeGenerator(false, false);
-            cg.ColumnAliasRendering = CodeGeneration.AliasRendering.Always;
-            cg.TableAliasRendering = CodeGeneration.AliasRendering.Always;
+            cg.ColumnAliasRendering = QueryGeneration.AliasRendering.Always;
+            cg.TableAliasRendering = QueryGeneration.AliasRendering.Always;
 
             qrw.Execute(qd.ParsingTree);
             var res = cg.Execute(qd.ParsingTree);

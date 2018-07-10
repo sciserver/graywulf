@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.NameResolution;
+using Jhu.Graywulf.Sql.QueryRendering;
+using Jhu.Graywulf.Sql.QueryRendering.SqlServer;
 
-namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
+namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
 {
     public class SqlServerColumnListGenerator : ColumnListGeneratorBase
     {
@@ -44,9 +46,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
         {
         }
 
-        protected override string QuoteIdentifier(string identifier)
+        protected override QueryRendererBase CreateQueryRenderer()
         {
-            return SqlServerCodeGenerator.QuoteIdentifier(identifier);
+            return new SqlServerQueryRenderer();
         }
     }
 }

@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.NameResolution;
+using Jhu.Graywulf.Sql.QueryRendering;
 
-namespace Jhu.Graywulf.Sql.CodeGeneration
+namespace Jhu.Graywulf.Sql.QueryGeneration
 {
     public abstract class ColumnListGeneratorBase
     {
@@ -15,6 +16,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         private const string columnNotNull = " NOT NULL";
         private const string identity = " IDENTITY(1, 1)";
 
+        private QueryRendererBase renderer;
+
         private List<ColumnReference> columns;
         private string tableAlias;
         private string joinedTableAlias;
@@ -22,6 +25,11 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         private ColumnListNullRendering nullRendering;
         private ColumnListSeparatorRendering separatorRendering;
         private ColumnListIdentityRendering identityRendering;
+
+        protected QueryRendererBase Renderer
+        {
+            get { return renderer; }
+        }
 
         public List<ColumnReference> Columns
         {
@@ -108,6 +116,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         private void InitializeMembers()
         {
+            this.renderer = CreateQueryRenderer();
             this.columns = new List<ColumnReference>();
             this.tableAlias = null;
             this.joinedTableAlias = null;
@@ -116,6 +125,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             this.separatorRendering = ColumnListSeparatorRendering.Default;
             this.identityRendering = ColumnListIdentityRendering.Original;
         }
+
+        protected abstract QueryRendererBase CreateQueryRenderer();
 
         #region Column name escaping
 
@@ -157,9 +168,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
         }
 
         #endregion
-
-        protected abstract string QuoteIdentifier(string identifier);
-
+        
         protected virtual string GetNullString()
         {
             string nullstring;
@@ -260,7 +269,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             }
             else if (tableAlias != null)
             {
-                alias = QuoteIdentifier(tableAlias) + ".";
+                alias = Renderer.GetQuotedIdentifier(tableAlias) + ".";
             }
             else if (String.IsNullOrWhiteSpace(table.Alias))
             {
@@ -268,7 +277,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
             }
             else
             {
-                alias = QuoteIdentifier(table.Alias) + ".";
+                alias = Renderer.GetQuotedIdentifier(table.Alias) + ".";
             }
 
             return alias;
@@ -276,7 +285,7 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
 
         private string GetJoinedTableAlias()
         {
-            return QuoteIdentifier(joinedTableAlias) + ".";
+            return Renderer.GetQuotedIdentifier(joinedTableAlias) + ".";
         }
 
         private string GetNullSpec(ColumnReference column, string nullstring)
@@ -346,8 +355,8 @@ namespace Jhu.Graywulf.Sql.CodeGeneration
                 columnlist.AppendFormat(
                     format,
                     alias,
-                    QuoteIdentifier(EscapePropagatedColumnName(column.TableReference, column.ColumnName)),
-                    QuoteIdentifier(column.ColumnName),
+                    Renderer.GetQuotedIdentifier(EscapePropagatedColumnName(column.TableReference, column.ColumnName)),
+                    Renderer.GetQuotedIdentifier(column.ColumnName),
                     // TODO: replace this with reald code generator
                     column.DataTypeReference.DataType.TypeNameWithLength,
                     nullspec,

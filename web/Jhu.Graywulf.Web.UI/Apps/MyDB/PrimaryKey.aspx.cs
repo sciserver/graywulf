@@ -2,7 +2,7 @@
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
+using Jhu.Graywulf.Sql.QueryGeneration.SqlServer;
 using Jhu.Graywulf.Sql.Jobs.SqlScript;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         {
             if (IsValid)
             {
-                var cg = new SqlServerCodeGenerator();
+                var cg = new SqlServerQueryGenerator();
                 string sql = "";
                 string columnname = null;
                 var comments = String.Format("Create primary key on {0}", table.DisplayName);
@@ -143,7 +143,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         {
             if (IsValid)
             {
-                var cg = new SqlServerCodeGenerator();
+                var cg = new SqlServerQueryGenerator();
                 var sql = cg.GenerateDropPrimaryKeyScript(table);
                 var comments = String.Format("Drop primary key on {0}", table.DisplayName);
 

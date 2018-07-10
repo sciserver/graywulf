@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.NameResolution;
+using Jhu.Graywulf.Sql.QueryRendering;
+using Jhu.Graywulf.Sql.QueryRendering.PostgreSql;
 
-namespace Jhu.Graywulf.Sql.CodeGeneration.PostgreSql
+namespace Jhu.Graywulf.Sql.QueryGeneration.PostgreSql
 {
     public class PostgreSqlColumnListGenerator : ColumnListGeneratorBase
     {
@@ -24,9 +26,9 @@ namespace Jhu.Graywulf.Sql.CodeGeneration.PostgreSql
         {
         }
 
-        protected override string QuoteIdentifier(string identifier)
+        protected override QueryRendererBase CreateQueryRenderer()
         {
-            return PostgreSqlCodeGenerator.QuoteIdentifier(identifier);
+            return new PostgreSqlQueryRenderer();
         }
     }
 }

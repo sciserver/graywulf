@@ -290,14 +290,20 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return cr;
         }
 
+        public static ColumnReference Interpret(ColumnName cn)
+        {
+            var cr = new ColumnReference(cn)
+            {
+                columnName = Util.RemoveIdentifierQuotes(cn.Value),
+            };
+
+            return cr;
+        }
+
         public static ColumnReference Interpret(ColumnDefinition cd)
         {
-            var cr = new ColumnReference(
-                cd,
-                null,
-                Util.RemoveIdentifierQuotes(cd.ColumnName.Value),
-                cd.DataTypeIdentifier.DataTypeReference);
-
+            var cr = cd.ColumnName.ColumnReference;
+            cr.DataTypeReference = cd.DataTypeIdentifier.DataTypeReference;
             return cr;
         }
 

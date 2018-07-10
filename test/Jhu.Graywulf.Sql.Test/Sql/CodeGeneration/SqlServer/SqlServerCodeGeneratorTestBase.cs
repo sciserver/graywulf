@@ -8,7 +8,7 @@ using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 
-namespace Jhu.Graywulf.Sql.CodeGeneration.SqlServer
+namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
 {
     public abstract class SqlServerCodeGeneratorTestBase : Jhu.Graywulf.Sql.Schema.SqlServer.SqlServerTestBase
     {

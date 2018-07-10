@@ -15,8 +15,8 @@ using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.LogicalExpressions;
 using Jhu.Graywulf.Sql.NameResolution;
-using Jhu.Graywulf.Sql.CodeGeneration;
-using Jhu.Graywulf.Sql.CodeGeneration.SqlServer;
+using Jhu.Graywulf.Sql.QueryGeneration;
+using Jhu.Graywulf.Sql.QueryGeneration.SqlServer;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.IO.Tasks;
 
@@ -367,7 +367,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 var columns = new Dictionary<string, ColumnReference>();
                 DatabaseObject table = null;
                 TableReference ntr = null;
-                CodeGeneratorBase cg = null;
+                QueryGeneratorBase cg = null;
 
                 // Loop through all references to the table
                 foreach (var tr in QueryDetails.SourceTableReferences[key])
@@ -379,7 +379,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                         ntr = new TableReference(tr);
                         ntr.Alias = null;
 
-                        cg = CodeGeneratorFactory.CreateCodeGenerator(table.Dataset);
+                        cg = QueryGeneratorFactory.CreateCodeGenerator(table.Dataset);
                         cg.TableNameRendering = NameRendering.FullyQualified;
                         cg.TableAliasRendering = AliasRendering.Never;
                         cg.ColumnNameRendering = NameRendering.IdentifierOnly;

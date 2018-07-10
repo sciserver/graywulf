@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 var ds = table.Dataset;
                 var dbf = DbProviderFactories.GetFactory(ds.ProviderName);
-                var cg = Sql.CodeGeneration.CodeGeneratorFactory.CreateCodeGenerator(table.Dataset.ProviderName);
+                var cg = Sql.QueryGeneration.QueryGeneratorFactory.CreateCodeGenerator(table.Dataset.ProviderName);
                 var sql = cg.GenerateSelectStarQuery(table, orderBy, from, max);
 
                 return sql;

@@ -3,39 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jhu.Graywulf.Sql.CodeGeneration
+namespace Jhu.Graywulf.Sql.QueryGeneration
 {
-    public enum IdentifierQuoting
-    {
-        AlwaysQuote,
-        SelectivelyQuote
-    }
-
-    public enum NameRendering
-    {
-        Original,
-        IdentifierOnly,
-        FullyQualified,
-
-        Default = Original
-    }
-
-    public enum AliasRendering
-    {
-        Default,
-        Always,
-        Never,
-    }
-
-    public enum VariableRendering
-    {
-        Original,
-        Substitute,
-        
-        Default = Original
-    }
-
-
     /// <summary>
     /// Column list nullable type.
     /// </summary>
