@@ -56,7 +56,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             return EnumerateDescendants<QuerySpecification>();
         }
 
-        public IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
+        public IEnumerable<TableSource> EnumerateSourceTables(bool recursive)
         {
             foreach (var qs in EnumerateDescendants<QuerySpecification>())
             {

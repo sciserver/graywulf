@@ -6,18 +6,8 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class WhileStatement : IStatement
+    public partial class WhileStatement
     {
-        public bool IsResolvable
-        {
-            get { return true; }
-        }
-
-        public StatementType StatementType
-        {
-            get { return StatementType.Flow; }
-        }
-
         public BooleanExpression Condition
         {
             get
@@ -26,15 +16,15 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
         }
 
-        public Statement Statement
+        public AnyStatement Statement
         {
             get
             {
-                return FindDescendant<Statement>();
+                return FindDescendant<AnyStatement>();
             }
         }
 
-        public IEnumerable<Statement> EnumerateSubStatements()
+        public override IEnumerable<AnyStatement> EnumerateSubStatements()
         {
             yield return Statement;
         }

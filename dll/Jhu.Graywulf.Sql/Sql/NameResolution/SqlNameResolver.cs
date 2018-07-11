@@ -191,19 +191,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         protected void ResolveStatementBlock(StatementBlock statementBlock)
         {
-            foreach (var statement in statementBlock.EnumerateDescendants<Statement>(true))
+            foreach (var statement in statementBlock.EnumerateDescendants<AnyStatement>(true))
             {
                 ResolveStatement(statement);
             }
         }
 
-        private void ResolveStatement(Statement statement)
+        private void ResolveStatement(AnyStatement statement)
         {
             var s = statement.SpecificStatement;
 
             // Resolve current statement
-            if (s.IsResolvable)
-            {
+            //if (s.IsResolvable)
+            //{
                 switch (s)
                 {
                     case WhileStatement ss:
@@ -269,7 +269,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     default:
                         throw new NotImplementedException();
                 }
-            }
+            //}
 
             // Call recursively for sub-statements
             foreach (var ss in s.EnumerateSubStatements())
@@ -790,7 +790,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 if (n is Subquery ||
                     n is VariableTableSource ||
-                    n is Statement)
+                    n is AnyStatement)
                 {
                     return;
                 }
@@ -1188,7 +1188,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        private void CollectSourceTableReference(CommonTableExpression cte, ISourceTableCollection resolvedSourceTables, ITableSource ts)
+        private void CollectSourceTableReference(CommonTableExpression cte, ISourceTableCollection resolvedSourceTables, TableSource ts)
         {
             var tr = ts.TableReference;
             var exportedName = tr.Alias ?? tr.VariableName ?? tr.TableName;

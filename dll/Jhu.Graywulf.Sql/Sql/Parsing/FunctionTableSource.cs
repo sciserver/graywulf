@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class FunctionTableSource : ITableSource, IFunctionReference
+    public partial class FunctionTableSource : IFunctionReference
     {
         private TableReference tableReference;
         private string uniqueKey;
@@ -18,13 +18,13 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { FunctionCall.FunctionReference = value; }
         }
         
-        public TableReference TableReference
+        public override TableReference TableReference
         {
             get { return tableReference; }
             set { tableReference = value; }
         }
 
-        public string UniqueKey
+        public override string UniqueKey
         {
             get { return uniqueKey; }
             set { uniqueKey = value; }
@@ -40,12 +40,12 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<TableValuedFunctionCall>(); }
         }
 
-        public bool IsSubquery
+        public override bool IsSubquery
         {
             get { return false; }
         }
 
-        public bool IsMultiTable
+        public override bool IsMultiTable
         {
             get { return false; }
         }
@@ -92,12 +92,12 @@ namespace Jhu.Graywulf.Sql.Parsing
             */
         }
 
-        public IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive)
+        public override IEnumerable<TableSource> EnumerateSubqueryTableSources(bool recursive)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<ITableSource> EnumerateMultiTableSources()
+        public override IEnumerable<TableSource> EnumerateMultiTableSources()
         {
             throw new NotImplementedException();
         }

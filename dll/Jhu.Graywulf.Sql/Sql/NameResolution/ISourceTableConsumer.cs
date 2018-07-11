@@ -13,6 +13,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
     /// </summary>
     public interface ISourceTableConsumer
     {
-        IEnumerable<ITableSource> EnumerateSourceTables(bool recursive);
+        IEnumerable<TableSource> EnumerateSourceTables(bool recursive);
     }
 }

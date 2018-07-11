@@ -254,7 +254,7 @@
     <Compile Include="Sql\NameResolution\Util.cs" />
     <Compile Include="Sql\NameResolution\VariableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\Parsing\MagicTokenBase.cs" />
-    <Compile Include="Sql\Parsing\SqlParsingTreeVisitor.cs" />
+    <Compile Include="Sql\Parsing\SqlStatementTreeVisitor.cs" />
     <Compile Include="Sql\Parsing\StarColumnIdentifier.cs" />
     <Compile Include="Sql\Parsing\Argument.cs" />
     <Compile Include="Sql\Parsing\ArgumentList.cs" />
@@ -279,12 +279,14 @@
     <Compile Include="Sql\Parsing\NumericConstant.cs" />
     <Compile Include="Sql\Parsing\PrintStatement.cs" />
     <Compile Include="Sql\Parsing\ScalarFunctionCall.cs" />
+    <Compile Include="Sql\Parsing\Statement.cs" />
     <Compile Include="Sql\Parsing\StatementSeparator.cs" />
     <Compile Include="Sql\Parsing\StatementType.cs" />
     <Compile Include="Sql\Parsing\SystemVariable.cs" />
     <Compile Include="Sql\Parsing\TableConstraint.cs" />
     <Compile Include="Sql\Parsing\TableDefinitionItem.cs" />
     <Compile Include="Sql\Parsing\TableDefinitionList.cs" />
+    <Compile Include="Sql\Parsing\TableSource.cs" />
     <Compile Include="Sql\Parsing\TableSourceIdentifier.cs" />
     <Compile Include="Sql\Parsing\TableOrViewIdentifier.cs" />
     <Compile Include="Sql\Parsing\TableSourceSpecification.cs" />
@@ -341,8 +343,6 @@
     <Compile Include="Sql\Parsing\BeginEndStatement.cs" />
     <Compile Include="Sql\Parsing\IntoClause.cs" />
     <Compile Include="Sql\Parsing\ISelect.cs" />
-    <Compile Include="Sql\Parsing\IStatement.cs" />
-    <Compile Include="Sql\Parsing\ITableSource.cs" />
     <Compile Include="Sql\Parsing\JoinedTable.cs" />
     <Compile Include="Sql\Parsing\JoinType.cs" />
     <Compile Include="Sql\Parsing\GotoStatement.cs" />
@@ -361,7 +361,7 @@
     <Compile Include="Sql\Parsing\SimpleTableSource.cs" />
     <Compile Include="Sql\Parsing\SqlParser.cs" />
     <Compile Include="Sql\Parsing\SqlParser.g.cs" />
-    <Compile Include="Sql\Parsing\Statement.cs" />
+    <Compile Include="Sql\Parsing\AnyStatement.cs" />
     <Compile Include="Sql\Parsing\StringConstant.cs" />
     <Compile Include="Sql\Parsing\Subquery.cs" />
     <Compile Include="Sql\Parsing\SubqueryTableSource.cs" />

@@ -8,19 +8,9 @@ using Jhu.Graywulf.Parsing;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public abstract class MagicTokenBase : Node, IStatement
+    public abstract class MagicTokenBase : Statement
     {
-        public bool IsResolvable
-        {
-            get { return false; }
-        }
-
-        public StatementType StatementType
-        {
-            get { return StatementType.Magic; }
-        }
-
-        public IEnumerable<Statement> EnumerateSubStatements()
+        public override IEnumerable<AnyStatement> EnumerateSubStatements()
         {
             yield break;
         }

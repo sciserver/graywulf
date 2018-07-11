@@ -7,18 +7,8 @@ using Jhu.Graywulf.Parsing;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class PrintStatement : IStatement
+    public partial class PrintStatement
     {
-        public bool IsResolvable
-        {
-            get { return true; }
-        }
-
-        public StatementType StatementType
-        {
-            get { return StatementType.Command; }
-        }
-
         public static PrintStatement Create(string message)
         {
             var p = new PrintStatement();
@@ -29,7 +19,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             return p;
         }
 
-        public IEnumerable<Statement> EnumerateSubStatements()
+        public override IEnumerable<AnyStatement> EnumerateSubStatements()
         {
             yield break;
         }

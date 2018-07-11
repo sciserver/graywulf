@@ -11,7 +11,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.QueryRendering
 {
-    public abstract class QueryRendererBase : SqlParsingTreeVisitor
+    public abstract class QueryRendererBase
     {
         #region Private members
 
@@ -180,14 +180,45 @@ namespace Jhu.Graywulf.Sql.QueryRendering
         }
 
         #endregion
-        #region Specialized node visitors
+        #region Node traversal
 
-        protected override void VisitToken(Token token)
+        protected void TraverseTopDown(Node node)
+        {
+            var res = WriteNode((dynamic)node);
+
+            if (!res)
+            {
+                foreach (var n in node.Stack)
+                {
+                    switch (n)
+                    {
+                        case Node nn:
+                            TraverseTopDown(nn);
+                            break;
+                        case Token t:
+                            WriteToken(t);
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+            }
+        }
+
+        protected bool WriteNode(Node node)
+        {
+            return false;
+        }
+
+        protected virtual void WriteToken(Token token)
         {
             writer.Write(token.Value);
         }
+        
+        #endregion
+        #region Specialized node visitors
 
-        protected override bool VisitMagicToken(MagicTokenBase node)
+        protected virtual bool WriteNode(MagicTokenBase node)
         {
             node.Write(this, Writer);
             return true;
@@ -203,7 +234,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
         /// table appears in the FROM clause. In all other cases it's
         /// WriteColumnIdentifier that generates the output
         /// </remarks>
-        protected override bool VisitTableOrViewIdentifier(TableOrViewIdentifier node)
+        protected virtual bool WriteNode(TableOrViewIdentifier node)
         {
             switch (tableNameRendering)
             {
@@ -218,7 +249,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             }
         }
 
-        protected override bool VisitTableSourceIdentifier(TableSourceIdentifier node)
+        protected virtual bool WriteNode(TableSourceIdentifier node)
         {
             if (!String.IsNullOrWhiteSpace(node.TableReference.Alias))
             {
@@ -248,7 +279,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             }
         }
 
-        protected override bool VisitTableAlias(TableAlias node)
+        protected virtual bool WriteNode(TableAlias node)
         {
             switch (tableAliasRendering)
             {
@@ -265,7 +296,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             return true;
         }
 
-        protected override bool VisitTargetTableSpecification(TargetTableSpecification tts)
+        protected virtual bool WriteNode(TargetTableSpecification tts)
         {
             if (tts.TableReference.TableContext.HasFlag(TableContext.Target) &&
                 !String.IsNullOrEmpty(tts.TableReference.Alias))
@@ -286,7 +317,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        protected override bool VisitColumnIdentifier(ColumnIdentifier node)
+        protected virtual bool WriteNode(ColumnIdentifier node)
         {
             switch (columnNameRendering)
             {
@@ -301,12 +332,12 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             }
         }
 
-        protected override bool VisitStarColumnIdentifier(StarColumnIdentifier node)
+        protected virtual bool WriteNode(StarColumnIdentifier node)
         {
             return false;
         }
 
-        protected override bool VisitColumnName(ColumnName node)
+        protected virtual bool WriteNode(ColumnName node)
         {
             WriteColumnName(node);
             return true;
@@ -317,7 +348,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        protected override bool VisitColumnExpression(ColumnExpression node)
+        protected virtual bool WriteNode(ColumnExpression node)
         {
             // A column expression is in the form of an expression,
             // optionally followed by a column alias in the form of
@@ -372,22 +403,22 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             }
         }
 
-        protected override bool VisitDataTypeIdentifier(DataTypeIdentifier node)
+        protected virtual bool WriteNode(DataTypeIdentifier node)
         {
             return WriteDataTypeName(node);
         }
 
-        protected override bool VisitFunctionIdentifier(FunctionIdentifier node)
+        protected virtual bool WriteNode(FunctionIdentifier node)
         {
             return WriteFunctionName(node);
         }
 
-        protected override bool VisitUserVariable(UserVariable node)
+        protected virtual bool WriteNode(UserVariable node)
         {
             return WriteVariable(node);
         }
 
-        protected override bool VisitSystemVariable(SystemVariable node)
+        protected virtual bool WriteNode(SystemVariable node)
         {
             return WriteVariable(node);
         }

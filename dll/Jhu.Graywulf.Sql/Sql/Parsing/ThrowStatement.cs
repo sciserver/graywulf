@@ -6,19 +6,9 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class ThrowStatement : IStatement
+    public partial class ThrowStatement
     {
-        public bool IsResolvable
-        {
-            get { return true; }
-        }
-
-        public StatementType StatementType
-        {
-            get { return StatementType.Flow; }
-        }
-
-        public IEnumerable<Statement> EnumerateSubStatements()
+        public override IEnumerable<AnyStatement> EnumerateSubStatements()
         {
             yield break;
         }

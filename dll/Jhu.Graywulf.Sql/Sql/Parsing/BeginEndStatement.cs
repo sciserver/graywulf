@@ -7,24 +7,14 @@ using Jhu.Graywulf.Parsing;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class BeginEndStatement : IStatement
+    public partial class BeginEndStatement
     {
-        public bool IsResolvable
-        {
-            get { return false; }
-        }
-
-        public StatementType StatementType
-        {
-            get { return StatementType.Flow; }
-        }
-
         public StatementBlock StatementBlock
         {
             get { return FindDescendant<StatementBlock>(); }
         }
 
-        public IEnumerable<Statement> EnumerateSubStatements()
+        public override IEnumerable<AnyStatement> EnumerateSubStatements()
         {
             return StatementBlock.EnumerateSubStatements();
         }

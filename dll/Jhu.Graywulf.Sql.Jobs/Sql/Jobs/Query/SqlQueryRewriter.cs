@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         #region Table source rewrite
 
-        protected override void 
+
 
         #endregion
         #region Select list rewrite

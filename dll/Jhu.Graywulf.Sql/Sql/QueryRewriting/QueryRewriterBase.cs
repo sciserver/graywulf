@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Sql.QueryRewriting
             }
         }
 
-        protected virtual void RewriteStatement(Statement statement)
+        protected virtual void RewriteStatement(AnyStatement statement)
         {
             switch (statement.SpecificStatement)
             {

@@ -9,7 +9,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class TableSourceSpecification : ITableReference
     {
-        public virtual ITableSource SpecificTableSource
+        public virtual TableSource SpecificTableSource
         {
             get { return FindSpecificTableSource(); }
         }
@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             return ts;
         }
 
-        protected virtual ITableSource FindSpecificTableSource()
+        protected virtual TableSource FindSpecificTableSource()
         {
             var ts = FindDescendant<SimpleTableSource>();
             if (ts != null)

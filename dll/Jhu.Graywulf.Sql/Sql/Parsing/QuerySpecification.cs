@@ -98,7 +98,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         /// </summary>
         /// <param name="recursive"></param>
         /// <returns></returns>
-        public virtual IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
+        public virtual IEnumerable<TableSource> EnumerateSourceTables(bool recursive)
         {
             // Start from the FROM clause, if specified, otherwise no
             // table sources in the query

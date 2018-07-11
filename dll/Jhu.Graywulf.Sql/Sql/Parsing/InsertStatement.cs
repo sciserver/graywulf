@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class InsertStatement : IStatement, ISelect, ISourceTableCollection, ITargetTableProvider
+    public partial class InsertStatement : ISelect, ISourceTableCollection, ITargetTableProvider
     {
         #region Private member variables
 
@@ -15,16 +15,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         private TableReference targetTableReference;
 
         #endregion
-
-        public bool IsResolvable
-        {
-            get { return true; }
-        }
-
-        public StatementType StatementType
-        {
-            get { return StatementType.Modify; }
-        }
 
         public CommonTableExpression CommonTableExpression
         {
@@ -106,12 +96,12 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         #endregion
 
-        public IEnumerable<Statement> EnumerateSubStatements()
+        public override IEnumerable<AnyStatement> EnumerateSubStatements()
         {
             yield break;
         }
 
-        public IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
+        public IEnumerable<TableSource> EnumerateSourceTables(bool recursive)
         {
             // Target table
             yield return TargetTable;

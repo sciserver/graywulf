@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         #region Source table functions
 
-        public IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
+        public IEnumerable<TableSource> EnumerateSourceTables(bool recursive)
         {
             var node = (Node)FindDescendant<TableSourceExpression>();
 

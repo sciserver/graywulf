@@ -6,18 +6,8 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class TryCatchStatement : IStatement
+    public partial class TryCatchStatement
     {
-        public bool IsResolvable
-        {
-            get { return true; }
-        }
-
-        public StatementType StatementType
-        {
-            get { return StatementType.Flow; }
-        }
-
         public StatementBlock TryBlock
         {
             get { return FindDescendant<StatementBlock>(0); }
@@ -28,7 +18,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<StatementBlock>(1); }
         }
 
-        public IEnumerable<Statement> EnumerateSubStatements()
+        public override IEnumerable<AnyStatement> EnumerateSubStatements()
         {
             var t = TryBlock;
             if (t != null)

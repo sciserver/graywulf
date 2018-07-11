@@ -7,30 +7,30 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class TargetTableSpecification : ITableSource, ITableReference
+    public partial class TargetTableSpecification : ITableReference
     {
         private string uniqueKey;
         private TableOrViewIdentifier tableName;
         private UserVariable variable;
         private TableReference tableReference;
 
-        public bool IsSubquery
+        public override bool IsSubquery
         {
             get { return false; }
         }
 
-        public bool IsMultiTable
+        public override bool IsMultiTable
         {
             get { return false; }
         }
 
-        public string UniqueKey
+        public override string UniqueKey
         {
             get { return uniqueKey; }
             set { uniqueKey = value; }
         }
 
-        public TableReference TableReference
+        public override TableReference TableReference
         {
             get
             {
@@ -89,12 +89,12 @@ namespace Jhu.Graywulf.Sql.Parsing
             this.variable = FindDescendantRecursive<UserVariable>();
         }
 
-        public IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive)
+        public override IEnumerable<TableSource> EnumerateSubqueryTableSources(bool recursive)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<ITableSource> EnumerateMultiTableSources()
+        public override IEnumerable<TableSource> EnumerateMultiTableSources()
         {
             throw new NotImplementedException();
         }

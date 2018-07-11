@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class Statement
+    public abstract partial class Statement
     {
-        public IStatement SpecificStatement
-        {
-            get { return (IStatement)Stack.First.Value; }
-        }
+        public abstract IEnumerable<AnyStatement> EnumerateSubStatements();
     }
 }

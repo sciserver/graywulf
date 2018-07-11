@@ -6,34 +6,24 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class IfStatement : IStatement
+    public partial class IfStatement
     {
-        public bool IsResolvable
-        {
-            get { return true; }
-        }
-
-        public StatementType StatementType
-        {
-            get { return StatementType.Flow; }
-        }
-
         public BooleanExpression Condition
         {
             get { return FindDescendant<BooleanExpression>(); }
         }
 
-        public Statement MainStatement
+        public AnyStatement MainStatement
         {
-            get { return FindDescendant<Statement>(0); }
+            get { return FindDescendant<AnyStatement>(0); }
         }
 
-        public Statement ElseStatement
+        public AnyStatement ElseStatement
         {
-            get { return FindDescendant<Statement>(1); }
+            get { return FindDescendant<AnyStatement>(1); }
         }
 
-        public IEnumerable<Statement> EnumerateSubStatements()
+        public override IEnumerable<AnyStatement> EnumerateSubStatements()
         {
             yield return MainStatement;
 

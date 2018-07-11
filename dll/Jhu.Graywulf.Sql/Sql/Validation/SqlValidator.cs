@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Sql.Validation
 
         public void Execute(StatementBlock parsingTree)
         {
-            foreach (var s in parsingTree.EnumerateDescendantsRecursive<IStatement>())
+            foreach (var s in parsingTree.EnumerateDescendantsRecursive<Statement>())
             {
                 OnValidateStatement(s);
             }
@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Sql.Validation
             // TODO: validate entire script, not just the select
         }
 
-        protected virtual void OnValidateStatement(IStatement statement)
+        protected virtual void OnValidateStatement(Statement statement)
         {
             if (statement is SelectStatement)
             {

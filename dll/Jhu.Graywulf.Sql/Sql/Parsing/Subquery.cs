@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             return QueryExpression.EnumerateQuerySpecifications();
         }
 
-        public IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
+        public IEnumerable<TableSource> EnumerateSourceTables(bool recursive)
         {
             return QueryExpression.EnumerateSourceTables(recursive);
         }

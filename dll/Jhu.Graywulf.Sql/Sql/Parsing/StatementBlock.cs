@@ -7,35 +7,20 @@ using Jhu.Graywulf.Parsing;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class StatementBlock : IStatement
+    public partial class StatementBlock
     {
-        #region Properties
-
-        public bool IsResolvable
+        public IEnumerable<AnyStatement> EnumerateSubStatements()
         {
-            get { return false; }
+            return EnumerateDescendants<AnyStatement>(true);
         }
 
-        public StatementType StatementType
+        public static StatementBlock Create(Statement statement)
         {
-            get { return StatementType.Block; }
-        }
-
-        #endregion
-
-        public IEnumerable<Statement> EnumerateSubStatements()
-        {
-            return EnumerateDescendants<Statement>(true);
-        }
-
-        public static StatementBlock Create(IStatement statement)
-        {
-            var nsb = new StatementBlock();
-            nsb.Stack.AddLast((Node)statement);
+            var nsb = new StatementBlock(new AnyStatement(statement));
             return nsb;
         }
 
-        public static StatementBlock Create(params IStatement[] statements)
+        public static StatementBlock Create(Statement[] statements)
         {
             StatementBlock nsb = null;
             StatementBlock sb = null;

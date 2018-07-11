@@ -7,11 +7,11 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class SubqueryTableSource : ITableSource
+    public partial class SubqueryTableSource
     {
         private string uniqueKey;
 
-        public string UniqueKey
+        public override string UniqueKey
         {
             get { return uniqueKey; }
             set { uniqueKey = value; }
@@ -32,18 +32,18 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return Subquery.QueryExpression; }
         }
         
-        public TableReference TableReference
+        public override TableReference TableReference
         {
             get { return QueryExpression.ResultsTableReference; }
             set { QueryExpression.ResultsTableReference = value; }
         }
 
-        public bool IsSubquery
+        public override bool IsSubquery
         {
             get { return true; }
         }
 
-        public bool IsMultiTable
+        public override bool IsMultiTable
         {
             get { return false; }
         }
@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             TableReference = TableReference.Interpret(this);
         }
 
-        public IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive)
+        public override IEnumerable<TableSource> EnumerateSubqueryTableSources(bool recursive)
         {
             foreach (var tts in Subquery.EnumerateSourceTables(recursive))
             {
@@ -76,7 +76,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
         }
 
-        public IEnumerable<ITableSource> EnumerateMultiTableSources()
+        public override IEnumerable<TableSource> EnumerateMultiTableSources()
         {
             throw new NotImplementedException();
         }

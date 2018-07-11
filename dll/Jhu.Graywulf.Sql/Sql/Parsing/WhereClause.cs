@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class WhereClause : ISourceTableConsumer
     {
-        public IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
+        public IEnumerable<TableSource> EnumerateSourceTables(bool recursive)
         {
             foreach (var sq in EnumerateDescendantsRecursive<Subquery>(typeof(Subquery)))
             {

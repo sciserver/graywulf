@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             return (SelectStatement)p.Execute(new SelectStatement(), query);
         }
 
-        private ITableSource[] EnumerateTableSourcesTestHelper(string query, bool recursive)
+        private TableSource[] EnumerateTableSourcesTestHelper(string query, bool recursive)
         {
             return
                 (from ats in CreateSelect(query)
@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         public void EnumerateTableSourcesTest()
         {
             string sql;
-            ITableSource[] tables;
+            TableSource[] tables;
 
             sql = "SELECT 1";
             tables = EnumerateTableSourcesTestHelper(sql, false);
@@ -82,7 +82,7 @@ INNER JOIN Author ON Author.ID = BookAuthor.AuthorID";
         public void EnumerateSourcesTables_SubqueryTest()
         {
             string sql;
-            ITableSource[] tables;
+            TableSource[] tables;
 
             sql = "SELECT * FROM table1";
             tables = EnumerateTableSourcesTestHelper(sql, false);
@@ -107,7 +107,7 @@ INNER JOIN Author ON Author.ID = BookAuthor.AuthorID";
         public void EnumerateSourcesTables_SemiJoinTest()
         {
             string sql;
-            ITableSource[] tables;
+            TableSource[] tables;
 
             sql = "SELECT * FROM table1 WHERE ID IN (SELECT * FROM table2)";
             tables = EnumerateTableSourcesTestHelper(sql, true);

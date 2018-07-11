@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public interface IStatement
+    public partial class AnyStatement
     {
-        bool IsResolvable { get; }
-
-        StatementType StatementType { get; }
-
-        IEnumerable<Statement> EnumerateSubStatements();
+        public Statement SpecificStatement
+        {
+            get { return (Statement)Stack.First.Value; }
+        }
     }
 }

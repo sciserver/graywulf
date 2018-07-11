@@ -10,13 +10,12 @@ namespace Jhu.Graywulf.Sql.Parsing
     public enum StatementType : int
     {
         Unknown = 0,
-        Block = 1,
-        Flow = 2,
-        Declaration = 4,
-        Command = 8,
-        Query = 16,
-        Modify = 32,
-        Schema = 64,
+        Flow = 1,
+        Declaration = 2,
+        Command = 3,
+        Query = 8,
+        Modify = 16,
+        Schema = 32,
 
 
         Magic = 0x7000

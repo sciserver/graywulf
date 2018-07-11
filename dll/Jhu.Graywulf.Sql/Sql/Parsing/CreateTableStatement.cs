@@ -7,18 +7,8 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class CreateTableStatement : IStatement, ITableReference
+    public partial class CreateTableStatement : ITableReference
     {
-        public bool IsResolvable
-        {
-            get { return true; }
-        }
-
-        public StatementType StatementType
-        {
-            get { return StatementType.Schema; }
-        }
-
         public TableOrViewIdentifier TargetTable
         {
             get { return FindDescendant<TableOrViewIdentifier>(); }
@@ -40,7 +30,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<TableDefinitionList>(); }
         }
 
-        public IEnumerable<Statement> EnumerateSubStatements()
+        public override IEnumerable<AnyStatement> EnumerateSubStatements()
         {
             yield break;
         }

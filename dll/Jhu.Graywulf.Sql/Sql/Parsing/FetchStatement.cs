@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class FetchStatement : IStatement, ICursorReference
+    public partial class FetchStatement : ICursorReference
     {
         private CursorReference cursorReference;
 
@@ -25,16 +25,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return cursorReference; }
             set { cursorReference = value; }
-        }
-
-        public bool IsResolvable
-        {
-            get { return true; }
-        }
-
-        public StatementType StatementType
-        {
-            get { return StatementType.Command; }
         }
 
         protected override void OnInitializeMembers()
@@ -57,7 +47,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             this.cursorReference = CursorReference.Interpret(this);
         }
 
-        public IEnumerable<Statement> EnumerateSubStatements()
+        public override IEnumerable<AnyStatement> EnumerateSubStatements()
         {
             yield break;
         }

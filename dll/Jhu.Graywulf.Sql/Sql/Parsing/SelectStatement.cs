@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Sql.Parsing
     /// <summary>
     /// Implements a SELECT statement including the ORDER BY clause
     /// </summary>
-    public partial class SelectStatement : IStatement, ISelect, ISourceTableCollection, ISourceTableConsumer, IOutputTableProvider
+    public partial class SelectStatement : ISelect, ISourceTableCollection, ISourceTableConsumer, IOutputTableProvider
     {
         #region Private member variables
 
@@ -19,16 +19,6 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         #endregion
         #region Properties
-
-        public bool IsResolvable
-        {
-            get { return true; }
-        }
-
-        public StatementType StatementType
-        {
-            get { return StatementType.Query; }
-        }
 
         public CommonTableExpression CommonTableExpression
         {
@@ -124,12 +114,12 @@ namespace Jhu.Graywulf.Sql.Parsing
             return Create(qe);
         }
 
-        public IEnumerable<Statement> EnumerateSubStatements()
+        public override IEnumerable<AnyStatement> EnumerateSubStatements()
         {
             yield break;
         }
 
-        public IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)
+        public IEnumerable<TableSource> EnumerateSourceTables(bool recursive)
         {
             throw new NotImplementedException();
         }
