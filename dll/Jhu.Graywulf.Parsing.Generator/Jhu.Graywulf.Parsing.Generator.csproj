@@ -80,6 +80,7 @@
     <None Include="Parsing\Generator\Resources\Symbol.cs" />
     <None Include="Parsing\Generator\Resources\Terminal.cs" />
     <None Include="Parsing\Generator\Resources\Whitespace.cs" />
+    <None Include="Parsing\Generator\Resources\AbstractRule.cs" />
     <Compile Include="Parsing\Generator\RuleVisitor.cs" />
     <Compile Include="Parsing\Generator\Templates.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -104,6 +105,7 @@
     <EmbeddedResource Include="Parsing\Generator\Templates.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Templates.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

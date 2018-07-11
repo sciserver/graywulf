@@ -380,17 +380,18 @@ namespace Jhu.Graywulf.Parsing.Generator
         /// <param name="inheritedGrammar"></param>
         /// <param name="inheritedRule"></param>
         /// <returns></returns>
-        public Expression GetRuleExpression(string name, out bool isInherited, out GrammarInfo inheritedGrammar, out string inheritedRule)
+        public Expression GetRuleExpression(string name, out bool isAbstract, out bool isInherited, out GrammarInfo inheritedGrammar, out string inheritedRule)
         {
             // This is a rule that has to be inherited from the base grammar because
             // something in its production is overwritten
             if (overriddenRules.Contains(name))
             {
+                isAbstract = false;
                 return GetInheritedRuleExpression(name, out isInherited, out inheritedGrammar, out inheritedRule);
             }
             else
             {
-                return GetLocalRuleExpression(name, out isInherited, out inheritedGrammar, out inheritedRule);
+                return GetLocalRuleExpression(name, out isAbstract, out isInherited, out inheritedGrammar, out inheritedRule);
             }
         }
 
@@ -406,11 +407,12 @@ namespace Jhu.Graywulf.Parsing.Generator
             return rule;
         }
 
-        private Expression GetLocalRuleExpression(string name, out bool isInherited, out GrammarInfo inheritedGrammar, out string inheritedRule)
+        private Expression GetLocalRuleExpression(string name, out bool isAbstract, out bool isInherited, out GrammarInfo inheritedGrammar, out string inheritedRule)
         {
             LambdaExpression exp = null;
             Expression rule = null;
 
+            isAbstract = false;
             isInherited = false;
             inheritedGrammar = null;
             inheritedRule = null;
@@ -421,14 +423,19 @@ namespace Jhu.Graywulf.Parsing.Generator
             // This is not a rule but a terminal
             if (rule.NodeType != ExpressionType.Call)
             {
-                isInherited = false;
                 return rule;
             }
             
             var method = ((MethodCallExpression)rule).Method;
             var args = ((MethodCallExpression)rule).Arguments.ToArray();
 
-            if (rule != null && method != null && method.Name == "Override")
+            if (rule != null && method != null && method.Name == nameof(Grammar.Abstract))
+            {
+                // No Match algorithm will be generated
+                isAbstract = true;
+                rule = null;
+            }
+            if (rule != null && method != null && method.Name == nameof(Grammar.Override))
             {
                 if (args.Length == 0)
                 {
@@ -453,7 +460,7 @@ namespace Jhu.Graywulf.Parsing.Generator
                     throw new NotImplementedException();
                 }
             }
-            else if (rule != null && method != null && method.Name == "Inherit")
+            else if (rule != null && method != null && method.Name == nameof(Grammar.Inherit))
             {
                 if (args.Length == 0)
                 {

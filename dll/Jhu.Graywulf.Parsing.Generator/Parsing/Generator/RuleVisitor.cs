@@ -14,11 +14,17 @@ namespace Jhu.Graywulf.Parsing.Generator
     class RuleVisitor : ExpressionVisitor
     {
         private bool skipArgument;
+        private bool isAbstractRule;
         private bool isInheritRule;
         private bool isOverrideRule;
         private string baseRule;
         private HashSet<MemberInfo> referencedRules;
         
+        public bool IsAbstractRule
+        {
+            get { return isAbstractRule; }
+        }
+
         public bool IsInheritedRule
         {
             get { return isInheritRule; }
@@ -43,6 +49,7 @@ namespace Jhu.Graywulf.Parsing.Generator
             : base()
         {
             skipArgument = false;
+            isAbstractRule = false;
             isInheritRule = false;
             isOverrideRule = false;
             baseRule = null;
@@ -54,7 +61,11 @@ namespace Jhu.Graywulf.Parsing.Generator
             var method = node.Method;
             var args = node.Arguments.ToArray();
 
-            if (method.Name == nameof(Grammar.Inherit))
+            if (method.Name == nameof(Grammar.Abstract))
+            {
+                isAbstractRule = true;
+            }
+            else if (method.Name == nameof(Grammar.Inherit))
             {
                 isInheritRule = true;
 

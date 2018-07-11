@@ -247,11 +247,12 @@ namespace Jhu.Graywulf.Parsing.Generator
             var resstr = "res";
 
             // Figure out whether this rule is inherited or not 
+            bool isAbstract;
             bool isInherited;
             GrammarInfo inheritedGrammar;
             string inheritedRule;
             string inheritedType;
-            var rule = grammar.GetRuleExpression(name, out isInherited, out inheritedGrammar, out inheritedRule);
+            var rule = grammar.GetRuleExpression(name, out isAbstract, out isInherited, out inheritedGrammar, out inheritedRule);
 
             // Generate matching code
             StringBuilder match = null;
@@ -282,13 +283,22 @@ namespace Jhu.Graywulf.Parsing.Generator
             }
 
             // Load template and substitute tokens
-            var template = new StringBuilder(Templates.Rule);
+            StringBuilder template;
+
+            if (isAbstract)
+            {
+                template = new StringBuilder(Templates.AbstractRule);
+            }
+            else
+            {
+                template = new StringBuilder(Templates.Rule);
+            }
 
             template.Replace("__InheritedType__", inheritedType);
             template.Replace("__LibNamespace__", typeof(Token).Namespace);
             template.Replace("__Namespace__", grammar.Namespace);
             template.Replace("__Name__", name);
-            template.Replace("__Match__", match == null? "" : match.ToString());
+            template.Replace("__Match__", match == null ? "" : match.ToString());
 
             return template.ToString();
         }

@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Parsing.Generator {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Templates {
@@ -61,28 +61,53 @@ namespace Jhu.Graywulf.Parsing.Generator {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to     public partial class [$Name] : [$LibNamespace].Comment, ICloneable
+        ///   Looks up a localized string similar to     public abstract partial class __Name__ : __InheritedType__, ICloneable
         ///    {
-        ///        private static Regex pattern = new Regex(@&quot;[$Pattern]&quot;, RegexOptions.Compiled);
+        ///        public __Name__()
+        ///            :base()
+        ///        {
+        ///        }
+        ///
+        ///        public __Name__(params __LibNamespace__.Token[] tokens)
+        ///            :base(tokens)
+        ///        {
+        ///        }
+        ///
+        ///        public __Name__(__Namespace__.__Name__ old)
+        ///            :base(old)
+        ///        {
+        ///        }
+        ///    }.
+        /// </summary>
+        internal static string AbstractRule {
+            get {
+                return ResourceManager.GetString("AbstractRule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to     public partial class __Name__ : __LibNamespace__.Comment, ICloneable
+        ///    {
+        ///        private static Regex pattern = new Regex(@&quot;__Pattern__&quot;, RegexOptions.Compiled);
         ///
         ///        protected override Regex Pattern
         ///        {
         ///            get { return pattern; }
         ///        }
         ///
-        ///        public [$Name]()
+        ///        public __Name__()
         ///            :base()
         ///        {
         ///        }
         ///
-        ///        public [$Name]([$Name] old)
+        ///        public __Name__(__Name__ old)
         ///            :base(old)
         ///        {
         ///        }
         ///
         ///        public override object Clone()
         ///        {
-        ///            return new [$Name](t [rest of string was truncated]&quot;;.
+        ///            return new __N [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Comment {
             get {
@@ -91,11 +116,11 @@ namespace Jhu.Graywulf.Parsing.Generator {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to         public override bool Match([$LibNamespace].Parser parser)
+        ///   Looks up a localized string similar to         public override bool Match(__LibNamespace__.Parser parser)
         ///        {
         ///            bool res = true;
         ///
-        ///[$Code]
+        ///__Code__
         ///
         ///            return res;
         ///        }.
@@ -112,13 +137,13 @@ namespace Jhu.Graywulf.Parsing.Generator {
         ///using System.Text;
         ///using System.Text.RegularExpressions;
         ///
-        ///namespace [$Namespace]
+        ///namespace __Namespace__
         ///{
-        ///    public partial class [$Name] : [$InheritedType]
+        ///    public partial class __Name__ : __InheritedType__
         ///    {
-        ///        private static HashSet&lt;string&gt; keywords = new HashSet&lt;string&gt;([$Comparer])
+        ///        private static HashSet&lt;string&gt; keywords = new HashSet&lt;string&gt;(__Comparer__)
         ///        {
-        ///[$Keywords]
+        ///__Keywords__
         ///        };
         ///
         ///        public override HashSet&lt;string&gt; Keywords
@@ -128,7 +153,7 @@ namespace Jhu.Graywulf.Parsing.Generator {
         ///
         ///        public static StringComparer ComparerInstance
         ///        {
-        ///            [rest of string was truncated]&quot;;.
+        ///       [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Parser {
             get {
@@ -137,24 +162,29 @@ namespace Jhu.Graywulf.Parsing.Generator {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to     public partial class [$Name] : [$InheritedType], ICloneable
+        ///   Looks up a localized string similar to     public partial class __Name__ : __InheritedType__, ICloneable
         ///    {
-        ///        public [$Name]()
+        ///        public __Name__()
         ///            :base()
         ///        {
         ///        }
         ///
-        ///        public [$Name]([$Namespace].[$Name] old)
+        ///        public __Name__(params __LibNamespace__.Token[] tokens)
+        ///            :base(tokens)
+        ///        {
+        ///        }
+        ///
+        ///        public __Name__(__Namespace__.__Name__ old)
         ///            :base(old)
         ///        {
         ///        }
         ///
         ///        public override object Clone()
         ///        {
-        ///            return new [$Namespace].[$Name](this);
+        ///            return new __Namespace__.__Name__(this);
         ///        }
         ///
-        ///[$Match]
+        ///__Match__
         ///    }.
         /// </summary>
         internal static string Rule {
@@ -164,29 +194,28 @@ namespace Jhu.Graywulf.Parsing.Generator {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to     public partial class [$Name] : [$LibNamespace].Symbol, ICloneable
+        ///   Looks up a localized string similar to     public partial class __Name__ : __LibNamespace__.Symbol, ICloneable
         ///    {
         ///        protected override string Pattern
         ///        {
-        ///            get { return @&quot;[$Pattern]&quot;; }
+        ///            get { return @&quot;__Pattern__&quot;; }
         ///        }
         ///
-        ///        public [$Name]()
+        ///        public __Name__()
         ///            :base()
         ///        {
-        ///            Value = @&quot;[$Pattern]&quot;;
+        ///            Value = @&quot;__Pattern__&quot;;
         ///        }
         ///
-        ///        public [$Name]([$Name] old)
+        ///        public __Name__(__Name__ old)
         ///            :base(old)
         ///        {
         ///        }
         ///
-        ///        public static [$Name] Create()
+        ///        public static __Name__ Create()
         ///        {
-        ///            var s = new [$Name]();
-        ///            s.Value = @&quot;[$Pattern]&quot;;
-        ///        [rest of string was truncated]&quot;;.
+        ///            var s = new __Name__();
+        ///            s.Value = @&quot;__Pattern__&quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Symbol {
             get {
@@ -195,27 +224,27 @@ namespace Jhu.Graywulf.Parsing.Generator {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to     public partial class [$Name] : [$LibNamespace].Terminal, ICloneable
+        ///   Looks up a localized string similar to     public partial class __Name__ : __LibNamespace__.Terminal, ICloneable
         ///    {
-        ///        private static Regex pattern = new Regex(@&quot;[$Pattern]&quot;, RegexOptions.Compiled);
+        ///        private static Regex pattern = new Regex(@&quot;__Pattern__&quot;, RegexOptions.Compiled);
         ///
         ///        protected override Regex Pattern
         ///        {
         ///            get { return pattern; }
         ///        }
         ///
-        ///        public [$Name]()
+        ///        public __Name__()
         ///            :base()
         ///        {
-        ///            Value = @&quot;[$Pattern]&quot;;
+        ///            Value = @&quot;__Pattern__&quot;;
         ///        }
         ///
-        ///        public [$Name]([$Name] old)
+        ///        public __Name__(__Name__ old)
         ///            :base(old)
         ///        {
         ///        }
         ///
-        ///        public static [$Name] Create(string va [rest of string was truncated]&quot;;.
+        ///        public static __Name__ Create(s [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Terminal {
             get {
@@ -224,28 +253,28 @@ namespace Jhu.Graywulf.Parsing.Generator {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to     public partial class [$Name] : [$LibNamespace].Whitespace, ICloneable
+        ///   Looks up a localized string similar to     public partial class __Name__ : __LibNamespace__.Whitespace, ICloneable
         ///    {
-        ///        private static Regex pattern = new Regex(@&quot;[$Pattern]&quot;, RegexOptions.Compiled);
+        ///        private static Regex pattern = new Regex(@&quot;__Pattern__&quot;, RegexOptions.Compiled);
         ///
         ///        protected override Regex Pattern
         ///        {
         ///            get { return pattern; }
         ///        }
         ///
-        ///        public [$Name]()
+        ///        public __Name__()
         ///            :base()
         ///        {
         ///        }
         ///
-        ///        public [$Name]([$Name] old)
+        ///        public __Name__(__Name__ old)
         ///            :base(old)
         ///        {
         ///        }
         ///
         ///        public override object Clone()
         ///        {
-        ///            return new [$Name [rest of string was truncated]&quot;;.
+        ///            return new  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Whitespace {
             get {
