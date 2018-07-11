@@ -14,13 +14,13 @@ using Jhu.Graywulf.Sql.QueryGeneration.SqlServer;
 namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
 {
     [TestClass]
-    public class SqlServerColumnListGeneratorTest :SqlServerCodeGeneratorTestBase
+    public class SqlServerColumnListGeneratorTest : SqlServerTestBase
     {
 
         private TableReference CreateTableReference()
         {
             var sql = @"SELECT Title, Year FROM Book b WHERE ID = 3";
-            var ss = CreateSelect(sql);
+            var ss = ParseAndResolveNames<SelectStatement>(sql);
             var tr = ss.EnumerateTableReferences().FirstOrDefault();
 
             return tr;

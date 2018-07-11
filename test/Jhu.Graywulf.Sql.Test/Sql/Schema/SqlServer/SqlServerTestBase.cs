@@ -9,7 +9,7 @@ using Jhu.Graywulf.Sql.Schema.SqlServer;
 
 namespace Jhu.Graywulf.Sql.Schema.SqlServer
 {
-    public class SqlServerTestBase: Jhu.Graywulf.Test.TestClassBase
+    /*public class SqlServerTestBase: Jhu.Graywulf.Test.TestClassBase
     {
 
         protected SqlServerDataset CreateTestDataset()
@@ -23,5 +23,5 @@ namespace Jhu.Graywulf.Sql.Schema.SqlServer
 
             return ds;
         }
-    }
+    }*/
 }

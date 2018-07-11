@@ -6,6 +6,7 @@ using System.IO;
 using System.Data;
 using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.LogicalExpressions;
 using Jhu.Graywulf.Sql.QueryRendering;
@@ -14,25 +15,8 @@ using Jhu.Graywulf.Sql.QueryRendering.SqlServer;
 namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
 {
     [TestClass]
-    public class RemoteQueryGeneratorTest : SqlServerCodeGeneratorTestBase
+    public class RemoteQueryGeneratorTest : SqlServerTestBase
     {
-        private string GenerateCode(string query, bool resolveAliases, bool resolveNames, bool substituteStars)
-        {
-            var ss = CreateSelect(query);
-            var w = new StringWriter();
-
-            var cg = new SqlServerQueryRenderer();
-            cg.TableNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.TableAliasRendering = resolveAliases ? AliasRendering.Always : AliasRendering.Never;
-            cg.ColumnNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.ColumnAliasRendering = resolveAliases ? AliasRendering.Always : AliasRendering.Never;
-            cg.DataTypeNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.FunctionNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.Execute(w, ss);
-
-            return w.ToString();
-        }
-
         [TestMethod]
         public void WithoutResolvedNamesTest()
         {
@@ -43,7 +27,7 @@ INNER JOIN BookAuthor ON BookAuthor.BookID = Book.ID AND Book.ID = 6
 INNER JOIN Author ON Author.ID = BookAuthor.AuthorID
 WHERE Author.ID = 3";
 
-            Assert.AreEqual(sql, GenerateCode(sql, false, false, false));
+            Assert.AreEqual(sql, RenderQuery(sql, false, false, false));
         }
 
         [TestMethod]
@@ -62,7 +46,7 @@ FROM [Graywulf_Schema_Test].[dbo].[Book]
 INNER JOIN [Graywulf_Schema_Test].[dbo].[BookAuthor] ON [Graywulf_Schema_Test].[dbo].[BookAuthor].[BookID] = [Graywulf_Schema_Test].[dbo].[Book].[ID] AND [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6
 INNER JOIN [Graywulf_Schema_Test].[dbo].[Author] ON [Graywulf_Schema_Test].[dbo].[Author].[ID] = [Graywulf_Schema_Test].[dbo].[BookAuthor].[AuthorID]
 WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 3",
-                GenerateCode(sql, false, true, false));
+                RenderQuery(sql, false, true, false));
         }
 
         [TestMethod]
@@ -73,7 +57,7 @@ WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 3",
 FROM Book b1, Book b2
 WHERE b1.ID = 1 AND b2.ID = 2";
 
-            var res = GenerateCode(sql, true, true, false);
+            var res = RenderQuery(sql, true, true, false);
 
             Assert.AreEqual(
 @"SELECT [b1].[Title], [b2].[Title]
@@ -129,7 +113,7 @@ WHERE [b1].[ID] = 1 AND [b2].[ID] = 2", res);
         [TestMethod]
         public void GenerateCreatePrimaryKeyScriptTest()
         {
-            var ds = CreateTestDataset();
+            var ds = SchemaTestDataset;
             var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithPrimaryKey"];
             var cg = new SqlServerQueryGenerator();
 
@@ -148,7 +132,7 @@ ADD CONSTRAINT [PK_TableWithPrimaryKey] PRIMARY KEY CLUSTERED (
         [TestMethod]
         public void GenerateDropPrimaryKeyScriptTest()
         {
-            var ds = CreateTestDataset();
+            var ds = SchemaTestDataset;
             var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithPrimaryKey"];
             var cg = new SqlServerQueryGenerator();
 

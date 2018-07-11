@@ -13,47 +13,10 @@ using Jhu.Graywulf.Sql.NameResolution;
 namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
 {
     [TestClass]
-    public class MySqlCodeGeneratorTest
+    public class MySqlQueryRendererTest : MySqlTestBase
     {
         // TODO: rewrite these to use SQL Server for name resolution but generate
         // SQL for MySQL
-
-        private SchemaManager CreateSchemaManager()
-        {
-            var sm = new SqlServerSchemaManager();
-            var ds = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString);
-
-            sm.Datasets[ds.Name] = ds;
-
-            return sm;
-        }
-
-        private SelectStatement CreateSelect(string query)
-        {
-            var p = new SqlParser();
-            var script = p.Execute<StatementBlock>(query);
-
-            SqlNameResolver nr = new SqlNameResolver();
-            nr.DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
-            nr.DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName;
-            nr.SchemaManager = CreateSchemaManager();
-            nr.Execute(script);
-
-            return script.FindDescendantRecursive<SelectStatement>();
-        }
-
-        private string GenerateCode(string query, bool resolved)
-        {
-            var ss = CreateSelect(query);
-            var w = new StringWriter();
-
-            var cg = new MySql.MySqlCodeGenerator();
-            // TODO
-            // cg.ResolveNames = resolved;
-            cg.Execute(w, ss);
-
-            return w.ToString();
-        }
 
         [TestMethod]
         public void WithoutResolvedNamesTest()
@@ -65,13 +28,15 @@ INNER JOIN BookAuthor ON BookAuthor.BookID = Book.ID AND Book.ID = 6
 INNER JOIN Author ON Author.ID = BookAuthor.AuthorID
 WHERE Author.ID = 3";
 
-            Assert.AreEqual(
+            var gt =
 @"SELECT Title, Name
 FROM Book
 INNER JOIN BookAuthor ON BookAuthor.BookID = Book.ID AND Book.ID = 6
 INNER JOIN Author ON Author.ID = BookAuthor.AuthorID
-WHERE Author.ID = 3",
-                        GenerateCode(sql, false));
+WHERE Author.ID = 3";
+
+            var res = RenderQuery(sql, false, false, false);
+            Assert.AreEqual(gt, res);
         }
 
         [TestMethod]
@@ -84,13 +49,15 @@ INNER JOIN BookAuthor ON BookAuthor.BookID = Book.ID AND Book.ID = 6
 INNER JOIN Author ON Author.ID = BookAuthor.AuthorID
 WHERE Author.ID = 3";
 
-            Assert.AreEqual(
-@"SELECT `Graywulf_Schema_Test`.`Book`.`Title` AS `Title`, `Graywulf_Schema_Test`.`Author`.`Name` AS `Name`
+            var gt =
+@"SELECT `Graywulf_Schema_Test`.`Book`.`Title`, `Graywulf_Schema_Test`.`Author`.`Name`
 FROM `Graywulf_Schema_Test`.`Book`
 INNER JOIN `Graywulf_Schema_Test`.`BookAuthor` ON `Graywulf_Schema_Test`.`BookAuthor`.`BookID` = `Graywulf_Schema_Test`.`Book`.`ID` AND `Graywulf_Schema_Test`.`Book`.`ID` = 6
 INNER JOIN `Graywulf_Schema_Test`.`Author` ON `Graywulf_Schema_Test`.`Author`.`ID` = `Graywulf_Schema_Test`.`BookAuthor`.`AuthorID`
-WHERE `Graywulf_Schema_Test`.`Author`.`ID` = 3",
-                GenerateCode(sql, true));
+WHERE `Graywulf_Schema_Test`.`Author`.`ID` = 3";
+
+            var res = RenderQuery(sql, true, true, true);
+            Assert.AreEqual(gt, res);
         }
 
         [TestMethod]
@@ -100,16 +67,16 @@ WHERE `Graywulf_Schema_Test`.`Author`.`ID` = 3",
 @"SELECT b1.Title, b2.Title
 FROM Book b1, Book b2";
 
-            var res = GenerateCode(sql, true);
+            var gt =
+@"SELECT `b1`.`Title`, `b2`.`Title`
+FROM `Graywulf_Schema_Test`.`Book` `b1`, `Graywulf_Schema_Test`.`Book` `b2`";
 
-            // *** TODO
-
-            Assert.AreEqual(
-@"SELECT `b1`.`Title` AS `b1_Title`, `b2`.`Title` AS `b2_Title`
-FROM `Graywulf_Schema_Test`.`Book` `b1`, `Graywulf_Schema_Test`.`Book` `b2`", res);
+            var res = RenderQuery(sql, true, true, true);
+            Assert.AreEqual(gt, res);
 
         }
 
+#if false
         private string[] GenerateMostRestrictiveTableQueryTestHelper(string sql, ColumnContext columnContext, int top)
         {
             var cg = new MySql.MySqlCodeGenerator();
@@ -215,6 +182,6 @@ WHERE `Graywulf_Schema_Test`.`Book`.`ID` = 1
             Assert.AreEqual(gta, res[0]);
             Assert.AreEqual(gtb, res[1]);
         }
-
+#endif
     }
 }

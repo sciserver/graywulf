@@ -11,7 +11,6 @@ namespace Jhu.Graywulf.Sql.Schema.SqlServer
     [TestClass]
     public class SqlServerMetadataTest : SqlServerTestBase
     {
-
         protected override SqlServerDataset CreateIOTestDataset()
         {
             return new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString);
