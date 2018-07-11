@@ -175,8 +175,8 @@
     <Compile Include="Sql\Parsing\UpdateStatementTest.cs" />
     <Compile Include="Sql\Parsing\WhileStatementTest.cs" />
     <Compile Include="Sql\QueryGeneration\SqlServer\RemoteQueryGeneratorTest.cs" />
-    <Compile Include="Sql\QueryGeneration\SqlServer\SqlServerCodeGeneratorTest.cs" />
     <Compile Include="Sql\QueryGeneration\SqlServer\SqlServerColumnListGeneratorTest.cs" />
+    <Compile Include="Sql\QueryGeneration\SqlServer\SqlServerQueryGeneratorTest.cs" />
     <Compile Include="Sql\QueryRendering\MySql\MySqlQueryRendererTest.cs" />
     <Compile Include="Sql\QueryRendering\SqlServer\SqlServerQueryRendererTest.cs" />
     <Compile Include="Sql\Schema\AppSettings.cs" />

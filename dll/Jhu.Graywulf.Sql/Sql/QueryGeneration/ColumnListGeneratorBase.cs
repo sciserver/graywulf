@@ -251,6 +251,11 @@ namespace Jhu.Graywulf.Sql.QueryGeneration
                 case ColumnListType.JoinConditionWithOriginalName:
                     separator = " AND ";
                     break;
+                case ColumnListType.CreateIndex:
+                case ColumnListType.CreateTableWithEscapedName:
+                case ColumnListType.CreateTableWithOriginalName:
+                    separator = "," + Environment.NewLine;
+                    break;
                 default:
                     separator = ", ";
                     break;

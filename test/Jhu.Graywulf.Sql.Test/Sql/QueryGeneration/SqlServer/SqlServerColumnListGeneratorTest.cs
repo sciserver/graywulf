@@ -62,7 +62,9 @@ namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
         public void CreateTableWithOriginalNameTest()
         {
             var res = CreateList(ColumnListType.CreateTableWithOriginalName);
-            Assert.AreEqual("[Title] nvarchar(50) NULL, [Year] int NULL", res);
+            Assert.AreEqual(
+@"[Title] nvarchar(50) NULL,
+[Year] int NULL", res);
         }
 
         [TestMethod]

@@ -4,55 +4,43 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Jhu.Graywulf.Sql.Schema;
 
 namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
 {
     [TestClass]
-    public class SqlServerCodeGeneratorTest : SqlServerTestBase
+    public class SqlServerQueryGeneratorTest : SqlServerTestBase
     {
-        /* TODO: rewrite this
         [TestMethod]
         public void GenerateCreateDestinationTableQueryTest()
         {
-            DataTable schema;
-
-            using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
+            var source = IOTestDataset.Tables[null, null, "SampleData"];
+            var dest = new Table(source)
             {
-                cn.Open();
-
-                var sql = "SELECT * FROM SampleData";
-                using (var cmd = new SqlCommand(sql, cn))
-                {
-                    using (var dr = cmd.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo))
-                    {
-                        schema = dr.GetSchemaTable();
-                    }
-                }
-            }
-
-            var dest = new Table()
-            {
-                SchemaName = Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName,
+                SchemaName = Jhu.Graywulf.Sql.Schema.SqlServer.Constants.DefaultSchemaName,
                 TableName = "destination"
             };
+            dest.CopyColumns(source.Columns.Values);
 
-            var cg = new SqlServerCodeGenerator();
-            var res = cg.GenerateCreateDestinationTableQuery(schema, dest);
+            var cg = new SqlServerQueryGenerator();
+            var res = cg.GenerateCreateTableScript(dest, false, false);
 
-            Assert.AreEqual(@"CREATE TABLE [dbo].[destination] ([float] real  NULL,
-[double] float  NULL,
-[decimal] money  NULL,
-[nvarchar(50)] nvarchar(50)  NULL,
-[bigint] bigint  NULL,
+            Assert.AreEqual(@"CREATE TABLE [Graywulf_IO_Test].[dbo].[destination] (
+[tinyint] tinyint NULL,
+[bigint] bigint NULL,
+[guid] uniqueidentifier NULL,
+[bit] bit NULL,
+[float] real NULL,
+[decimal] money NULL,
 [int] int NOT NULL,
-[tinyint] tinyint  NULL,
-[smallint] smallint  NULL,
-[bit] bit  NULL,
-[ntext] nvarchar(max)  NULL,
-[char] char(1)  NULL,
-[datetime] datetime  NULL,
-[guid] uniqueidentifier  NULL)", res);
-        }*/
+[nvarchar(50)] nvarchar(50) NULL,
+[char] char(1) NULL,
+[smallint] smallint NULL,
+[double] float NULL,
+[datetime] datetime NULL,
+[ntext] nvarchar(max) NULL )
+", res);
+        }
 
 
         [TestMethod]
