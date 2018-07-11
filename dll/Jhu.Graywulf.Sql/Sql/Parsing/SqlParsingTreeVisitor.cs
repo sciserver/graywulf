@@ -15,128 +15,91 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         protected override bool VisitNode(Node node)
         {
-            bool res = false;
-
             switch (node)
             {
-                // Statement
+                // Statements
                 case StatementBlock n:
-                    res = VisitStatementBlock(n);
-                    break;
-
+                    return VisitStatementBlock(n);
+                case Statement n:
+                    return VisitStatement(n);
+                    
                 // Select list
                 case ColumnExpression ce:
-                    res = VisitColumnExpression(ce);
-                    break;
+                    return VisitColumnExpression(ce);
                 case ColumnIdentifier n:
-                    res = VisitColumnIdentifier(n);
-                    break;
+                    return VisitColumnIdentifier(n);
                 case StarColumnIdentifier n:
-                    res = VisitStarColumnIdentifier(n);
-                    break;
+                    return VisitStarColumnIdentifier(n);
                 case ColumnName n:
-                    res = VisitColumnName(n);
-                    break;
+                    return VisitColumnName(n);
 
                 // Expressions
                 case Expression n:
-                    res = VisitExpression(n);
-                    break;
+                    return VisitExpression(n);
                 case Constant n:
-                    res = VisitConstant(n);
-                    break;
+                    return VisitConstant(n);
                 case UserVariable n:
-                    res = VisitUserVariable(n);
-                    break;
+                    return VisitUserVariable(n);
                 case SystemVariable n:
-                    res = VisitSystemVariable(n);
-                    break;
+                    return VisitSystemVariable(n);
 
                 // Boolean expressions
                 case BooleanExpression n:
-                    VisitBooleanExpression(n);
-                    break;
+                    return VisitBooleanExpression(n);
 
                 // Functions
                 case ScalarFunctionCall n:
-                    res = VisitScalarFunctionCall(n);
-                    break;
+                    return VisitScalarFunctionCall(n);
                 case TableValuedFunctionCall n:
-                    res = VisitTableValuedFunctionCall(n);
-                    break;
+                    return VisitTableValuedFunctionCall(n);
                 case FunctionIdentifier fi:
-                    res = VisitFunctionIdentifier(fi);
-                    break;
+                    return VisitFunctionIdentifier(fi);
 
                 // Data types
                 case DataTypeIdentifier dt:
-                    res = VisitDataTypeIdentifier(dt);
-                    break;
+                    return VisitDataTypeIdentifier(dt);
 
                 // Subqueries
                 case ExpressionSubquery n:
-                    res = VisitExpressionSubquery(n);
-                    break;
+                    return VisitExpressionSubquery(n);
                 case SemiJoinSubquery n:
-                    res = VisitSemiJoinSubquery(n);
-                    break;
+                    return VisitSemiJoinSubquery(n);
                 case CommonTableSubquery n:
-                    res = VisitCommonTableSubquery(n);
-                    break;
+                    return VisitCommonTableSubquery(n);
                 case Subquery n:
-                    res = VisitSubquery(n);
-                    break;
+                    return VisitSubquery(n);
 
                 // Table identifiers
                 case TableSourceIdentifier t:
-                    res = VisitTableSourceIdentifier(t);
-                    break;
+                    return VisitTableSourceIdentifier(t);
                 case TableOrViewIdentifier t:
-                    res = VisitTableOrViewIdentifier(t);
-                    break;
+                    return VisitTableOrViewIdentifier(t);
                 case TableAlias ta:
-                    res = VisitTableAlias(ta);
-                    break;
+                    return VisitTableAlias(ta);
                 case TargetTableSpecification tts:
-                    res = VisitTargetTableSpecification(tts);
-                    break;
+                    return VisitTargetTableSpecification(tts);
 
                 // Table and index creation
                 case ColumnDefinition cd:
-                    res = VisitColumnDefinition(cd);
-                    break;
+                    return VisitColumnDefinition(cd);
                 case IndexColumnDefinition cd:
-                    res = VisitIndexColumnDefinition(cd);
-                    break;
+                    return VisitIndexColumnDefinition(cd);
 
                 // Magic token and default behavior
                 case MagicTokenBase mt:
-                    res = VisitMagicToken(mt);
-                    break;
+                    return VisitMagicToken(mt);
                 default:
                     // Continue tree traversal
                     return false;
             }
-
-            return res;
         }
 
         #endregion
         #region Statement visitors
 
-        /// <summary>
-        /// Visit statements of the script sequentially. This is fine because SQL variables
-        /// are not scoped.
-        /// </summary>
-        /// <param name="statementBlock"></param>
-        protected virtual bool VisitStatementBlock(StatementBlock statementBlock)
+        protected virtual bool VisitStatementBlock(StatementBlock sb)
         {
-            foreach (var statement in statementBlock.EnumerateDescendants<Statement>(true))
-            {
-                VisitStatement(statement);
-            }
-
-            return true;
+            return false;
         }
 
         protected virtual bool VisitStatement(Statement statement)
@@ -210,15 +173,7 @@ namespace Jhu.Graywulf.Sql.Parsing
                     throw new NotImplementedException();
             }
 
-            // If node is not handled, descend using generic node visitor 
-            if (!res)
-            {
-                return VisitNode(statement);
-            }
-            else
-            {
-                return true;
-            }
+            return res;
         }
 
         protected virtual bool VisitWhileStatement(WhileStatement statement)

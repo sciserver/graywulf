@@ -165,16 +165,18 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             }
             else
             {
-                var sw = new StringWriter();
-                ExecuteTopDown(node);
-                return sw.ToString();
+                using (writer = new StringWriter())
+                {
+                    TraverseTopDown(node);
+                    return writer.ToString();
+                }
             }
         }
 
         public virtual void Execute(TextWriter writer, Node node)
         {
             this.writer = writer;
-            Execute(node);
+            TraverseTopDown(node);
         }
 
         #endregion
@@ -327,39 +329,46 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             var exp = node.Expression;
             var star = node.StarColumnIdentifier;
 
-            if (star != null)
-            {
-                VisitNode(star);
-            }
-            else if (variable != null)
-            {
-                VisitNode(variable);
-            }
-            else if (exp != null)
-            {
-                VisitNode(exp);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-
-            if (columnAliasRendering == AliasRendering.Always)
-            {
-                if (!node.ColumnReference.IsStar && !String.IsNullOrEmpty(node.ColumnReference.ColumnAlias))
-                {
-                    Writer.Write(" AS {0}", GetQuotedIdentifier(node.ColumnReference.ColumnAlias));
-                }
-
-                return true;
-            }
-            else if (columnAliasRendering == AliasRendering.Never)
-            {
-                return true;
-            }
-            else
+            if (columnAliasRendering == AliasRendering.Default)
             {
                 return false;
+            }
+            else
+            {
+                if (star != null)
+                {
+                    TraverseTopDown(star);
+                }
+                else if (variable != null)
+                {
+                    TraverseTopDown(variable);
+                }
+                else if (exp != null)
+                {
+                    TraverseTopDown(exp);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+
+                if (columnAliasRendering == AliasRendering.Always)
+                {
+                    if (!node.ColumnReference.IsStar && !String.IsNullOrEmpty(node.ColumnReference.ColumnAlias))
+                    {
+                        Writer.Write(" AS {0}", GetQuotedIdentifier(node.ColumnReference.ColumnAlias));
+                    }
+
+                    return true;
+                }
+                else if (columnAliasRendering == AliasRendering.Never)
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
             }
         }
 

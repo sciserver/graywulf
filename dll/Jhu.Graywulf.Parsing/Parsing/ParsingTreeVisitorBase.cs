@@ -8,8 +8,24 @@ namespace Jhu.Graywulf.Parsing
 {
     public abstract class ParsingTreeVisitorBase
     {
-        protected void ExecuteTopDown(Node node)
+        protected enum TraversalDirection
         {
+            TopDown,
+            BottomUp
+        }
+
+        private TraversalDirection direction;
+
+        protected TraversalDirection Direction
+        {
+            get { return direction; }
+            set { direction = value; }
+        }
+
+        protected void TraverseTopDown(Node node)
+        {
+            direction = TraversalDirection.TopDown;
+
             var res = VisitNode(node);
 
             if (!res)
@@ -19,7 +35,7 @@ namespace Jhu.Graywulf.Parsing
                     switch (n)
                     {
                         case Node nn:
-                            ExecuteTopDown(nn);
+                            TraverseTopDown(nn);
                             break;
                         case Token t:
                             VisitToken(t);
@@ -31,14 +47,16 @@ namespace Jhu.Graywulf.Parsing
             }
         }
 
-        protected void ExecuteBottomUp(Node node)
+        protected void TraverseBottomUp(Node node)
         {
+            direction = TraversalDirection.BottomUp;
+
             foreach (var n in node.Stack)
             {
                 switch (n)
                 {
                     case Node nn:
-                        ExecuteBottomUp(nn);
+                        TraverseBottomUp(nn);
                         break;
                     case Token t:
                         VisitToken(t);
