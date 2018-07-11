@@ -6,6 +6,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Sql.Schema
 {
@@ -35,7 +36,7 @@ namespace Jhu.Graywulf.Sql.Schema
         private bool isCompressed;
 
         [NonSerialized]
-        private Lazy<ConcurrentDictionary<string, IndexColumn>> columns;
+        private LazyProperty<ConcurrentDictionary<string, IndexColumn>> columns;
 
         /// <summary>
         /// Gets or sets the name of the index.
@@ -107,6 +108,7 @@ namespace Jhu.Graywulf.Sql.Schema
         public ConcurrentDictionary<string, IndexColumn> Columns
         {
             get { return columns.Value; }
+            protected set { columns.Value = value; }
         }
 
         [IgnoreDataMember]
@@ -200,6 +202,14 @@ namespace Jhu.Graywulf.Sql.Schema
             CopyMembers(old);
         }
 
+        public Index(IIndexes databaseObject, Index old)
+            :base(old)
+        {
+            CopyMembers(old);
+
+            this.databaseObject = databaseObject;
+        }
+
         /// <summary>
         /// Initializes member variables to their default values
         /// </summary>
@@ -215,7 +225,7 @@ namespace Jhu.Graywulf.Sql.Schema
             this.isUnique = false;
             this.isCompressed = true;
 
-            this.columns = new Lazy<ConcurrentDictionary<string, IndexColumn>>(this.LoadIndexColumns, true);
+            this.columns = new LazyProperty<ConcurrentDictionary<string, IndexColumn>>(this.LoadIndexColumns);
         }
 
         private void CopyMembers(Index old)
@@ -229,7 +239,14 @@ namespace Jhu.Graywulf.Sql.Schema
             this.isUnique = old.isUnique;
             this.isCompressed = old.isCompressed;
 
-            this.columns = new Lazy<ConcurrentDictionary<string, IndexColumn>>(this.LoadIndexColumns, true);
+            if (old.columns.IsInitialized)
+            {
+                CopyColumns(old.Columns.Values);
+            }
+            else
+            {
+                this.columns = new LazyProperty<ConcurrentDictionary<string, IndexColumn>>(LoadIndexColumns);
+            }
         }
 
         /// <summary>
@@ -243,21 +260,18 @@ namespace Jhu.Graywulf.Sql.Schema
 
         #endregion
 
-        private void CopyColumns(IList<Column> columns)
+        protected void CopyColumns(IEnumerable<Column> columns)
         {
-            this.columns = new Lazy<ConcurrentDictionary<string, IndexColumn>>();
+            this.Columns = new ConcurrentDictionary<string, IndexColumn>(SchemaManager.Comparer);
 
             int q = 0;
-            foreach (var column in columns)
+            foreach (var c in columns)
             {
-                var ic = new IndexColumn(column)
+                var ic = new IndexColumn(c)
                 {
-                    ID = q
+                    ID = q++
                 };
-
                 this.Columns.TryAdd(ic.Name, ic);
-
-                q++;
             }
         }
 

@@ -103,6 +103,13 @@ namespace Jhu.Graywulf.Sql.Schema
             CopyMembers(old);
         }
 
+        public Variable(DatabaseObject parent, Variable old)
+        {
+            CopyMembers(old);
+
+            this.parent = parent;
+        }
+
         [OnSerializing]
         private void InitializeMembers(StreamingContext context)
         {

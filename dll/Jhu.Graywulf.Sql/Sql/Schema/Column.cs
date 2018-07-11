@@ -96,6 +96,12 @@ namespace Jhu.Graywulf.Sql.Schema
             CopyMembers(old);
         }
 
+        public Column(DatabaseObject parent, Column old)
+            :base(parent, old)
+        {
+            CopyMembers(old);
+        }
+
         /// <summary>
         /// Initializes member variables
         /// </summary>

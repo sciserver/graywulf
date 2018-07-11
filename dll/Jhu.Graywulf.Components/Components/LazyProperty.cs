@@ -11,16 +11,21 @@ namespace Jhu.Graywulf.Components
         [NonSerialized]
         private Func<T> initializer;
 
-        private bool isValueLoaded;
+        private bool isInitialized;
         private T value;
+
+        public bool IsInitialized
+        {
+            get { return isInitialized; }
+        }
 
         public T Value
         {
             get
             {
-                if (!isValueLoaded)
+                if (!isInitialized)
                 {
-                    LoadValue();
+                    InitializeValue();
                 }
 
                 return this.value;
@@ -28,8 +33,16 @@ namespace Jhu.Graywulf.Components
             set
             {
                 this.value = value;
-                this.isValueLoaded = true;
+                this.isInitialized = true;
             }
+        }
+
+        public LazyProperty(T initialValue)
+        {
+            InitializeMembers();
+
+            this.isInitialized = true;
+            this.value = initialValue;
         }
 
         public LazyProperty(Func<T> initializer)
@@ -47,16 +60,16 @@ namespace Jhu.Graywulf.Components
         private void InitializeMembers()
         {
             this.initializer = null;
-            this.isValueLoaded = false;
+            this.isInitialized = false;
             this.value = default(T);
         }
 
-        private void LoadValue()
+        private void InitializeValue()
         {
             lock (this)
             {
                 this.value = initializer();
-                this.isValueLoaded = true;
+                this.isInitialized = true;
             }
         }
 
@@ -64,7 +77,7 @@ namespace Jhu.Graywulf.Components
         {
             lock (this)
             {
-                this.isValueLoaded = false;
+                this.isInitialized = false;
                 this.value = default(T);
             }
         }

@@ -77,6 +77,12 @@ namespace Jhu.Graywulf.Sql.Schema
             CopyMembers(old);
         }
 
+        public IndexColumn(DatabaseObject parent, IndexColumn old)
+            : base(parent, old)
+        {
+            CopyMembers(old);
+        }
+
         public IndexColumn(Column old)
             : base(old)
         {

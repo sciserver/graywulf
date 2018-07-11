@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
@@ -13,7 +14,7 @@ namespace Jhu.Graywulf.Sql.Schema
     /// Contains information about a database table
     /// </summary>
     [Serializable]
-    [DataContract(Namespace="")]
+    [DataContract(Namespace = "")]
     public abstract class TableOrView : DatabaseObject, IColumns, IIndexes, ICloneable
     {
         #region Property storage members and private variables
@@ -62,6 +63,7 @@ namespace Jhu.Graywulf.Sql.Schema
         public ConcurrentDictionary<string, Index> Indexes
         {
             get { return indexes.Value; }
+            protected set { indexes.Value = value; }
         }
 
         /// <summary>
@@ -138,10 +140,37 @@ namespace Jhu.Graywulf.Sql.Schema
             this.statistics = new LazyProperty<TableStatistics>(LoadStatistics);
         }
 
+        public void CopyColumns(IEnumerable<Column> columns)
+        {
+            this.Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
+
+            int q = 0;
+            foreach (var c in columns)
+            {
+                var nc = new Column(this, c)
+                {
+                    ID = q++
+                };
+                this.Columns.TryAdd(nc.Name, nc);
+            }
+        }
+
+        public void CopyIndexes(IEnumerable<Index> indexes)
+        {
+            this.Indexes = new ConcurrentDictionary<string, Index>(SchemaManager.Comparer);
+
+            foreach (var ix in indexes)
+            {
+                var ni = new Index(this, ix);
+                this.Indexes.TryAdd(ix.IndexName, ix);
+            }
+        }
+
         protected QuantityIndex LoadQuantities()
         {
             return new QuantityIndex(Columns.Values);
         }
+
 
         private TableStatistics LoadStatistics()
         {

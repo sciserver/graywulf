@@ -81,22 +81,6 @@ namespace Jhu.Graywulf.Sql.Schema
             return new Table(this);
         }
 
-        private void CopyColumnsFrom(IList<Column> columns)
-        {
-            this.Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
-
-            for (int i = 0; i < columns.Count; i++)
-            {
-                var nc = (Column)columns[i].Clone();
-                this.Columns.TryAdd(nc.Name, nc);
-            }
-
-            if (PrimaryKey != null)
-            {
-
-            }
-        }
-
         private void CreatePrimaryKeyFrom(IList<Column> columns)
         {
             Index pk;
@@ -187,7 +171,7 @@ namespace Jhu.Graywulf.Sql.Schema
             }
             else
             {
-                CopyColumnsFrom(columns);
+                CopyColumns(columns);
                 CreatePrimaryKeyFrom(columns);
 
                 if ((options & TableInitializationOptions.Append) != 0)
