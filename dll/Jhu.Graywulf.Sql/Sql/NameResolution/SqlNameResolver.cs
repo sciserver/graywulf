@@ -603,7 +603,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 ResolveCommonTableExpression(cte);
             }
 
-            ResolveSelect(cte, 0, QueryContext.SelectStatement, statement);
+            ResolveSelect(cte, 0, QueryContext.SelectStatement, statement.QueryExpression, statement.OrderByClause);
 
             var firstqs = statement.QueryExpression.FirstQuerySpecification;
             if (firstqs != null)
@@ -1012,19 +1012,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     ResolveSubqueries(cte, depth, queryContext, (Node)n);
                 }
 
-                if (n is Subquery)
+                if (n is Subquery sq)
                 {
-                    ResolveSelect(cte, depth + 1, queryContext | QueryContext.Subquery, (Subquery)n);
+                    ResolveSelect(cte, depth + 1, queryContext | QueryContext.Subquery, sq.QueryExpression, sq.OrderByClause);
                 }
             }
         }
 
-        protected void ResolveSelect(CommonTableExpression cte, int depth, QueryContext queryContext, ISelect select)
+        protected void ResolveSelect(CommonTableExpression cte, int depth, QueryContext queryContext, QueryExpression qe, OrderByClause orderBy)
         {
-            var qe = select.QueryExpression;
             ResolveQueryExpression(cte, qe, depth, queryContext);
-
-            var orderBy = select.OrderByClause;
 
             if (orderBy != null)
             {
@@ -1048,7 +1045,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void ResolveCommonTableSpecification(CommonTableExpression cte, CommonTableSpecification ts)
         {
             var subquery = ts.Subquery;
-            ResolveSelect(cte, 1, QueryContext.CommonTableExpression, subquery);
+            ResolveSelect(cte, 1, QueryContext.CommonTableExpression, subquery.QueryExpression, subquery.OrderByClause);
         }
 
         protected void ResolveQueryExpression(CommonTableExpression cte, QueryExpression qe, int depth, QueryContext queryContext)

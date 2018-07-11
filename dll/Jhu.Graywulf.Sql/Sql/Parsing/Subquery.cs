@@ -6,7 +6,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class Subquery : ISelect
+    public partial class Subquery
     {
         public QueryExpression QueryExpression
         {

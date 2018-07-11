@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class InsertStatement : ISelect, ISourceTableCollection, ITargetTableProvider
+    public partial class InsertStatement : ISourceTableCollection, ITargetTableProvider
     {
         #region Private member variables
 

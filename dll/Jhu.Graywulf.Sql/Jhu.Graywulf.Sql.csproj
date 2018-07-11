@@ -342,7 +342,6 @@
     <Compile Include="Sql\Parsing\FunctionTableSource.cs" />
     <Compile Include="Sql\Parsing\BeginEndStatement.cs" />
     <Compile Include="Sql\Parsing\IntoClause.cs" />
-    <Compile Include="Sql\Parsing\ISelect.cs" />
     <Compile Include="Sql\Parsing\JoinedTable.cs" />
     <Compile Include="Sql\Parsing\JoinType.cs" />
     <Compile Include="Sql\Parsing\GotoStatement.cs" />
