@@ -10,11 +10,6 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public abstract class MagicTokenBase : Statement
     {
-        public override IEnumerable<AnyStatement> EnumerateSubStatements()
-        {
-            yield break;
-        }
-
         public abstract void Write(QueryRendering.QueryRendererBase renderer, TextWriter writer);
     }
 }

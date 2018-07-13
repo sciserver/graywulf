@@ -221,6 +221,7 @@
     <Compile Include="Sql\NameResolution\DatabaseObjectReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\DataTypeReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\FunctionReferenceEqualityComparer.cs" />
+    <Compile Include="Sql\NameResolution\IColumnReferences.cs" />
     <Compile Include="Sql\NameResolution\ICursorReference.cs" />
     <Compile Include="Sql\NameResolution\IDatabaseObjectReference.cs" />
     <Compile Include="Sql\NameResolution\IMethodReference.cs" />
@@ -254,6 +255,7 @@
     <Compile Include="Sql\NameResolution\Util.cs" />
     <Compile Include="Sql\NameResolution\VariableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\Parsing\MagicTokenBase.cs" />
+    <Compile Include="Sql\Parsing\OrderByArgument.cs" />
     <Compile Include="Sql\Parsing\SqlStatementTreeVisitor.cs" />
     <Compile Include="Sql\Parsing\StarColumnIdentifier.cs" />
     <Compile Include="Sql\Parsing\Argument.cs" />
@@ -284,10 +286,11 @@
     <Compile Include="Sql\Parsing\StatementType.cs" />
     <Compile Include="Sql\Parsing\SystemVariable.cs" />
     <Compile Include="Sql\Parsing\TableConstraint.cs" />
+    <Compile Include="Sql\Parsing\TableDeclaration.cs" />
+    <Compile Include="Sql\Parsing\TableDefinition.cs" />
     <Compile Include="Sql\Parsing\TableDefinitionItem.cs" />
     <Compile Include="Sql\Parsing\TableDefinitionList.cs" />
     <Compile Include="Sql\Parsing\TableSource.cs" />
-    <Compile Include="Sql\Parsing\TableSourceIdentifier.cs" />
     <Compile Include="Sql\Parsing\TableOrViewIdentifier.cs" />
     <Compile Include="Sql\Parsing\TableSourceSpecification.cs" />
     <Compile Include="Sql\Parsing\TargetTableSpecification.cs" />

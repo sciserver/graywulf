@@ -235,7 +235,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 May(Sequence(LogicalNot, May(CommentOrWhitespace))),
                 Must
                 (
-                    Predicate, 
+                    Predicate,
                     BooleanExpressionBrackets
                 ),
                 May(Sequence(May(CommentOrWhitespace), LogicalOperator, May(CommentOrWhitespace), BooleanExpression))
@@ -312,6 +312,24 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 Keyword("NULL")
             );
 
+        public static Expression<Rule> InExpressionListPredicate = () =>
+            Sequence
+            (
+                Expression,
+                May(CommentOrWhitespace),
+                May(Sequence(Keyword("NOT"), CommentOrWhitespace)),
+                Keyword("IN"),
+                May(CommentOrWhitespace),
+                Sequence
+                (
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    ArgumentList,
+                    May(CommentOrWhitespace),
+                    BracketClose
+                )
+            );
+
         public static Expression<Rule> InSemiJoinPredicate = () =>
             Sequence
             (
@@ -320,21 +338,14 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 May(Sequence(Keyword("NOT"), CommentOrWhitespace)),
                 Keyword("IN"),
                 May(CommentOrWhitespace),
-                Must
-                (
-                    SemiJoinSubquery,
-                    Sequence
-                    (
-                        BracketOpen,
-                        May(CommentOrWhitespace),
-                        ArgumentList,
-                        May(CommentOrWhitespace),
-                        BracketClose
-                    )
-                )
+                SemiJoinSubquery
             );
 
         public static Expression<Rule> ComparisonSemiJoinPredicate = () =>
+
+            // TODO: it can be used without keyword
+            // TODO: check if subquery can be the first
+
             Sequence
             (
                 Expression,
@@ -440,20 +451,13 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 )
             );
 
-        public static Expression<Rule> TableSourceIdentifier = () =>
-            Must
-            (
-                Sequence(SchemaName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), TableName),
-                TableName
-            );
-
         public static Expression<Rule> ColumnIdentifier = () => MultiPartIdentifier;
 
         public static Expression<Rule> StarColumnIdentifier = () =>
             Must
             (
                 Mul,
-                Sequence(TableSourceIdentifier, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Mul)
+                Sequence(TableOrViewIdentifier, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Mul)
             );
 
         #endregion
@@ -617,7 +621,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         #endregion
         #region Property access syntax
 
-        public static Expression<Rule> UdtPropertyAccess = () => 
+        public static Expression<Rule> UdtPropertyAccess = () =>
             Sequence
             (
                 Dot,
@@ -758,21 +762,21 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> BreakStatement = () =>
             Inherit
             (
-                Statement, 
+                Statement,
                 Keyword("BREAK")
             );
 
         public static Expression<Rule> ContinueStatement = () =>
             Inherit
             (
-                Statement, 
+                Statement,
                 Keyword("CONTINUE")
             );
 
         public static Expression<Rule> ReturnStatement = () =>
             Inherit
             (
-                Statement, 
+                Statement,
                 Keyword("RETURN")
             );
         // TODO: return can take a value
@@ -792,7 +796,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> IfStatement = () =>
             Inherit
             (
-                Statement, 
+                Statement,
                 Sequence
                 (
                     Keyword("IF"),
@@ -1023,7 +1027,7 @@ FOR select_statement
                 (
                     Must
                     (
-                        Keyword("ABSOLUTE"), 
+                        Keyword("ABSOLUTE"),
                         Keyword("RELATIVE")
                     ),
                     May(CommentOrWhitespace),
@@ -1054,19 +1058,21 @@ FOR select_statement
                 (
                     Keyword("DECLARE"),
                     May(CommentOrWhitespace),
-                    UserVariable,
-                    May(CommentOrWhitespace),
-                    May(Sequence(Keyword("AS"), CommentOrWhitespace)),
-                    Keyword("TABLE"),
-                    May(CommentOrWhitespace),
-                    BracketOpen,
-                    May(CommentOrWhitespace),
-                    TableDefinitionList,
-                    May(CommentOrWhitespace),
-                    BracketClose
+                    TableDeclaration
                 )
             );
 
+        public static Expression<Rule> TableDeclaration = () =>
+            Sequence
+            (
+                UserVariable,
+                May(CommentOrWhitespace),
+                May(Sequence(Keyword("AS"), CommentOrWhitespace)),
+                Keyword("TABLE"),
+                May(CommentOrWhitespace),
+                TableDefinition
+            );
+        
         #endregion
 
         #region Common table expressions
@@ -1202,7 +1208,7 @@ FOR select_statement
                 Sequence(Expression, May(CommentOrWhitespace), May(Sequence(Keyword("AS"), May(CommentOrWhitespace))), ColumnAlias),
                 Expression
             );
-        
+
         #endregion
         #region Into clause
 
@@ -1293,10 +1299,10 @@ FOR select_statement
                 VariableTableSource,
                 SubqueryTableSource
 
-                // TODO:
-                // - derived table with the VALUES clause of INSERT
-                // - PIVOT
-                // - UNPIVOT
+            // TODO:
+            // - derived table with the VALUES clause of INSERT
+            // - PIVOT
+            // - UNPIVOT
             );
 
         public static Expression<Rule> TableSource = () => Abstract();
@@ -1751,15 +1757,22 @@ FOR select_statement
                     May(CommentOrWhitespace),
                     TableOrViewIdentifier,
                     May(CommentOrWhitespace),
-                    BracketOpen,
-                    May(CommentOrWhitespace),
-                    TableDefinitionList,
-                    May(CommentOrWhitespace),
-                    BracketClose
+                    TableDefinition
                 )
             );
 
         // TODO: create table could be extended with options and file group part
+
+        public static Expression<Rule> TableDefinition = () =>
+            Sequence
+            (
+                    
+                BracketOpen,
+                May(CommentOrWhitespace),
+                TableDefinitionList,
+                May(CommentOrWhitespace),
+                BracketClose
+            );
 
         public static Expression<Rule> TableDefinitionList = () =>
             Sequence

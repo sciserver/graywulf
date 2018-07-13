@@ -8,9 +8,5 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class ContinueStatement
     {
-        public override IEnumerable<AnyStatement> EnumerateSubStatements()
-        {
-            yield break;
-        }
     }
 }

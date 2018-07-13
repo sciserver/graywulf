@@ -7,11 +7,11 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class DeclareTableStatement
+    public partial class TableDefinition
     {
-        public TableDeclaration TableDeclaration
+        public TableDefinitionList TableDefinitionList
         {
-            get { return FindDescendant<TableDeclaration>(); }
+            get { return FindDescendant<TableDefinitionList>(); }
         }
     }
 }

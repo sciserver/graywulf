@@ -114,11 +114,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             return Create(qe);
         }
 
-        public override IEnumerable<AnyStatement> EnumerateSubStatements()
-        {
-            yield break;
-        }
-
         public IEnumerable<TableSource> EnumerateSourceTables(bool recursive)
         {
             throw new NotImplementedException();

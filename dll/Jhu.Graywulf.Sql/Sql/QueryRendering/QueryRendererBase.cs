@@ -214,7 +214,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
         {
             writer.Write(token.Value);
         }
-        
+
         #endregion
         #region Specialized node visitors
 
@@ -246,36 +246,6 @@ namespace Jhu.Graywulf.Sql.QueryRendering
                     return true;
                 default:
                     return false;
-            }
-        }
-
-        protected virtual bool WriteNode(TableSourceIdentifier node)
-        {
-            if (!String.IsNullOrWhiteSpace(node.TableReference.Alias))
-            {
-                switch (tableNameRendering)
-                {
-                    case NameRendering.FullyQualified:
-                    case NameRendering.IdentifierOnly:
-                        Writer.Write(GetQuotedIdentifier(node.TableReference.Alias));
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-            else
-            {
-                switch (tableNameRendering)
-                {
-                    case NameRendering.FullyQualified:
-                        Writer.Write(GetResolvedTableName(node.TableReference));
-                        return true;
-                    case NameRendering.IdentifierOnly:
-                        Writer.Write(GetQuotedIdentifier(node.TableReference.DatabaseObjectName));
-                        return true;
-                    default:
-                        return false;
-                }
             }
         }
 
@@ -334,7 +304,43 @@ namespace Jhu.Graywulf.Sql.QueryRendering
 
         protected virtual bool WriteNode(StarColumnIdentifier node)
         {
-            return false;
+            var tr = node.TableOrViewIdentifier?.TableReference;
+
+            if (tr != null)
+            {
+                if (!String.IsNullOrWhiteSpace(tr.Alias))
+                {
+                    switch (tableNameRendering)
+                    {
+                        case NameRendering.FullyQualified:
+                        case NameRendering.IdentifierOnly:
+                            Writer.Write(GetQuotedIdentifier(tr.Alias));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (tableNameRendering)
+                    {
+                        case NameRendering.FullyQualified:
+                            Writer.Write(GetResolvedTableName(tr));
+                            break;
+                        case NameRendering.IdentifierOnly:
+                            Writer.Write(GetQuotedIdentifier(tr.TableName));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                Writer.Write(".");
+            }
+
+            Writer.Write("*");
+
+            return true;
         }
 
         protected virtual bool WriteNode(ColumnName node)

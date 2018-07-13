@@ -16,15 +16,15 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
         }
 
-        public AnyStatement Statement
+        public Statement Statement
         {
             get
             {
-                return FindDescendant<AnyStatement>();
+                return FindDescendant<AnyStatement>().SpecificStatement;
             }
         }
 
-        public override IEnumerable<AnyStatement> EnumerateSubStatements()
+        public override IEnumerable<Statement> EnumerateSubStatements()
         {
             yield return Statement;
         }

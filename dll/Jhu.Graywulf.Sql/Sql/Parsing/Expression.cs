@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
@@ -16,16 +17,24 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get
             {
-                if (Stack.Count == 1)
+                // A single column expression can only have the following nodes:
+                // - CommentOrWhitespace
+                // - ExpressionBrackets
+                // - Expression
+                // - ColumnIdentifier
+
+                foreach (var t in this.EnumerateDescendantsRecursive<Node>(typeof(ColumnIdentifier)))
                 {
-                    var ci = FindDescendant<ColumnIdentifier>();
-                    if (ci != null)
+                    if (!(t is CommentOrWhitespace ||
+                          t is ColumnIdentifier ||
+                          t is ExpressionBrackets ||
+                          t is Expression))
                     {
-                        return true;
+                        return false;
                     }
                 }
 
-                return false;
+                return true;
             }
         }
 

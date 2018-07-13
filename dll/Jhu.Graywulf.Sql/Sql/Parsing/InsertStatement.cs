@@ -96,11 +96,6 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         #endregion
 
-        public override IEnumerable<AnyStatement> EnumerateSubStatements()
-        {
-            yield break;
-        }
-
         public IEnumerable<TableSource> EnumerateSourceTables(bool recursive)
         {
             // Target table

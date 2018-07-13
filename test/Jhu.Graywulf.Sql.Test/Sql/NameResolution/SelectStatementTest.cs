@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
     public class SelectStatementTest : SqlNameResolverTestBase
     {
         [TestMethod]
-        public void SimpleQueryTest()
+        public void SingleColumnQueryTest()
         {
             var sql = "SELECT Name FROM Author";
 
@@ -19,6 +19,27 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
+
+            var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
+
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
+
+            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+
+            Assert.AreEqual(1, cs.Length);
+            Assert.AreEqual("Name", cs[0].ColumnName);
+        }
+
+        [TestMethod]
+        public void SingleColumnQueryWithExpressionBracketsTest()
+        {
+            var sql = "SELECT ( (Name) ) FROM Author";
+
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
+
+            var res = GenerateCode(qs);
+            Assert.AreEqual("SELECT ( ([Graywulf_Schema_Test].[dbo].[Author].[Name]) ) FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
 
             var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
 
@@ -43,7 +64,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            Assert.AreEqual(ColumnContext.From | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.From | ColumnContext.PrimaryKey | ColumnContext.JoinOn, ts[0].ColumnReferences[0].ColumnContext);
             Assert.AreEqual(ColumnContext.SelectList, ts[0].ColumnReferences[1].ColumnContext);
 
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
@@ -101,6 +122,30 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], MAX([Graywulf_Schema_Test].[dbo].[Author].[Name]) FROM [Graywulf_Schema_Test].[dbo].[Author] GROUP BY [Graywulf_Schema_Test].[dbo].[Author].[ID]", res);
+        }
+
+        [TestMethod]
+        public void SimpleQueryWithGroupByTest2()
+        {
+            var sql = "SELECT ID, Name, MAX(Name) FROM Author GROUP BY ID, Name";
+
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
+
+            var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
+
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
+
+            Assert.AreEqual(ColumnContext.SelectList | ColumnContext.GroupBy | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.SelectList | ColumnContext.GroupBy, ts[0].ColumnReferences[1].ColumnContext);
+
+            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+
+            Assert.AreEqual(3, cs.Length);
+            Assert.AreEqual("ID", cs[0].ColumnName);
+
+            var res = GenerateCode(qs);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name], MAX([Graywulf_Schema_Test].[dbo].[Author].[Name]) FROM [Graywulf_Schema_Test].[dbo].[Author] GROUP BY [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name]", res);
         }
 
         [TestMethod]
@@ -630,6 +675,5 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         }
 
         #endregion
-
     }
 }

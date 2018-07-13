@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class VariableDeclaration : IVariableReference
+    public partial class TableDeclaration : IVariableReference
     {
         public VariableReference VariableReference
         {
@@ -20,29 +20,15 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<UserVariable>(); }
         }
 
-        public DataTypeIdentifier DataTypeIdentifier
+        public TableDefinition TableDefinition
         {
-            get { return FindDescendant<DataTypeIdentifier>(); }
-        }
-        
-        public bool IsCursor
-        {
-            get
-            {
-                var cursor = FindDescendant<Jhu.Graywulf.Parsing.Literal>(1);
-                return cursor != null;
-            }
-        }
-
-        public Expression Expression
-        {
-            get { return FindDescendant<Expression>(); }
+            get { return FindDescendant<TableDefinition>(); }
         }
 
         public override void Interpret()
         {
             base.Interpret();
-            Variable.VariableReference.Interpret(this);
+            VariableReference.Interpret(this);
         }
     }
 }

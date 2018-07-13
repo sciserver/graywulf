@@ -32,12 +32,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
 )";
 
             var ss = ParseAndResolveNames<DeclareTableStatement>(sql);
+            var td = ss.TableDeclaration;
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
 
-            var v = ss.VariableReference.Variable;
-            var t = ss.VariableReference.DataTypeReference.DataType;
+            var v = td.VariableReference.Variable;
+            var t = td.VariableReference.DataTypeReference.DataType;
             Assert.AreEqual("@test", v.Name);
             Assert.AreEqual(4, t.Columns.Count);
 
@@ -71,12 +72,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
 )";
 
             var ss = ParseAndResolveNames<DeclareTableStatement>(sql);
+            var td = ss.TableDeclaration;
 
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
 
-            var v = ss.VariableReference.Variable;
-            var t = ss.VariableReference.DataTypeReference.DataType;
+            var v = td.VariableReference.Variable;
+            var t = td.VariableReference.DataTypeReference.DataType;
             Assert.AreEqual("@test", v.Name);
             Assert.AreEqual(5, t.Columns.Count);
 

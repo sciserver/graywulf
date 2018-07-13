@@ -71,7 +71,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
         }
 
-        public TableOrViewIdentifier TableName
+        public TableOrViewIdentifier TableOrViewIdentifier
         {
             get { return tableName; }
         }

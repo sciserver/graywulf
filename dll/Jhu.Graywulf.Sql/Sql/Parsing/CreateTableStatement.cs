@@ -14,25 +14,16 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<TableOrViewIdentifier>(); }
         }
 
-        public DatabaseObjectReference DatabaseObjectReference
-        {
-            get { return TargetTable.DatabaseObjectReference; }
-        }
-
         public TableReference TableReference
         {
             get { return TargetTable.TableReference; }
             set { TargetTable.TableReference = value; }
         }
 
-        public TableDefinitionList TableDefinition
+        public TableDefinition TableDefinition
         {
-            get { return FindDescendant<TableDefinitionList>(); }
+            get { return FindDescendant<TableDefinition>(); }
         }
 
-        public override IEnumerable<AnyStatement> EnumerateSubStatements()
-        {
-            yield break;
-        }
     }
 }

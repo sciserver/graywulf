@@ -9,7 +9,7 @@ using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public class DataTypeReference : DatabaseObjectReference
+    public class DataTypeReference : DatabaseObjectReference, IColumnReferences
     {
         #region Property storage variables
 
@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        public List<ColumnReference> ColumnReferences
+        public IList<ColumnReference> ColumnReferences
         {
             get { return columnReferences; }
         }

@@ -8,7 +8,7 @@ using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public class TableReference : DatabaseObjectReference
+    public class TableReference : DatabaseObjectReference, IColumnReferences
     {
         #region Property storage variables
 
@@ -137,7 +137,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             set { variableReference = value; }
         }
 
-        public List<ColumnReference> ColumnReferences
+        public IList<ColumnReference> ColumnReferences
         {
             get { return columnReferences; }
         }
@@ -233,7 +233,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 DatabaseName = fr.DatabaseName,
                 SchemaName = fr.SchemaName,
                 DatabaseObjectName = fr.DatabaseObjectName,
-                tableContext = TableContext.UserDefinedFunction
+                tableContext = TableContext.From | TableContext.UserDefinedFunction
             };
 
             return tr;
@@ -245,6 +245,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var alias = ts.Alias;
 
             tr.alias = Util.RemoveIdentifierQuotes(alias?.Value);
+            tr.tableContext |= TableContext.From | TableContext.TableOrView;
 
             return tr;
         }
@@ -259,7 +260,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 alias = Util.RemoveIdentifierQuotes(alias?.Value ?? variable?.Value),
                 variableName = variable.VariableName,
                 variableReference = variable.VariableReference,
-                tableContext = TableContext.Variable
+                tableContext = TableContext.From | TableContext.Variable
             };
 
             return tr;
@@ -272,7 +273,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var tr = new TableReference(ts)
             {
                 alias = Util.RemoveIdentifierQuotes(alias.Value),
-                tableContext = TableContext.Subquery,
+                tableContext = TableContext.From | TableContext.Subquery,
             };
 
             // TODO: is subquery parsed at this point? Copy columns now?
@@ -310,22 +311,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 DatasetName = Util.RemoveIdentifierQuotes(ds?.DatasetName),
                 DatabaseName = Util.RemoveIdentifierQuotes(database),
-                SchemaName = Util.RemoveIdentifierQuotes(schema),
-                DatabaseObjectName = Util.RemoveIdentifierQuotes(table),
-                IsUserDefined = true,
-                tableContext = TableContext.TableOrView
-            };
-
-            return tr;
-        }
-
-        public static TableReference Interpret(TableSourceIdentifier ti)
-        {
-            var schema = ti.FindDescendant<SchemaName>()?.Value;
-            var table = ti.FindDescendant<TableName>()?.Value;
-
-            var tr = new TableReference(ti)
-            {
                 SchemaName = Util.RemoveIdentifierQuotes(schema),
                 DatabaseObjectName = Util.RemoveIdentifierQuotes(table),
                 IsUserDefined = true,
@@ -542,7 +527,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             foreach (var cr in ColumnReferences)
             {
                 // Avoid hint and special contexts
-                if (((columnContext & cr.ColumnContext) != 0 || (columnContext & ColumnContext.NonReferenced) != 0)
+                if (((columnContext & cr.ColumnContext) != 0 || (columnContext & ColumnContext.NotReferenced) != 0)
                     && !res.ContainsKey(cr.ColumnName))
                 {
                     res.Add(cr.ColumnName, cr);

@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
 
-            var t = (Schema.Table)ss.DatabaseObjectReference.DatabaseObject;
+            var t = (Schema.Table)ss.TableReference.DatabaseObject;
             Assert.AreEqual("test", t.TableName);
             Assert.AreEqual(4, t.Columns.Count);
 
@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
 
-            var t = (Schema.Table)ss.DatabaseObjectReference.DatabaseObject;
+            var t = (Schema.Table)ss.TableReference.DatabaseObject;
             Assert.AreEqual("test", t.TableName);
             Assert.AreEqual(5, t.Columns.Count);
 
@@ -110,7 +110,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
 
-            var t = (Schema.Table)ss.DatabaseObjectReference.DatabaseObject;
+            var t = (Schema.Table)ss.TableReference.DatabaseObject;
             Assert.AreEqual("test", t.TableName);
             Assert.AreEqual(3, t.Columns.Count);
 
@@ -144,7 +144,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
 
-            var t = (Schema.Table)ss.DatabaseObjectReference.DatabaseObject;
+            var t = (Schema.Table)ss.TableReference.DatabaseObject;
             Assert.AreEqual("test", t.TableName);
             Assert.AreEqual(2, t.Columns.Count);
         }

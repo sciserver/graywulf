@@ -127,7 +127,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return vr;
         }
 
-        public void InterpretVariableDeclaration(Parsing.VariableDeclaration vd)
+        public void Interpret(Parsing.VariableDeclaration vd)
         {
             if (vd.IsCursor)
             {
@@ -138,7 +138,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 this.variableContext = VariableContext.Scalar;
             }
 
-            dataTypeReference = vd.DataType.DataTypeReference;
+            dataTypeReference = vd.DataTypeIdentifier.DataTypeReference;
+        }
+
+        public void Interpret(Parsing.TableDeclaration td)
+        {
+            variableContext = VariableContext.Table;
+            dataTypeReference = new DataTypeReference();
         }
 
         /// <summary>

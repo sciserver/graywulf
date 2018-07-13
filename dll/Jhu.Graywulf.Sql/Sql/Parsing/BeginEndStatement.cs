@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<StatementBlock>(); }
         }
 
-        public override IEnumerable<AnyStatement> EnumerateSubStatements()
+        public override IEnumerable<Statement> EnumerateSubStatements()
         {
             return StatementBlock.EnumerateSubStatements();
         }

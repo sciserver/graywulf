@@ -18,10 +18,5 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             return p;
         }
-
-        public override IEnumerable<AnyStatement> EnumerateSubStatements()
-        {
-            yield break;
-        }
     }
 }

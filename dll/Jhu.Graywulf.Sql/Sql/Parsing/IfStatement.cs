@@ -13,17 +13,17 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<BooleanExpression>(); }
         }
 
-        public AnyStatement MainStatement
+        public Statement MainStatement
         {
-            get { return FindDescendant<AnyStatement>(0); }
+            get { return FindDescendant<AnyStatement>(0).SpecificStatement; }
         }
 
-        public AnyStatement ElseStatement
+        public Statement ElseStatement
         {
-            get { return FindDescendant<AnyStatement>(1); }
+            get { return FindDescendant<AnyStatement>(1).SpecificStatement; }
         }
 
-        public override IEnumerable<AnyStatement> EnumerateSubStatements()
+        public override IEnumerable<Statement> EnumerateSubStatements()
         {
             yield return MainStatement;
 

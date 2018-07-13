@@ -24,10 +24,5 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return TargetTable.TableReference; }
             set { TargetTable.TableReference = value; }
         }
-
-        public override IEnumerable<AnyStatement> EnumerateSubStatements()
-        {
-            yield break;
-        }
     }
 }

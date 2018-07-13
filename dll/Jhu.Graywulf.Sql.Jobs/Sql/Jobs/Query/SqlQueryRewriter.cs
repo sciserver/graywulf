@@ -247,7 +247,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var parent = selectStatement.FindAscendant<StatementBlock>();
             var magic = new ServerMessageMagicToken()
             {
-                DestinationTable = into.TargetTable.TableName.TableReference
+                DestinationTable = into.TargetTable.TableOrViewIdentifier.TableReference
             };
 
             var sb = StatementBlock.Create(magic, selectStatement);

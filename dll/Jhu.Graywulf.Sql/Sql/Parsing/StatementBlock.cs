@@ -9,9 +9,9 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class StatementBlock
     {
-        public IEnumerable<AnyStatement> EnumerateSubStatements()
+        public IEnumerable<Statement> EnumerateSubStatements()
         {
-            return EnumerateDescendants<AnyStatement>(true);
+            return EnumerateDescendants<Statement>(true);
         }
 
         public static StatementBlock Create(Statement statement)

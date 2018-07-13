@@ -25,15 +25,15 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             var sql = @"DECLARE @test TABLE (ID int)";
             var exp = new SqlParser().Execute<DeclareTableStatement>(sql);
-            Assert.AreEqual("@test", exp.VariableReference.VariableName);
+            Assert.AreEqual("@test", exp.TableDeclaration.VariableReference.VariableName);
 
             sql = @"DECLARE@test TABLE(ID int)";
             exp = new SqlParser().Execute<DeclareTableStatement>(sql);
-            Assert.AreEqual("@test", exp.VariableReference.VariableName);
+            Assert.AreEqual("@test", exp.TableDeclaration.VariableReference.VariableName);
 
             sql = @"DECLARE @test AS TABLE (ID int)";
             exp = new SqlParser().Execute<DeclareTableStatement>(sql);
-            Assert.AreEqual("@test", exp.VariableReference.VariableName);
+            Assert.AreEqual("@test", exp.TableDeclaration.VariableReference.VariableName);
 
             sql = @"DECLARE@test AS TABLE(ID int)";
             exp = new SqlParser().Execute<DeclareTableStatement>(sql);

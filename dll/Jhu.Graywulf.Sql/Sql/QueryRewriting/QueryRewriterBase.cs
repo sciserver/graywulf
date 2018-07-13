@@ -29,15 +29,15 @@ namespace Jhu.Graywulf.Sql.QueryRewriting
             }
         }
 
-        protected virtual void RewriteStatement(AnyStatement statement)
+        protected virtual void RewriteStatement(Statement statement)
         {
-            switch (statement.SpecificStatement)
+            switch (statement)
             {
                 case SelectStatement s:
                     RewriteSelectStatement(s);
                     break;
                 default:
-                    foreach (var s in statement.SpecificStatement.EnumerateSubStatements())
+                    foreach (var s in statement.EnumerateSubStatements())
                     {
                         RewriteStatement(s);
                     }

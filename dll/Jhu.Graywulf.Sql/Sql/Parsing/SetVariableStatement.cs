@@ -24,10 +24,5 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return FindDescendant<Expression>(); }
         }
-
-        public override IEnumerable<AnyStatement> EnumerateSubStatements()
-        {
-            yield break;
-        }
     }
 }

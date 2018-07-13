@@ -52,6 +52,16 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<WhereClause>(); }
         }
 
+        public GroupByClause GroupByClause
+        {
+            get { return FindDescendant<GroupByClause>(); }
+        }
+
+        public HavingClause HavingClause
+        {
+            get { return FindDescendant<HavingClause>(); }
+        }
+
         #endregion
         #region Constructors and initializers
 

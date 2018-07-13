@@ -45,11 +45,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             this.cursorReference = old.cursorReference;
         }
 
-        public override IEnumerable<AnyStatement> EnumerateSubStatements()
-        {
-            yield break;
-        }
-
         public override void Interpret()
         {
             base.Interpret();

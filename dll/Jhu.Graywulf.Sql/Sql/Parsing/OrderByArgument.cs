@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public abstract partial class Statement
+    public partial class OrderByArgument
     {
-        public virtual IEnumerable<Statement> EnumerateSubStatements()
+        public Expression Expression
         {
-            yield break;
+            get { return FindDescendant<Expression>(); }
         }
     }
 }

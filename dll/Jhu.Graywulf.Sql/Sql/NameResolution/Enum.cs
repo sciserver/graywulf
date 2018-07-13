@@ -9,14 +9,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
     public enum ColumnContext : long
     {
         None = 0x00000000,
-        NonReferenced = 0x00000001,
+        NotReferenced = 0x00000001,
 
         SelectList = 0x00000002,
         From = 0x00000004,
-        Where = 0x00000008,
-        GroupBy = 0x00000010,
-        Having = 0x00000020,
-        OrderBy = 0x00000040,
+        JoinOn = 0x00000008,
+        Where = 0x00000010,
+        GroupBy = 0x00000020,
+        Having = 0x00000040,
+        OrderBy = 0x00000080,
 
         Default = SelectList | From | Where | GroupBy | Having | OrderBy,
 
@@ -48,7 +49,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
         CommonTable = 0x00010000,
         From = 0x00020000,
         Into = 0x00040000,                   // SELECT INTO
+        Where = 0x00080000,
+        GroupBy = 0x00100000,
+        Having = 0x00200000,
+        OrderBy = 0x00400000,
+        SelectList = 0x00800000,
         Target = 0x00080000,                 // INSERT, UPDATE, DELETE
+        
         CreateTable = 0x00100000,
         AlterTable = 0x00200000,
         DropTable = 0x00400000,

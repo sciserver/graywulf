@@ -230,7 +230,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             this.columnContext = old.columnContext;
         }
-
+        
         public override object Clone()
         {
             return new ColumnReference(this);
@@ -279,7 +279,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static ColumnReference Interpret(StarColumnIdentifier ci)
         {
-            var ti = ci.TableSourceIdentifier;
+            var ti = ci.TableOrViewIdentifier;
             var cr = new ColumnReference(ci)
             {
                 TableReference = ti?.TableReference ?? new TableReference(),
