@@ -36,6 +36,7 @@ namespace Jhu.Graywulf.Sql.Schema
         StoredProcedure = SqlStoredProcedure | ClrStoredProcedure,
 
         Index = 8192,
+        Constraint = 16384,
     }
 
     /// <summary>

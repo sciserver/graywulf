@@ -20,6 +20,8 @@ namespace Jhu.Graywulf.Sql.QueryRendering.SqlServer
             cg.ColumnNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.DataTypeNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.FunctionNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
+            cg.IndexNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
+            cg.ConstraintNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.Execute(sw, node);
 
             return sw.ToString();

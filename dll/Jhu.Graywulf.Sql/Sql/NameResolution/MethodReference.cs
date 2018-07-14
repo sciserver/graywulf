@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var mr = new MethodReference(mc)
             {
-                MethodName = Util.RemoveIdentifierQuotes(mn.Value)
+                MethodName = RemoveIdentifierQuotes(mn.Value)
             };
 
             return mr;
@@ -86,7 +86,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var mr = new MethodReference(mc)
             {
-                MethodName = Util.RemoveIdentifierQuotes(mn.Value)
+                MethodName = RemoveIdentifierQuotes(mn.Value)
             };
 
             return mr;

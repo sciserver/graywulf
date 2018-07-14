@@ -104,8 +104,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var dr = new DataTypeReference()
             {
-                SchemaName = Util.RemoveIdentifierQuotes(mpi.NamePart2),
-                DatabaseObjectName = Util.RemoveIdentifierQuotes(mpi.NamePart1),
+                SchemaName = RemoveIdentifierQuotes(mpi.NamePart2),
+                DatabaseObjectName = RemoveIdentifierQuotes(mpi.NamePart1),
             };
 
             if (dr.DatasetName == null &&  dr.DatabaseName == null && dr.SchemaName == null &&

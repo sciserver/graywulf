@@ -75,6 +75,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static NameResolverException UnresolvableColumnReference(IColumnReference node)
         {
+            var name = String.IsNullOrWhiteSpace(node.ColumnReference.ColumnName) ? node.ToString() : node.ColumnReference.ColumnName;
             return CreateException(ExceptionMessages.UnresolvableColumnReference, null, node.ColumnReference.ColumnName, (Node)node);
         }
 

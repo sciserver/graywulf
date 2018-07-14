@@ -28,6 +28,8 @@ namespace Jhu.Graywulf.Sql.Parsing
                 ColumnNameRendering = QueryRendering.NameRendering.FullyQualified,
                 TableNameRendering = QueryRendering.NameRendering.FullyQualified,
                 FunctionNameRendering = QueryRendering.NameRendering.FullyQualified,
+                IndexNameRendering = QueryRendering.NameRendering.FullyQualified,
+                ConstraintNameRendering = QueryRendering.NameRendering.FullyQualified,
             };
         }
 

@@ -294,7 +294,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var cr = new ColumnReference(cn)
             {
-                columnName = Util.RemoveIdentifierQuotes(cn.Value),
+                columnName = RemoveIdentifierQuotes(cn.Value),
             };
 
             return cr;
@@ -311,7 +311,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var cr = new ColumnReference(ic)
             {
-                columnName = Util.RemoveIdentifierQuotes(ic.ColumnName.Value)
+                columnName = RemoveIdentifierQuotes(ic.ColumnName.Value)
             };
 
             return cr;
@@ -321,7 +321,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var cr = new ColumnReference(ic)
             {
-                columnName = Util.RemoveIdentifierQuotes(ic.ColumnName.Value)
+                columnName = RemoveIdentifierQuotes(ic.ColumnName.Value)
             };
 
             return cr;
@@ -358,7 +358,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 };
             }
 
-            cr.columnAlias = Util.RemoveIdentifierQuotes(alias?.Value);
+            cr.columnAlias = RemoveIdentifierQuotes(alias?.Value);
 
             return cr;
         }

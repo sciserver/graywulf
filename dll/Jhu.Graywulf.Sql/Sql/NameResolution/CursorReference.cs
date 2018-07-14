@@ -89,7 +89,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var cr = new CursorReference(cn)
             {
-                cursorName = Util.RemoveIdentifierQuotes(cn.Value)
+                cursorName = RemoveIdentifierQuotes(cn.Value)
             };
             return cr;
         }

@@ -7,22 +7,28 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class CreateIndexStatement : ITableReference
+    public partial class CreateIndexStatement : ITableReference, IIndexReference
     {
         public TableOrViewIdentifier TargetTable
         {
             get { return FindDescendant<TableOrViewIdentifier>(); }
         }
 
-        public DatabaseObjectReference DatabaseObjectReference
+        public IndexName IndexName
         {
-            get { return TargetTable.DatabaseObjectReference; }
+            get { return FindDescendant<IndexName>(); }
         }
 
         public TableReference TableReference
         {
             get { return TargetTable.TableReference; }
             set { TargetTable.TableReference = value; }
+        }
+
+        public IndexReference IndexReference
+        {
+            get { return IndexName.IndexReference; }
+            set { IndexName.IndexReference = value; }
         }
 
         public IndexColumnDefinitionList IndexDefinition

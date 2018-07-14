@@ -26,6 +26,8 @@ namespace Jhu.Graywulf.Sql.QueryRendering
         private NameRendering dataTypeNameRendering;
         private NameRendering functionNameRendering;
         private VariableRendering variableRendering;
+        private NameRendering indexNameRendering;
+        private NameRendering constraintNameRendering;
 
         private Lazy<Dictionary<DatasetBase, DatasetBase>> datasetMap;
         private Lazy<Dictionary<TableReference, TableReference>> tableReferenceMap;
@@ -91,6 +93,18 @@ namespace Jhu.Graywulf.Sql.QueryRendering
         {
             get { return variableRendering; }
             set { variableRendering = value; }
+        }
+
+        public NameRendering IndexNameRendering
+        {
+            get { return indexNameRendering; }
+            set { indexNameRendering = value; }
+        }
+
+        public NameRendering ConstraintNameRendering
+        {
+            get { return constraintNameRendering; }
+            set { constraintNameRendering = value; }
         }
 
         public Dictionary<DatasetBase, DatasetBase> DatasetMap
@@ -429,6 +443,18 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             return WriteVariable(node);
         }
 
+        protected virtual bool WriteNode(IndexName node)
+        {
+            WriteIndexName(node);
+            return true;
+        }
+
+        protected virtual bool WriteNode(ConstraintName node)
+        {
+            WriteConstraintName(node);
+            return true;
+        }
+
         #endregion
         #region Specialized writer functions
 
@@ -482,6 +508,32 @@ namespace Jhu.Graywulf.Sql.QueryRendering
                 case NameRendering.IdentifierOnly:
                     // No point doing this because it would break the query
                     throw new InvalidOperationException();
+                default:
+                    return false;
+            }
+        }
+
+        private bool WriteIndexName(IIndexReference node)
+        {
+            switch (indexNameRendering)
+            {
+                case NameRendering.FullyQualified:
+                case NameRendering.IdentifierOnly:
+                    Writer.Write(GetQuotedIdentifier(node.IndexReference.IndexName));
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private bool WriteConstraintName(IConstraintReference node)
+        {
+            switch (constraintNameRendering)
+            {
+                case NameRendering.FullyQualified:
+                case NameRendering.IdentifierOnly:
+                    Writer.Write(GetQuotedIdentifier(node.ConstraintReference.ConstraintName));
+                    return true;
                 default:
                     return false;
             }

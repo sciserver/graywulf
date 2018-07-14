@@ -135,8 +135,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
 (
     [ID] [bigint],
     [Data] [nvarchar](50),
-    CONSTRAINT PK_test PRIMARY KEY ([ID]),
-    INDEX IX_text ([ID], [Data])
+    CONSTRAINT [PK_test] PRIMARY KEY ([ID]),
+    INDEX [IX_text] ([ID], [Data])
 )";
 
             var ss = ParseAndResolveNames<CreateTableStatement>(sql);

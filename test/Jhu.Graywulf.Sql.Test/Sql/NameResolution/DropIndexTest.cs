@@ -34,12 +34,12 @@ DROP INDEX IX_test ON test";
     [Data] [float]
 )
 
-CREATE INDEX IX_test ON [Graywulf_Schema_Test].[dbo].[test]
+CREATE INDEX [IX_test] ON [Graywulf_Schema_Test].[dbo].[test]
 (
     [ID]
 )
 
-DROP INDEX IX_test ON [Graywulf_Schema_Test].[dbo].[test]";
+DROP INDEX [IX_test] ON [Graywulf_Schema_Test].[dbo].[test]";
 
             var ss = ParseAndResolveNames<StatementBlock>(sql);
 

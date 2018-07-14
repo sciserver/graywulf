@@ -19,11 +19,35 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
         }
 
+        public virtual void VisitDropTableStatement(DropTableStatement node)
+        {
+        }
+
         public virtual void VisitTruncateTableStatement(TruncateTableStatement node)
         {
         }
 
+        public virtual void VisitCreateIndexStatement(CreateIndexStatement node)
+        {
+        }
+
+        public virtual void VisitDropIndexStatement(DropIndexStatement node)
+        {
+        }
+
         public virtual void VisitSelectStatement(SelectStatement node)
+        {
+        }
+
+        public virtual void VisitInsertStatement(InsertStatement node)
+        {
+        }
+
+        public virtual void VisitDeleteStatement(DeleteStatement node)
+        {
+        }
+
+        public virtual void VisitUpdateStatement(UpdateStatement node)
         {
         }
 
@@ -32,6 +56,10 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         public virtual void VisitDeclareVariableStatement(DeclareTableStatement node)
+        {
+        }
+
+        public virtual void VisitSetVariableStatement(SetVariableStatement node)
         {
         }
 
@@ -55,6 +83,14 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         public virtual void VisitTableIndex(TableIndex node)
+        {
+        }
+
+        public virtual void VisitIndexColumnDefinition(IndexColumnDefinition node)
+        {
+        }
+
+        public virtual void VisitIncludedColumnDefinition(IncludedColumnDefinition node)
         {
         }
 
@@ -111,6 +147,10 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         public virtual void VisitFunctionIdentifier(FunctionIdentifier node)
+        {
+        }
+
+        public virtual void VisitIndexName(IndexName node)
         {
         }
 

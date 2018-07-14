@@ -53,6 +53,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public TableOrView TableOrView
         {
             get { return (TableOrView)DatabaseObject; }
+            set { DatabaseObject = value; }
         }
 
         /// <summary>
@@ -227,7 +228,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var tr = new TableReference(ts)
             {
-                alias = Util.RemoveIdentifierQuotes(alias?.Value),
+                alias = RemoveIdentifierQuotes(alias?.Value),
                 DatasetName = fr.DatasetName,
                 DatabaseName = fr.DatabaseName,
                 SchemaName = fr.SchemaName,
@@ -243,7 +244,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var tr = ts.TableReference;
             var alias = ts.Alias;
 
-            tr.alias = Util.RemoveIdentifierQuotes(alias?.Value);
+            tr.alias = RemoveIdentifierQuotes(alias?.Value);
             tr.tableContext |= TableContext.From | TableContext.TableOrView;
 
             return tr;
@@ -256,7 +257,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var tr = new TableReference(ts)
             {
-                alias = Util.RemoveIdentifierQuotes(alias?.Value ?? variable?.Value),
+                alias = RemoveIdentifierQuotes(alias?.Value ?? variable?.Value),
                 variableName = variable.VariableName,
                 variableReference = variable.VariableReference,
                 tableContext = TableContext.From | TableContext.Variable
@@ -271,7 +272,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var tr = new TableReference(ts)
             {
-                alias = Util.RemoveIdentifierQuotes(alias.Value),
+                alias = RemoveIdentifierQuotes(alias.Value),
                 tableContext = TableContext.From | TableContext.Subquery,
             };
 
@@ -287,7 +288,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var tr = new TableReference(cts)
             {
-                alias = Util.RemoveIdentifierQuotes(alias.Value),
+                alias = RemoveIdentifierQuotes(alias.Value),
                 tableContext = TableContext.Subquery | TableContext.CommonTable,
             };
 
@@ -308,10 +309,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var tr = new TableReference(ti)
             {
-                DatasetName = Util.RemoveIdentifierQuotes(ds?.DatasetName),
-                DatabaseName = Util.RemoveIdentifierQuotes(database),
-                SchemaName = Util.RemoveIdentifierQuotes(schema),
-                DatabaseObjectName = Util.RemoveIdentifierQuotes(table),
+                DatasetName = RemoveIdentifierQuotes(ds?.DatasetName),
+                DatabaseName = RemoveIdentifierQuotes(database),
+                SchemaName = RemoveIdentifierQuotes(schema),
+                DatabaseObjectName = RemoveIdentifierQuotes(table),
                 IsUserDefined = true,
                 tableContext = TableContext.TableOrView
             };
@@ -406,7 +407,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // if column alias list is present, use the alias instead of the original name
                 if (calist != null)
                 {
-                    cr.ColumnName = Util.RemoveIdentifierQuotes(calist[q].Value);
+                    cr.ColumnName = RemoveIdentifierQuotes(calist[q].Value);
                 }
 
                 this.columnReferences.Add(cr);

@@ -187,6 +187,8 @@ namespace Jhu.Graywulf.Test
             cg.ColumnAliasRendering = AliasRendering.Always;
             cg.DataTypeNameRendering = NameRendering.FullyQualified;
             cg.FunctionNameRendering = NameRendering.FullyQualified;
+            cg.IndexNameRendering = NameRendering.FullyQualified;
+            cg.ConstraintNameRendering = NameRendering.FullyQualified;
 
             var sw = new StringWriter();
             cg.Execute(sw, node);

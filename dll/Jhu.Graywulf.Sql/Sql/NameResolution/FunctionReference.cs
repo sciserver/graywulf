@@ -88,10 +88,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var fr = new FunctionReference(fi)
             {
-                DatasetName = Util.RemoveIdentifierQuotes(ds?.DatasetName),
-                DatabaseName = Util.RemoveIdentifierQuotes(mpi.NamePart3),
-                SchemaName = Util.RemoveIdentifierQuotes(mpi.NamePart2),
-                DatabaseObjectName = Util.RemoveIdentifierQuotes(mpi.NamePart1),
+                DatasetName = RemoveIdentifierQuotes(ds?.DatasetName),
+                DatabaseName = RemoveIdentifierQuotes(mpi.NamePart3),
+                SchemaName = RemoveIdentifierQuotes(mpi.NamePart2),
+                DatabaseObjectName = RemoveIdentifierQuotes(mpi.NamePart1),
                 IsUserDefined = true
             };
 

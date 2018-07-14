@@ -27,6 +27,22 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         [TestMethod]
+        public void DeleteWithWhereTest()
+        {
+            var sql = "DELETE Author WHERE ID = 1";
+
+            var ds = ParseAndResolveNames<DeleteStatement>(sql);
+
+            var res = GenerateCode(ds);
+            Assert.AreEqual("DELETE [Graywulf_Schema_Test].[dbo].[Author] WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 1", res);
+
+            var ts = ds.EnumerateSourceTables(false).ToArray();
+            Assert.AreEqual(1, ts.Length);
+            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].TableReference.Alias);
+        }
+
+        [TestMethod]
         public void DeleteWithFromTest()
         {
             var sql = 
@@ -81,7 +97,7 @@ WHERE ID IN (SELECT ID FROM Book)";
 
             var gt =
 @"DELETE [Graywulf_Schema_Test].[dbo].[Author]
-WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] IN (SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID] FROM [Graywulf_Schema_Test].[dbo].[Book])";
+WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] IN (SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID] FROM [Graywulf_Schema_Test].[dbo].[Book])";
 
             var ds = ParseAndResolveNames<DeleteStatement>(sql);
 

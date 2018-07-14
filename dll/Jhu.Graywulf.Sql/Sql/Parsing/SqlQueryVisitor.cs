@@ -269,9 +269,9 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private void TraverseSetVariableStatement(SetVariableStatement node)
         {
-            throw new NotImplementedException();
-            // TODO: visit expression
+            TraverseExpression(node.Expression);
             Sink.VisitUserVariable(node.Variable);
+            Sink.VisitSetVariableStatement(node);
         }
 
         private void TraverseCreateTableStatement(CreateTableStatement node)
@@ -287,7 +287,12 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private void TraverseDropTableStatement(DropTableStatement node)
         {
-            throw new NotImplementedException();
+            tableContextStack.Push(TableContext | TableContext.Drop);
+
+            Sink.VisitTableOrViewIdentifier(node.TargetTable);
+            Sink.VisitDropTableStatement(node);
+
+            tableContextStack.Pop();
         }
 
         private void TraverseTruncateTableStatement(TruncateTableStatement node)
@@ -302,12 +307,50 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private void TraverseCreateIndexStatement(CreateIndexStatement node)
         {
-            throw new NotImplementedException();
+            var cds = node.IndexDefinition;
+            var ics = node.IncludedColumns;
+
+            tableContextStack.Push(TableContext | TableContext.Alter);
+
+            Sink.VisitTableOrViewIdentifier(node.TargetTable);
+            Sink.VisitIndexName(node.IndexName);
+            TraverseIndexDefinition(cds);
+
+            if (ics != null)
+            {
+                TraverseIncludedColumns(ics);
+            }
+
+            Sink.VisitCreateIndexStatement(node);
+
+            tableContextStack.Pop();
+        }
+
+        private void TraverseIndexDefinition(IndexColumnDefinitionList node)
+        {
+            foreach (var cd in node.EnumerateDescendants<IndexColumnDefinition>())
+            {
+                Sink.VisitIndexColumnDefinition(cd);
+            }
+        }
+
+        private void TraverseIncludedColumns(IncludedColumnList node)
+        {
+            foreach (var ic in node.EnumerateDescendants<IncludedColumnDefinition>())
+            {
+                Sink.VisitIncludedColumnDefinition(ic);
+            }
         }
 
         private void TraverseDropIndexStatement(DropIndexStatement node)
         {
-            throw new NotImplementedException();
+            tableContextStack.Push(TableContext | TableContext.Alter);
+
+            Sink.VisitTableOrViewIdentifier(node.TargetTable);
+            Sink.VisitIndexName(node.IndexName);
+            Sink.VisitDropIndexStatement(node);
+
+            tableContextStack.Pop();
         }
 
         private void TraverseSelectStatement(SelectStatement node)
@@ -330,7 +373,48 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private void TraverseDeleteStatement(DeleteStatement node)
         {
-            throw new NotImplementedException();
+            queryContextStack.Push(QueryContext.DeleteStatement);
+            statementStack.Push(node);
+
+            // Target table
+            tableContextStack.Push(TableContext.Delete);
+            TraverseTargetTableSpecification(node.TargetTable);
+            tableContextStack.Pop();
+
+            // Rest of delete
+            var cte = node.CommonTableExpression;
+            var from = node.FromClause;
+            var where = node.WhereClause;
+            
+            if (cte != null)
+            {
+                TraverseCommonTableExpression(cte);
+            }
+
+            if (cte != null)
+            {
+                commonTableExpression = cte;
+            }
+
+            if (from != null)
+            {
+                TraverseFromClause(from);
+            }
+
+            if (where != null)
+            {
+                TraverseWhereClause(where);
+            }            
+
+            if (cte != null)
+            {
+                commonTableExpression = null;
+            }
+
+            queryContextStack.Pop();
+            statementStack.Pop();
+
+            Sink.VisitDeleteStatement(node);
         }
 
         private void TraverseUpdateStatement(UpdateStatement node)
@@ -856,6 +940,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             var uv = node.Variable;
             var ti = node.TableOrViewIdentifier;
 
+            tableContextStack.Push(TableContext | TableContext.Target);
+
             if (uv != null)
             {
                 Sink.VisitUserVariable(uv);
@@ -870,6 +956,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
 
             Sink.VisitTargetTableSpecification(node);
+
+            tableContextStack.Pop();
         }
 
         #endregion
