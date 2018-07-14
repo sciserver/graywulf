@@ -134,7 +134,7 @@ namespace Jhu.Graywulf.Test
             nameResolver.DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
             nameResolver.DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
             nameResolver.DefaultDataTypeDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
-            nameResolver.DefaultOutputDatasetName = Jhu.Graywulf.Test.Constants.MyDBDatasetName;
+            nameResolver.DefaultOutputDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
 
             return nameResolver;
         }

@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private string variableName;
         private TableContext tableContext;
         private bool isComputed;
-
+        private TableSource tableSource;
         private VariableReference variableReference;
         private List<ColumnReference> columnReferences;
 
@@ -131,6 +131,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
+        public TableSource TableSource
+        {
+            get { return tableSource; }
+            set { tableSource = value; }
+        }
+
         public VariableReference VariableReference
         {
             get { return variableReference; }
@@ -191,7 +197,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.variableName = null;
             this.tableContext = TableContext.None;
             this.isComputed = false;
-
+            this.tableSource = null;
             this.variableReference = null;
             this.columnReferences = new List<ColumnReference>();
         }
@@ -202,7 +208,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.variableName = old.variableName;
             this.tableContext = old.tableContext;
             this.isComputed = old.isComputed;
-
+            this.tableSource = old.tableSource;
             this.variableReference = old.variableReference;
 
             // Deep copy of column references
@@ -229,6 +235,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var tr = new TableReference(ts)
             {
                 alias = RemoveIdentifierQuotes(alias?.Value),
+                tableSource = ts,
                 DatasetName = fr.DatasetName,
                 DatabaseName = fr.DatabaseName,
                 SchemaName = fr.SchemaName,
@@ -245,7 +252,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var alias = ts.Alias;
 
             tr.alias = RemoveIdentifierQuotes(alias?.Value);
-            tr.tableContext |= TableContext.From | TableContext.TableOrView;
+            tr.tableSource = ts;
+            tr.tableContext |= TableContext.From;
 
             return tr;
         }
@@ -258,6 +266,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var tr = new TableReference(ts)
             {
                 alias = RemoveIdentifierQuotes(alias?.Value ?? variable?.Value),
+                tableSource = ts,
                 variableName = variable.VariableName,
                 variableReference = variable.VariableReference,
                 tableContext = TableContext.From | TableContext.Variable
@@ -273,6 +282,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var tr = new TableReference(ts)
             {
                 alias = RemoveIdentifierQuotes(alias.Value),
+                tableSource = ts,
                 tableContext = TableContext.From | TableContext.Subquery,
             };
 
@@ -289,6 +299,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var tr = new TableReference(cts)
             {
                 alias = RemoveIdentifierQuotes(alias.Value),
+                tableSource = cts,
                 tableContext = TableContext.Subquery | TableContext.CommonTable,
             };
 
@@ -314,7 +325,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 SchemaName = RemoveIdentifierQuotes(schema),
                 DatabaseObjectName = RemoveIdentifierQuotes(table),
                 IsUserDefined = true,
-                tableContext = TableContext.TableOrView
             };
 
             return tr;

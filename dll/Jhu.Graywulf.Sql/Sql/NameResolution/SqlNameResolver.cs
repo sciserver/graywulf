@@ -256,59 +256,59 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public override void VisitSimpleTableSource(SimpleTableSource node)
         {
-            // Table name in FROM
-            SubstituteSourceTableDefaults(Visitor.ParentQuerySpecification, node.TableReference);
-            ResolveSourceTableReference(Visitor.ParentQuerySpecification, node);
-        }
-
-        public override void VisitTargetTableSpecification(TargetTableSpecification node)
-        {
-            ISourceTableCollection resolvedSourceTables = Visitor.ParentStatement as ISourceTableCollection;
-            var tr = node.TableReference;
-
-            tr.TableContext |= Visitor.TableContext;
-
-            CollectSourceTableReference(tr, resolvedSourceTables);
-        }
-
-        public override void VisitTableSourceSpecification(TableSourceSpecification node)
-        {
-            ISourceTableCollection resolvedSourceTables =
-                Visitor.ParentQuerySpecification ??
-                Visitor.ParentStatement as ISourceTableCollection;
-
-            var ts = node.SpecificTableSource;
-            var tr = ts.TableReference;
-
-            tr.TableContext |= Visitor.TableContext;
-
-            var uniqueKey = CollectSourceTableReference(tr, resolvedSourceTables);
-
-            if (uniqueKey != null)
-            {
-                ts.UniqueKey = uniqueKey;
-            }
+            // Branch landing here:
+            // - SELECT ... FROM
+            ResolveTableReference(node);
         }
 
         public override void VisitTableOrViewIdentifier(TableOrViewIdentifier node)
         {
-            if ((Visitor.TableContext & TableContext.Target) != 0)
+            // Branches landing here:
+            // - SELECT INTO
+            // - CREATE TABLE
+            // - INSERT
+            // - UPDATE
+            // - DELETE
+            ResolveTableReference(node);
+        }
+
+        protected void ResolveTableReference(ITableReference node)
+        {
+            var sourceTableCollection =
+                Visitor.ParentQuerySpecification as ISourceTableCollection ??
+                Visitor.ParentStatement as ISourceTableCollection;
+
+            var targetTableProvider =
+                Visitor.ParentStatement as ITargetTableProvider;
+
+            node.TableReference.TableContext |= Visitor.TableContext;
+
+            if ((Visitor.TableContext & TableContext.Output) != 0)
             {
-                // TargetTable
-                var tr = node.TableReference;
-
-                SubstituteOutputTableDefaults(tr);
-                ResolveTargetTableReference(tr);
-
-                if (tr.TableContext.HasFlag(TableContext.Into))
-                {
-                    CollectOutputTableReference(tr);
-                }
+                // SELECT INTO or CREATE TABLE
+                // Table is resolved in dedicated callback
+                throw new InvalidOperationException();
+            }
+            else if ((Visitor.TableContext & TableContext.Target) != 0)
+            {
+                // INSERT, UPDATE, DELETE, etc.
+                SubstituteSourceTableDefaults(sourceTableCollection, node);
+                ResolveSourceTableReference(sourceTableCollection, node);
+                CollectTargetTableReference(targetTableProvider, node);
+            }
+            else if ((Visitor.TableContext & TableContext.From) != 0)
+            {
+                // SELECT ... FROM
+                SubstituteSourceTableDefaults(sourceTableCollection, node);
+                ResolveSourceTableReference(sourceTableCollection, node);
+                CollectSourceTableReference(sourceTableCollection, node);
             }
             else
             {
-                // Source table (* column)
-                ResolveTableReference(Visitor.ParentQuerySpecification, node);
+                // Source table (table.* syntax only)
+                SubstituteSourceTableDefaults(sourceTableCollection, node);
+                ResolveColumnTableReference(sourceTableCollection, node);
+                CollectSourceTableReference(sourceTableCollection, node);
             }
         }
 
@@ -325,15 +325,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var vr = node.VariableReference;
             var variable = CreateVariable(vr);
 
-            // Add to query details
-            if (!details.VariableReferences.ContainsKey(node.VariableReference.VariableName))
-            {
-                details.VariableReferences.Add(node.VariableReference.VariableName, node.VariableReference);
-            }
-            else
-            {
-                throw NameResolutionError.DuplicateVariableName(node);
-            }
+            CollectVariableReference(vr);
         }
 
         public override void VisitTableDeclaration(TableDeclaration node)
@@ -341,44 +333,86 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var vr = node.Variable.VariableReference;
             var dr = vr.DataTypeReference;
 
-            ResolveTableDefinition(node.TableDefinition, null, dr);
+            ResolveTableDefinition(node.TableDefinition, dr);
 
             vr.Variable = CreateVariable(vr);
             dr.DataType = CreateDataType(dr);
-
-            // Add to query details
-            if (!details.VariableReferences.ContainsKey(vr.VariableName))
-            {
-                details.VariableReferences.Add(vr.VariableName, vr);
-            }
-            else
-            {
-                throw NameResolutionError.DuplicateVariableName(node.Variable);
-            }
+            CollectVariableReference(vr);
         }
 
         public override void VisitCreateTableStatement(CreateTableStatement node)
         {
+            var sourceTableCollection =
+                Visitor.ParentQuerySpecification as ISourceTableCollection ??
+                Visitor.ParentStatement as ISourceTableCollection;
+
+            var targetTableProvider =
+                Visitor.ParentStatement as ITargetTableProvider;
+
             var tr = node.TargetTable.TableReference;
             var td = node.TableDefinition;
 
-            ResolveTableDefinition(td, tr, null);
-
-            var table = CreateTable(tr);
-            tr.DatabaseObject = table;
-
-            if (!table.Dataset.Tables.TryAdd(table.UniqueKey, table))
-            {
-                throw NameResolutionError.TableAlreadyExists(node.TargetTable);
-            }
-
-            // Add to query details
-            if (!details.TargetTableReferences.ContainsKey(table.UniqueKey))
-            {
-                details.TargetTableReferences.Add(table.UniqueKey, new List<TableReference>());
-            }
-            details.TargetTableReferences[table.UniqueKey].Add(tr);
+            SubstituteOutputTableDefaults(tr);
+            ResolveTableDefinition(td, tr);
+            CollectOutputTableReference(targetTableProvider, tr);
         }
+
+        private void ResolveTableDefinition(TableDefinition td, TableReference tr)
+        {
+            foreach (var item in td.TableDefinitionList.EnumerateTableDefinitionItems())
+            {
+                var cd = item.ColumnDefinition;
+                var tc = item.TableConstraint;
+                var ti = item.TableIndex;
+
+                if (cd != null)
+                {
+                    var ncr = new ColumnReference(tr, null, cd.ColumnReference, cd.DataTypeIdentifier.DataTypeReference);
+                    if (tr != null)
+                    {
+                        tr.ColumnReferences.Add(ncr);
+                    }
+                }
+
+                if (tc != null)
+                {
+                    // TODO
+                }
+
+                if (ti != null)
+                {
+                    // TODO
+                }
+            }
+
+            tr.DatabaseObject = CreateTable(tr);
+        }
+
+        private void ResolveTableDefinition(TableDefinition td, DataTypeReference dr)
+        {
+            foreach (var item in td.TableDefinitionList.EnumerateTableDefinitionItems())
+            {
+                var cd = item.ColumnDefinition;
+
+                if (cd != null)
+                {
+                    var ncr = new ColumnReference(null, dr, cd.ColumnReference, cd.DataTypeIdentifier.DataTypeReference);
+                    if (dr != null)
+                    {
+                        dr.ColumnReferences.Add(ncr);
+                    }
+                }
+            }
+
+            dr.DataType = CreateDataType(dr);
+        }
+
+        public override void VisitColumnDefinition(ColumnDefinition node)
+        {
+            node.DataTypeIdentifier.DataTypeReference.DataType.IsNullable = node.IsNullable;
+        }
+
+
 
         public override void VisitDropTableStatement(DropTableStatement node)
         {
@@ -436,72 +470,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #endregion
         #region Table DDL
 
-        private void ResolveTableDefinition(TableDefinition td, TableReference tr, DataTypeReference dr)
-        {
-            foreach (var item in td.TableDefinitionList.EnumerateTableDefinitionItems())
-            {
-                var cd = item.ColumnDefinition;
-                var tc = item.TableConstraint;
-                var ti = item.TableIndex;
-
-                if (cd != null)
-                {
-                    ResolveColumnDefinition(cd, tr, dr);
-                }
-
-                if (tc != null)
-                {
-                    ResolveTableConstraint(tc);
-                }
-
-                if (ti != null)
-                {
-                    ResolveTableIndex(ti);
-                }
-            }
-        }
-
-        private void ResolveColumnDefinition(ColumnDefinition cd, TableReference tr, DataTypeReference dr)
-        {
-            /*
-            SubstituteDataTypeDefaults(cd.DataTypeIdentifier.DataTypeReference);
-            ResolveDataTypeReference(cd.DataTypeIdentifier.DataTypeReference);
-            */
-
-            cd.DataTypeIdentifier.DataTypeReference.DataType.IsNullable = cd.IsNullable;
-
-            // Column defults contain an expression
-            /*
-            var dd = cd.DefaultDefinition;
-
-            if (dd != null)
-            {
-                var exp = dd.Expression;
-                ResolveSubtree(QueryContext.None, exp);
-            }
-            */
-
-            var ncr = new ColumnReference(tr, dr, cd.ColumnReference, cd.DataTypeIdentifier.DataTypeReference);
-
-            if (tr != null)
-            {
-                tr.ColumnReferences.Add(ncr);
-            }
-
-            if (dr != null)
-            {
-                dr.ColumnReferences.Add(ncr);
-            }
-        }
-
-
-        private void ResolveTableConstraint(TableConstraint tc)
-        {
-        }
-
-        private void ResolveTableIndex(TableIndex ti)
-        {
-        }
 
         private Table CreateTable(TableReference tr)
         {
@@ -701,59 +669,109 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         #endregion
-        #region Query constructs
 
-        protected void CopyResultTableColumns(QuerySpecification qs)
+
+
+
+
+        #region Default substitution logic
+
+        /// <summary>
+        /// Substitutes table defaults for all tables that are supposed to exist during query execution
+        /// </summary>
+        /// <param name="resolvedSourceTables"></param>
+        /// <param name="tr"></param>
+        protected void SubstituteSourceTableDefaults(ISourceTableCollection resolvedSourceTables, ITableReference node)
         {
-            var tr = qs.ResultsTableReference;
-            int index = 0;
-            foreach (var ce in qs.SelectList.EnumerateColumnExpressions())
-            {
-                var cr = ce.ColumnReference;
+            var tr = node.TableReference;
 
-                if (cr.IsStar)
+            try
+            {
+                if (tr.IsPossiblyAlias &&
+                    (Visitor.CommonTableExpression != null && Visitor.CommonTableExpression.CommonTableReferences.ContainsKey(tr.DatabaseObjectName) ||
+                     resolvedSourceTables != null && resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(tr.DatabaseObjectName)))
                 {
-                    if (cr.TableReference.IsUndefined)
-                    {
-                        foreach (var ts in qs.EnumerateSourceTables(false))
-                        {
-                            foreach (var ccr in ts.TableReference.ColumnReferences)
-                            {
-                                CopyResultTableColumn(ccr, tr, index++);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var ts = qs.ResolvedSourceTableReferences[cr.TableReference.Alias ?? cr.TableReference.TableName];
-                        foreach (var ccr in ts.ColumnReferences)
-                        {
-                            CopyResultTableColumn(ccr, tr, index++);
-                        }
-                    }
+                    // Don't do any substitution if referencing a common table or anything that aliased
+                }
+                else if (tr.TableContext.HasFlag(TableContext.UserDefinedFunction))
+                {
+                    tr.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
+                }
+                else if (tr.TableContext.HasFlag(TableContext.Variable))
+                {
+                    // No substitution
                 }
                 else
                 {
-                    CopyResultTableColumn(cr, tr, index++);
+                    tr.SubstituteDefaults(SchemaManager, defaultTableDatasetName);
+                }
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw NameResolutionError.UnresolvableDatasetReference(ex, tr);
+            }
+        }
+
+        /// <summary>
+        /// Substitutes table default for tables that are created during query execution 
+        /// </summary>
+        /// <param name="tr"></param>
+        private void SubstituteOutputTableDefaults(TableReference tr)
+        {
+            try
+            {
+                tr.SubstituteDefaults(SchemaManager, defaultOutputDatasetName);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw NameResolutionError.UnresolvableDatasetReference(ex, tr);
+            }
+        }
+
+        /// <summary>
+        /// Substitutes dataset and schema defaults into function references.
+        /// </summary>
+        /// <remarks>
+        /// This is non-standard SQL as SQL requires the schema name to be specified and the database is
+        /// always taken from the current context. In applications, like SkyQuery, functions are always
+        /// taken from the CODE database.
+        /// </remarks>
+        /// <param name="node"></param>
+        private void SubstituteFunctionDefaults(IFunctionReference node)
+        {
+            if (!node.FunctionReference.IsSystem)
+            {
+                try
+                {
+                    node.FunctionReference.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw NameResolutionError.UnresolvableDatasetReference(ex, node.FunctionReference);
                 }
             }
         }
 
-        protected ColumnReference CopyResultTableColumn(ColumnReference cr, TableReference tr, int index)
+        private void SubstituteDataTypeDefaults(DataTypeReference dr)
         {
-            cr.ColumnContext |= ColumnContext.SelectList;
-            var ncr = new ColumnReference(tr, cr)
+            if (!dr.IsSystem)
             {
-                SelectListIndex = index,
-                ColumnAlias = null,
-                ColumnName = cr.ColumnAlias ?? cr.ColumnName
-            };
-            tr.ColumnReferences.Add(ncr);
-            return ncr;
+                try
+                {
+                    dr.SubstituteDefaults(SchemaManager, defaultDataTypeDatasetName);
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw NameResolutionError.UnresolvableDatasetReference(ex, dr);
+                }
+            }
         }
 
+        #endregion
+        #region Identifier resolution logic
+
         /// <summary>
-        /// Looks up the table among CTE and direct schema objects
+        /// Looks up the table among CTE and table sources and direct schema objects
         /// </summary>
         /// <param name="cte"></param>
         /// <param name="tr"></param>
@@ -810,12 +828,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
 
                 ntr.DatabaseObject = ds.GetObject(ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName);
+                ntr.TableContext |= TableContext.TableOrView;
 
                 // Load column descriptions for the table
                 ntr.LoadColumnReferences(schemaManager);
             }
             else
             {
+                throw new NotImplementedException();
+
+                // TODO: this is not necessary here
                 // This is a reference to a subquery with an obligatory alias
                 ntr = new TableReference(tr);
             }
@@ -825,7 +847,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
             node.TableReference = ntr;
         }
 
-        private void ResolveTargetTableReference(TableReference tr)
+#if false
+        /* TODO: delete
+        private void ResolveOutputTableReference(TableReference tr)
         {
             DatasetBase ds;
 
@@ -849,7 +873,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
             */
 
-            tr.DatabaseObject = ds.GetObject(tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName);
+        tr.DatabaseObject = ds.GetObject(tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName);
 
             if (tr.DatabaseObject == null)
             {
@@ -859,79 +883,20 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     SchemaName = tr.SchemaName ?? ds.DefaultSchemaName,
                     TableName = tr.DatabaseObjectName,
                 };
-
-                // TODO: if it is a new table, consider figuring out the columns from the query
             }
             else
             {
                 tr.LoadColumnReferences(schemaManager);
             }
         }
-
-        private string CollectSourceTableReference(TableReference tr, ISourceTableCollection resolvedSourceTables)
-        {
-            string uniquekey = null;
-            string exportedName = tr.Alias ?? tr.VariableName ?? tr.TableName;
-
-            if (exportedName == null)
-            {
-                throw new InvalidOperationException();
-            }
-
-            // Make sure that table key is used only once, unless it is the target table of DELETE, INSERT or UPDATE
-            // where it can also appear in the FROM clause with the same name
-            if (resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(exportedName) &&
-                !resolvedSourceTables.ResolvedSourceTableReferences[exportedName].TableContext.HasFlag(TableContext.Target))
-            {
-                throw NameResolutionError.DuplicateTableAlias(exportedName, tr.Node);
-            }
-
-            if (!resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(exportedName))
-            {
-                // Save the table in the query specification
-                resolvedSourceTables.ResolvedSourceTableReferences.Add(exportedName, tr);
-            }
-
-            // Collect in the global store
-            if (tr.TableContext.HasFlag(TableContext.TableOrView))
-            {
-                var uniqueKey = tr.DatabaseObject.UniqueKey;
-
-                if (!details.SourceTableReferences.ContainsKey(uniqueKey))
-                {
-                    details.SourceTableReferences.Add(uniqueKey, new List<TableReference>());
-                }
-
-                details.SourceTableReferences[uniqueKey].Add(tr);
-                uniqueKey = String.Format("{0}_{1}_{2}", uniqueKey, tr.Alias, details.SourceTableReferences[uniqueKey].Count - 1);
-            }
-
-            return uniquekey;
-        }
-
-        private void CollectOutputTableReference(TableReference tr)
-        {
-            // Save it to the global store
-            var uniqueKey = tr.DatabaseObject.UniqueKey;
-
-            if (!details.OutputTableReferences.ContainsKey(uniqueKey))
-            {
-                details.OutputTableReferences.Add(uniqueKey, new List<TableReference>());
-            }
-            else
-            {
-                throw NameResolutionError.DuplicateOutputTable(tr);
-            }
-
-            details.OutputTableReferences[uniqueKey].Add(tr);
-        }
+#endif
 
         /// <summary>
         /// Resolves a table reference to a table listed in SourceTableReferences
         /// </summary>
         /// <param name="qs"></param>
         /// <param name="tr"></param>
-        private void ResolveTableReference(ISourceTableCollection resolvedSourceTables, ITableReference node)
+        private void ResolveColumnTableReference(ISourceTableCollection resolvedSourceTables, ITableReference node)
         {
             // Try to resolve the table alias part of a table reference
             // If and alias or table name is specified, this can be done based on
@@ -1025,87 +990,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        #endregion
-        #region Default substitution logic
-
-        protected void SubstituteSourceTableDefaults(ISourceTableCollection resolvedSourceTables, TableReference tr)
-        {
-            try
-            {
-                if (tr.IsPossiblyAlias &&
-                    (Visitor.CommonTableExpression != null && Visitor.CommonTableExpression.CommonTableReferences.ContainsKey(tr.DatabaseObjectName) ||
-                     resolvedSourceTables != null && resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(tr.DatabaseObjectName)))
-                {
-                    // Don't do any substitution if referencing a common table or anything that aliased
-                }
-                else if (tr.TableContext.HasFlag(TableContext.TableOrView))
-                {
-                    tr.SubstituteDefaults(SchemaManager, defaultTableDatasetName);
-                }
-                else if (tr.TableContext.HasFlag(TableContext.UserDefinedFunction))
-                {
-                    tr.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
-                }
-            }
-            catch (KeyNotFoundException ex)
-            {
-                throw NameResolutionError.UnresolvableDatasetReference(ex, tr);
-            }
-        }
-
-        private void SubstituteOutputTableDefaults(TableReference tr)
-        {
-            try
-            {
-                tr.SubstituteDefaults(SchemaManager, defaultTableDatasetName);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                throw NameResolutionError.UnresolvableDatasetReference(ex, tr);
-            }
-        }
-
-        /// <summary>
-        /// Substitutes dataset and schema defaults into function references.
-        /// </summary>
-        /// <remarks>
-        /// This is non-standard SQL as SQL requires the schema name to be specified and the database is
-        /// always taken from the current context. In applications, like SkyQuery, functions are always
-        /// taken from the CODE database.
-        /// </remarks>
-        /// <param name="node"></param>
-        private void SubstituteFunctionDefaults(IFunctionReference node)
-        {
-            if (!node.FunctionReference.IsSystem)
-            {
-                try
-                {
-                    node.FunctionReference.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
-                }
-                catch (KeyNotFoundException ex)
-                {
-                    throw NameResolutionError.UnresolvableDatasetReference(ex, node.FunctionReference);
-                }
-            }
-        }
-
-        private void SubstituteDataTypeDefaults(DataTypeReference dr)
-        {
-            if (!dr.IsSystem)
-            {
-                try
-                {
-                    dr.SubstituteDefaults(SchemaManager, defaultDataTypeDatasetName);
-                }
-                catch (KeyNotFoundException ex)
-                {
-                    throw NameResolutionError.UnresolvableDatasetReference(ex, dr);
-                }
-            }
-        }
-
-        #endregion
-
         private void ResolveDataTypeReference(DataTypeReference dr)
         {
             if (!dr.IsResolved && dr.IsUserDefined)
@@ -1137,6 +1021,151 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             dr.IsResolved = true;
         }
+
+        #endregion
+        #region Collect tables
+
+        private void CollectVariableReference(VariableReference vr)
+        {
+            // Add to query details
+            if (!details.VariableReferences.ContainsKey(vr.VariableName))
+            {
+                details.VariableReferences.Add(vr.VariableName, vr);
+            }
+            else
+            {
+                throw NameResolutionError.DuplicateVariableName(vr);
+            }
+        }
+
+        private void CollectSourceTableReference(ISourceTableCollection resolvedSourceTables, ITableReference node)
+        {
+            var tr = node.TableReference;
+            string exportedName = tr.Alias ?? tr.VariableName ?? tr.TableName;
+
+            if (exportedName == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            // Make sure that table key is used only once, unless it is the target table of DELETE, INSERT or UPDATE
+            // where it can also appear in the FROM clause with the same name
+            if (resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(exportedName) &&
+            !resolvedSourceTables.ResolvedSourceTableReferences[exportedName].TableContext.HasFlag(TableContext.Target))
+            {
+                throw NameResolutionError.DuplicateTableAlias(exportedName, tr.Node);
+            }
+
+            if (!resolvedSourceTables.ResolvedSourceTableReferences.ContainsKey(exportedName))
+            {
+                // Save the table in the query specification
+                resolvedSourceTables.ResolvedSourceTableReferences.Add(exportedName, tr);
+            }
+
+            if (tr.TableContext.HasFlag(TableContext.TableOrView))
+            {
+                // Collect in the global store
+                var uniquekey = tr.DatabaseObject.UniqueKey;
+
+                if (!details.SourceTableReferences.ContainsKey(uniquekey))
+                {
+                    details.SourceTableReferences.Add(uniquekey, new List<TableReference>());
+                }
+
+                details.SourceTableReferences[uniquekey].Add(tr);
+
+                tr.TableSource.UniqueKey = String.Format("{0}_{1}_{2}", uniquekey, tr.Alias, details.SourceTableReferences[uniquekey].Count - 1);
+            }
+        }
+
+        private void CollectTargetTableReference(ITargetTableProvider targetTable, ITableReference node)
+        {
+            // Save it to the global store
+            var tr = node.TableReference;
+            var uniqueKey = tr.DatabaseObject.UniqueKey;
+
+            if (!details.TargetTableReferences.ContainsKey(uniqueKey))
+            {
+                details.TargetTableReferences.Add(uniqueKey, new List<TableReference>());
+            }
+
+            details.TargetTableReferences[uniqueKey].Add(tr);
+        }
+
+        private void CollectOutputTableReference(ITargetTableProvider targetTable, TableReference tr)
+        {
+            var table = (Table)tr.DatabaseObject;
+            var uniqueKey = table.UniqueKey;
+
+            // Add to schema
+            if (!table.Dataset.Tables.TryAdd(uniqueKey, table))
+            {
+                throw NameResolutionError.TableAlreadyExists(tr.Node);
+            }
+
+            // Add to query details
+            if (!details.OutputTableReferences.ContainsKey(uniqueKey))
+            {
+                details.OutputTableReferences.Add(uniqueKey, new List<TableReference>());
+            }
+            else
+            {
+                throw NameResolutionError.DuplicateOutputTable(tr);
+            }
+
+            details.OutputTableReferences[uniqueKey].Add(tr);
+        }
+
+        protected void CopyResultTableColumns(QuerySpecification qs)
+        {
+            var tr = qs.ResultsTableReference;
+            int index = 0;
+            foreach (var ce in qs.SelectList.EnumerateColumnExpressions())
+            {
+                var cr = ce.ColumnReference;
+
+                if (cr.IsStar)
+                {
+                    if (cr.TableReference.IsUndefined)
+                    {
+                        foreach (var ts in qs.EnumerateSourceTables(false))
+                        {
+                            foreach (var ccr in ts.TableReference.ColumnReferences)
+                            {
+                                CopyResultTableColumn(ccr, tr, index++);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var ts = qs.ResolvedSourceTableReferences[cr.TableReference.Alias ?? cr.TableReference.TableName];
+                        foreach (var ccr in ts.ColumnReferences)
+                        {
+                            CopyResultTableColumn(ccr, tr, index++);
+                        }
+                    }
+                }
+                else
+                {
+                    CopyResultTableColumn(cr, tr, index++);
+                }
+            }
+        }
+
+        protected ColumnReference CopyResultTableColumn(ColumnReference cr, TableReference tr, int index)
+        {
+            cr.ColumnContext |= ColumnContext.SelectList;
+            var ncr = new ColumnReference(tr, cr)
+            {
+                SelectListIndex = index,
+                ColumnAlias = null,
+                ColumnName = cr.ColumnAlias ?? cr.ColumnName
+            };
+            tr.ColumnReferences.Add(ncr);
+            return ncr;
+        }
+
+        #endregion
 
         /// <summary>
         /// Creates and parameterizes and exception to be thrown by the name resolver.

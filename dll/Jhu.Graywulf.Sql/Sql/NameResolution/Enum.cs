@@ -64,7 +64,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
         Drop = 0x00400000,
         Truncate = 0x00800000,
 
-        Target = Into | Insert | Update | Delete | Create | Alter | Drop | Truncate
+        Output = Into | Create,
+        Target = Insert | Update | Delete | Alter | Drop | Truncate
     }
 
     [Flags]

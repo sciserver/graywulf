@@ -238,6 +238,7 @@
     <Compile Include="Sql\NameResolution\NameResolutionError.cs" />
     <Compile Include="Sql\NameResolution\QueryDetails.cs" />
     <Compile Include="Sql\NameResolution\ReferenceBase.cs" />
+    <Compile Include="Sql\NameResolution\SqlNameResolver.cs" />
     <Compile Include="Sql\NameResolution\TableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\VariableReference.cs" />
     <Compile Include="Sql\NameResolution\DataTypeReference.cs" />
@@ -254,7 +255,6 @@
     <Compile Include="Sql\NameResolution\ITableReference.cs" />
     <Compile Include="Sql\NameResolution\IVariableReference.cs" />
     <Compile Include="Sql\NameResolution\NameResolverException.cs" />
-    <Compile Include="Sql\NameResolution\SqlNameResolver.cs" />
     <Compile Include="Sql\NameResolution\TableReference.cs" />
     <Compile Include="Sql\NameResolution\VariableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\Parsing\ConstraintName.cs" />

@@ -99,9 +99,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return CreateException(ExceptionMessages.UnresolvableVariableReference, null, node.VariableReference.VariableName, (Node)node);
         }
 
-        public static NameResolverException DuplicateVariableName(IVariableReference node)
+        public static NameResolverException DuplicateVariableName(VariableReference vr)
         {
-            return CreateException(ExceptionMessages.DuplicateVariableName, null, node.VariableReference.VariableName, (Node)node);
+            return CreateException(ExceptionMessages.DuplicateVariableName, null, vr.VariableName, vr.Node);
         }
 
         public static NameResolverException ScalarVariableExpected(IVariableReference node)

@@ -279,7 +279,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             tableContextStack.Push(TableContext | TableContext.Create);
 
             TraverseTableDefinition(node.TableDefinition);
-            Sink.VisitTableOrViewIdentifier(node.TargetTable);
             Sink.VisitCreateTableStatement(node);
 
             tableContextStack.Pop();
@@ -656,6 +655,16 @@ namespace Jhu.Graywulf.Sql.Parsing
             {
                 TraverseColumnDefinition(cd);
             }
+
+            if (tc != null)
+            {
+                // TODO
+            }
+
+            if (ti != null)
+            {
+                // TODO
+            }
         }
 
         private void TraverseColumnDefinition(ColumnDefinition node)
@@ -943,7 +952,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
         }
 
-        protected void DispatchTableSource(TableSource node)
+        protected virtual void DispatchTableSource(TableSource node)
         {
             switch (node)
             {
@@ -1112,8 +1121,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             var uv = node.Variable;
             var ti = node.TableOrViewIdentifier;
 
-            tableContextStack.Push(TableContext | TableContext.Target);
-
             if (uv != null)
             {
                 Sink.VisitUserVariable(uv);
@@ -1128,8 +1135,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
 
             Sink.VisitTargetTableSpecification(node);
-
-            tableContextStack.Pop();
         }
 
         #endregion
