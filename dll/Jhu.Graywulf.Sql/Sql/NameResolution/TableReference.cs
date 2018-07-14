@@ -78,7 +78,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                   !tableContext.HasFlag(TableContext.CommonTable) &&
                   !tableContext.HasFlag(TableContext.UserDefinedFunction) &&
                   !tableContext.HasFlag(TableContext.Variable) &&
-                  !tableContext.HasFlag(TableContext.CreateTable) &&
                   !tableContext.HasFlag(TableContext.Target) &&             // TODO: review this
                   !IsComputed;
             }

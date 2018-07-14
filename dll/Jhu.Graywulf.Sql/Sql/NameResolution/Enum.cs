@@ -46,21 +46,25 @@ namespace Jhu.Graywulf.Sql.NameResolution
         Variable = 0x00000004,
         UserDefinedFunction = 0x00000008,
 
-        CommonTable = 0x00010000,
-        From = 0x00020000,
-        Into = 0x00040000,                   // SELECT INTO
-        Where = 0x00080000,
-        GroupBy = 0x00100000,
-        Having = 0x00200000,
-        OrderBy = 0x00400000,
-        SelectList = 0x00800000,
-        Target = 0x00080000,                 // INSERT, UPDATE, DELETE
-        
-        CreateTable = 0x00100000,
-        AlterTable = 0x00200000,
-        DropTable = 0x00400000,
-        CreateIndex = 0x00800000,
-        DropIndex = 0x01000000,
+        CommonTable = 0x00000100,
+        From = 0x00000200,
+        Into = 0x00000400,                   // SELECT INTO
+        Where = 0x00000800,
+        GroupBy = 0x00001000,
+        Having = 0x00002000,
+        OrderBy = 0x00004000,
+        SelectList = 0x00008000,
+
+        Insert = 0x00010000,
+        Update = 0x00020000,
+        Delete = 0x00040000,
+
+        Create = 0x00100000,
+        Alter = 0x00200000,
+        Drop = 0x00400000,
+        Truncate = 0x00800000,
+
+        Target = Into | Insert | Update | Delete | Create | Alter | Drop | Truncate
     }
 
     [Flags]

@@ -13,9 +13,11 @@ namespace Jhu.Graywulf.Sql.Parsing
     /// Implements a generic SQL tree traversal algorithm to be used with name
     /// resolution and query rewriting
     /// </summary>
-    public abstract class SqlStatementTreeVisitor
+    public class SqlQueryVisitor
     {
         #region Private member variables
+
+        private SqlQueryVisitorSink sink;
 
         private int statementCounter;
         private Stack<Statement> statementStack;
@@ -28,52 +30,57 @@ namespace Jhu.Graywulf.Sql.Parsing
         #endregion
         #region Properties
 
-        protected int StatementCounter
+        private SqlQueryVisitorSink Sink
+        {
+            get { return sink; }
+        }
+
+        public int StatementCounter
         {
             get { return statementCounter; }
         }
 
-        protected Stack<Statement> StatementStack
+        public Stack<Statement> StatementStack
         {
             get { return statementStack; }
         }
 
-        protected int StatementDepth
+        public int StatementDepth
         {
             get { return statementStack.Count; }
         }
 
-        protected Statement ParentStatement
+        public Statement ParentStatement
         {
             get { return statementStack?.Peek(); }
         }
 
-        protected QueryContext QueryContext
+        public QueryContext QueryContext
         {
             get { return queryContextStack.Peek(); }
         }
 
-        protected TableContext TableContext
+        public TableContext TableContext
         {
             get { return tableContextStack.Peek(); }
         }
 
-        protected ColumnContext ColumnContext
+        public ColumnContext ColumnContext
         {
             get { return columnContextStack.Peek(); }
         }
 
-        protected CommonTableExpression CommonTableExpression
+        public CommonTableExpression CommonTableExpression
         {
             get { return commonTableExpression; }
         }
 
-        protected QuerySpecification ParentQuerySpecification
+        public QuerySpecification ParentQuerySpecification
         {
             get { return querySpecificationStack.Count == 0 ? null : querySpecificationStack.Peek(); }
         }
 
-        protected int QuerySpecificationDepth
+        public int QuerySpecificationDepth
         {
             get { return querySpecificationStack.Count; }
         }
@@ -81,13 +88,17 @@ namespace Jhu.Graywulf.Sql.Parsing
         #endregion
         #region Constructors and initializers
 
-        protected SqlStatementTreeVisitor()
+        public SqlQueryVisitor(SqlQueryVisitorSink sink)
         {
             InitializeMembers();
+
+            this.sink = sink;
         }
 
         private void InitializeMembers()
         {
+            this.sink = null;
+
             this.statementCounter = 0;
             this.statementStack = new Stack<Statement>();
             this.queryContextStack = new Stack<QueryContext>();
@@ -98,9 +109,9 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         #endregion
-        #region Statements
+        #region Entry points
 
-        protected void TraverseStatements(StatementBlock node)
+        public void Execute(StatementBlock node)
         {
             queryContextStack.Push(QueryContext.None);
             tableContextStack.Push(TableContext.None);
@@ -113,25 +124,22 @@ namespace Jhu.Graywulf.Sql.Parsing
             columnContextStack.Pop();
         }
 
+        // TODO: add entry points for expressions
+
+        #endregion
+        #region Statements
+
         private void TraverseStatementBlock(StatementBlock node)
         {
-            var res = VisitStatementBlock(node);
+            Sink.VisitStatementBlock(node);
 
-            if (!res)
+            foreach (var s in node.EnumerateDescendants<AnyStatement>(true))
             {
-                foreach (var s in node.EnumerateDescendants<AnyStatement>(true))
-                {
-                    TraverseStatement(s.FindDescendant<Statement>());
-                }
+                TraverseStatement(s.FindDescendant<Statement>());
             }
         }
 
-        protected virtual bool VisitStatementBlock(StatementBlock node)
-        {
-            return false;
-        }
-
-        protected void TraverseStatement(Statement node)
+        private void TraverseStatement(Statement node)
         {
             statementStack.Push(node);
 
@@ -147,7 +155,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             statementStack.Pop();
         }
 
-        private void DispatchStatement(Statement node)
+        protected virtual void DispatchStatement(Statement node)
         {
             switch (node)
             {
@@ -261,19 +269,20 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private void TraverseSetVariableStatement(SetVariableStatement node)
         {
-            VisitUserVariable(node.Variable);
+            throw new NotImplementedException();
+            // TODO: visit expression
+            Sink.VisitUserVariable(node.Variable);
         }
 
         private void TraverseCreateTableStatement(CreateTableStatement node)
         {
-            TraverseTableDefinition(node.TableDefinition);
-            VisitTargetTableIdentifier(node.TargetTable);
-            VisitCreateTableStatement(node);
-        }
+            tableContextStack.Push(TableContext | TableContext.Create);
 
-        protected bool VisitCreateTableStatement(CreateTableStatement node)
-        {
-            return false;
+            TraverseTableDefinition(node.TableDefinition);
+            Sink.VisitTableOrViewIdentifier(node.TargetTable);
+            Sink.VisitCreateTableStatement(node);
+
+            tableContextStack.Pop();
         }
 
         private void TraverseDropTableStatement(DropTableStatement node)
@@ -283,17 +292,13 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private void TraverseTruncateTableStatement(TruncateTableStatement node)
         {
-            // TODO: grammar szinten ketté kéne szedni a kimeneti és bemeneti táblákat
+            tableContextStack.Push(TableContext | TableContext.Truncate);
 
-            VisitTargetTableIdentifier(node.TargetTable);
-            VisitTruncateTableStatement(node);
+            Sink.VisitTableOrViewIdentifier(node.TargetTable);
+            Sink.VisitTruncateTableStatement(node);
+
+            tableContextStack.Pop();
         }
-
-        protected virtual bool VisitTruncateTableStatement(TruncateTableStatement node)
-        {
-            return false;
-        }
-
 
         private void TraverseCreateIndexStatement(CreateIndexStatement node)
         {
@@ -315,12 +320,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             queryContextStack.Pop();
             statementStack.Pop();
 
-            VisitSelectStatement(node);
-        }
-
-        protected virtual bool VisitSelectStatement(SelectStatement node)
-        {
-            return false;
+            Sink.VisitSelectStatement(node);
         }
 
         private void TraverseInsertStatement(InsertStatement node)
@@ -354,26 +354,21 @@ namespace Jhu.Graywulf.Sql.Parsing
             var dt = node.DataTypeIdentifier;
             var exp = node.Expression;
 
-            VisitDataTypeIdentifier(node.DataTypeIdentifier);
+            Sink.VisitDataTypeIdentifier(node.DataTypeIdentifier);
 
             if (exp != null)
             {
                 TraverseExpression(exp);
             }
 
-            VisitVariableDeclaration(node);
-        }
-
-        protected virtual bool VisitVariableDeclaration(VariableDeclaration node)
-        {
-            return false;
+            Sink.VisitVariableDeclaration(node);
         }
 
         private void TraverseDeclareTableStatement(DeclareTableStatement node)
         {
             var td = node.TableDeclaration;
             TraverseTableDeclaration(td);
-            VisitDeclareTableStatement(node);
+            Sink.VisitDeclareTableStatement(node);
         }
 
         private void TraverseTableDeclaration(TableDeclaration node)
@@ -381,18 +376,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var td = node.TableDefinition;
 
             TraverseTableDefinition(td);
-            VisitTableDeclaration(node);
-        }
-    
-
-        protected virtual bool VisitDeclareTableStatement(DeclareTableStatement node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitTableDeclaration(TableDeclaration node)
-        {
-            return false;
+            Sink.VisitTableDeclaration(node);
         }
 
         #endregion
@@ -427,38 +411,18 @@ namespace Jhu.Graywulf.Sql.Parsing
                 TraverseExpression(exp);
             }
 
-            VisitDataTypeIdentifier(node.DataTypeIdentifier);
-            VisitColumnDefinition(node);
+            Sink.VisitDataTypeIdentifier(node.DataTypeIdentifier);
+            Sink.VisitColumnDefinition(node);
         }
 
         private void TraverseTableConstraint(TableConstraint node)
         {
-            VisitTableConstraint(node);
+            Sink.VisitTableConstraint(node);
         }
 
         private void TraverseTableIndex(TableIndex node)
         {
-            VisitTableIndex(node);
-        }
-
-        protected virtual bool VisitTableDefinition(TableDefinition node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitColumnDefinition(ColumnDefinition node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitTableConstraint(TableConstraint node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitTableIndex(TableIndex node)
-        {
-            return false;
+            Sink.VisitTableIndex(node);
         }
 
         #endregion
@@ -499,9 +463,14 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private void TraverseExpressionNodes(Node node)
         {
+            // TODO: consider extending this to observer operation precedence
+            // during expressiont tree traversal
+
+            // c.f. with logical expression's ExpressionVisitor class
+
             foreach (var n in node.Stack)
             {
-                if (!(n is Subquery) && n is Node nn)
+                if (!(n is ExpressionSubquery) && n is Node nn)
                 {
                     TraverseExpressionNodes(nn);
                 }
@@ -510,91 +479,44 @@ namespace Jhu.Graywulf.Sql.Parsing
             DispatchExpressionNode(node);
         }
 
-        private bool DispatchExpressionNode(Node node)
+        protected virtual void DispatchExpressionNode(Node node)
         {
             switch (node)
             {
+                case Constant n:
+                    Sink.VisitConstant(n);
+                    break;
+                case ExpressionSubquery n:
+                    Sink.VisitExpressionSubquery(n);
+                    break;
                 case SystemVariable n:
-                    return VisitSystemVariable(n);
+                    Sink.VisitSystemVariable(n);
+                    break;
                 case UserVariable n:
-                    return VisitUserVariable(n);
+                    Sink.VisitUserVariable(n);
+                    break;
                 case UdtStaticMethodCall n:
-                    return VisitUdtStaticMethodCall(n);
+                    Sink.VisitUdtStaticMethodCall(n);
+                    break;
                 case UdtStaticPropertyAccess n:
-                    return VisitUdtStaticPropertyAccess(n);
-                case WindowedFunctionCall n:
-                    return VisitWindowedFunctionCall(n);
-                case ScalarFunctionCall n:
-                    return VisitScalarFunctionCall(n);
+                    Sink.VisitUdtStaticPropertyAccess(n);
+                    break;
                 case CountStar n:
-                    return VisitCountStar(n);
-                case DataTypeIdentifier n:
-                    return VisitDataTypeIdentifier(n);
-                case FunctionIdentifier n:
-                    return VisitFunctionIdentifier(n);
+                    Sink.VisitCountStar(n);
+                    break;
                 case ColumnIdentifier n:
-                    return VisitColumnIdentifier(n);
-
-                // TODO: UDT member list
-
-                default:
-                    return false;
+                    Sink.VisitColumnIdentifier(n);
+                    break;
+                case FunctionIdentifier n:
+                    Sink.VisitFunctionIdentifier(n);
+                    break;
+                case UdtMethodCall n:
+                    Sink.VisitUdtMethodCall(n);
+                    break;
+                case UdtPropertyAccess n:
+                    Sink.VisitUdtPropertyAccess(n);
+                    break;
             }
-        }
-
-        protected virtual bool VisitSystemVariable(SystemVariable node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitUserVariable(UserVariable node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitUdtStaticMethodCall(UdtStaticMethodCall node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitUdtStaticPropertyAccess(UdtStaticPropertyAccess node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitWindowedFunctionCall(WindowedFunctionCall node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitScalarFunctionCall(ScalarFunctionCall node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitCountStar(CountStar node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitTableSourceIdentifier(TableOrViewIdentifier node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitDataTypeIdentifier(DataTypeIdentifier node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitFunctionIdentifier(FunctionIdentifier node)
-        {
-            return false;
-        }
-        
-        protected virtual bool VisitColumnIdentifier(ColumnIdentifier node)
-        {
-            return false;
         }
 
         #endregion
@@ -636,8 +558,8 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             foreach (var ct in cte.EnumerateCommonTableSpecifications())
             {
-                // This needs to happen early otherwise recursive queris won't work
-                VisitCommonTableSpecification(ct);
+                // This needs to happen early otherwise recursive queries won't work
+                Sink.VisitCommonTableSpecification(ct);
 
                 queryContextStack.Push(QueryContext.CommonTableExpression);
                 TraverseQuery(ct.Subquery);
@@ -646,7 +568,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             commonTableExpression = null;
 
-            VisitCommonTableExpression(cte);
+            Sink.VisitCommonTableExpression(cte);
         }
 
         private void TraverseQueryExpression(QueryExpression qe)
@@ -656,7 +578,7 @@ namespace Jhu.Graywulf.Sql.Parsing
                 TraverseQuerySpecification(qs);
             }
 
-            VisitQueryExpression(qe);
+            Sink.VisitQueryExpression(qe);
         }
 
         private void TraverseQuerySpecification(QuerySpecification qs)
@@ -706,7 +628,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             querySpecificationStack.Pop();
 
-            VisitQuerySpecification(qs);
+            Sink.VisitQuerySpecification(qs);
         }
 
         private void TraverseFromClause(FromClause node)
@@ -758,10 +680,29 @@ namespace Jhu.Graywulf.Sql.Parsing
             while (ts != null)
             {
                 DispatchTableSource(ts.SpecificTableSource);
-                VisitTableSource(ts.SpecificTableSource);
+                Sink.VisitTableSourceSpecification(ts);
 
                 ts = jt?.FindDescendant<TableSourceSpecification>();
                 jt = jt?.FindDescendant<JoinedTable>();
+            }
+        }
+
+        protected void DispatchTableSource(TableSource node)
+        {
+            switch (node)
+            {
+                case FunctionTableSource n:
+                    Sink.VisitFunctionTableSource(n);
+                    break;
+                case SimpleTableSource n:
+                    Sink.VisitSimpleTableSource(n);
+                    break;
+                case VariableTableSource n:
+                    Sink.VisitVariableTableSource(n);
+                    break;
+                case SubqueryTableSource n:
+                    Sink.VisitSubqueryTableSource(n);
+                    break;
             }
         }
 
@@ -788,27 +729,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
         }
 
-        private void DispatchTableSource(TableSource node)
-        {
-            switch (node)
-            {
-                case FunctionTableSource n:
-                    VisitFunctionTableSource(n);
-                    break;
-                case SimpleTableSource n:
-                    VisitSimpleTableSource(n);
-                    break;
-                case VariableTableSource n:
-                    VisitVariableTableSource(n);
-                    break;
-                case SubqueryTableSource n:
-                    VisitSubqueryTableSouce(n);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
         private void TraverseSubquery(Subquery sq)
         {
             queryContextStack.Push(QueryContext.Subquery);
@@ -816,11 +736,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             TraverseQuery(sq);
 
             queryContextStack.Pop();
-        }
-
-        protected virtual bool VisitTableSource(TableSource ts)
-        {
-            return false;
         }
 
         private void TraverseSelectList(SelectList node)
@@ -836,7 +751,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
                 if (var != null)
                 {
-                    VisitUserVariable(var);
+                    Sink.VisitUserVariable(var);
                 }
 
                 if (exp != null)
@@ -849,7 +764,7 @@ namespace Jhu.Graywulf.Sql.Parsing
                     TraverseStarColumnIdentifier(star);
                 }
 
-                VisitColumnExpression(ce);
+                Sink.VisitColumnExpression(ce);
             }
 
             tableContextStack.Pop();
@@ -862,7 +777,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             if (ti != null)
             {
-                VisitTableSourceIdentifier(ti);
+                Sink.VisitTableOrViewIdentifier(ti);
             }
         }
 
@@ -925,68 +840,12 @@ namespace Jhu.Graywulf.Sql.Parsing
             foreach (var arg in obl.EnumerateDescendants<OrderByArgument>())
             {
                 TraverseExpression(arg.Expression);
+                Sink.VisitOrderByArgument(arg);
             }
-
-            VisitOrderByClause(node);
 
             querySpecificationStack.Pop();
             tableContextStack.Pop();
             columnContextStack.Pop();
-        }
-
-        protected virtual bool VisitCommonTableExpression(CommonTableExpression node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitCommonTableSpecification(CommonTableSpecification cts)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitSubquery(Subquery node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitQueryExpression(QueryExpression qe)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitQuerySpecification(QuerySpecification qs)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitOrderByClause(OrderByClause orderBy)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitColumnExpression(ColumnExpression ce)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitSimpleTableSource(SimpleTableSource node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitFunctionTableSource(FunctionTableSource node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitVariableTableSource(VariableTableSource node)
-        {
-            return false;
-        }
-
-        protected virtual bool VisitSubqueryTableSouce(SubqueryTableSource node)
-        {
-            return false;
         }
 
         #endregion
@@ -999,27 +858,18 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             if (uv != null)
             {
-                VisitUserVariable(uv);
+                Sink.VisitUserVariable(uv);
             }
             else if (ti != null)
             {
-                VisitTargetTableIdentifier(ti);
+                Sink.VisitTableOrViewIdentifier(ti);
             }
             else
             {
                 throw new NotImplementedException();
             }
 
-            VisitTargetTableSpecification(node);
-        }
-
-        protected virtual void VisitTargetTableSpecification(TargetTableSpecification node)
-        {
-        }
-
-        protected virtual bool VisitTargetTableIdentifier(TableOrViewIdentifier node)
-        {
-            return false;
+            Sink.VisitTargetTableSpecification(node);
         }
 
         #endregion

@@ -256,7 +256,8 @@
     <Compile Include="Sql\NameResolution\VariableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\Parsing\MagicTokenBase.cs" />
     <Compile Include="Sql\Parsing\OrderByArgument.cs" />
-    <Compile Include="Sql\Parsing\SqlStatementTreeVisitor.cs" />
+    <Compile Include="Sql\Parsing\SqlQueryVisitor.cs" />
+    <Compile Include="Sql\Parsing\SqlQueryVisitorSink.cs" />
     <Compile Include="Sql\Parsing\StarColumnIdentifier.cs" />
     <Compile Include="Sql\Parsing\Argument.cs" />
     <Compile Include="Sql\Parsing\ArgumentList.cs" />
