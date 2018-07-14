@@ -215,8 +215,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public override void VisitColumnIdentifier(ColumnIdentifier node)
         {
             var sourceTables =
-                (ISourceTableCollection)Visitor.ParentQuerySpecification ??
-                (ISourceTableCollection)Visitor.ParentStatement;
+                                (ISourceTableCollection)Visitor.ParentQuerySpecification ??
+                                (ISourceTableCollection)Visitor.ParentStatement;
 
             ResolveColumnReference(sourceTables.ResolvedSourceTableReferences.Values, node);
         }
@@ -273,13 +273,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public override void VisitTableSourceSpecification(TableSourceSpecification node)
         {
-            ISourceTableCollection resolvedSourceTables = 
+            ISourceTableCollection resolvedSourceTables =
                 Visitor.ParentQuerySpecification ??
                 Visitor.ParentStatement as ISourceTableCollection;
 
             var ts = node.SpecificTableSource;
             var tr = ts.TableReference;
-            
+
             tr.TableContext |= Visitor.TableContext;
 
             var uniqueKey = CollectSourceTableReference(tr, resolvedSourceTables);
@@ -316,7 +316,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #region DML statements
 
 
-        
+
         #endregion
         #region Scalar and table-valued variables
 
@@ -395,24 +395,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // TODO maybe add index to schema?
         }
 
-
         #endregion
-
-
-
-
-
-
-        // ---------------------------------------------------
-
-
-
-
-
-
-#if true
-        #region Statements
-
         #region Scalar and table-valued variables
 
         private Schema.Variable CreateVariable(VariableReference vr)
@@ -425,7 +408,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             return variable;
         }
-               
+
 
         private DataType CreateDataType(DataTypeReference dr)
         {
@@ -559,133 +542,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         // TODO: add alter table here
 
         #endregion
-
-        private void ResolveInsertStatement(InsertStatement statement)
-        {
-            throw new NotImplementedException();
-
-            /*
-            // Resolve CTE
-            var cte = statement.FindDescendant<CommonTableExpression>();
-            if (cte != null)
-            {
-                ResolveCommonTableExpression(cte);
-            }
-
-            // Resolve target table
-            var target = statement.TargetTable;
-            ResolveTargetTable(cte, statement, target);
-
-            // Resolve column list
-            var columnList = statement.ColumnList;
-            if (columnList != null)
-            {
-                foreach (var column in columnList.EnumerateDescendants<ColumnIdentifier>())
-                {
-                    // Resolve column name and make sure it belongs to the target table
-                    ResolveColumnReference(null, new[] { target.TableReference }, ColumnContext.Insert, column);
-
-                    // Make sure column belongs to the target table
-                    if (!column.ColumnReference.TableReference.TryMatch(target.TableReference))
-                    {
-                        throw NameResolutionError.ColumnNotPartOfTargetTable(column);
-                    }
-                }
-            }
-
-            // Resolve values list (incl. subqueries)
-            var values = statement.ValuesClause;
-            if (values != null)
-            {
-                foreach (var group in values.EnumerateValueGroups())
-                {
-                    foreach (var val in group.EnumerateValues())
-                    {
-                        // It can be an Expression or DEFAULT, we ignore the latter
-                        if (val is Expression exp)
-                        {
-                            ResolveSubqueries(cte, 0, QueryContext.InsertStatement, exp);
-                            ResolveExpressionReferences(cte, statement, ColumnContext.None, exp);
-                        }
-                    }
-                }
-            }
-
-            // Resolve select part
-            var query = statement.QueryExpression;
-            if (query != null)
-            {
-                ResolveQueryExpression(cte, query, 0, QueryContext.InsertStatement | QueryContext.SelectStatement);
-
-                // Resolve order by
-                var orderBy = statement.OrderByClause;
-                if (orderBy != null)
-                {
-                    var qs = query.FirstQuerySpecification;
-                    ResolveOrderByClause(cte, orderBy, qs, QueryContext.InsertStatement | QueryContext.SelectStatement);
-                }
-            }
-            */
-        }
-
-        private void ResolveUpdateStatement(UpdateStatement statement)
-        {
-            throw new NotImplementedException();
-
-            /*
-            // Resolve CTE
-            var cte = statement.FindDescendant<CommonTableExpression>();
-            if (cte != null)
-            {
-                ResolveCommonTableExpression(cte);
-            }
-
-            var from = statement.FromClause;
-            if (from != null)
-            {
-                ResolveTableAndColumnReferences(cte, statement, from, from, 0, QueryContext.UpdateStatement);
-            }
-
-            var where = statement.WhereClause;
-            if (where != null)
-            {
-                ResolveTableAndColumnReferences(cte, statement, where, where, 0, QueryContext.UpdateStatement);
-            }
-
-            // Resolve target table
-            var target = statement.TargetTable;
-            ResolveTargetTable(cte, statement, target);
-
-            // Resolve values list (incl. subqueries)
-            var sets = statement.UpdateSetList;
-            if (sets != null)
-            {
-                foreach (var set in sets.EnumerateSetColumns())
-                {
-                    var leftvar = set.LeftHandSide.UserVariable;
-                    if (leftvar != null)
-                    {
-                        ResolveScalarVariableReference(leftvar);
-                    }
-
-                    var leftcol = set.LeftHandSide.ColumnIdentifier;
-                    if (leftcol != null)
-                    {
-                        ResolveColumnReference(cte, new[] { target.TableReference }, ColumnContext.Update, leftcol);
-                    }
-
-                    var rightexp = set.RightHandSide.Expression;
-                    if (rightexp != null)
-                    {
-                        ResolveSubqueries(cte, 0, QueryContext.InsertStatement, rightexp);
-                        ResolveExpressionReferences(cte, statement, ColumnContext.None, rightexp);
-                    }
-                }
-            }
-            */
-        }
-
-        #endregion
         #region Reference resolution
 
         protected virtual bool IsSystemFunctionName(string name)
@@ -815,7 +671,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (q == 0)
                 {
-                    throw NameResolutionError.UnresolvableColumnReference(cr);
+                    if (Visitor.ColumnContext.HasFlag(ColumnContext.Insert))
+                    {
+                        throw NameResolutionError.ColumnNotPartOfTargetTable((Node)cr);
+                    }
+                    else
+                    {
+                        throw NameResolutionError.UnresolvableColumnReference(cr);
+                    }
                 }
 
                 UpdateColumnReference(cr.ColumnReference, ncr, Visitor.ColumnContext);
@@ -888,7 +751,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             tr.ColumnReferences.Add(ncr);
             return ncr;
         }
-        
+
         /// <summary>
         /// Looks up the table among CTE and direct schema objects
         /// </summary>
@@ -911,8 +774,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 ntr = tr;
                 ntr.TableContext |= TableContext.Subquery;
             }
-            else if (tr.IsPossiblyAlias && 
-                Visitor.CommonTableExpression != null && 
+            else if (tr.IsPossiblyAlias &&
+                Visitor.CommonTableExpression != null &&
                 Visitor.CommonTableExpression.CommonTableReferences.ContainsKey(tr.TableName))
             {
                 // This is a reference to a CTE query
@@ -1292,6 +1155,5 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             return ex;
         }
-#endif
     }
 }

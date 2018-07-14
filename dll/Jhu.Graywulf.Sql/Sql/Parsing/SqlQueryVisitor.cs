@@ -368,7 +368,95 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private void TraverseInsertStatement(InsertStatement node)
         {
-            throw new NotImplementedException();
+            queryContextStack.Push(QueryContext.InsertStatement);
+            statementStack.Push(node);
+
+            tableContextStack.Push(TableContext.Insert);
+
+            // Target table
+            TraverseTargetTableSpecification(node.TargetTable);
+
+            // Target column list, must be traversed before any table resolution to
+            // make sure these all reference the target table
+            var cl = node.ColumnList;
+
+            if (cl != null)
+            {
+                TraverseInsertColumnList(cl);
+            }
+
+            // Common table expression
+            var cte = node.CommonTableExpression;
+
+            if (cte != null)
+            {
+                TraverseCommonTableExpression(cte);
+            }
+
+            if (cte != null)
+            {
+                commonTableExpression = cte;
+            }
+
+            // Values clause
+            var vc = node.ValuesClause;
+
+            if (vc != null)
+            {
+                TraverseValuesClause(vc);
+            }
+
+            tableContextStack.Pop();
+
+            // Query
+            var qe = node.QueryExpression;
+            var orderby = node.OrderByClause;
+
+            if (qe != null)
+            {
+                TraverseQueryExpression(qe);
+            }
+
+            if (orderby != null)
+            {
+                var qs = qe.FirstQuerySpecification;
+                TraverseOrderByClause(qs, orderby);
+            }
+
+            Sink.VisitInsertStatement(node);
+
+            if (cte != null)
+            {
+                commonTableExpression = null;
+            }
+
+            queryContextStack.Pop();
+            statementStack.Pop();
+        }
+
+        private void TraverseInsertColumnList(InsertColumnList node)
+        {
+            columnContextStack.Push(ColumnContext | ColumnContext.Insert);
+
+            foreach (var column in node.EnumerateDescendants<ColumnIdentifier>())
+            {
+                Sink.VisitColumnIdentifier(column);
+            }
+        }
+
+        private void TraverseValuesClause(ValuesClause node)
+        {
+            foreach (var group in node.EnumerateValueGroups())
+            {
+                foreach (var val in group.EnumerateValues())
+                {
+                    // It can be an Expression or DEFAULT, we ignore the latter
+                    if (val is Expression exp)
+                    {
+                        TraverseExpression(exp);
+                    }
+                }
+            }
         }
 
         private void TraverseDeleteStatement(DeleteStatement node)
@@ -385,7 +473,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var cte = node.CommonTableExpression;
             var from = node.FromClause;
             var where = node.WhereClause;
-            
+
             if (cte != null)
             {
                 TraverseCommonTableExpression(cte);
@@ -404,7 +492,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             if (where != null)
             {
                 TraverseWhereClause(where);
-            }            
+            }
+
+            Sink.VisitDeleteStatement(node);
 
             if (cte != null)
             {
@@ -413,13 +503,95 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             queryContextStack.Pop();
             statementStack.Pop();
-
-            Sink.VisitDeleteStatement(node);
         }
 
         private void TraverseUpdateStatement(UpdateStatement node)
         {
-            throw new NotImplementedException();
+            queryContextStack.Push(QueryContext.DeleteStatement);
+            statementStack.Push(node);
+
+            // Target table
+            tableContextStack.Push(TableContext.Update);
+            TraverseTargetTableSpecification(node.TargetTable);
+            tableContextStack.Pop();
+
+            // First visit left hand side only to make sure all
+            // target columns are
+            TraverseUpdateSetList1(node.UpdateSetList);
+
+            // Common table expression
+            var cte = node.CommonTableExpression;
+            var from = node.FromClause;
+            var where = node.WhereClause;
+
+            if (cte != null)
+            {
+                TraverseCommonTableExpression(cte);
+            }
+
+            if (cte != null)
+            {
+                commonTableExpression = cte;
+            }
+
+            // Rest of update
+            if (from != null)
+            {
+                TraverseFromClause(from);
+            }
+
+            if (where != null)
+            {
+                TraverseWhereClause(where);
+            }
+
+            // Second traversal of the set list, this time the right-had sides,
+            // which can have references to all the tables
+            TraverseUpdateSetList2(node.UpdateSetList);
+
+            Sink.VisitUpdateStatement(node);
+
+            if (cte != null)
+            {
+                commonTableExpression = null;
+            }
+
+            queryContextStack.Pop();
+            statementStack.Pop();
+        }
+
+        private void TraverseUpdateSetList1(UpdateSetList node)
+        {
+            columnContextStack.Push(ColumnContext | ColumnContext.Update);
+
+            foreach (var set in node.EnumerateSetColumns())
+            {
+                var leftvar = set.LeftHandSide.UserVariable;
+                if (leftvar != null)
+                {
+                    Sink.VisitUserVariable(leftvar);
+                }
+
+                var leftcol = set.LeftHandSide.ColumnIdentifier;
+                if (leftcol != null)
+                {
+                    Sink.VisitColumnIdentifier(leftcol);
+                }
+            }
+
+            columnContextStack.Pop();
+        }
+
+        private void TraverseUpdateSetList2(UpdateSetList node)
+        {
+            foreach (var set in node.EnumerateSetColumns())
+            {
+                var rightexp = set.RightHandSide.Expression;
+                if (rightexp != null)
+                {
+                    TraverseExpression(rightexp);
+                }
+            }
         }
 
         #endregion

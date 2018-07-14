@@ -1560,7 +1560,14 @@ FOR select_statement
                         Sequence
                         (
                             May(CommentOrWhitespace),
-                            ColumnListBrackets
+                            Sequence
+                            (
+                                BracketOpen,
+                                May(CommentOrWhitespace),
+                                InsertColumnList,
+                                May(CommentOrWhitespace),
+                                BracketClose
+                            )
                         )
                     ),
                     // TODO: add OUTPUT clause
@@ -1581,21 +1588,11 @@ FOR select_statement
                 )
             );
 
-        public static Expression<Rule> ColumnListBrackets = () =>
-            Sequence
-            (
-                BracketOpen,
-                May(CommentOrWhitespace),
-                ColumnList,
-                May(CommentOrWhitespace),
-                BracketClose
-            );
-
-        public static Expression<Rule> ColumnList = () =>
+        public static Expression<Rule> InsertColumnList = () =>
             Sequence
             (
                 ColumnIdentifier,
-                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ColumnList))
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), InsertColumnList))
             );
 
         public static Expression<Rule> ValuesClause = () =>

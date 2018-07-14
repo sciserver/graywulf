@@ -61,6 +61,13 @@ namespace Jhu.Graywulf.Sql.Schema
         }
 
         [TestMethod]
+        public void ConstraintSerializationTest()
+        {
+            Assert.IsTrue(TestType(typeof(Constraint)));
+        }
+
+
+        [TestMethod]
         public void IndexColumnSerializationTest()
         {
             Assert.IsTrue(TestType(typeof(IndexColumn)));

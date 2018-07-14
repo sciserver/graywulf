@@ -26,11 +26,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<TargetTableSpecification>(); }
         }
 
-        public ColumnList ColumnList
+        public InsertColumnList ColumnList
         {
             get
             {
-                return FindDescendant<ColumnListBrackets>()?.FindDescendant<ColumnList>();
+                return FindDescendant<InsertColumnList>();
             }
         }
 

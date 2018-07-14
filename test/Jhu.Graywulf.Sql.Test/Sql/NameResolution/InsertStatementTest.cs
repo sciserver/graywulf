@@ -219,6 +219,54 @@ SELECT TOP 100 * FROM [Graywulf_Schema_Test].[dbo].[Author]";
             Assert.AreEqual(null, ts[0].TableReference.Alias);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(NameResolverException))]
+        public void InsertColumnNotPartOfTargetTest()
+        {
+            var sql =
+@"INSERT Author
+(ID2, Name3)
+DEFAULT VALUES";
+
+            ParseAndResolveNames<InsertStatement>(sql);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NameResolverException))]
+        public void InsertColumnNotPartOfTargetTest2()
+        {
+            var sql =
+@"WITH q AS (SELECT 1 AS ID2, '' AS Name3)
+INSERT Author
+(ID2, Name3)
+DEFAULT VALUES";
+
+            ParseAndResolveNames<InsertStatement>(sql);
+        }
+
+        [TestMethod]
+        public void ValueFromCommonTableExpressionTest()
+        {
+            var sql =
+@"WITH q AS (SELECT 1 AS ID2, '' AS Name3)
+INSERT Author
+(ID, NAME)
+VALUES
+((SELECT ID2 FROM q), (SELECT Name3 FROM q))";
+
+            var gt =
+@"WITH [q] AS (SELECT 1 AS [ID2], '' AS [Name3])
+INSERT [Graywulf_Schema_Test].[dbo].[Author]
+([Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[NAME])
+VALUES
+((SELECT [q].[ID2] FROM [q]), (SELECT [q].[Name3] FROM [q]))";
+
+            var exp = ParseAndResolveNames<InsertStatement>(sql);
+            var res = GenerateCode(exp);
+
+            Assert.AreEqual(gt, res);
+        }
+
         // TODO: values part with subquery in expression
         // TODO: values part with sum of queries in expression
         // TODO: select with join

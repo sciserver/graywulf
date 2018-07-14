@@ -27,6 +27,22 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         [TestMethod]
+        public void DeleteWithAliasTest()
+        {
+            var sql = "DELETE a FROM Author a";
+
+            var ds = ParseAndResolveNames<DeleteStatement>(sql);
+
+            var res = GenerateCode(ds);
+            Assert.AreEqual("DELETE [Graywulf_Schema_Test].[dbo].[Author]", res);
+
+            var ts = ds.EnumerateSourceTables(false).ToArray();
+            Assert.AreEqual(1, ts.Length);
+            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].TableReference.Alias);
+        }
+
+        [TestMethod]
         public void DeleteWithWhereTest()
         {
             var sql = "DELETE Author WHERE ID = 1";

@@ -7,6 +7,8 @@ using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Sql.Schema
 {
+    [Serializable]
+    [DataContract(Namespace = "")]
     public class Constraint : DatabaseObject
     {
         /// <summary>
