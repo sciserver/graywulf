@@ -282,7 +282,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
 
         protected virtual bool WriteNode(TargetTableSpecification tts)
         {
-            if (tts.TableReference.TableContext.HasFlag(TableContext.Target) &&
+            if ((tts.TableReference.TableContext & TableContext.Target) != 0 &&
                 !String.IsNullOrEmpty(tts.TableReference.Alias))
             {
                 // Always render target tables with alias, when defined

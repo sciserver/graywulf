@@ -278,6 +278,8 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             tableContextStack.Push(TableContext | TableContext.Create);
 
+            // Do not visit table indentifier here because table is
+            // non-existing and would cause problems with name resolution
             TraverseTableDefinition(node.TableDefinition);
             Sink.VisitCreateTableStatement(node);
 
@@ -370,7 +372,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             queryContextStack.Push(QueryContext.InsertStatement);
             statementStack.Push(node);
 
-            tableContextStack.Push(TableContext.Insert);
+            tableContextStack.Push(TableContext | TableContext.Insert);
 
             // Target table
             TraverseTargetTableSpecification(node.TargetTable);
@@ -460,15 +462,11 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private void TraverseDeleteStatement(DeleteStatement node)
         {
-            queryContextStack.Push(QueryContext.DeleteStatement);
             statementStack.Push(node);
+            queryContextStack.Push(QueryContext.DeleteStatement);
 
             // Target table
-            tableContextStack.Push(TableContext.Delete);
-            TraverseTargetTableSpecification(node.TargetTable);
-            tableContextStack.Pop();
 
-            // Rest of delete
             var cte = node.CommonTableExpression;
             var from = node.FromClause;
             var where = node.WhereClause;
@@ -487,6 +485,10 @@ namespace Jhu.Graywulf.Sql.Parsing
             {
                 TraverseFromClause(from);
             }
+
+            tableContextStack.Push(TableContext | TableContext.Delete);
+            TraverseTargetTableSpecification(node.TargetTable);
+            tableContextStack.Pop();
 
             if (where != null)
             {
@@ -510,7 +512,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             statementStack.Push(node);
 
             // Target table
-            tableContextStack.Push(TableContext.Update);
+            tableContextStack.Push(TableContext | TableContext.Update);
             TraverseTargetTableSpecification(node.TargetTable);
             tableContextStack.Pop();
 
@@ -698,8 +700,12 @@ namespace Jhu.Graywulf.Sql.Parsing
             // Visit immediate subquries first, then do a bottom-up
             // traversal of the tree by not going deeper than the subqueries.
 
+            columnContextStack.Push(ColumnContext | ColumnContext.Expression);
+
             TraverseExpressionSubqueries(node);
             TraverseExpressionNodes(node);
+
+            columnContextStack.Pop();
         }
 
         protected void TraverseBooleanExpression(BooleanExpression node)
@@ -707,8 +713,12 @@ namespace Jhu.Graywulf.Sql.Parsing
             // Visit immediate subquries first, then do a bottom-up
             // traversal of the tree by not going deeper than the subqueries.
 
+            columnContextStack.Push(ColumnContext | ColumnContext.Expression);
+
             TraverseExpressionSubqueries(node);
             TraverseExpressionNodes(node);
+
+            columnContextStack.Pop();
         }
 
         private void TraverseExpressionSubqueries(Node node)
@@ -772,8 +782,8 @@ namespace Jhu.Graywulf.Sql.Parsing
                 case ColumnIdentifier n:
                     Sink.VisitColumnIdentifier(n);
                     break;
-                case FunctionIdentifier n:
-                    Sink.VisitFunctionIdentifier(n);
+                case FunctionCall n:
+                    TraverseFunctionCall(n);
                     break;
                 case UdtMethodCall n:
                     Sink.VisitUdtMethodCall(n);
@@ -784,6 +794,21 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
         }
 
+        private void TraverseFunctionCall(FunctionCall node)
+        {
+            var args = node.ArgumentList;
+
+            if (args != null)
+            {
+                foreach (var arg in node.ArgumentList.EnumerateArguments())
+                {
+                    Sink.VisitFunctionArgument(arg);
+                }
+            }
+
+            Sink.VisitFunctionIdentifier(node.FunctionIdentifier);
+        }
+        
         #endregion
         #region Queries
 
@@ -957,18 +982,46 @@ namespace Jhu.Graywulf.Sql.Parsing
             switch (node)
             {
                 case FunctionTableSource n:
-                    Sink.VisitFunctionTableSource(n);
+                    TraverseFunctionTableSource(n);
                     break;
                 case SimpleTableSource n:
-                    Sink.VisitSimpleTableSource(n);
+                    TraverseSimpleTableSource(n);
                     break;
                 case VariableTableSource n:
-                    Sink.VisitVariableTableSource(n);
+                    TraverseVariableTableSource(n);
                     break;
                 case SubqueryTableSource n:
-                    Sink.VisitSubqueryTableSource(n);
+                    TraverseSubqueryTableSource(n);
                     break;
             }
+        }
+
+        private void TraverseFunctionTableSource(FunctionTableSource node)
+        {
+            TraverseFunctionCall(node.FunctionCall);
+            Sink.VisitFunctionTableSource(node);
+        }
+
+        private void TraverseSimpleTableSource(SimpleTableSource node)
+        {
+            Sink.VisitTableOrViewIdentifier(node.TableOrViewIdentifier);
+            Sink.VisitSimpleTableSource(node);
+        }
+
+        private void TraverseVariableTableSource(VariableTableSource node)
+        {
+            Sink.VisitUserVariable(node.Variable);
+            Sink.VisitVariableTableSource(node);
+        }
+
+        private void TraverseSubqueryTableSource(SubqueryTableSource node)
+        {
+            tableContextStack.Push(TableContext | TableContext.Subquery);
+
+            // Subquery has already been traversed!
+            Sink.VisitSubqueryTableSource(node);
+
+            tableContextStack.Pop();
         }
 
         private void TraverseJoinConditions(TableSourceExpression node)
@@ -997,10 +1050,14 @@ namespace Jhu.Graywulf.Sql.Parsing
         private void TraverseSubquery(Subquery sq)
         {
             queryContextStack.Push(QueryContext.Subquery);
-
+            tableContextStack.Push(TableContext.None);
+            columnContextStack.Push(ColumnContext.None);
+            
             TraverseQuery(sq);
 
             queryContextStack.Pop();
+            tableContextStack.Pop();
+            columnContextStack.Pop();
         }
 
         private void TraverseSelectList(SelectList node)

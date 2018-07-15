@@ -7,14 +7,15 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class VariableTableSource
+    public partial class VariableTableSource : IVariableReference
     {
         private TableReference tableReference;
         private string uniqueKey;
-        
-        public DatabaseObjectReference DatabaseObjectReference
+       
+        public VariableReference VariableReference
         {
-            get { return tableReference; }
+            get { return Variable.VariableReference; }
+            set { Variable.VariableReference = value; }
         }
 
         public override TableReference TableReference

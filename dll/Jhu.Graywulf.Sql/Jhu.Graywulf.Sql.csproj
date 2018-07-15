@@ -258,6 +258,7 @@
     <Compile Include="Sql\NameResolution\TableReference.cs" />
     <Compile Include="Sql\NameResolution\VariableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\Parsing\ConstraintName.cs" />
+    <Compile Include="Sql\Parsing\FunctionCall.cs" />
     <Compile Include="Sql\Parsing\IndexName.cs" />
     <Compile Include="Sql\Parsing\MagicTokenBase.cs" />
     <Compile Include="Sql\Parsing\OrderByArgument.cs" />

@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var ds = ParseAndResolveNames<DeleteStatement>(sql);
 
             var res = GenerateCode(ds);
-            Assert.AreEqual("DELETE [Graywulf_Schema_Test].[dbo].[Author]", res);
+            Assert.AreEqual("DELETE [a] FROM [Graywulf_Schema_Test].[dbo].[Author] [a]", res);
 
             var ts = ds.EnumerateSourceTables(false).ToArray();
             Assert.AreEqual(1, ts.Length);

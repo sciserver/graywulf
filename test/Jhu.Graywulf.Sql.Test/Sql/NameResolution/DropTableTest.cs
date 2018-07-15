@@ -36,7 +36,7 @@ DROP TABLE [Graywulf_Schema_Test].[dbo].[test]";
             var res = GenerateCode(ss);
             Assert.AreEqual(gt, res);
 
-            var t = (Schema.Table)ss.FindDescendantRecursive<DropTableStatement>().DatabaseObjectReference.DatabaseObject;
+            var t = (Schema.Table)ss.FindDescendantRecursive<DropTableStatement>().TableReference.DatabaseObject;
             Assert.AreEqual("test", t.TableName);
             Assert.AreEqual(2, t.Columns.Count);
         }

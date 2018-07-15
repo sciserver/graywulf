@@ -118,6 +118,14 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
         }
 
+        public virtual void VisitFunctionCall(FunctionCall node)
+        {
+        }
+
+        public virtual void VisitFunctionArgument(Argument node)
+        {
+        }
+
         public virtual void VisitExpressionSubquery(ExpressionSubquery node)
         {
         }
@@ -184,7 +192,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         public virtual void VisitTableSourceSpecification(TableSourceSpecification node)
         {
         }
-
+        
         public virtual void VisitTargetTableSpecification(TargetTableSpecification node)
         {
         }

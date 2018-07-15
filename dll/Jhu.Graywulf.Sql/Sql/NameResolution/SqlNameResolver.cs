@@ -209,22 +209,23 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public override void VisitUserVariable(UserVariable node)
         {
-            ResolveScalarVariableReference(node);
+            if (Visitor.ColumnContext.HasFlag(ColumnContext.Expression) ||
+                Visitor.ColumnContext.HasFlag(ColumnContext.SelectList))
+            {
+                ResolveScalarVariableReference(node);
+            }
         }
 
         public override void VisitColumnIdentifier(ColumnIdentifier node)
         {
-            var sourceTables =
-                                (ISourceTableCollection)Visitor.ParentQuerySpecification ??
-                                (ISourceTableCollection)Visitor.ParentStatement;
-
-            ResolveColumnReference(sourceTables.ResolvedSourceTableReferences.Values, node);
+            ResolveColumnReference(node);
         }
 
         public override void VisitFunctionIdentifier(FunctionIdentifier node)
         {
             SubstituteFunctionDefaults(node);
             ResolveFunctionReference(node);
+            CollectFunctionReference(node);
         }
 
         public override void VisitDataTypeIdentifier(DataTypeIdentifier node)
@@ -243,37 +244,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public override void VisitQuerySpecification(QuerySpecification qs)
         {
-            // ColumnExpression are rendered with original table name by the code generator
-            // but are referenced by outer queries by table alias. For this reason, at
-            // this point we need to make a copy of all column references and update the
-            // table reference
-            CopyResultTableColumns(qs);
+            ResolveResultsTableReference(qs);
+        }
+
+        public override void VisitVariableTableSource(VariableTableSource node)
+        {
+            ResolveTableVariableReference(node);
         }
 
         public override void VisitFunctionTableSource(FunctionTableSource node)
         {
-        }
-
-        public override void VisitSimpleTableSource(SimpleTableSource node)
-        {
             // Branch landing here:
             // - SELECT ... FROM
-            ResolveTableReference(node);
-        }
 
-        public override void VisitTableOrViewIdentifier(TableOrViewIdentifier node)
-        {
-            // Branches landing here:
-            // - SELECT INTO
-            // - CREATE TABLE
-            // - INSERT
-            // - UPDATE
-            // - DELETE
-            ResolveTableReference(node);
-        }
-
-        protected void ResolveTableReference(ITableReference node)
-        {
             var sourceTableCollection =
                 Visitor.ParentQuerySpecification as ISourceTableCollection ??
                 Visitor.ParentStatement as ISourceTableCollection;
@@ -283,11 +266,53 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             node.TableReference.TableContext |= Visitor.TableContext;
 
+            // SELECT ... FROM ...()
+            SubstituteFunctionDefaults(node);
+            ResolveFunctionReference(node);
+            CollectFunctionReference(node);
+            CollectSourceTableReference(sourceTableCollection, node);
+        }
+
+        public override void VisitSubqueryTableSource(SubqueryTableSource node)
+        {
+            ResolveTableReference(node, null);
+        }
+
+        public override void VisitTableOrViewIdentifier(TableOrViewIdentifier node)
+        {
+            ResolveTableReference(node, null);
+        }
+
+        protected void ResolveTableReference(ITableReference node, TableDefinition td)
+        {
+            var sourceTableCollection =
+                Visitor.ParentQuerySpecification as ISourceTableCollection ??
+                Visitor.ParentStatement as ISourceTableCollection;
+
+            var targetTableProvider =
+                Visitor.ParentStatement as ITargetTableProvider;
+
+            // Set it on the original reference, later will be set on the resolved one too
+            node.TableReference.TableContext |= Visitor.TableContext;
+
             if ((Visitor.TableContext & TableContext.Output) != 0)
             {
                 // SELECT INTO or CREATE TABLE
                 // Table is resolved in dedicated callback
-                throw new InvalidOperationException();
+                SubstituteOutputTableDefaults(node);
+
+                if (td != null)
+                {
+                    // TODO: do we know the columns of the SELECT INTO here?
+                    // names are known, but types are not
+                    ResolveTableDefinition(td, node);
+                }
+                else
+                {
+                    ResolveOutputTableReference(Visitor.ParentQuerySpecification, node);
+                }
+
+                CollectOutputTableReference(targetTableProvider, node);
             }
             else if ((Visitor.TableContext & TableContext.Target) != 0)
             {
@@ -295,6 +320,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 SubstituteSourceTableDefaults(sourceTableCollection, node);
                 ResolveSourceTableReference(sourceTableCollection, node);
                 CollectTargetTableReference(targetTableProvider, node);
+            }
+            else if ((Visitor.TableContext & TableContext.Subquery) != 0)
+            {
+                // SELECT ... FROM (SELECT ...) sq
+                // Everything is resolved, just copy to source tables
+                CollectSourceTableReference(sourceTableCollection, node);
             }
             else if ((Visitor.TableContext & TableContext.From) != 0)
             {
@@ -308,8 +339,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // Source table (table.* syntax only)
                 SubstituteSourceTableDefaults(sourceTableCollection, node);
                 ResolveColumnTableReference(sourceTableCollection, node);
-                CollectSourceTableReference(sourceTableCollection, node);
             }
+
+            // Set context on the resolved table also
+            node.TableReference.TableContext |= Visitor.TableContext;
         }
 
         #endregion
@@ -325,7 +358,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var vr = node.VariableReference;
             var variable = CreateVariable(vr);
 
-            CollectVariableReference(vr);
+            CollectVariableReference(node);
         }
 
         public override void VisitTableDeclaration(TableDeclaration node)
@@ -337,28 +370,27 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             vr.Variable = CreateVariable(vr);
             dr.DataType = CreateDataType(dr);
-            CollectVariableReference(vr);
+            CollectVariableReference(node);
         }
 
         public override void VisitCreateTableStatement(CreateTableStatement node)
         {
-            var sourceTableCollection =
-                Visitor.ParentQuerySpecification as ISourceTableCollection ??
-                Visitor.ParentStatement as ISourceTableCollection;
-
-            var targetTableProvider =
-                Visitor.ParentStatement as ITargetTableProvider;
-
             var tr = node.TargetTable.TableReference;
             var td = node.TableDefinition;
-
-            SubstituteOutputTableDefaults(tr);
-            ResolveTableDefinition(td, tr);
-            CollectOutputTableReference(targetTableProvider, tr);
+            ResolveTableReference(node, td);
         }
 
-        private void ResolveTableDefinition(TableDefinition td, TableReference tr)
+        private void ResolveOutputTableReference(QuerySpecification qs, ITableReference node)
         {
+            var tr = node.TableReference;
+            tr.CopyColumnReferences(qs.ResultsTableReference.ColumnReferences);
+            tr.DatabaseObject = CreateTable(tr);
+        }
+
+        private void ResolveTableDefinition(TableDefinition td, ITableReference node)
+        {
+            var tr = node.TableReference;
+
             foreach (var item in td.TableDefinitionList.EnumerateTableDefinitionItems())
             {
                 var cd = item.ColumnDefinition;
@@ -411,8 +443,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             node.DataTypeIdentifier.DataTypeReference.DataType.IsNullable = node.IsNullable;
         }
-
-
 
         public override void VisitDropTableStatement(DropTableStatement node)
         {
@@ -547,48 +577,63 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
 
                 node.FunctionReference.DatabaseObject = dbo;
-
-                var uniqueKey = node.FunctionReference.DatabaseObject.UniqueKey;
-
-                if (!details.FunctionReferences.ContainsKey(uniqueKey))
-                {
-                    details.FunctionReferences.Add(uniqueKey, new List<FunctionReference>());
-                }
-
-                details.FunctionReferences[uniqueKey].Add(node.FunctionReference);
             }
         }
 
-        private void ResolveScalarVariableReference(IVariableReference vr)
+        private void ResolveScalarVariableReference(IVariableReference node)
         {
+            var vr = node.VariableReference;
             // TODO: extend this to UDTs, including member access
 
-            if (!vr.VariableReference.IsUserDefined)
+            if (!vr.IsUserDefined)
             {
-                var name = vr.VariableReference.VariableName.TrimStart('@');
+                var name = vr.VariableName.TrimStart('@');
 
                 if (!SystemVariableNames.Contains(name))
                 {
-                    throw NameResolutionError.UnresolvableVariableReference(vr);
+                    throw NameResolutionError.UnresolvableVariableReference(node);
                 }
             }
-            else if (details.VariableReferences.ContainsKey(vr.VariableReference.VariableName))
+            else if (details.VariableReferences.ContainsKey(vr.VariableName))
             {
-                vr.VariableReference = details.VariableReferences[vr.VariableReference.VariableName];
+                vr = node.VariableReference = details.VariableReferences[vr.VariableName];
 
-                if (vr.VariableReference.VariableContext != VariableContext.Scalar)
+                if (vr.VariableContext != VariableContext.Scalar)
                 {
-                    throw NameResolutionError.ScalarVariableExpected(vr);
+                    throw NameResolutionError.ScalarVariableExpected(node);
                 }
             }
             else
             {
-                throw NameResolutionError.UnresolvableVariableReference(vr);
+                throw NameResolutionError.UnresolvableVariableReference(node);
             }
         }
 
-        private void ResolveColumnReference(IEnumerable<TableReference> sourceTables, IColumnReference cr)
+        private void ResolveTableVariableReference(IVariableReference node)
         {
+            var vr = node.VariableReference;
+
+            if (details.VariableReferences.ContainsKey(vr.VariableName))
+            {
+                vr = node.VariableReference = details.VariableReferences[vr.VariableName];
+
+                if (vr.VariableContext != VariableContext.Table)
+                {
+                    throw NameResolutionError.TableVariableExpected(node);
+                }
+            }
+            else
+            {
+                throw NameResolutionError.UnresolvableVariableReference(node);
+            }
+        }
+
+        private void ResolveColumnReference(IColumnReference cr)
+        {
+            var sourceTables =
+                (ISourceTableCollection)Visitor.ParentQuerySpecification ??
+                (ISourceTableCollection)Visitor.ParentStatement;
+
             // Star columns cannot be resolved, treat them separately
             if (!cr.ColumnReference.IsResolved && !cr.ColumnReference.IsStar && !cr.ColumnReference.IsComplexExpression)
             {
@@ -601,7 +646,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     // or column is referenced by a multi-part identifier which needs to be resolved now
 
                     // Look for a match based on column name only
-                    foreach (var tr in sourceTables)
+                    foreach (var tr in sourceTables.ResolvedSourceTableReferences.Values)
                     {
                         foreach (var ccr in tr.ColumnReferences)
                         {
@@ -716,15 +761,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// Substitutes table default for tables that are created during query execution 
         /// </summary>
         /// <param name="tr"></param>
-        private void SubstituteOutputTableDefaults(TableReference tr)
+        private void SubstituteOutputTableDefaults(ITableReference node)
         {
             try
             {
-                tr.SubstituteDefaults(SchemaManager, defaultOutputDatasetName);
+                node.TableReference.SubstituteDefaults(SchemaManager, defaultOutputDatasetName);
             }
             catch (KeyNotFoundException ex)
             {
-                throw NameResolutionError.UnresolvableDatasetReference(ex, tr);
+                throw NameResolutionError.UnresolvableDatasetReference(ex, node.TableReference);
             }
         }
 
@@ -828,8 +873,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
 
                 ntr.DatabaseObject = ds.GetObject(ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName);
-                ntr.TableContext |= TableContext.TableOrView;
 
+                if (ntr.DatabaseObject is TableOrView)
+                {
+                    ntr.TableContext |= TableContext.TableOrView;
+                }
+                
                 // Load column descriptions for the table
                 ntr.LoadColumnReferences(schemaManager);
             }
@@ -1025,8 +1074,25 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #endregion
         #region Collect tables
 
-        private void CollectVariableReference(VariableReference vr)
+        private void CollectFunctionReference(IFunctionReference node)
         {
+            if (node.FunctionReference.DatabaseObject != null)
+            {
+                var uniqueKey = node.FunctionReference.DatabaseObject.UniqueKey;
+
+                if (!details.FunctionReferences.ContainsKey(uniqueKey))
+                {
+                    details.FunctionReferences.Add(uniqueKey, new List<FunctionReference>());
+                }
+
+                details.FunctionReferences[uniqueKey].Add(node.FunctionReference);
+            }
+        }
+
+        private void CollectVariableReference(IVariableReference node)
+        {
+            var vr = node.VariableReference;
+
             // Add to query details
             if (!details.VariableReferences.ContainsKey(vr.VariableName))
             {
@@ -1062,7 +1128,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 resolvedSourceTables.ResolvedSourceTableReferences.Add(exportedName, tr);
             }
 
-            if (tr.TableContext.HasFlag(TableContext.TableOrView))
+            if (tr.DatabaseObject is TableOrView)
             {
                 // Collect in the global store
                 var uniquekey = tr.DatabaseObject.UniqueKey;
@@ -1092,8 +1158,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
             details.TargetTableReferences[uniqueKey].Add(tr);
         }
 
-        private void CollectOutputTableReference(ITargetTableProvider targetTable, TableReference tr)
+        private void CollectOutputTableReference(ITargetTableProvider targetTable, ITableReference node)
         {
+            var tr = node.TableReference;
             var table = (Table)tr.DatabaseObject;
             var uniqueKey = table.UniqueKey;
 
@@ -1114,6 +1181,20 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
 
             details.OutputTableReferences[uniqueKey].Add(tr);
+        }
+
+        protected void ResolveResultsTableReference(QuerySpecification qs)
+        {
+            if (Visitor.QueryContext.HasFlag(QueryContext.Subquery))
+            {
+                qs.ResultsTableReference.TableContext |= TableContext.Subquery;
+            }
+
+            // ColumnExpression are rendered with original table name by the code generator
+            // but are referenced by outer queries by table alias. For this reason, at
+            // this point we need to make a copy of all column references and update the
+            // table reference
+            CopyResultTableColumns(qs);
         }
 
         protected void CopyResultTableColumns(QuerySpecification qs)

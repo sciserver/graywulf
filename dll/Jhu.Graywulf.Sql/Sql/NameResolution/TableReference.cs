@@ -362,7 +362,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 LoadUdfColumnReferences(schemaManager);
             }
-            else if (tableContext.HasFlag(TableContext.TableOrView))
+            else if (tableContext.HasFlag(TableContext.TableOrView) ||
+                tableContext.HasFlag(TableContext.Target))
             {
                 LoadTableOrViewColumnReferences(schemaManager);
             }
@@ -537,7 +538,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             foreach (var cr in ColumnReferences)
             {
                 // Avoid hint and special contexts
-                if (((columnContext & cr.ColumnContext) != 0 || (columnContext & ColumnContext.NotReferenced) != 0)
+                if ((columnContext & cr.ColumnContext) != 0
                     && !res.ContainsKey(cr.ColumnName))
                 {
                     res.Add(cr.ColumnName, cr);

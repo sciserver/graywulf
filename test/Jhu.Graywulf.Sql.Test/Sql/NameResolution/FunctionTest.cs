@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         [TestMethod]
-        public void UdtTest()
+        public void TableValuedUdfTest()
         {
             var sql = "SELECT * FROM dbo.TestTableValuedFunction() q";
             var q = ParseAndResolveNames(sql);

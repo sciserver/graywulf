@@ -451,6 +451,22 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 )
             );
 
+        public static Expression<Rule> TargetTableSpecification = () =>
+            Inherit
+            (
+                TableSource,
+                Sequence
+                (
+                    Must
+                    (
+                        UserVariable,
+                        TableOrViewIdentifier
+                    // TODO: temp table?
+                    ),
+                    May(Sequence(May(CommentOrWhitespace), TableHintClause))
+                )
+            );
+
         public static Expression<Rule> ColumnIdentifier = () => MultiPartIdentifier;
 
         public static Expression<Rule> StarColumnIdentifier = () =>
@@ -515,12 +531,18 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         #endregion
         #region Function call syntax
 
+        public static Expression<Rule> FunctionCall = () => Abstract();
+
         public static Expression<Rule> ScalarFunctionCall = () =>
-            Sequence
+            Inherit
             (
-                FunctionIdentifier,
-                May(CommentOrWhitespace),
-                FunctionArguments
+                FunctionCall,
+                Sequence
+                (
+                    FunctionIdentifier,
+                    May(CommentOrWhitespace),
+                    FunctionArguments
+                )
             );
 
         public static Expression<Rule> UdtMethodCall = () =>
@@ -579,11 +601,15 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             );
 
         public static Expression<Rule> TableValuedFunctionCall = () =>
-            Sequence
+            Inherit
             (
-                FunctionIdentifier,
-                May(CommentOrWhitespace),
-                FunctionArguments
+                FunctionCall,
+                Sequence
+                (
+                    FunctionIdentifier,
+                    May(CommentOrWhitespace),
+                    FunctionArguments
+                )
             );
 
         public static Expression<Rule> WindowedFunctionCall = () =>
@@ -1218,22 +1244,6 @@ FOR select_statement
                 Keyword("INTO"),
                 May(CommentOrWhitespace),
                 TargetTableSpecification
-            );
-
-        public static Expression<Rule> TargetTableSpecification = () =>
-            Inherit
-            (
-                TableSource,
-                Sequence
-                (
-                    Must
-                    (
-                        UserVariable,
-                        TableOrViewIdentifier
-                    // TODO: temp table?
-                    ),
-                    May(Sequence(May(CommentOrWhitespace), TableHintClause))
-                )
             );
 
         #endregion

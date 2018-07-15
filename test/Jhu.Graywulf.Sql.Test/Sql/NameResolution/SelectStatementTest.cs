@@ -64,8 +64,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            Assert.AreEqual(ColumnContext.From | ColumnContext.PrimaryKey | ColumnContext.JoinOn, ts[0].ColumnReferences[0].ColumnContext);
-            Assert.AreEqual(ColumnContext.SelectList, ts[0].ColumnReferences[1].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.From | ColumnContext.PrimaryKey | ColumnContext.JoinOn, ts[0].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList, ts[0].ColumnReferences[1].ColumnContext);
 
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
 
@@ -91,8 +91,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            Assert.AreEqual(ColumnContext.Where | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
-            Assert.AreEqual(ColumnContext.SelectList, ts[0].ColumnReferences[1].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.Where | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList, ts[0].ColumnReferences[1].ColumnContext);
 
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
 
@@ -112,8 +112,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            Assert.AreEqual(ColumnContext.SelectList | ColumnContext.GroupBy | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
-            Assert.AreEqual(ColumnContext.SelectList, ts[0].ColumnReferences[1].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList | ColumnContext.GroupBy | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList, ts[0].ColumnReferences[1].ColumnContext);
 
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
 
@@ -136,8 +136,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            Assert.AreEqual(ColumnContext.SelectList | ColumnContext.GroupBy | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
-            Assert.AreEqual(ColumnContext.SelectList | ColumnContext.GroupBy, ts[0].ColumnReferences[1].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList | ColumnContext.GroupBy | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList | ColumnContext.GroupBy, ts[0].ColumnReferences[1].ColumnContext);
 
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
 
@@ -160,8 +160,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            Assert.AreEqual(ColumnContext.SelectList | ColumnContext.GroupBy | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
-            Assert.AreEqual(ColumnContext.SelectList | ColumnContext.Having, ts[0].ColumnReferences[1].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList | ColumnContext.GroupBy | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList | ColumnContext.Having, ts[0].ColumnReferences[1].ColumnContext);
 
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
 
@@ -375,14 +375,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var sql = "SELECT * FROM Author AS a";
             var qs = ParseAndResolveNames<QuerySpecification>(sql);
             var res = GenerateCode(qs);
-            Assert.AreEqual(2, qs.ResultsTableReference.ColumnReferences.Count);           
             Assert.AreEqual("SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]", res);
+            Assert.AreEqual(2, qs.ResultsTableReference.ColumnReferences.Count);           
+            
 
             sql = "SELECT a.* FROM Author AS a";
             qs = ParseAndResolveNames<QuerySpecification>(sql);
             res = GenerateCode(qs);
-            Assert.AreEqual(2, qs.ResultsTableReference.ColumnReferences.Count);
             Assert.AreEqual("SELECT [a].* FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]", res);
+            Assert.AreEqual(2, qs.ResultsTableReference.ColumnReferences.Count);
         }
 
         [TestMethod]

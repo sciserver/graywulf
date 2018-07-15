@@ -9,7 +9,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
     public enum ColumnContext : long
     {
         None = 0x00000000,
-        NotReferenced = 0x00000001,
+        Expression = 0x00000001,
 
         SelectList = 0x00000002,
         From = 0x00000004,
@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         InsertStatement = 8,
         CommonTableExpression = 16,      // CTE definition part
         Subquery = 32,                   // Subquery in FROM
-        SemiJoin = 64                    // Subquery in EXISTS, ALL, SOME and ANY, etc.
+        SemiJoin = 64,                   // Subquery in EXISTS, ALL, SOME and ANY, etc.
     }
 
     [Flags]

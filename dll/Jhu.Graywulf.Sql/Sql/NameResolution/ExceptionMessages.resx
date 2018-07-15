@@ -198,4 +198,7 @@
   <data name="FunctionIdentifierTooManyParts" xml:space="preserve">
     <value>The function identifier '{0}' specifies too many parts.</value>
   </data>
+  <data name="TableVariableExpected" xml:space="preserve">
+    <value>Table variable expected at ({1},{2}).</value>
+  </data>
 </root>
