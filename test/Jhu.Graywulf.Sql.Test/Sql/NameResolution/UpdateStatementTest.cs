@@ -89,7 +89,33 @@ FROM Author AS a";
 
             var gt =
 @"UPDATE [Graywulf_Schema_Test].[dbo].[Author]
-SET [a].[Name] = 'new_name'
+SET [Graywulf_Schema_Test].[dbo].[Author].[Name] = 'new_name'
+FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]";
+
+            var ds = ParseAndResolveNames<UpdateStatement>(sql);
+
+            var res = GenerateCode(ds);
+            Assert.AreEqual(gt, res);
+
+            var ts = ds.EnumerateSourceTables(false).ToArray();
+            Assert.AreEqual(2, ts.Length);
+            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].TableReference.Alias);
+            Assert.AreEqual("Author", ts[1].TableReference.DatabaseObjectName);
+            Assert.AreEqual("a", ts[1].TableReference.Alias);
+        }
+
+        [TestMethod]
+        public void UpdateWithNoTableAliasTest2()
+        {
+            var sql =
+@"UPDATE Author
+SET Author.Name = 'new_name'
+FROM Author AS a";
+
+            var gt =
+@"UPDATE [Graywulf_Schema_Test].[dbo].[Author]
+SET [Graywulf_Schema_Test].[dbo].[Author].[Name] = 'new_name'
 FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]";
 
             var ds = ParseAndResolveNames<UpdateStatement>(sql);

@@ -357,12 +357,6 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             return true;
         }
 
-        protected virtual bool WriteNode(ColumnName node)
-        {
-            WriteColumnName(node);
-            return true;
-        }
-
         /// <summary>
         /// Writes a column expression
         /// </summary>
@@ -423,6 +417,22 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             }
         }
 
+        protected virtual bool WriteNode(ColumnName node)
+        {
+            // Table and index column definition
+            // UPDATE set mutator only
+
+            switch (columnNameRendering)
+            {
+                case NameRendering.FullyQualified:
+                case NameRendering.IdentifierOnly:
+                    Writer.Write(GetQuotedIdentifier(node.ColumnReference.ColumnName));
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         protected virtual bool WriteNode(DataTypeIdentifier node)
         {
             return WriteDataTypeName(node);
@@ -469,20 +479,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
                     return false;
             }
         }
-
-        private bool WriteColumnName(IColumnReference node)
-        {
-            switch (columnNameRendering)
-            {
-                case NameRendering.FullyQualified:
-                case NameRendering.IdentifierOnly:
-                    Writer.Write(GetQuotedIdentifier(node.ColumnReference.ColumnName));
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
+        
         private bool WriteFunctionName(IFunctionReference node)
         {
             switch (functionNameRendering)
