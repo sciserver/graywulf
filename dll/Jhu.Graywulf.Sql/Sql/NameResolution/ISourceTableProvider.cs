@@ -16,8 +16,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
     /// - SELECT statement FROM clause table can be referenced from select list or WHERE predicates
     /// - INSERT statement INTO clause table can be referenced from target column list
     /// </remarks>
-    public interface ISourceTableCollection : ISourceTableConsumer
+    public interface ISourceTableProvider : ISourceTableConsumer
     {
-        Dictionary<string, TableReference> ResolvedSourceTableReferences { get; }
+        Dictionary<string, TableReference> SourceTableReferences { get; }
     }
 }

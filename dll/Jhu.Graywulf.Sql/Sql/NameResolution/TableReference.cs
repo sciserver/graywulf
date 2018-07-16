@@ -330,6 +330,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return tr;
         }
 
+        public static TableReference Interpret(TargetTableSpecification tt)
+        {
+            var tr = tt.TableReference;
+            tr.tableSource = tt;
+            return tr;
+        }
+
         public void CopyColumnReferences(IEnumerable<IColumnReference> other)
         {
             CopyColumnReferences(other.Select(cr => cr.ColumnReference));

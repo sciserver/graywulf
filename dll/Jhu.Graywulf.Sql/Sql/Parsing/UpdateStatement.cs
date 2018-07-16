@@ -7,12 +7,11 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class UpdateStatement : ISourceTableCollection, ISourceTableConsumer, ITargetTableProvider
+    public partial class UpdateStatement : ISourceTableProvider, ISourceTableConsumer, ITargetTableProvider
     {
         #region Private member variables
 
         private Dictionary<string, TableReference> sourceTableReferences;
-        private TableReference targetTableReference;
 
         #endregion
 
@@ -41,17 +40,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<WhereClause>(); }
         }
 
-        public Dictionary<string, TableReference> ResolvedSourceTableReferences
+        public Dictionary<string, TableReference> SourceTableReferences
         {
             get { return sourceTableReferences; }
         }
-
-        public TableReference TargetTableReference
-        {
-            get { return targetTableReference; }
-            set { targetTableReference = value; }
-        }
-
+        
         #region Constructors and initializers
 
         protected override void OnInitializeMembers()
@@ -59,7 +52,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             base.OnInitializeMembers();
 
             this.sourceTableReferences = new Dictionary<string, TableReference>(Schema.SchemaManager.Comparer);
-            this.targetTableReference = null;
         }
 
         protected override void OnCopyMembers(object other)
@@ -69,7 +61,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             var old = (UpdateStatement)other;
 
             this.sourceTableReferences = new Dictionary<string, TableReference>(old.sourceTableReferences);
-            this.targetTableReference = new TableReference(old.targetTableReference);
         }
 
         #endregion

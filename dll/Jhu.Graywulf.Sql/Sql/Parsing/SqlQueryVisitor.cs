@@ -465,8 +465,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             statementStack.Push(node);
             queryContextStack.Push(QueryContext.DeleteStatement);
 
-            // Target table
-
             var cte = node.CommonTableExpression;
             var from = node.FromClause;
             var where = node.WhereClause;
@@ -511,15 +509,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             queryContextStack.Push(QueryContext.DeleteStatement);
             statementStack.Push(node);
 
-            // Target table
-            tableContextStack.Push(TableContext | TableContext.Update);
-            TraverseTargetTableSpecification(node.TargetTable);
-            tableContextStack.Pop();
-
-            // First visit left hand side only to make sure all
-            // target columns are
-            TraverseUpdateSetList1(node.UpdateSetList);
-
             // Common table expression
             var cte = node.CommonTableExpression;
             var from = node.FromClause;
@@ -540,6 +529,18 @@ namespace Jhu.Graywulf.Sql.Parsing
             {
                 TraverseFromClause(from);
             }
+
+            // Target table
+            // First visit left hand side only to make sure all columns are
+            // target table columns
+            tableContextStack.Push(TableContext | TableContext.Update);
+            columnContextStack.Push(ColumnContext.Update);
+
+            TraverseTargetTableSpecification(node.TargetTable);
+            TraverseUpdateSetList1(node.UpdateSetList);
+
+            tableContextStack.Pop();
+            columnContextStack.Pop();
 
             if (where != null)
             {

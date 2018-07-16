@@ -37,9 +37,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("DELETE [a] FROM [Graywulf_Schema_Test].[dbo].[Author] [a]", res);
 
             var ts = ds.EnumerateSourceTables(false).ToArray();
-            Assert.AreEqual(1, ts.Length);
+            Assert.AreEqual(2, ts.Length);
             Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].TableReference.Alias);
+            Assert.AreEqual("a", ts[0].TableReference.Alias);
+            Assert.AreEqual("Author", ts[1].TableReference.DatabaseObjectName);
+            Assert.AreEqual("a", ts[1].TableReference.Alias);
         }
 
         [TestMethod]
@@ -78,6 +80,78 @@ FROM [Graywulf_Schema_Test].[dbo].[Author]";
             Assert.AreEqual(2, ts.Length);
             Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
             Assert.AreEqual(null, ts[0].TableReference.Alias);
+        }
+
+        [TestMethod]
+        public void DeleteWithFromAndWhereTest()
+        {
+            var sql =
+@"DELETE Author
+FROM Author
+WHERE ID = 2";
+
+            var gt =
+@"DELETE [Graywulf_Schema_Test].[dbo].[Author]
+FROM [Graywulf_Schema_Test].[dbo].[Author]
+WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 2";
+
+            var ds = ParseAndResolveNames<DeleteStatement>(sql);
+
+            var res = GenerateCode(ds);
+            Assert.AreEqual(gt, res);
+
+            var ts = ds.EnumerateSourceTables(false).ToArray();
+            Assert.AreEqual(2, ts.Length);
+            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].TableReference.Alias);
+        }
+
+        [TestMethod]
+        public void DeleteWithFromAliasAndWhereTest()
+        {
+            var sql =
+@"DELETE Author
+FROM Author a
+WHERE ID = 2";
+
+            var gt =
+@"DELETE [Graywulf_Schema_Test].[dbo].[Author]
+FROM [Graywulf_Schema_Test].[dbo].[Author] [a]
+WHERE [a].[ID] = 2";
+
+            var ds = ParseAndResolveNames<DeleteStatement>(sql);
+
+            var res = GenerateCode(ds);
+            Assert.AreEqual(gt, res);
+
+            var ts = ds.EnumerateSourceTables(false).ToArray();
+            Assert.AreEqual(2, ts.Length);
+            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].TableReference.Alias);
+        }
+
+        [TestMethod]
+        public void DeleteWithFromAliasAndWhereTest2()
+        {
+            var sql =
+@"DELETE a
+FROM Author a
+WHERE ID = 2";
+
+            var gt =
+@"DELETE [a]
+FROM [Graywulf_Schema_Test].[dbo].[Author] [a]
+WHERE [a].[ID] = 2";
+
+            var ds = ParseAndResolveNames<DeleteStatement>(sql);
+
+            var res = GenerateCode(ds);
+            Assert.AreEqual(gt, res);
+
+            var ts = ds.EnumerateSourceTables(false).ToArray();
+            Assert.AreEqual(2, ts.Length);
+            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
+            Assert.AreEqual("a", ts[0].TableReference.Alias);
         }
 
         [TestMethod]

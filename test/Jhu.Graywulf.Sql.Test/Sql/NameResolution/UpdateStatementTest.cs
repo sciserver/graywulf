@@ -89,7 +89,7 @@ FROM Author AS a";
 
             var gt =
 @"UPDATE [Graywulf_Schema_Test].[dbo].[Author]
-SET [Graywulf_Schema_Test].[dbo].[Author].[Name] = 'new_name'
+SET [a].[Name] = 'new_name'
 FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]";
 
             var ds = ParseAndResolveNames<UpdateStatement>(sql);

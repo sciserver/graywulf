@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
 
-            var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
+            var ts = qs.SourceTableReferences.Values.ToArray();
 
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT ( ([Graywulf_Schema_Test].[dbo].[Author].[Name]) ) FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
 
-            var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
+            var ts = qs.SourceTableReferences.Values.ToArray();
 
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
-            var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
+            var ts = qs.SourceTableReferences.Values.ToArray();
 
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
@@ -86,7 +86,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 1", res);
 
-            var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
+            var ts = qs.SourceTableReferences.Values.ToArray();
 
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
@@ -107,7 +107,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
-            var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
+            var ts = qs.SourceTableReferences.Values.ToArray();
 
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
@@ -131,7 +131,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
-            var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
+            var ts = qs.SourceTableReferences.Values.ToArray();
 
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
@@ -155,7 +155,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
-            var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
+            var ts = qs.SourceTableReferences.Values.ToArray();
 
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
@@ -178,7 +178,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var sql = "SELECT Name FROM Author a";
 
             var qs = ParseAndResolveNames<QuerySpecification>(sql);
-            var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
+            var ts = qs.SourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [a].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a]", res);
@@ -193,7 +193,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var sql = "SELECT Author.Name FROM Author";
 
             var qs = ParseAndResolveNames<QuerySpecification>(sql);
-            var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
+            var ts = qs.SourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
@@ -205,7 +205,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var sql = "SELECT a.Name, b.Name FROM Author a, Author b";
 
             var qs = ParseAndResolveNames<QuerySpecification>(sql);
-            var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
+            var ts = qs.SourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [a].[Name], [b].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a], [Graywulf_Schema_Test].[dbo].[Author] [b]", res);
@@ -227,7 +227,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var sql = "SELECT a.ID, b.ID FROM Author a, Book b";
 
             var qs = ParseAndResolveNames<QuerySpecification>(sql);
-            var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
+            var ts = qs.SourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [a].[ID], [b].[ID] FROM [Graywulf_Schema_Test].[dbo].[Author] [a], [Graywulf_Schema_Test].[dbo].[Book] [b]", res);
@@ -249,7 +249,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var sql = "SELECT Author.ID, Book.ID FROM Author, Book";
 
             var qs = ParseAndResolveNames<QuerySpecification>(sql);
-            var ts = qs.ResolvedSourceTableReferences.Values.ToArray();
+            var ts = qs.SourceTableReferences.Values.ToArray();
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Book].[ID] FROM [Graywulf_Schema_Test].[dbo].[Author], [Graywulf_Schema_Test].[dbo].[Book]", res);

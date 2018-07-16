@@ -13,6 +13,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
     /// </summary>
     public interface ISourceTableConsumer
     {
+        // TODO: try to get rid of this, the name resolver replaced this functionality already
+
+
         IEnumerable<TableSource> EnumerateSourceTables(bool recursive);
     }
 }

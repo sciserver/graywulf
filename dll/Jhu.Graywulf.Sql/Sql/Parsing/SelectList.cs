@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             SelectList root = null;
             SelectList last = null;
 
-            foreach (var tr in querySpecification.ResolvedSourceTableReferences.Values)
+            foreach (var tr in querySpecification.SourceTableReferences.Values)
             {
                 Create(ref root, ref last, tr);
             }

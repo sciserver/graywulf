@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Sql.Parsing
     /// <summary>
     /// Implements a SELECT statement including the ORDER BY clause
     /// </summary>
-    public partial class SelectStatement : ISourceTableCollection, ISourceTableConsumer, IOutputTableProvider
+    public partial class SelectStatement : ISourceTableProvider, ISourceTableConsumer, IOutputTableProvider
     {
         #region Private member variables
 
@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
         }
 
-        public Dictionary<string, TableReference> ResolvedSourceTableReferences
+        public Dictionary<string, TableReference> SourceTableReferences
         {
             get { return sourceTableReferences; }
         }

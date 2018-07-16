@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var res = GenerateCode(qs);
 
             Assert.AreEqual("SELECT [a].[Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
-            Assert.IsTrue(qs.ResolvedSourceTableReferences["a"].TableContext.HasFlag(TableContext.Subquery));
+            Assert.IsTrue(qs.SourceTableReferences["a"].TableContext.HasFlag(TableContext.Subquery));
         }
 
         [TestMethod]
@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var res = GenerateCode(qs);
 
             Assert.AreEqual("SELECT [a].[Name] FROM (SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]) [a]", res);
-            Assert.IsTrue(qs.ResolvedSourceTableReferences["a"].TableContext.HasFlag(TableContext.Subquery));
+            Assert.IsTrue(qs.SourceTableReferences["a"].TableContext.HasFlag(TableContext.Subquery));
         }
 
         [TestMethod]
@@ -107,8 +107,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var res = GenerateCode(qs);
 
             Assert.AreEqual("SELECT [a].[Name] FROM (SELECT [q].[Name] FROM (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [q]) [a]", res);
-            Assert.AreEqual(1, qs.ResolvedSourceTableReferences.Count);
-            Assert.IsTrue(qs.ResolvedSourceTableReferences["a"].TableContext.HasFlag(TableContext.Subquery));
+            Assert.AreEqual(1, qs.SourceTableReferences.Count);
+            Assert.IsTrue(qs.SourceTableReferences["a"].TableContext.HasFlag(TableContext.Subquery));
         }
 
         [TestMethod]
@@ -130,9 +130,9 @@ INNER JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Book]) [b]
             var res = GenerateCode(qs);
 
             Assert.AreEqual(gt, res);
-            Assert.AreEqual(2, qs.ResolvedSourceTableReferences.Count);
-            Assert.IsTrue(qs.ResolvedSourceTableReferences["a"].TableContext.HasFlag(TableContext.Subquery));
-            Assert.IsTrue(qs.ResolvedSourceTableReferences["b"].TableContext.HasFlag(TableContext.Subquery));
+            Assert.AreEqual(2, qs.SourceTableReferences.Count);
+            Assert.IsTrue(qs.SourceTableReferences["a"].TableContext.HasFlag(TableContext.Subquery));
+            Assert.IsTrue(qs.SourceTableReferences["b"].TableContext.HasFlag(TableContext.Subquery));
         }
 
         [TestMethod]
@@ -146,8 +146,8 @@ INNER JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Book]) [b]
             var res = GenerateCode(qs);
 
             Assert.AreEqual(gt, res);
-            Assert.AreEqual(1, qs.ResolvedSourceTableReferences.Count);
-            Assert.IsTrue(qs.ResolvedSourceTableReferences["a"].TableContext.HasFlag(TableContext.Subquery));
+            Assert.AreEqual(1, qs.SourceTableReferences.Count);
+            Assert.IsTrue(qs.SourceTableReferences["a"].TableContext.HasFlag(TableContext.Subquery));
         }
 
         // Add SELECT * tests, function, sunquery in where etc.

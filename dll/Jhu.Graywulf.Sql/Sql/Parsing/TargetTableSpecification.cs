@@ -87,6 +87,8 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             this.tableName = FindDescendantRecursive<TableOrViewIdentifier>();
             this.variable = FindDescendantRecursive<UserVariable>();
+
+            TableReference = TableReference.Interpret(this);
         }
 
         public override IEnumerable<TableSource> EnumerateSubqueryTableSources(bool recursive)

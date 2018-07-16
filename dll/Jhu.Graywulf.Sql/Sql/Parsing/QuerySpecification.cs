@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class QuerySpecification : ISourceTableCollection
+    public partial class QuerySpecification : ISourceTableProvider
     {
         #region Private member variables
 
@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         #endregion
         #region Properties
 
-        public Dictionary<string, TableReference> ResolvedSourceTableReferences
+        public Dictionary<string, TableReference> SourceTableReferences
         {
             get { return sourceTableReferences; }
         }
