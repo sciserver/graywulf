@@ -150,6 +150,34 @@ INNER JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Book]) [b]
             Assert.IsTrue(qs.SourceTableReferences["a"].TableContext.HasFlag(TableContext.Subquery));
         }
 
+        #region Subqueries in expressions
+
+        [TestMethod]
+        public void SubqueryInSelectListTest()
+        {
+            var sql = "SELECT (SELECT TOP 1 ID FROM Author)";
+            var gt = "SELECT (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[ID] FROM [Graywulf_Schema_Test].[dbo].[Author])";
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
+            var res = GenerateCode(qs);
+
+            Assert.AreEqual(gt, res);
+        }
+
+        [TestMethod]
+        public void SubqueryInPredicateTest()
+        {
+            var sql = "SELECT * FROM Author WHERE ID = (SELECT 1)";
+            var gt = "SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = (SELECT 1)";
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
+            var res = GenerateCode(qs);
+
+            Assert.AreEqual(gt, res);
+        }
+
+        #endregion
+
         // Add SELECT * tests, function, sunquery in where etc.
+
+
     }
 }

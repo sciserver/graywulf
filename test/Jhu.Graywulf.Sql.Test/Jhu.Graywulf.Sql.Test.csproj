@@ -93,6 +93,7 @@
     <Compile Include="Sql\LogicalExpressions\DnfConverterTest.cs" />
     <Compile Include="Sql\LogicalExpressions\SearchConditionNormalizerTest.cs" />
     <Compile Include="Sql\NameResolution\ColumnReferenceTest.cs" />
+    <Compile Include="Sql\NameResolution\SemiJoinTest.cs" />
     <Compile Include="Sql\NameResolution\TableReferenceTest.cs" />
     <Compile Include="Sql\NameResolution\UserDefinedTypeTest.cs" />
     <Compile Include="Sql\NameResolution\TableVariableTest.cs" />

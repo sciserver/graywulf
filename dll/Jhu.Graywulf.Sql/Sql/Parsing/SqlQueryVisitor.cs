@@ -879,6 +879,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             var groupby = qs.GroupByClause;
             var having = qs.HavingClause;
 
+            qs.ParentQuerySpecification = ParentQuerySpecification;
+
             querySpecificationStack.Push(qs);
 
             // TODO: make this a dynamic dispatch so it can be extended

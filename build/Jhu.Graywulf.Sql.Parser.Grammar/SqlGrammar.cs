@@ -344,8 +344,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> ComparisonSemiJoinPredicate = () =>
 
             // TODO: it can be used without keyword
-            // TODO: check if subquery can be the first
-
             Sequence
             (
                 Expression,

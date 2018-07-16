@@ -640,9 +640,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveColumnReference(IColumnReference cr)
         {
-            var stp =
-                Visitor.ParentQuerySpecification as ISourceTableProvider ??
-                Visitor.ParentStatement as ISourceTableProvider;
+            var qs = Visitor.ParentQuerySpecification;
+            var stp =qs as ISourceTableProvider ?? Visitor.ParentStatement as ISourceTableProvider;
             var sourceTables = stp?.SourceTableReferences.Values;
             var ttp = Visitor.ParentStatement as ITargetTableProvider;
             var targetTable = ttp?.TargetTable.TableReference;
@@ -669,19 +668,37 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     // This has an empty table reference (only column name specified),
                     // or column is referenced by a multi-part identifier which needs to be resolved now
-
                     // Look for a match based on column name only
 
-                    // Look into all source tables
-                    foreach (var tr in sourceTables)
+                    // If we are in a subquery in the where clause or elsewhere outside FROM,
+                    // it might be necessary to walk up the query expression stack to find the
+                    // table
+
+                    while (sourceTables != null)
                     {
-                        ResolveColumnReference(cr, tr, ref q, ref ncr);
+                        // Look into all source tables
+                        foreach (var tr in sourceTables)
+                        {
+                            ResolveColumnReference(cr, tr, ref q, ref ncr);
+                        }
+
+                        if (q == 1)
+                        {
+                            break;
+                        }
+
+                        // Try to go one query specification up
+                        qs = qs?.ParentQuerySpecification;
+                        stp = qs as ISourceTableProvider;
+                        sourceTables = stp?.SourceTableReferences.Values;
                     }
                 }
                 else
                 {
                     // This has a table reference already so only check
                     // columns of that particular table
+
+                    // TODO: this might never be hit but it doesn't do any harm for now
 
                     ResolveColumnReference(cr, cr.ColumnReference.TableReference, ref q, ref ncr);
                 }

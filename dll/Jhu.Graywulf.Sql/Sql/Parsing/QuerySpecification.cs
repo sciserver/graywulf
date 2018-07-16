@@ -11,11 +11,18 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         #region Private member variables
 
+        private QuerySpecification parentQuerySpecification;
         private Dictionary<string, TableReference> sourceTableReferences;
         private TableReference resultsTableReference;
 
         #endregion
         #region Properties
+
+        public QuerySpecification ParentQuerySpecification
+        {
+            get { return parentQuerySpecification; }
+            set { parentQuerySpecification = value; }
+        }
 
         public Dictionary<string, TableReference> SourceTableReferences
         {
@@ -69,6 +76,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             base.OnInitializeMembers();
 
+            this.parentQuerySpecification = null;
             this.sourceTableReferences = new Dictionary<string, TableReference>(Schema.SchemaManager.Comparer);
             this.resultsTableReference = new TableReference(this);
         }
@@ -79,6 +87,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             var old = (QuerySpecification)other;
 
+            this.parentQuerySpecification = old.parentQuerySpecification;
             this.sourceTableReferences = new Dictionary<string, TableReference>(old.sourceTableReferences);
             this.resultsTableReference = new TableReference(old.resultsTableReference);
         }
