@@ -381,10 +381,14 @@ namespace Jhu.Graywulf.Sql.Parsing
             // make sure these all reference the target table
             var cl = node.ColumnList;
 
+            columnContextStack.Push(ColumnContext | ColumnContext.Insert);
+
             if (cl != null)
             {
                 TraverseInsertColumnList(cl);
             }
+
+            columnContextStack.Pop();
 
             // Common table expression
             var cte = node.CommonTableExpression;
@@ -437,8 +441,6 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private void TraverseInsertColumnList(InsertColumnList node)
         {
-            columnContextStack.Push(ColumnContext | ColumnContext.Insert);
-
             foreach (var column in node.EnumerateDescendants<ColumnIdentifier>())
             {
                 Sink.VisitColumnIdentifier(column);
@@ -534,7 +536,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             // First visit left hand side only to make sure all columns are
             // target table columns
             tableContextStack.Push(TableContext | TableContext.Update);
-            columnContextStack.Push(ColumnContext.Update);
+            columnContextStack.Push(ColumnContext | ColumnContext.Update);
 
             TraverseTargetTableSpecification(node.TargetTable);
             TraverseUpdateSetList1(node.UpdateSetList);
@@ -564,8 +566,6 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private void TraverseUpdateSetList1(UpdateSetList node)
         {
-            columnContextStack.Push(ColumnContext | ColumnContext.Update);
-
             foreach (var set in node.EnumerateSetColumns())
             {
                 var leftvar = set.LeftHandSide.UserVariable;
@@ -580,8 +580,6 @@ namespace Jhu.Graywulf.Sql.Parsing
                     Sink.VisitColumnIdentifier(leftcol);
                 }
             }
-
-            columnContextStack.Pop();
         }
 
         private void TraverseUpdateSetList2(UpdateSetList node)

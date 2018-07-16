@@ -648,22 +648,23 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var targetTable = ttp?.TargetTable.TableReference;
 
             // Star columns cannot be resolved, treat them separately
-            // Also, UPDATE SET ... columns must be resolved against the target table
+            // Also, UPDATE SET ... and INSERT (...) columns must be resolved against the target table
 
-            if (Visitor.ColumnContext.HasFlag(ColumnContext.Update))
+            ColumnReference ncr = null;
+            int q = 0;
+
+            if (Visitor.ColumnContext.HasFlag(ColumnContext.Update) ||
+                Visitor.ColumnContext.HasFlag(ColumnContext.Insert))
             {
-                ColumnReference ncr = null;
-                int q = 0;
-
                 ResolveColumnReference(cr, targetTable, ref q, ref ncr);
 
-                UpdateColumnReference(cr.ColumnReference, ncr, Visitor.ColumnContext);
+                if (q == 0)
+                {
+                    throw NameResolutionError.ColumnNotPartOfTargetTable((Node)cr);
+                }
             }
             else if (!cr.ColumnReference.IsResolved && !cr.ColumnReference.IsStar && !cr.ColumnReference.IsComplexExpression)
             {
-                ColumnReference ncr = null;
-                int q = 0;
-
                 if (cr.ColumnReference.TableReference == null || cr.ColumnReference.TableReference.IsUndefined)
                 {
                     // This has an empty table reference (only column name specified),
@@ -687,16 +688,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (q == 0)
                 {
-                    if (Visitor.ColumnContext.HasFlag(ColumnContext.Insert))
-                    {
-                        throw NameResolutionError.ColumnNotPartOfTargetTable((Node)cr);
-                    }
-                    else
-                    {
-                        throw NameResolutionError.UnresolvableColumnReference(cr);
-                    }
+                    throw NameResolutionError.UnresolvableColumnReference(cr);
                 }
+            }
 
+            if (ncr != null)
+            {
                 UpdateColumnReference(cr.ColumnReference, ncr, Visitor.ColumnContext);
             }
         }
