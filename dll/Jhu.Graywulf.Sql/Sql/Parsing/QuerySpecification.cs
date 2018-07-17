@@ -39,6 +39,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { resultsTableReference = value; }
         }
 
+        public TableSource FirstTableSource
+        {
+            get { return FromClause?.FirstTableSource; }
+        }
+
         public SelectList SelectList
         {
             get { return FindDescendant<SelectList>(); }
@@ -110,48 +115,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             return qs;
         }
-
-        /// <summary>
-        /// Enumerates source tables referenced in the current, and optionally in
-        /// all subqueries.
-        /// </summary>
-        /// <param name="recursive"></param>
-        /// <returns></returns>
-        public virtual IEnumerable<TableSource> EnumerateSourceTables(bool recursive)
-        {
-            // Start from the FROM clause, if specified, otherwise no
-            // table sources in the query
-            var from = FromClause;
-            var where = WhereClause;
-
-            if (from != null)
-            {
-                foreach (var ts in from.EnumerateSourceTables(recursive))
-                {
-                    yield return ts;
-                }
-            }
-
-            if (where != null)
-            {
-                foreach (var ts in where.EnumerateSourceTables(recursive))
-                {
-                    yield return ts;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Enumerates through all table sources and returns every TableReference
-        /// associated with the table source
-        /// </summary>
-        /// <param name="recursive"></param>
-        /// <returns></returns>
-        public IEnumerable<TableReference> EnumerateSourceTableReferences(bool recursive)
-        {
-            return EnumerateSourceTables(recursive).Select(ts => ts.TableReference);
-        }
-
+        
         #region Query construction functions
 
         public void AppendWhereClause(WhereClause where)

@@ -25,10 +25,10 @@ VALUES (1, 'test')";
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTables(false).ToArray();
+            var ts = ds.SourceTableReferences.Values.ToArray();
             Assert.AreEqual(1, ts.Length);
-            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].TableReference.Alias);
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
         }
 
         [TestMethod]
@@ -48,10 +48,10 @@ VALUES (1, 'test')";
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTables(false).ToArray();
+            var ts = ds.SourceTableReferences.Values.ToArray();
             Assert.AreEqual(1, ts.Length);
-            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].TableReference.Alias);
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
 
             var cn = ds.ColumnList.EnumerateDescendants<ColumnIdentifier>().ToArray();
             Assert.AreEqual(2, cn.Length);
@@ -74,14 +74,21 @@ VALUES
 VALUES
 ((SELECT 1), (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[ID]))";
 
-            var ds = ParseAndResolveNames<InsertStatement>(sql);
+            var qs = ParseAndResolveNames(sql);
+            var ds = qs.ParsingTree.FindDescendantRecursive<InsertStatement>();
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTables(false).ToArray();
-            Assert.AreEqual(2, ts.Length);
-            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].TableReference.Alias);
+            var ts = ds.SourceTableReferences;
+            Assert.AreEqual(1, ts.Count);
+            Assert.AreEqual("Author", ts["Author"].DatabaseObjectName);
+            Assert.AreEqual(null, ts["Author"].Alias);
+
+            Assert.AreEqual("Author", ds.TargetTable.TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ds.TargetTable.TableReference.Alias);
+
+            Assert.AreEqual(1, qs.SourceTableReferences.Count);
+            Assert.AreEqual(2, qs.SourceTableReferences["Table|TEST|Graywulf_Schema_Test|dbo|Author"].Count);
 
             var cn = ds.ColumnList.EnumerateDescendants<ColumnIdentifier>().ToArray();
             Assert.AreEqual(2, cn.Length);
@@ -104,19 +111,24 @@ VALUES
 VALUES
 ((SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Book].[Title] FROM [Graywulf_Schema_Test].[dbo].[Book] ORDER BY [Graywulf_Schema_Test].[dbo].[Book].[ID]), (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[ID]))";
 
-            var ds = ParseAndResolveNames<InsertStatement>(sql);
+            var qs = ParseAndResolveNames(sql);
+            var ds = qs.ParsingTree.FindDescendantRecursive<InsertStatement>();
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTables(false).ToArray();
-            Assert.AreEqual(3, ts.Length);
-            // Target
-            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].TableReference.Alias);
-            // Source 1
-            Assert.AreEqual("Book", ts[1].TableReference.DatabaseObjectName);
-            // Source 2
-            Assert.AreEqual("Author", ts[2].TableReference.DatabaseObjectName);
+
+            var ts = ds.SourceTableReferences;
+            Assert.AreEqual(1, ts.Count);
+            Assert.AreEqual("Author", ts["Author"].DatabaseObjectName);
+            Assert.AreEqual(null, ts["Author"].Alias);
+
+            Assert.AreEqual("Author", ds.TargetTable.TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ds.TargetTable.TableReference.Alias);
+
+            Assert.AreEqual(2, qs.SourceTableReferences.Count);
+            Assert.AreEqual(2, qs.SourceTableReferences["Table|TEST|Graywulf_Schema_Test|dbo|Author"].Count);
+            Assert.AreEqual(1, qs.SourceTableReferences["Table|TEST|Graywulf_Schema_Test|dbo|Book"].Count);
+
 
             var cn = ds.ColumnList.EnumerateDescendants<ColumnIdentifier>().ToArray();
             Assert.AreEqual(2, cn.Length);
@@ -139,19 +151,22 @@ VALUES
 VALUES
 ((SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Book].[Title] FROM [Graywulf_Schema_Test].[dbo].[Book] ORDER BY [Graywulf_Schema_Test].[dbo].[Book].[ID]) + (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[ID]), (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[ID]))";
 
-            var ds = ParseAndResolveNames<InsertStatement>(sql);
+            var qs = ParseAndResolveNames(sql);
+            var ds = qs.ParsingTree.FindDescendantRecursive<InsertStatement>();
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTables(false).ToArray();
-            Assert.AreEqual(4, ts.Length);
-            // Target
-            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].TableReference.Alias);
-            // Source 1
-            Assert.AreEqual("Book", ts[1].TableReference.DatabaseObjectName);
-            // Source 2
-            Assert.AreEqual("Author", ts[2].TableReference.DatabaseObjectName);
+            var ts = ds.SourceTableReferences;
+            Assert.AreEqual(1, ts.Count);
+            Assert.AreEqual("Author", ts["Author"].DatabaseObjectName);
+            Assert.AreEqual(null, ts["Author"].Alias);
+
+            Assert.AreEqual("Author", ds.TargetTable.TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ds.TargetTable.TableReference.Alias);
+
+            Assert.AreEqual(2, qs.SourceTableReferences.Count);
+            Assert.AreEqual(3, qs.SourceTableReferences["Table|TEST|Graywulf_Schema_Test|dbo|Author"].Count);
+            Assert.AreEqual(1, qs.SourceTableReferences["Table|TEST|Graywulf_Schema_Test|dbo|Book"].Count);
 
             var cn = ds.ColumnList.EnumerateDescendants<ColumnIdentifier>().ToArray();
             Assert.AreEqual(2, cn.Length);
@@ -176,21 +191,22 @@ VALUES
 VALUES
 ((SELECT TOP 1 [q].[Title] FROM (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Book]) [q] ORDER BY [q].[ID]), (SELECT TOP 1 [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] ORDER BY [Graywulf_Schema_Test].[dbo].[Author].[ID]))";
 
-            var ds = ParseAndResolveNames<InsertStatement>(sql);
+            var qs = ParseAndResolveNames(sql);
+            var ds = qs.ParsingTree.FindDescendantRecursive<InsertStatement>();
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTables(false).ToArray();
-            Assert.AreEqual(4, ts.Length);
-            // Target
-            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].TableReference.Alias);
-            // Source subquery
-            Assert.IsTrue(ts[1].TableReference.TableContext.HasFlag(TableContext.Subquery));
-            // Source 1
-            Assert.AreEqual("Book", ts[2].TableReference.DatabaseObjectName);
-            // Source 2
-            Assert.AreEqual("Author", ts[3].TableReference.DatabaseObjectName);
+            var ts = ds.SourceTableReferences;
+            Assert.AreEqual(1, ts.Count);
+            Assert.AreEqual("Author", ts["Author"].DatabaseObjectName);
+            Assert.AreEqual(null, ts["Author"].Alias);
+
+            Assert.AreEqual("Author", ds.TargetTable.TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ds.TargetTable.TableReference.Alias);
+
+            Assert.AreEqual(2, qs.SourceTableReferences.Count);
+            Assert.AreEqual(2, qs.SourceTableReferences["Table|TEST|Graywulf_Schema_Test|dbo|Author"].Count);
+            Assert.AreEqual(1, qs.SourceTableReferences["Table|TEST|Graywulf_Schema_Test|dbo|Book"].Count);
 
             var cn = ds.ColumnList.EnumerateDescendants<ColumnIdentifier>().ToArray();
             Assert.AreEqual(2, cn.Length);
@@ -213,10 +229,10 @@ SELECT TOP 100 * FROM [Graywulf_Schema_Test].[dbo].[Author]";
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTables(false).ToArray();
-            Assert.AreEqual(2, ts.Length);
-            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].TableReference.Alias);
+            var ts = ds.SourceTableReferences.Values.ToArray();
+            Assert.AreEqual(1, ts.Length);
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
         }
 
         [TestMethod]

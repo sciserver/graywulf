@@ -87,10 +87,10 @@ namespace Jhu.Graywulf.Sql.QueryRewriting
                 RewriteSelectList(qs, selectList, depth, index, queryContext);
             }
 
-            foreach (var ts in qs.FromClause.EnumerateSourceTables(false))
+            /*foreach (var ts in qs.FromClause.EnumerateSourceTables(false))
             {
 
-            }
+            }*/
         }
 
         protected virtual void RewriteSelectList(QuerySpecification qs, SelectList selectList, int depth, int index, QueryContext queryContext)

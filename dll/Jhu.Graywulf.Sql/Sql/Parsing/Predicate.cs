@@ -11,6 +11,9 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         public bool IsSpecificToTable(TableReference table)
         {
+            throw new NotImplementedException();
+
+            /*
             foreach (var tr in NodeExtensions.EnumerateTableReferences(this))
             {
                 if (tr != null && tr != table)
@@ -20,10 +23,14 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
 
             return true;
+            */
         }
 
         public bool IsSpecificToTable(DatabaseObject table)
         {
+            throw new NotImplementedException();
+
+            /*
             foreach (var tr in NodeExtensions.EnumerateTableReferences(this))
             {
                 if (tr != null && (tr.DatabaseObject == null || tr.DatabaseObject != table))
@@ -33,6 +40,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
 
             return true;
+            */
         }
 
         public LogicalExpressions.Expression GetExpressionTree()

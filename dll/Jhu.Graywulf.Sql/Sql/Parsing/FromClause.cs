@@ -7,8 +7,13 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class FromClause : ISourceTableConsumer
+    public partial class FromClause
     {
+        public TableSource FirstTableSource
+        {
+            get { return FindDescendant<TableSourceExpression>()?.FirstTableSource; }
+        }
+
         public static FromClause Create(TableSourceExpression tse)
         {
             var from = new FromClause();
@@ -20,14 +25,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             return from;
         }
 
-        #region Source table functions
-
-        public IEnumerable<TableSource> EnumerateSourceTables(bool recursive)
-        {
-            return FindDescendant<TableSourceExpression>()?.EnumerateSourceTables(recursive);
-        }
-
-        #endregion
         #region Query construction functions
 
         public void AppendJoinedTable(JoinedTable joinedTable)

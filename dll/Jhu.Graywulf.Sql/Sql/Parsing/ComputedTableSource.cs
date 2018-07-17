@@ -73,15 +73,5 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             throw new NotImplementedException();
         }
-
-        public override IEnumerable<TableSource> EnumerateSubqueryTableSources(bool recursive)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IEnumerable<TableSource> EnumerateMultiTableSources()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

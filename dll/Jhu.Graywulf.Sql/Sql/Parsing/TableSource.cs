@@ -12,9 +12,5 @@ namespace Jhu.Graywulf.Sql.Parsing
         public abstract bool IsMultiTable { get; }
         public abstract string UniqueKey { get; set; }
         public abstract TableReference TableReference { get; set; }
-
-        public abstract IEnumerable<TableSource> EnumerateSubqueryTableSources(bool recursive);
-
-        public abstract IEnumerable<TableSource> EnumerateMultiTableSources();
     }
 }

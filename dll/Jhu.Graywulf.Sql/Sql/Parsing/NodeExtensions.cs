@@ -9,6 +9,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public static class NodeExtensions
     {
+        /*
         // Ezek már name resolution után futnak csak, mert a tablereference-eket
         // referencia és nem érték alapján hasonlítják össze
         // Át kell tenni a name resolverbe, mert nem ide valók ???
@@ -41,5 +42,6 @@ namespace Jhu.Graywulf.Sql.Parsing
                 }
             }
         }
+        */
     }
 }

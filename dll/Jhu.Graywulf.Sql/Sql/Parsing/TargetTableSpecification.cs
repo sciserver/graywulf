@@ -7,12 +7,19 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class TargetTableSpecification : ITableReference
+    public partial class TargetTableSpecification : ITableReference, IVariableReference
     {
         private string uniqueKey;
-        private TableOrViewIdentifier tableName;
-        private UserVariable variable;
-        private TableReference tableReference;
+
+        public TableOrViewIdentifier TableOrViewIdentifier
+        {
+            get { return FindDescendantRecursive<TableOrViewIdentifier>(); }
+        }
+
+        public UserVariable Variable
+        {
+            get { return FindDescendantRecursive<UserVariable>(); }
+        }
 
         public override bool IsSubquery
         {
@@ -32,73 +39,43 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public override TableReference TableReference
         {
-            get
-            {
-                if (tableName != null)
-                {
-                    return tableName.TableReference;
-                }
-                else
-                {
-                    return tableReference;
-                }
-            }
+            get { return TableOrViewIdentifier?.TableReference; }
             set
             {
-                if (tableName != null)
+                var table = TableOrViewIdentifier;
+                if (table != null)
                 {
-                    tableName.TableReference = value;
-                }
-                else
-                {
-                    tableReference = value;
+                    table.TableReference = value;
                 }
             }
         }
 
-        public DatabaseObjectReference DatabaseObjectReference
+        public VariableReference VariableReference
         {
-            get
+            get { return Variable?.VariableReference; }
+            set
             {
-                if (tableName != null)
+                var variable = Variable;
+                if (variable != null)
                 {
-                    return tableName.DatabaseObjectReference;
-                }
-                else
-                {
-                    return null;
+                    variable.VariableReference = value;
                 }
             }
-        }
-
-        public TableOrViewIdentifier TableOrViewIdentifier
-        {
-            get { return tableName; }
-        }
-
-        public UserVariable Variable
-        {
-            get { return variable; }
         }
 
         public override void Interpret()
         {
             base.Interpret();
 
-            this.tableName = FindDescendantRecursive<TableOrViewIdentifier>();
-            this.variable = FindDescendantRecursive<UserVariable>();
+            if (TableReference != null)
+            {
+                TableReference = TableReference.Interpret(this);
+            }
 
-            TableReference = TableReference.Interpret(this);
-        }
-
-        public override IEnumerable<TableSource> EnumerateSubqueryTableSources(bool recursive)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IEnumerable<TableSource> EnumerateMultiTableSources()
-        {
-            throw new NotImplementedException();
+            if (VariableReference != null)
+            {
+                VariableReference = VariableReference.Interpret(this);
+            }
         }
     }
 }

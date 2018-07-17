@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class DeleteStatement : ISourceTableProvider, ISourceTableConsumer, ITargetTableProvider
+    public partial class DeleteStatement : ISourceTableProvider, ITargetTableProvider
     {
         #region Private member variables
 
@@ -59,31 +59,5 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         #endregion
-
-        public IEnumerable<TableSource> EnumerateSourceTables(bool recursive)
-        {
-            yield return TargetTable;
-
-            // Start from the FROM clause, if specified, otherwise no
-            // table sources in the query
-            var from = FromClause;
-            var where = WhereClause;
-
-            if (from != null)
-            {
-                foreach (var ts in from.EnumerateSourceTables(recursive))
-                {
-                    yield return ts;
-                }
-            }
-
-            if (where != null)
-            {
-                foreach (var ts in where.EnumerateSourceTables(recursive))
-                {
-                    yield return ts;
-                }
-            }
-        }
     }
 }

@@ -91,15 +91,5 @@ namespace Jhu.Graywulf.Sql.Parsing
             return fts;
             */
         }
-
-        public override IEnumerable<TableSource> EnumerateSubqueryTableSources(bool recursive)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IEnumerable<TableSource> EnumerateMultiTableSources()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

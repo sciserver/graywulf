@@ -129,9 +129,9 @@ FROM Author";
         private List<Column> GetColumnListTestHelper(string sql, ColumnContext context)
         {
             var details = ParseAndResolveNames(sql);
-            var ts = details.ParsingTree.FindDescendantRecursive<SelectStatement>().QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
-            var table = (IColumns)ts.TableReference.DatabaseObject;
-            var cr = ts.TableReference.FilterColumnReferences(context);
+            var ts = details.ParsingTree.FindDescendantRecursive<SelectStatement>().QueryExpression.FirstQuerySpecification.SourceTableReferences.Values.ToArray();
+            var table = (IColumns)ts[0].DatabaseObject;
+            var cr = ts[0].FilterColumnReferences(context);
             var cs = cr.Select(c => table.Columns[c.ColumnName]);
 
             return new List<Column>(cs);

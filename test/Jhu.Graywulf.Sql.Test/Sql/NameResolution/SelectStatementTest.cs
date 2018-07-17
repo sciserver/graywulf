@@ -664,7 +664,7 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
 
             var qs = ParseAndResolveNames<QuerySpecification>(sql);
 
-            var tables = qs.EnumerateSourceTableReferences(false).ToArray();
+            var tables = qs.SourceTableReferences.Values.ToArray();
 
             Assert.AreEqual(1, tables.Length);
             Assert.IsTrue(tables[0].TableContext.HasFlag(TableContext.UserDefinedFunction));

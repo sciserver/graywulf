@@ -12,56 +12,6 @@ namespace Jhu.Graywulf.Sql.Parsing
     [TestClass]
     public class PredicateTest : ParsingTestBase
     {
-        private void GetSearchCondition(string query, out SelectStatement select, out BooleanExpression where)
-        {
-            select = CreateSelect(query);
-            where = select.FindDescendantRecursive<WhereClause>().FindDescendant<BooleanExpression>();
-        }
-
-        [TestMethod]
-        public void IsSpecificToTableTest()
-        {
-            // TODO: this won't work due to changes in predicate filtering logic
-            // Figure out how to fix test
-            // Move teste from parsing tests
-
-            string sql;
-            SelectStatement select;
-            BooleanExpression where;
-            TableReference table;
-            Predicate predicate;
-            
-            // Simple predicate restricting a single table
-
-            sql = "SELECT ID FROM Book WHERE ID = 6";           
-            GetSearchCondition(sql, out select, out where);
-
-            table = select.QueryExpression.EnumerateSourceTableReferences(false).First();
-            predicate = where.FindDescendantRecursive<Predicate>();
-
-            Assert.IsTrue(predicate.IsSpecificToTable(table));
-
-            // Predicate that references multiple tables
-
-            sql = "SELECT Book.ID FROM Book, Author WHERE Book.ID = Author.ID";
-            GetSearchCondition(sql, out select, out where);
-
-            table = select.QueryExpression.EnumerateSourceTableReferences(false).First();
-            predicate = where.FindDescendantRecursive<Predicate>();
-
-            Assert.IsFalse(predicate.IsSpecificToTable(table));
-
-            // Predicate that doesn't reference any tables
-
-            sql = "SELECT ID FROM Book WHERE 4 = 6";
-            GetSearchCondition(sql, out select, out where);
-
-            table = select.QueryExpression.EnumerateSourceTableReferences(false).First();
-            predicate = where.FindDescendantRecursive<Predicate>();
-
-            Assert.IsTrue(predicate.IsSpecificToTable(table));
-        }
-
         private Predicate Parse(string query)
         {
             var p = new SqlParser();

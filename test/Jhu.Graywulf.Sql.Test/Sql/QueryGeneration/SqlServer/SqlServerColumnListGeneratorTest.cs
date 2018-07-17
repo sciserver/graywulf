@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
         {
             var sql = @"SELECT Title, Year FROM Book b WHERE ID = 3";
             var ss = ParseAndResolveNames<SelectStatement>(sql);
-            var tr = ss.EnumerateTableReferences().FirstOrDefault();
+            var tr = ss.SourceTableReferences.Values.FirstOrDefault();
 
             return tr;
         }

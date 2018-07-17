@@ -33,7 +33,7 @@ SELECT [a].[Name] FROM [a]";
             Assert.AreEqual(gt, res);
 
             var ct = ss.CommonTableExpression.EnumerateCommonTableSpecifications().ToArray();
-            var ts = ct[0].Subquery.QueryExpression.EnumerateSourceTableReferences(false).ToArray();
+            var ts = ct[0].Subquery.QueryExpression.FirstQuerySpecification.SourceTableReferences.Values.ToArray();
 
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
@@ -67,7 +67,7 @@ SELECT [a].[Name] FROM [a]";
             Assert.AreEqual(gt, res);
 
             var ct = ss.CommonTableExpression.EnumerateCommonTableSpecifications().ToArray();
-            var ts = ct[0].Subquery.QueryExpression.EnumerateSourceTableReferences(false).ToArray();
+            var ts = ct[0].Subquery.QueryExpression.FirstQuerySpecification.SourceTableReferences.Values.ToArray();
 
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);

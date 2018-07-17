@@ -258,11 +258,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // - SELECT ... FROM
 
             var sourceTableCollection =
-                Visitor.ParentQuerySpecification as ISourceTableProvider ??
-                Visitor.ParentStatement as ISourceTableProvider;
+                Visitor.CurrentQuerySpecification as ISourceTableProvider ??
+                Visitor.CurrentStatement as ISourceTableProvider;
 
             var targetTableProvider =
-                Visitor.ParentStatement as ITargetTableProvider;
+                Visitor.CurrentStatement as ITargetTableProvider;
 
             node.TableReference.TableContext |= Visitor.TableContext;
 
@@ -286,11 +286,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
         protected void ResolveTableReference(ITableReference node, TableDefinition td)
         {
             var sourceTableCollection =
-                Visitor.ParentQuerySpecification as ISourceTableProvider ??
-                Visitor.ParentStatement as ISourceTableProvider;
+                Visitor.CurrentQuerySpecification as ISourceTableProvider ??
+                Visitor.CurrentStatement as ISourceTableProvider;
 
             var targetTableProvider =
-                Visitor.ParentStatement as ITargetTableProvider;
+                Visitor.CurrentStatement as ITargetTableProvider;
 
             // Set it on the original reference, later will be set on the resolved one too
             node.TableReference.TableContext |= Visitor.TableContext;
@@ -310,7 +310,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 else
                 {
-                    ResolveOutputTableReference(Visitor.ParentQuerySpecification, node);
+                    ResolveOutputTableReference(Visitor.CurrentQuerySpecification, node);
                 }
 
                 CollectOutputTableReference(targetTableProvider, node);
@@ -640,10 +640,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void ResolveColumnReference(IColumnReference cr)
         {
-            var qs = Visitor.ParentQuerySpecification;
-            var stp =qs as ISourceTableProvider ?? Visitor.ParentStatement as ISourceTableProvider;
+            var qs = Visitor.CurrentQuerySpecification;
+            var stp =qs as ISourceTableProvider ?? Visitor.CurrentStatement as ISourceTableProvider;
             var sourceTables = stp?.SourceTableReferences.Values;
-            var ttp = Visitor.ParentStatement as ITargetTableProvider;
+            var ttp = Visitor.CurrentStatement as ITargetTableProvider;
             var targetTable = ttp?.TargetTable.TableReference;
 
             // Star columns cannot be resolved, treat them separately
@@ -1264,9 +1264,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     if (cr.TableReference.IsUndefined)
                     {
-                        foreach (var ts in qs.EnumerateSourceTables(false))
+                        foreach (var ts in qs.SourceTableReferences.Values)
                         {
-                            foreach (var ccr in ts.TableReference.ColumnReferences)
+                            foreach (var ccr in ts.ColumnReferences)
                             {
                                 CopyResultTableColumn(ccr, tr, index++);
                             }

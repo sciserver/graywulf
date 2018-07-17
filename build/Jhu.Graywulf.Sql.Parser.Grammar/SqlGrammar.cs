@@ -258,6 +258,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 LikePredicate,
                 BetweenPredicate,
                 IsNullPredicate,
+                InExpressionListPredicate,
                 InSemiJoinPredicate,
                 ComparisonSemiJoinPredicate,
                 ExistsSemiJoinPredicate

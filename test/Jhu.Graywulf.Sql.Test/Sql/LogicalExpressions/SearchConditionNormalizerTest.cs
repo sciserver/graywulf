@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
                 cn.CollectConditions(qs);
 
                 // TODO use qs.SourceTableReferences ???
-                foreach (var tr in qs.EnumerateSourceTableReferences(true))
+                foreach (var tr in qs.SourceTableReferences.Values)
                 {
                     var where = cn.GenerateWherePredicatesSpecificToTable(tr);
 
@@ -348,7 +348,7 @@ SELECT Title FROM Book WHERE Year > 2000";
             var conditions = typeof(LogicalExpressions.SearchConditionNormalizer).GetField("conditions", BindingFlags.Instance | BindingFlags.NonPublic);
             var enumterms = typeof(LogicalExpressions.SearchConditionNormalizer).GetMethod("EnumerateCnfTermsSpecificToTable", BindingFlags.Static | BindingFlags.NonPublic);
 
-            return (IEnumerable<LogicalExpressions.Expression>)enumterms.Invoke(null, new object[] { ((List<LogicalExpressions.Expression>)conditions.GetValue(scn)).FirstOrDefault(), select.QueryExpression.EnumerateSourceTableReferences(false).First(), null });
+            return (IEnumerable<LogicalExpressions.Expression>)enumterms.Invoke(null, new object[] { ((List<LogicalExpressions.Expression>)conditions.GetValue(scn)).FirstOrDefault(), select.QueryExpression.FirstQuerySpecification.SourceTableReferences.Values.First(), null });
         }
 
         [TestMethod]

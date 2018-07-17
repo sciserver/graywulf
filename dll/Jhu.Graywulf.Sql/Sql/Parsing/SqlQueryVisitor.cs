@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return statementStack.Count; }
         }
 
-        public Statement ParentStatement
+        public Statement CurrentStatement
         {
             get { return statementStack?.Peek(); }
         }
@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return commonTableExpression; }
         }
 
-        public QuerySpecification ParentQuerySpecification
+        public QuerySpecification CurrentQuerySpecification
         {
             get { return querySpecificationStack.Count == 0 ? null : querySpecificationStack.Peek(); }
         }
@@ -879,7 +879,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var groupby = qs.GroupByClause;
             var having = qs.HavingClause;
 
-            qs.ParentQuerySpecification = ParentQuerySpecification;
+            qs.ParentQuerySpecification = CurrentQuerySpecification;
 
             querySpecificationStack.Push(qs);
 

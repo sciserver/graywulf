@@ -55,18 +55,5 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             TableReference = TableReference.Interpret(this);
         }
-
-        public override IEnumerable<TableSource> EnumerateSubqueryTableSources(bool recursive)
-        {
-            foreach (var tts in Subquery.EnumerateSourceTables(recursive))
-            {
-                yield return tts;
-            }
-        }
-
-        public override IEnumerable<TableSource> EnumerateMultiTableSources()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

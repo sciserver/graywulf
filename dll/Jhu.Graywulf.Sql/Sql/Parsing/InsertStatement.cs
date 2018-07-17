@@ -86,43 +86,5 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         #endregion
-
-        public IEnumerable<TableSource> EnumerateSourceTables(bool recursive)
-        {
-            // Target table
-            yield return TargetTable;
-
-            // Tables referenced in VALUES part subqueries
-            var values = ValuesClause;
-            if (values != null)
-            {
-                foreach (var group in values.EnumerateValueGroups())
-                {
-                    foreach (var value in group.EnumerateValues())
-                    {
-                        if (value is Expression exp)
-                        {
-                            foreach (var sq in exp.EnumerateDescendantsRecursive<Subquery>())
-                            {
-                                foreach (var ts in sq.EnumerateSourceTables(recursive))
-                                {
-                                    yield return ts;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Tables referenced by the SELECT part and its subqueries
-            var query = QueryExpression;
-            if (query != null)
-            {
-                foreach (var ts in query.EnumerateSourceTables(recursive))
-                {
-                    yield return ts;
-                }
-            }
-        }
     }
 }

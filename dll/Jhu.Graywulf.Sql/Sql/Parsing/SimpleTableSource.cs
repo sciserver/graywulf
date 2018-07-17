@@ -142,15 +142,5 @@ namespace Jhu.Graywulf.Sql.Parsing
                 partitioningKeyDataType = ci.ColumnReference.DataTypeReference?.DataType;
             }
         }
-
-        public override IEnumerable<TableSource> EnumerateSubqueryTableSources(bool recursive)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IEnumerable<TableSource> EnumerateMultiTableSources()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

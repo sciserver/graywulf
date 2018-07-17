@@ -231,7 +231,6 @@
     <Compile Include="Sql\NameResolution\IndexReference.cs" />
     <Compile Include="Sql\NameResolution\IOutputTableProvider.cs" />
     <Compile Include="Sql\NameResolution\IPropertyReference.cs" />
-    <Compile Include="Sql\NameResolution\ISourceTableConsumer.cs" />
     <Compile Include="Sql\NameResolution\ISourceTableProvider.cs" />
     <Compile Include="Sql\NameResolution\ITargetTableProvider.cs" />
     <Compile Include="Sql\NameResolution\MethodReference.cs" />

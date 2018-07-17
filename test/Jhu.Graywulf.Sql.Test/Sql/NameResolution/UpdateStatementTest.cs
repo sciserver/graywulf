@@ -25,10 +25,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var res = GenerateCode(ds);
             Assert.AreEqual("UPDATE [Graywulf_Schema_Test].[dbo].[Author] SET [Graywulf_Schema_Test].[dbo].[Author].[Name] = 'new_name'", res);
 
-            var ts = ds.EnumerateSourceTables(false).ToArray();
+            var ts = ds.SourceTableReferences.Values.ToArray();
             Assert.AreEqual(1, ts.Length);
-            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].TableReference.Alias);
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
         }
 
         [TestMethod]
@@ -49,10 +49,12 @@ FROM [Graywulf_Schema_Test].[dbo].[Author]";
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTables(false).ToArray();
-            Assert.AreEqual(2, ts.Length);
-            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].TableReference.Alias);
+            Assert.AreEqual(1, ds.SourceTableReferences.Count);
+            Assert.AreEqual("Author", ds.SourceTableReferences["Author"].DatabaseObjectName);
+            Assert.AreEqual(null, ds.SourceTableReferences["Author"].Alias);
+
+            Assert.AreEqual("Author", ds.TargetTable.TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ds.TargetTable.TableReference.Alias);
         }
 
         [TestMethod]
@@ -73,10 +75,12 @@ FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]";
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTables(false).ToArray();
-            Assert.AreEqual(2, ts.Length);
-            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual("a", ts[0].TableReference.Alias);
+            Assert.AreEqual(1, ds.SourceTableReferences.Count);
+            Assert.AreEqual("Author", ds.SourceTableReferences["a"].DatabaseObjectName);
+            Assert.AreEqual("a", ds.SourceTableReferences["a"].Alias);
+
+            Assert.AreEqual("Author", ds.TargetTable.TableReference.DatabaseObjectName);
+            Assert.AreEqual("a", ds.TargetTable.TableReference.Alias);
         }
 
         [TestMethod]
@@ -97,12 +101,11 @@ FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]";
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTables(false).ToArray();
-            Assert.AreEqual(2, ts.Length);
-            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].TableReference.Alias);
-            Assert.AreEqual("Author", ts[1].TableReference.DatabaseObjectName);
-            Assert.AreEqual("a", ts[1].TableReference.Alias);
+            Assert.AreEqual(1, ds.SourceTableReferences.Count);
+            Assert.AreEqual("Author", ds.SourceTableReferences["a"].DatabaseObjectName);
+            Assert.AreEqual("a", ds.SourceTableReferences["a"].Alias);
+
+            Assert.AreEqual("Author", ds.TargetTable.TableReference.DatabaseObjectName);
         }
 
         [TestMethod]
@@ -123,12 +126,11 @@ FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]";
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTables(false).ToArray();
-            Assert.AreEqual(2, ts.Length);
-            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].TableReference.Alias);
-            Assert.AreEqual("Author", ts[1].TableReference.DatabaseObjectName);
-            Assert.AreEqual("a", ts[1].TableReference.Alias);
+            Assert.AreEqual(1, ds.SourceTableReferences.Count);
+            Assert.AreEqual("Author", ds.SourceTableReferences["a"].DatabaseObjectName);
+            Assert.AreEqual("a", ds.SourceTableReferences["a"].Alias);
+
+            Assert.AreEqual("Author", ds.TargetTable.TableReference.DatabaseObjectName);
         }
 
         /*

@@ -8,46 +8,9 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class TableSourceExpression
     {
-        public IEnumerable<TableSource> EnumerateSourceTables(bool recursive)
+        public TableSource FirstTableSource
         {
-            var node = (Node)this;
-
-            while (node != null)
-            {
-                var ts = node.FindDescendant<TableSourceSpecification>();
-                yield return ts.SpecificTableSource;
-
-                // Enumerate recursively, if necessary
-                if (recursive && ts.SpecificTableSource.IsSubquery)
-                {
-                    foreach (var tts in ts.SpecificTableSource.EnumerateSubqueryTableSources(recursive))
-                    {
-                        yield return tts;
-                    }
-                }
-
-                // Certain table sources might return additional table sources
-                // This is not standard SQL, it is used with special extensions
-                // such as the XMATCH syntax
-                if (ts.SpecificTableSource.IsMultiTable)
-                {
-                    foreach (var mts in ts.SpecificTableSource.EnumerateMultiTableSources())
-                    {
-                        yield return mts;
-
-                        // Enumerate recursively, if necessary
-                        if (recursive && mts.IsSubquery)
-                        {
-                            foreach (var tts in mts.EnumerateSubqueryTableSources(recursive))
-                            {
-                                yield return tts;
-                            }
-                        }
-                    }
-                }
-
-                node = node.FindDescendant<JoinedTable>();
-            }
+            get { return FindDescendant<TableSourceSpecification>()?.SpecificTableSource; }
         }
 
         public static TableSourceExpression Create(TableSourceSpecification tableSource)

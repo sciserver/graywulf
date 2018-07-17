@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Sql.Parsing
     /// <summary>
     /// Implements a SELECT statement including the ORDER BY clause
     /// </summary>
-    public partial class SelectStatement : ISourceTableProvider, ISourceTableConsumer, IOutputTableProvider
+    public partial class SelectStatement : ISourceTableProvider, IOutputTableProvider
     {
         #region Private member variables
 
@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             get
             {
                 var qs = QueryExpression.EnumerateQuerySpecifications().FirstOrDefault<QuerySpecification>();
-                var ts = qs.EnumerateSourceTables(false).FirstOrDefault();
+                var ts = qs.FirstTableSource;
 
                 if (ts == null || !(ts is SimpleTableSource))
                 {
