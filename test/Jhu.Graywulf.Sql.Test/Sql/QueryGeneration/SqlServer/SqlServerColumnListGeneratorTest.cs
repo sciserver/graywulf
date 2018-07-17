@@ -16,12 +16,11 @@ namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
     [TestClass]
     public class SqlServerColumnListGeneratorTest : SqlServerTestBase
     {
-
         private TableReference CreateTableReference()
         {
             var sql = @"SELECT Title, Year FROM Book b WHERE ID = 3";
             var ss = ParseAndResolveNames<SelectStatement>(sql);
-            var tr = ss.SourceTableReferences.Values.FirstOrDefault();
+            var tr = ss.QueryExpression.FirstQuerySpecification.SourceTableReferences.Values.FirstOrDefault();
 
             return tr;
         }
