@@ -257,20 +257,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // Branch landing here:
             // - SELECT ... FROM
 
-            var sourceTableCollection =
-                Visitor.CurrentQuerySpecification as ISourceTableProvider ??
-                Visitor.CurrentStatement as ISourceTableProvider;
-
-            var targetTableProvider =
-                Visitor.CurrentStatement as ITargetTableProvider;
-
             node.TableReference.TableContext |= Visitor.TableContext;
 
             // SELECT ... FROM ...()
             SubstituteFunctionDefaults(node);
             ResolveFunctionReference(node);
             CollectFunctionReference(node);
-            CollectSourceTableReference(sourceTableCollection, node);
+
+            CollectSourceTableReference(node);
         }
 
         public override void VisitSubqueryTableSource(SubqueryTableSource node)
@@ -325,17 +319,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 // For statement with query parts target table can also
                 // appear as a source table for column resolution
-                if (sourceTableCollection != null)
-                {
-                    CollectSourceTableReference(sourceTableCollection, node);
-                }
+                CollectSourceTableReference(node);
             }
             else if ((Visitor.TableContext & TableContext.Subquery) != 0)
             {
                 // Case 3: aliased subquery
                 // SELECT ... FROM (SELECT ...) sq
                 // Everything is resolved, just copy to source tables
-                CollectSourceTableReference(sourceTableCollection, node);
+                CollectSourceTableReference(node);
             }
             else if ((Visitor.TableContext & TableContext.From) != 0)
             {
@@ -343,7 +334,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // SELECT ... FROM
                 SubstituteSourceTableDefaults(sourceTableCollection, node);
                 ResolveSourceTableReference(sourceTableCollection, node);
-                CollectSourceTableReference(sourceTableCollection, node);
+                CollectSourceTableReference(node);
             }
             else
             {
@@ -641,7 +632,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void ResolveColumnReference(IColumnReference cr)
         {
             var qs = Visitor.CurrentQuerySpecification;
-            var stp =qs as ISourceTableProvider ?? Visitor.CurrentStatement as ISourceTableProvider;
+            var stp = qs as ISourceTableProvider ?? Visitor.CurrentStatement as ISourceTableProvider;
             var sourceTables = stp?.SourceTableReferences.Values;
             var ttp = Visitor.CurrentStatement as ITargetTableProvider;
             var targetTable = ttp?.TargetTable.TableReference;
@@ -1139,7 +1130,42 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        private void CollectSourceTableReference(ISourceTableProvider stp, ITableReference node)
+        private void CollectSourceTableReference(ITableReference node)
+        {
+            TableReference tr = node.TableReference;
+            var stp = Visitor.CurrentQuerySpecification as ISourceTableProvider ??
+                      Visitor.CurrentStatement as ISourceTableProvider;
+
+
+            // Store table source on query specification or statement level
+            if (stp != null)
+            {
+                CollectSourceTableReference(stp, node, false);
+            }
+            
+            // If it is a table, save to the global store also, and generate unique name
+            if (tr.DatabaseObject is TableOrView)
+            {
+                // Collect in the global store
+                var uniquekey = tr.DatabaseObject.UniqueKey;
+
+                if (!details.SourceTableReferences.ContainsKey(uniquekey))
+                {
+                    details.SourceTableReferences.Add(uniquekey, new List<TableReference>());
+                }
+
+                details.SourceTableReferences[uniquekey].Add(tr);
+
+                if (tr.TableSource != null)
+                {
+                    tr.TableSource.UniqueKey = String.Format("{0}_{1}_{2}", uniquekey, tr.Alias, details.SourceTableReferences[uniquekey].Count - 1);
+                }
+            }
+
+
+        }
+
+        private void CollectSourceTableReference(ISourceTableProvider stp, ITableReference node, bool allowDuplicates)
         {
             var sourceTables = stp.SourceTableReferences;
             var tr = node.TableReference;
@@ -1171,7 +1197,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
             }
 
-            if (sourceTables.ContainsKey(exportedName))
+            if (!allowDuplicates && sourceTables.ContainsKey(exportedName))
             {
                 throw NameResolutionError.DuplicateTableAlias(exportedName, tr.Node);
             }
@@ -1180,22 +1206,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 // Save the table in the query specification
                 sourceTables.Add(exportedName, tr);
-            }
-
-            if (tr.DatabaseObject is TableOrView)
-            {
-                // Collect in the global store
-                var uniquekey = tr.DatabaseObject.UniqueKey;
-
-                if (!details.SourceTableReferences.ContainsKey(uniquekey))
-                {
-                    details.SourceTableReferences.Add(uniquekey, new List<TableReference>());
-                }
-
-                details.SourceTableReferences[uniquekey].Add(tr);
-
-
-                tr.TableSource.UniqueKey = String.Format("{0}_{1}_{2}", uniquekey, tr.Alias, details.SourceTableReferences[uniquekey].Count - 1);
             }
         }
 
