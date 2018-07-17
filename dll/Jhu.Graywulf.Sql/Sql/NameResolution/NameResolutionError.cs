@@ -158,5 +158,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             return CreateException(ExceptionMessages.FunctionIdentifierTooManyParts, null, null, node);
         }
+
+        public static NameResolverException DifferentTableReferenceInHintNotAllowed(ITableReference node)
+        {
+            return CreateException(ExceptionMessages.DifferentTableReferenceInHintNotAllowed, null, null, (Node)node);
+        }
     }
 }
