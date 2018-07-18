@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class WhereClause
     {        
-        public static WhereClause Create(BooleanExpression sc)
+        public static WhereClause Create(LogicalExpression sc)
         {
             var wh = new WhereClause();
 
@@ -21,16 +21,16 @@ namespace Jhu.Graywulf.Sql.Parsing
             return wh;
         }
 
-        public void AppendCondition(BooleanExpression sc, string opstring)
+        public void AppendCondition(LogicalExpression sc, string opstring)
         {
-            var cond = this.FindDescendant<BooleanExpression>();
+            var cond = this.FindDescendant<LogicalExpression>();
             this.Stack.Remove(cond);
 
-            var br1 = BooleanExpressionBrackets.Create(sc);
-            var br2 = BooleanExpressionBrackets.Create(cond);
+            var br1 = LogicalExpressionBrackets.Create(sc);
+            var br2 = LogicalExpressionBrackets.Create(cond);
 
             var op = LogicalOperator.Create(opstring);
-            cond = BooleanExpression.Create(br1, BooleanExpression.Create(false, br2), op);
+            cond = LogicalExpression.Create(br1, LogicalExpression.Create(false, br2), op);
 
             this.Stack.AddLast(cond);
         }

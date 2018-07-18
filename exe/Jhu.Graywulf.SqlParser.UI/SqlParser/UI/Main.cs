@@ -125,9 +125,9 @@ namespace Jhu.Graywulf.Parser.Test
                             wc = new SearchConditionReference((Predicate)n);
                             yield return wc;
                         }
-                        else if (n is BooleanExpressionBrackets)
+                        else if (n is LgocalExpressionBrackets)
                         {
-                            wc = new SearchConditionReference((BooleanExpressionBrackets)n);
+                            wc = new SearchConditionReference((LgocalExpressionBrackets)n);
                             yield return wc;
                         }
                     }

@@ -137,7 +137,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             Stack.AddAfter(wsn, where);
         }
 
-        public void AppendSearchCondition(BooleanExpression condition, string op)
+        public void AppendSearchCondition(LogicalExpression condition, string op)
         {
             if (condition == null)
             {

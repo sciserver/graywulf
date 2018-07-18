@@ -7,11 +7,11 @@ using Jhu.Graywulf.Parsing;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class BooleanExpressionBrackets
+    public partial class LogicalExpressionBrackets
     {
-        public static BooleanExpressionBrackets Create(BooleanExpression sc)
+        public static LogicalExpressionBrackets Create(LogicalExpression sc)
         {
-            var scb = new BooleanExpressionBrackets();
+            var scb = new LogicalExpressionBrackets();
 
             scb.Stack.AddLast(new BracketOpen());
             scb.Stack.AddLast(sc);
@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public LogicalExpressions.Expression GetExpressionTree()
         {
-            return new LogicalExpressions.Brackets(FindDescendant<BooleanExpression>().GetExpressionTree());
+            return new LogicalExpressions.Brackets(FindDescendant<LogicalExpression>().GetExpressionTree());
         }
     }
 }

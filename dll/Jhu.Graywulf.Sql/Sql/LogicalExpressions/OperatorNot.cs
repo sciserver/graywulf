@@ -26,11 +26,11 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             return visitor.VisitOperatorNot(this);
         }
 
-        public override Parsing.BooleanExpression GetParsingTree()
+        public override Parsing.LogicalExpression GetParsingTree()
         {
             var sc = Operand.GetParsingTree();
             sc.Stack.AddFirst(Parsing.Whitespace.Create());
-            sc.Stack.AddFirst(Parsing.LogicalNot.Create());
+            sc.Stack.AddFirst(Parsing.LogicalNotOperator.Create());
             return sc;
         }
 

@@ -8,11 +8,11 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class WhileStatement
     {
-        public BooleanExpression Condition
+        public LogicalExpression Condition
         {
             get
             {
-                return FindDescendant<BooleanExpression>();
+                return FindDescendant<LogicalExpression>();
             }
         }
 

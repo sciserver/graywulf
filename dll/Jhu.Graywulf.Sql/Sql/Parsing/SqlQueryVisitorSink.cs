@@ -213,6 +213,49 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         #endregion
+        #region Logical expressions
+
+        public virtual void VisitLogicalNotOperator(LogicalNotOperator node)
+        {
+        }
+
+        public virtual void VisitLogicalOperator(LogicalOperator node)
+        {
+        }
+
+        public virtual void VisitComparisonPredicate(ComparisonPredicate node)
+        {
+        }
+
+        public virtual void VisitLikePredicate(LikePredicate node)
+        {
+        }
+
+        public virtual void VisitBetweenPredicate(BetweenPredicate node)
+        {
+        }
+
+        public virtual void VisitIsNullPredicate(IsNullPredicate node)
+        {
+        }
+
+        public virtual void VisitInExpressionListPredicate(InExpressionListPredicate node)
+        {
+        }
+
+        public virtual void VisitInSemiJoinPredicate(InSemiJoinPredicate node)
+        {
+        }
+
+        public virtual void VisitComparisonSemiJoinPredicate(ComparisonSemiJoinPredicate node)
+        {
+        }
+
+        public virtual void VisitExistsSemiJoinPredicate(ExistsSemiJoinPredicate node)
+        {
+        }
+
+        #endregion
         #region Queries
 
         public virtual void VisitCommonTableExpression(CommonTableExpression node)

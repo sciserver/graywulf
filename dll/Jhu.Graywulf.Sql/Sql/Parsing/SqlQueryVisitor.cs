@@ -251,7 +251,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private void TraverseWhileStatement(WhileStatement node)
         {
-            TraverseBooleanExpression(node.Condition);
+            TraverseLogicalExpression(node.Condition);
         }
 
         private void TraverseReturnStatement(ReturnStatement node)
@@ -263,7 +263,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private void TraverseIfStatement(IfStatement node)
         {
-            TraverseBooleanExpression(node.Condition);
+            TraverseLogicalExpression(node.Condition);
         }
 
         private void TraverseThrowStatement(ThrowStatement node)
@@ -1064,7 +1064,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         #endregion
         #region Boolean expression traversal
 
-        protected void TraverseBooleanExpression(BooleanExpression node)
+        protected void TraverseLogicalExpression(LogicalExpression node)
         {
             // Visit immediate subquries first, then do a bottom-up
             // traversal of the tree by not going deeper than the subqueries.
@@ -1076,29 +1076,169 @@ namespace Jhu.Graywulf.Sql.Parsing
                 TraverseExpressionSubqueries(node);
             }
 
-            switch (options.BooleanExpressionTraversal)
+            switch (options.LogicalExpressionTraversal)
             {
                 case ExpressionTraversalMode.Infix:
                 case ExpressionTraversalMode.Postfix:
+                    TraverseLogicalExpressionNode(node);
+                    break;
                 case ExpressionTraversalMode.None:
+                    break;
                 default:
                     throw new NotImplementedException();
             }
 
-            /*
-            if (options.TraverseBooleanExpressions)
-            {
-                // TODO: branch here based on method
-                throw new NotImplementedException();
-                // review this
-                // TraverseExpressionNodes(node);
-            }
-            */
-
             columnContextStack.Pop();
 
-            // TODO: remove this
-            //Sink.VisitBooleanExpression(node);
+        }
+
+        private void TraverseLogicalExpressionNode(Node node)
+        {
+            foreach (var n in node.Stack)
+            {
+                DispatchLogicalExpressionNode(n);
+            }
+        }
+
+        protected void DispatchLogicalExpressionNode(Token node)
+        {
+            switch (node)
+            {
+                case LogicalNotOperator n:
+                    Sink.VisitLogicalNotOperator(n);
+                    break;
+                case LogicalOperator n:
+                    Sink.VisitLogicalOperator(n);
+                    break;
+                case LogicalExpressionBrackets n:
+                    TraverseLogicalExpressionBrackets(n);
+                    break;
+                case Predicate n:
+                    TraversePredicate(n);
+                    break;
+                case Expression n:
+                    TraverseLogicalExpressionNode(n);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void TraverseLogicalExpressionBrackets(LogicalExpressionBrackets node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case BracketOpen n:
+                        Sink.VisitExpressionBracketOpen(n);
+                        break;
+                    case Expression n:
+                        TraverseExpressionNode(n);
+                        break;
+                    case BracketClose n:
+                        Sink.VisitExpressionBracketClose(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraversePredicate(Predicate node)
+        {
+            var predicate = (Node)node.Stack.First.Value;
+
+            DispatchPredicate(predicate);
+        }
+
+        protected virtual void DispatchPredicate(Node node)
+        {
+            switch (node)
+            {
+                case ComparisonPredicate n:
+                    TraverseComparisonPredicate(n);
+                    break;
+                case LikePredicate n:
+                    TraverseLikePredicate(n);
+                    break;
+                case BetweenPredicate n:
+                    TraverseBetweenPredicate(n);
+                    break;
+                case IsNullPredicate n:
+                    TraverseIsNullPredicate(n);
+                    break;
+                case InExpressionListPredicate n:
+                    TraverseInExpressionListPredicate(n);
+                    break;
+                case InSemiJoinPredicate n:
+                    TraverseInSemiJoinPredicate(n);
+                    break;
+                case ComparisonSemiJoinPredicate n:
+                    TraverseComparisonSemiJoinPredicate(n);
+                    break;
+                case ExistsSemiJoinPredicate n:
+                    TraverseExistsSemiJoinPredicate(n);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void TraverseComparisonPredicate(ComparisonPredicate node)
+        {
+            Sink.VisitComparisonPredicate(node);
+            TraverseExpression(node.LeftOperand);
+            TraverseExpression(node.RightOperand);
+        }
+
+        private void TraverseLikePredicate(LikePredicate node)
+        {
+            Sink.VisitLikePredicate(node);
+            TraverseExpression(node.LeftOperand);
+            TraverseExpression(node.RightOperand);
+            TraverseExpression(node.EscapeOperand);
+
+            // TODO How to make sure in expression tree that it has an extra operand? do we have to?
+        }
+
+        private void TraverseBetweenPredicate(BetweenPredicate node)
+        {
+            Sink.VisitBetweenPredicate(node);
+            TraverseExpression(node.LeftOperand);
+            TraverseExpression(node.StartOperand);
+            TraverseExpression(node.EndOperand);
+        }
+
+        private void TraverseIsNullPredicate(IsNullPredicate node)
+        {
+            Sink.VisitIsNullPredicate(node);
+            TraverseExpression(node.Operand);
+        }
+
+        private void TraverseInExpressionListPredicate(InExpressionListPredicate node)
+        {
+            Sink.VisitInExpressionListPredicate(node);
+            TraverseExpression(node.Operand);
+            TraverseArgumentList(node.ArgumentList);
+        }
+
+        private void TraverseInSemiJoinPredicate(InSemiJoinPredicate node)
+        {
+            Sink.VisitInSemiJoinPredicate(node);
+            TraverseExpression(node.Operand);
+            TraverseSubquery(node.Subquery);
+        }
+
+        private void TraverseComparisonSemiJoinPredicate(ComparisonSemiJoinPredicate node)
+        {
+            Sink.VisitComparisonSemiJoinPredicate(node);
+            TraverseExpression(node.Operand);
+            TraverseSubquery(node.Subquery);
+        }
+
+        private void TraverseExistsSemiJoinPredicate(ExistsSemiJoinPredicate node)
+        {
+            Sink.VisitExistsSemiJoinPredicate(node);
+            TraverseSubquery(node.Subquery);
         }
 
         #endregion
@@ -1327,13 +1467,13 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             while (ts != null)
             {
-                var jc = jt?.FindDescendant<BooleanExpression>();
+                var jc = jt?.FindDescendant<LogicalExpression>();
 
                 if (jc != null)
                 {
                     columnContextStack.Push(ColumnContext | ColumnContext.JoinOn);
 
-                    TraverseBooleanExpression(jc);
+                    TraverseLogicalExpression(jc);
 
                     columnContextStack.Pop();
                 }
@@ -1413,8 +1553,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             tableContextStack.Push(TableContext | TableContext.Where);
             columnContextStack.Push(ColumnContext | ColumnContext.Where);
 
-            var exp = node.FindDescendant<BooleanExpression>();
-            TraverseBooleanExpression(exp);
+            var exp = node.FindDescendant<LogicalExpression>();
+            TraverseLogicalExpression(exp);
 
             tableContextStack.Pop();
             columnContextStack.Pop();
@@ -1441,8 +1581,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             tableContextStack.Push(TableContext | TableContext.Having);
             columnContextStack.Push(ColumnContext | ColumnContext.Having);
 
-            var be = node.FindDescendant<BooleanExpression>();
-            TraverseBooleanExpression(be);
+            var be = node.FindDescendant<LogicalExpression>();
+            TraverseLogicalExpression(be);
 
             tableContextStack.Pop();
             columnContextStack.Pop();

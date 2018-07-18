@@ -6,12 +6,12 @@ using Jhu.Graywulf.Parsing;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class LogicalNot
+    public partial class LogicalNotOperator
     {
 
-        public static LogicalNot Create()
+        public static LogicalNotOperator Create()
         {
-            var not = new LogicalNot();
+            var not = new LogicalNotOperator();
 
             not.Stack.AddLast(Keyword.Create("NOT"));
             

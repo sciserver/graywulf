@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Parser.Test
             UpdateFromNode((Node)node);
         }
 
-        public SearchConditionReference(Sql.Parsing.BooleanExpressionBrackets node)
+        public SearchConditionReference(Sql.Parsing.LgocalExpressionBrackets node)
         {
             InitializeMembers();
             UpdateFromNode((Node)node);

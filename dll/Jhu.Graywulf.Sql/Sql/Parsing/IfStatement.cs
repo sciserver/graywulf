@@ -8,9 +8,9 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class IfStatement
     {
-        public BooleanExpression Condition
+        public LogicalExpression Condition
         {
-            get { return FindDescendant<BooleanExpression>(); }
+            get { return FindDescendant<LogicalExpression>(); }
         }
 
         public Statement MainStatement

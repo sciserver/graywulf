@@ -150,7 +150,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 Options = new SqlQueryVisitorOptions()
                 {
-                    BooleanExpressionTraversal = ExpressionTraversalMode.Infix,
+                    LogicalExpressionTraversal = ExpressionTraversalMode.Infix,
                     ExpressionTraversal = ExpressionTraversalMode.Infix,
                     VisitExpressionSubqueries = true,
                     VisitSchemaReferences = false

@@ -12,10 +12,10 @@ namespace Jhu.Graywulf.Sql.Parsing
     [TestClass]
     public class BooleanExpressionBracketsTest
     {
-        private BooleanExpressionBrackets Parse(string query)
+        private LgocalExpressionBrackets Parse(string query)
         {
             var p = new SqlParser();
-            return p.Execute<BooleanExpressionBrackets>(query);
+            return p.Execute<LgocalExpressionBrackets>(query);
         }
 
         [TestMethod]
@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var exp = new SqlParser().Execute<BooleanExpression>("a = b");
 
-            var bc = BooleanExpressionBrackets.Create(exp);
+            var bc = LgocalExpressionBrackets.Create(exp);
             Assert.AreEqual("(a = b)", bc.Value);
         }
     }

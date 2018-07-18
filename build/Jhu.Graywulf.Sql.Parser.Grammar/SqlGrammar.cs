@@ -89,7 +89,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         #endregion
         #region Logical operators used in search conditions
 
-        public static Expression<Rule> LogicalNot = () => Keyword("NOT");
+        public static Expression<Rule> LogicalNotOperator = () => Keyword("NOT");
         public static Expression<Rule> LogicalOperator = () => Must(Keyword("AND"), Keyword("OR"));
 
         #endregion
@@ -241,16 +241,16 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             );
 
         #endregion
-        #region Boolean expressions
+        #region Logical expressions
 
-        public static Expression<Rule> BooleanExpression = () =>
+        public static Expression<Rule> LogicalExpression = () =>
             Sequence
             (
-                May(Sequence(LogicalNot, May(CommentOrWhitespace))),
+                May(Sequence(LogicalNotOperator, May(CommentOrWhitespace))),
                 Must
                 (
                     Predicate,
-                    BooleanExpressionBrackets
+                    LogicalExpressionBrackets
                 ),
                 May
                 (
@@ -259,17 +259,17 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                         May(CommentOrWhitespace), 
                         LogicalOperator, 
                         May(CommentOrWhitespace), 
-                        BooleanExpression
+                        LogicalExpression
                     )
                 )
             );
 
-        public static Expression<Rule> BooleanExpressionBrackets = () =>
+        public static Expression<Rule> LogicalExpressionBrackets = () =>
             Sequence
             (
                 BracketOpen,
                 May(CommentOrWhitespace),
-                BooleanExpression,
+                LogicalExpression,
                 May(CommentOrWhitespace),
                 BracketClose
             );
@@ -451,7 +451,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             (
                 Keyword("WHEN"),
                 May(CommentOrWhitespace),
-                BooleanExpression,
+                LogicalExpression,
                 May(CommentOrWhitespace),
                 Keyword("THEN"),
                 May(CommentOrWhitespace),
@@ -807,7 +807,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 (
                     Keyword("WHILE"),
                     May(CommentOrWhitespace),
-                    BooleanExpression,
+                    LogicalExpression,
                     May(CommentOrWhitespace),
                     AnyStatement
                 )
@@ -855,7 +855,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 (
                     Keyword("IF"),
                     May(CommentOrWhitespace),
-                    BooleanExpression,
+                    LogicalExpression,
                     May(CommentOrWhitespace),
                     AnyStatement,
                     May(
@@ -1295,7 +1295,7 @@ FOR select_statement
             (
                 Must
                 (
-                    Sequence(JoinType, May(CommentOrWhitespace), TableSourceSpecification, May(CommentOrWhitespace), Keyword("ON"), May(CommentOrWhitespace), BooleanExpression),
+                    Sequence(JoinType, May(CommentOrWhitespace), TableSourceSpecification, May(CommentOrWhitespace), Keyword("ON"), May(CommentOrWhitespace), LogicalExpression),
                     Sequence(Keyword("CROSS"), CommentOrWhitespace, Keyword("JOIN"), May(CommentOrWhitespace), TableSourceSpecification),
                     Sequence(Comma, May(CommentOrWhitespace), TableSourceSpecification),
                     Sequence(Must(Keyword("CROSS"), Keyword("OUTER")), CommentOrWhitespace, Keyword("APPLY"), May(CommentOrWhitespace), TableSourceSpecification)
@@ -1444,7 +1444,7 @@ FOR select_statement
             (
                 Keyword("WHERE"),
                 May(CommentOrWhitespace),
-                BooleanExpression
+                LogicalExpression
             );
 
         #endregion
@@ -1478,7 +1478,7 @@ FOR select_statement
             (
                 Keyword("HAVING"),
                 May(CommentOrWhitespace),
-                BooleanExpression
+                LogicalExpression
             );
 
         #endregion

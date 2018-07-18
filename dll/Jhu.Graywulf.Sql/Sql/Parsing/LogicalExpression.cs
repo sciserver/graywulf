@@ -6,45 +6,45 @@ using Jhu.Graywulf.Parsing;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class BooleanExpression
+    public partial class LogicalExpression
     {
         public Predicate Predicate
         {
             get { return FindAscendant<Predicate>(); }
         }
 
-        public BooleanExpressionBrackets BooleanExpressionBrackets
+        public LogicalExpressionBrackets BooleanExpressionBrackets
         {
-            get { return FindAscendant<BooleanExpressionBrackets>(); }
+            get { return FindAscendant<LogicalExpressionBrackets>(); }
         }
 
         #region Instance creation
         
-        private static BooleanExpression CreateInternal(bool negated, Node n)
+        private static LogicalExpression CreateInternal(bool negated, Node n)
         {
-            var sc = new BooleanExpression();
+            var sc = new LogicalExpression();
             if (negated)
             {
-                sc.Stack.AddLast(LogicalNot.Create());
+                sc.Stack.AddLast(LogicalNotOperator.Create());
                 sc.Stack.AddLast(Whitespace.Create());
             }
             sc.Stack.AddLast(n);
             return sc;
         }
 
-        public static BooleanExpression Create(bool negated, Predicate predicate)
+        public static LogicalExpression Create(bool negated, Predicate predicate)
         {
             return CreateInternal(negated, predicate);
         }
 
-        public static BooleanExpression Create(bool negated, BooleanExpressionBrackets brackets)
+        public static LogicalExpression Create(bool negated, LogicalExpressionBrackets brackets)
         {
             return CreateInternal(negated, brackets);
         }
 
-        public static BooleanExpression Create(BooleanExpression a, BooleanExpression b, LogicalOperator op)
+        public static LogicalExpression Create(LogicalExpression a, LogicalExpression b, LogicalOperator op)
         {
-            var nsc = new BooleanExpression();
+            var nsc = new LogicalExpression();
 
             nsc.Stack.AddLast(a);
             nsc.Stack.AddLast(Whitespace.Create());
@@ -55,9 +55,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             return nsc;
         }
 
-        public static BooleanExpression Create(BooleanExpressionBrackets br, BooleanExpression sc, LogicalOperator op)
+        public static LogicalExpression Create(LogicalExpressionBrackets br, LogicalExpression sc, LogicalOperator op)
         {
-            var nsc = new BooleanExpression();
+            var nsc = new LogicalExpression();
 
             nsc.Stack.AddLast(br);
             nsc.Stack.AddLast(Whitespace.Create());
@@ -134,11 +134,11 @@ namespace Jhu.Graywulf.Sql.Parsing
         /// </remarks>
         private IEnumerable<LogicalExpressions.Expression> EnumerateRawExpressions()
         {
-            BooleanExpression sc = this;
+            LogicalExpression sc = this;
 
             while (sc != null)
             {
-                var not = sc.FindDescendant<LogicalNot>();
+                var not = sc.FindDescendant<LogicalNotOperator>();
 
                 if (not != null)
                 {
@@ -146,7 +146,7 @@ namespace Jhu.Graywulf.Sql.Parsing
                 }
 
                 var pr = sc.FindDescendant<Predicate>();
-                var br = sc.FindDescendant<BooleanExpressionBrackets>();
+                var br = sc.FindDescendant<LogicalExpressionBrackets>();
 
                 if (pr != null)
                 {
@@ -181,7 +181,7 @@ namespace Jhu.Graywulf.Sql.Parsing
                     }
 
                     // proceed to next iteration
-                    sc = sc.FindDescendant<BooleanExpression>();
+                    sc = sc.FindDescendant<LogicalExpression>();
                 }
                 else
                 {

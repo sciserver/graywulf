@@ -100,7 +100,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void CreateFromBooleanExpressionsTest2()
         {
-            var be1 = new SqlParser().Execute<BooleanExpressionBrackets>("(a = b)");
+            var be1 = new SqlParser().Execute<LgocalExpressionBrackets>("(a = b)");
             var be2 = new SqlParser().Execute<BooleanExpression>("c < d");
 
             var be = BooleanExpression.Create(be1, be2, LogicalOperator.CreateAnd());

@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
                 foreach (Parsing.JoinedTable jt in tablesource.EnumerateDescendantsRecursive<Parsing.JoinedTable>(typeof(Parsing.Subquery)))
                 {
                     // CROSS JOIN queries have no search condition
-                    var sc = jt.FindDescendant<Parsing.BooleanExpression>();
+                    var sc = jt.FindDescendant<Parsing.LogicalExpression>();
                     if (sc != null)
                     {
                         conditions.Add(GetConjunctiveNormalForm(sc));
@@ -66,14 +66,14 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 
             if (where != null)
             {
-                var sc = where.FindDescendant<Parsing.BooleanExpression>();
+                var sc = where.FindDescendant<Parsing.LogicalExpression>();
                 conditions.Add(GetConjunctiveNormalForm(sc));
             }
         }
 
-        public Parsing.BooleanExpression GenerateWherePredicatesSpecificToTable(IList<TableReference> trs)
+        public Parsing.LogicalExpression GenerateWherePredicatesSpecificToTable(IList<TableReference> trs)
         {
-            Parsing.BooleanExpression sc = null;
+            Parsing.LogicalExpression sc = null;
 
             // Chain up search conditions with the AND operator
             foreach (var tr in trs)
@@ -102,9 +102,9 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             return sc;
         }
 
-        public Parsing.BooleanExpression GenerateWherePredicatesSpecificToTable(TableReference tr)
+        public Parsing.LogicalExpression GenerateWherePredicatesSpecificToTable(TableReference tr)
         {
-            Parsing.BooleanExpression sc = null;
+            Parsing.LogicalExpression sc = null;
 
             // Loop over all conditions (JOIN ONs and WHERE conditions)
             // Result will be a combinations of the table specific conditions terms
@@ -131,7 +131,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 
             if (sc != null)
             {
-                sc = Parsing.BooleanExpression.Create(false, Parsing.BooleanExpressionBrackets.Create(sc));
+                sc = Parsing.LogicalExpression.Create(false, Parsing.LogicalExpressionBrackets.Create(sc));
             }
 
             return sc;
@@ -282,14 +282,14 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             }
         }
 
-        private LogicalExpressions.Expression GetDisjunctiveNormalForm(Parsing.BooleanExpression sc)
+        private LogicalExpressions.Expression GetDisjunctiveNormalForm(Parsing.LogicalExpression sc)
         {
             var exp = sc.GetExpressionTree();
             var dnf = new LogicalExpressions.DnfConverter();
             return dnf.Visit(exp);
         }
 
-        private LogicalExpressions.Expression GetConjunctiveNormalForm(Parsing.BooleanExpression sc)
+        private LogicalExpressions.Expression GetConjunctiveNormalForm(Parsing.LogicalExpression sc)
         {
             var exp = sc.GetExpressionTree();
             var cnf = new LogicalExpressions.CnfConverter();

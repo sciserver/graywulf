@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         #region Private member variables
 
         private ExpressionTraversalMode expressionTraversal;
-        private ExpressionTraversalMode booleanExpressionTraversal;
+        private ExpressionTraversalMode logicalExpressionTraversal;
         private bool visitExpressionSubqueries;
         private bool visitSchemaReferences;
 
@@ -24,10 +24,10 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { expressionTraversal = value; }
         }
 
-        public ExpressionTraversalMode BooleanExpressionTraversal
+        public ExpressionTraversalMode LogicalExpressionTraversal
         {
-            get { return booleanExpressionTraversal; }
-            set { booleanExpressionTraversal = value; }
+            get { return logicalExpressionTraversal; }
+            set { logicalExpressionTraversal = value; }
         }
 
         public bool VisitExpressionSubqueries
@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         private void InitializeMembers()
         {
             this.expressionTraversal = ExpressionTraversalMode.Infix;
-            this.booleanExpressionTraversal = ExpressionTraversalMode.Infix;
+            this.logicalExpressionTraversal = ExpressionTraversalMode.Infix;
             this.visitExpressionSubqueries = true;
             this.visitSchemaReferences = false;
         }
@@ -66,7 +66,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         private void CopyMembers(SqlQueryVisitorOptions old)
         {
             this.expressionTraversal = old.expressionTraversal;
-            this.booleanExpressionTraversal = old.booleanExpressionTraversal;
+            this.logicalExpressionTraversal = old.logicalExpressionTraversal;
             this.visitExpressionSubqueries = old.visitExpressionSubqueries;
             this.visitSchemaReferences = old.visitSchemaReferences;
         }
