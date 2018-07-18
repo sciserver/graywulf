@@ -24,7 +24,7 @@ b";
             var exp = ExpressionTestHelper(sql);
             var nodes = exp.Stack.ToArray();
 
-            Assert.IsInstanceOfType(nodes[0], typeof(ColumnIdentifier));
+            Assert.IsInstanceOfType(nodes[0], typeof(Operand));
 
             Assert.IsInstanceOfType(nodes[1], typeof(CommentOrWhitespace));
             Assert.AreEqual(" ", nodes[1].Value);
@@ -46,7 +46,7 @@ b";
             var exp = ExpressionTestHelper(sql);
             var nodes = exp.Stack.ToArray();
 
-            Assert.IsInstanceOfType(nodes[0], typeof(ColumnIdentifier));
+            Assert.IsInstanceOfType(nodes[0], typeof(Operand));
 
             Assert.IsInstanceOfType(nodes[1], typeof(CommentOrWhitespace));
             Assert.AreEqual("/*...*/", nodes[1].Value);
@@ -67,7 +67,7 @@ b";
             var exp = ExpressionTestHelper(sql);
             var nodes = exp.Stack.ToArray();
 
-            Assert.IsInstanceOfType(nodes[0], typeof(ColumnIdentifier));
+            Assert.IsInstanceOfType(nodes[0], typeof(Operand));
 
             Assert.IsInstanceOfType(nodes[1], typeof(CommentOrWhitespace));
             Assert.AreEqual("/*...\r\n...*/", nodes[1].Value);

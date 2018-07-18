@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Sql.Parsing
                 // - CommentOrWhitespace
                 // - ExpressionBrackets
                 // - Expression
+                // - Operand
                 // - ColumnIdentifier
 
                 foreach (var t in this.EnumerateDescendantsRecursive<Node>(typeof(ColumnIdentifier)))
@@ -28,7 +29,8 @@ namespace Jhu.Graywulf.Sql.Parsing
                     if (!(t is CommentOrWhitespace ||
                           t is ColumnIdentifier ||
                           t is ExpressionBrackets ||
-                          t is Expression))
+                          t is Expression ||
+                          t is Operand))
                     {
                         return false;
                     }
@@ -42,16 +44,26 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get
             {
-                if (Stack.Count == 1)
+                // A single column expression can only have the following nodes:
+                // - CommentOrWhitespace
+                // - ExpressionBrackets
+                // - Expression
+                // - Operand
+                // - ColumnIdentifier
+
+                foreach (var t in this.EnumerateDescendantsRecursive<Node>(typeof(ColumnIdentifier)))
                 {
-                    var nc = FindDescendant<Constant>()?.FindDescendant<NumericConstant>();
-                    if (nc != null)
+                    if (!(t is CommentOrWhitespace ||
+                          t is Constant ||
+                          t is ExpressionBrackets ||
+                          t is Expression ||
+                          t is Operand))
                     {
-                        return true;
+                        return false;
                     }
                 }
 
-                return false;
+                return true;
             }
         }
 

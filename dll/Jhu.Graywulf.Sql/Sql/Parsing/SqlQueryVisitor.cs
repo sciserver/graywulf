@@ -17,6 +17,7 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         #region Private member variables
 
+        private SqlQueryVisitorOptions options;
         private SqlQueryVisitorSink sink;
 
         private int statementCounter;
@@ -26,9 +27,16 @@ namespace Jhu.Graywulf.Sql.Parsing
         private Stack<ColumnContext> columnContextStack;
         private CommonTableExpression commonTableExpression;
         private Stack<QuerySpecification> querySpecificationStack;
+        private Stack<Node> expressionStack;
 
         #endregion
         #region Properties
+
+        public SqlQueryVisitorOptions Options
+        {
+            get { return options; }
+            set { options = value; }
+        }
 
         private SqlQueryVisitorSink Sink
         {
@@ -97,6 +105,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private void InitializeMembers()
         {
+            this.options = new SqlQueryVisitorOptions();
             this.sink = null;
 
             this.statementCounter = 0;
@@ -106,6 +115,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             this.columnContextStack = new Stack<ColumnContext>();
             this.commonTableExpression = null;
             this.querySpecificationStack = new Stack<QuerySpecification>();
+            this.expressionStack = new Stack<Node>();
         }
 
         #endregion
@@ -113,18 +123,33 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public void Execute(StatementBlock node)
         {
+            PushAllNone();
+            TraverseStatementBlock(node);
+            PopAll();
+        }
+
+        // TODO: add entry points for expressions
+
+        public void Execute(Expression node)
+        {
+            PushAllNone();
+            TraverseExpression(node);
+            PopAll();
+        }
+
+        private void PushAllNone()
+        {
             queryContextStack.Push(QueryContext.None);
             tableContextStack.Push(TableContext.None);
             columnContextStack.Push(ColumnContext.None);
+        }
 
-            TraverseStatementBlock(node);
-
+        private void PopAll()
+        {
             queryContextStack.Pop();
             tableContextStack.Pop();
             columnContextStack.Pop();
         }
-
-        // TODO: add entry points for expressions
 
         #endregion
         #region Statements
@@ -425,7 +450,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             if (orderby != null)
             {
                 var qs = qe.FirstQuerySpecification;
-                TraverseOrderByClause(qs, orderby);
+                querySpecificationStack.Push(qs);
+                TraverseOrderByClause(orderby);
+                querySpecificationStack.Pop();
             }
 
             Sink.VisitInsertStatement(node);
@@ -694,6 +721,37 @@ namespace Jhu.Graywulf.Sql.Parsing
         #endregion
         #region Expressions
 
+        protected virtual void DispatchSchemaReference(Node node)
+        {
+            if (options.VisitSchemaReferences)
+            {
+                if (node is IDataTypeReference dr)
+                {
+                    Sink.VisitDataTypeReference(dr);
+                }
+
+                if (node is IVariableReference vr)
+                {
+                    Sink.VisitVariableReference(vr);
+                }
+
+                if (node is IFunctionReference fr)
+                {
+                    Sink.VisitFunctionReference(fr);
+                }
+
+                if (node is IColumnReference cr)
+                {
+                    Sink.VisitColumnReference(cr);
+                }
+
+                if (node is ITableReference tr)
+                {
+                    Sink.VisitTableReference(tr);
+                }
+            }
+        }
+
         protected void TraverseExpression(Expression node)
         {
             // Visit immediate subquries first, then do a bottom-up
@@ -701,21 +759,22 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             columnContextStack.Push(ColumnContext | ColumnContext.Expression);
 
-            TraverseExpressionSubqueries(node);
-            TraverseExpressionNodes(node);
+            if (options.VisitExpressionSubqueries)
+            {
+                TraverseExpressionSubqueries(node);
+            }
 
-            columnContextStack.Pop();
-        }
-
-        protected void TraverseBooleanExpression(BooleanExpression node)
-        {
-            // Visit immediate subquries first, then do a bottom-up
-            // traversal of the tree by not going deeper than the subqueries.
-
-            columnContextStack.Push(ColumnContext | ColumnContext.Expression);
-
-            TraverseExpressionSubqueries(node);
-            TraverseExpressionNodes(node);
+            switch (options.ExpressionTraversal)
+            {
+                case ExpressionTraversalMode.Infix:
+                case ExpressionTraversalMode.Postfix:
+                    TraverseExpressionNode(node);
+                    break;
+                case ExpressionTraversalMode.None:
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
 
             columnContextStack.Pop();
         }
@@ -735,25 +794,71 @@ namespace Jhu.Graywulf.Sql.Parsing
             };
         }
 
-        private void TraverseExpressionNodes(Node node)
+        private void TraverseExpressionNode(Node node)
         {
-            // TODO: consider extending this to observer operation precedence
-            // during expressiont tree traversal
-
-            // c.f. with logical expression's ExpressionVisitor class
-
             foreach (var n in node.Stack)
             {
-                if (!(n is ExpressionSubquery) && n is Node nn)
-                {
-                    TraverseExpressionNodes(nn);
-                }
+                DispatchExpressionNode(n);
             }
-
-            DispatchExpressionNode(node);
         }
 
-        protected virtual void DispatchExpressionNode(Node node)
+        protected void DispatchExpressionNode(Token node)
+        {
+            switch (node)
+            {
+                case UnaryOperator n:
+                    Sink.VisitUnaryOperator(n);
+                    break;
+                case ArithmeticOperator n:
+                    Sink.VisitArithmeticOperator(n);
+                    break;
+                case BitwiseOperator n:
+                    Sink.VisitBitwiseOperator(n);
+                    break;
+                case ExpressionBrackets n:
+                    TraverseExpressionBrackets(n);
+                    break;
+                case Operand n:
+                    TraverseOperand(n);
+                    break;
+                case UdtMemberList n:
+                    TraverseUdtMembersList(n);
+                    break;
+                case Expression n:
+                    TraverseExpressionNode(n);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void TraverseExpressionBrackets(ExpressionBrackets node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case BracketOpen n:
+                        Sink.VisitExpressionBracketOpen(n);
+                        break;
+                    case Expression n:
+                        TraverseExpressionNode(n);
+                        break;
+                    case BracketClose n:
+                        Sink.VisitExpressionBracketClose(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraverseOperand(Operand node)
+        {
+            var operand = (Node)node.Stack.First.Value;
+
+            DispatchOperand(operand);
+        }
+
+        protected virtual void DispatchOperand(Node node)
         {
             switch (node)
             {
@@ -762,52 +867,240 @@ namespace Jhu.Graywulf.Sql.Parsing
                     break;
                 case ExpressionSubquery n:
                     Sink.VisitExpressionSubquery(n);
+                    DispatchSchemaReference(n);
                     break;
                 case SystemVariable n:
                     Sink.VisitSystemVariable(n);
+                    DispatchSchemaReference(n);
                     break;
                 case UserVariable n:
                     Sink.VisitUserVariable(n);
-                    break;
-                case UdtStaticMethodCall n:
-                    Sink.VisitUdtStaticMethodCall(n);
-                    break;
-                case UdtStaticPropertyAccess n:
-                    Sink.VisitUdtStaticPropertyAccess(n);
+                    DispatchSchemaReference(n);
                     break;
                 case CountStar n:
                     Sink.VisitCountStar(n);
                     break;
                 case ColumnIdentifier n:
-                    Sink.VisitColumnIdentifier(n);
+                    TraverseColumnIdentifier(n);
+                    break;
+                case UdtStaticPropertyAccess n:
+                    Sink.VisitUdtStaticPropertyAccess(n);
+                    DispatchSchemaReference(n);
                     break;
                 case FunctionCall n:
                     TraverseFunctionCall(n);
                     break;
-                case UdtMethodCall n:
-                    Sink.VisitUdtMethodCall(n);
+                case SimpleCaseExpression n:
+                    TraverseSimpleCaseExpression(n);
                     break;
-                case UdtPropertyAccess n:
-                    Sink.VisitUdtPropertyAccess(n);
+                case SearchedCaseExpression n:
+                    TraverseSearchedCaseExpression(n);
                     break;
+                default:
+                    throw new NotImplementedException();
             }
+        }
+
+        private void TraverseUdtMembersList(UdtMemberList node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case UdtMethodCall n:
+                        TraverseFunctionCall(n);
+                        break;
+                    case UdtPropertyAccess n:
+                        Sink.VisitUdtPropertyAccess(n);
+                        DispatchSchemaReference(n);
+                        break;
+                    case UdtMemberList n:
+                        TraverseUdtMembersList(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraverseColumnIdentifier(ColumnIdentifier node)
+        {
+            // TODO: if resolved, try to split into column name and property access
+
+            Sink.VisitColumnIdentifier(node);
+            DispatchSchemaReference(node);
         }
 
         private void TraverseFunctionCall(FunctionCall node)
         {
-            var args = node.ArgumentList;
+            DispatchFunctionCall(node);
+            DispatchSchemaReference(node);
 
-            if (args != null)
+            TraverseFunctionArguments(node.FunctionArguments);
+        }
+
+        protected virtual void DispatchFunctionCall(FunctionCall node)
+        {
+            switch (node)
             {
-                foreach (var arg in node.ArgumentList.EnumerateArguments())
-                {
-                    Sink.VisitFunctionArgument(arg);
-                }
+                case ScalarFunctionCall n:
+                    Sink.VisitScalarFunctionCall(n);
+                    break;
+                case UdtMethodCall n:
+                    Sink.VisitUdtMethodCall(n);
+                    break;
+                case UdtStaticMethodCall n:
+                    Sink.VisitUdtStaticMethodCall(n);
+                    break;
+                case WindowedFunctionCall n:
+                    TraverseWindowedFunctionCall(n);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void TraverseWindowedFunctionCall(WindowedFunctionCall node)
+        {
+            var over = node.OverClause;
+            var partitionby = over.PartitionByClause;
+            var orderby = over.OrderByClause;
+
+            Sink.VisitWindowedFunctionCall(node);
+            Sink.VisitOverClause(over);
+
+            if (partitionby != null)
+            {
+                TraversePartitionByClause(partitionby);
             }
 
-            Sink.VisitFunctionIdentifier(node.FunctionIdentifier);
+            if (orderby != null)
+            {
+                TraverseOrderByClause(orderby);
+            }
         }
-        
+
+        private void TraverseFunctionArguments(FunctionArguments node)
+        {
+            Sink.VisitArgumentListStart(new ArgumentListStart());
+
+            var arglist = node.FindDescendant<ArgumentList>();
+            if (arglist != null)
+            {
+                TraverseArgumentList(arglist);
+            }
+
+            Sink.VisitArgumentListEnd(new ArgumentListEnd());
+        }
+
+        private void TraverseArgumentList(ArgumentList node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Argument n:
+                        Sink.VisitArgument(n);
+                        TraverseExpressionNode(n.Expression);
+                        break;
+                    case ArgumentList n:
+                        TraverseArgumentList(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraversePartitionByClause(PartitionByClause node)
+        {
+            Sink.VisitPartitionByClause(node);
+            Sink.VisitArgumentListStart(new ArgumentListStart());
+            TraverseExpressionNode(node.Expression);
+            Sink.VisitArgumentListEnd(new ArgumentListEnd());
+        }
+
+        private void TraverseOrderByClause(OrderByClause node)
+        {
+            tableContextStack.Push(TableContext | TableContext.OrderBy);
+            columnContextStack.Push(ColumnContext | ColumnContext.OrderBy);
+
+            Sink.VisitOrderByClause(node);
+
+            Sink.VisitArgumentListStart(new ArgumentListStart());
+
+            var arglist = node.FindDescendant<OrderByArgumentList>();
+            TraverseOrderByArgumentList(arglist);
+
+            Sink.VisitArgumentListEnd(new ArgumentListEnd());
+
+            tableContextStack.Pop();
+            columnContextStack.Pop();
+        }
+
+        private void TraverseOrderByArgumentList(OrderByArgumentList node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case OrderByArgument n:
+                        Sink.VisitOrderByArgument(n);
+                        TraverseExpression(n.Expression);
+                        break;
+                    case OrderByArgumentList n:
+                        TraverseOrderByArgumentList(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraverseSimpleCaseExpression(SimpleCaseExpression node)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void TraverseSearchedCaseExpression(SearchedCaseExpression node)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+        #region Boolean expression traversal
+
+        protected void TraverseBooleanExpression(BooleanExpression node)
+        {
+            // Visit immediate subquries first, then do a bottom-up
+            // traversal of the tree by not going deeper than the subqueries.
+
+            columnContextStack.Push(ColumnContext | ColumnContext.Expression);
+
+            if (options.VisitExpressionSubqueries)
+            {
+                TraverseExpressionSubqueries(node);
+            }
+
+            switch (options.BooleanExpressionTraversal)
+            {
+                case ExpressionTraversalMode.Infix:
+                case ExpressionTraversalMode.Postfix:
+                case ExpressionTraversalMode.None:
+                default:
+                    throw new NotImplementedException();
+            }
+
+            /*
+            if (options.TraverseBooleanExpressions)
+            {
+                // TODO: branch here based on method
+                throw new NotImplementedException();
+                // review this
+                // TraverseExpressionNodes(node);
+            }
+            */
+
+            columnContextStack.Pop();
+
+            // TODO: remove this
+            //Sink.VisitBooleanExpression(node);
+        }
+
         #endregion
         #region Queries
 
@@ -832,7 +1125,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             if (orderby != null)
             {
                 var firstqs = qe.FirstQuerySpecification;
-                TraverseOrderByClause(firstqs, orderby);
+                querySpecificationStack.Push(firstqs);
+                TraverseOrderByClause(orderby);
+                querySpecificationStack.Pop();
             }
 
             if (cte != null)
@@ -1053,7 +1348,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             queryContextStack.Push(QueryContext.Subquery);
             tableContextStack.Push(TableContext.None);
             columnContextStack.Push(ColumnContext.None);
-            
+
             TraverseQuery(sq);
 
             queryContextStack.Pop();
@@ -1149,24 +1444,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             var be = node.FindDescendant<BooleanExpression>();
             TraverseBooleanExpression(be);
 
-            tableContextStack.Pop();
-            columnContextStack.Pop();
-        }
-
-        private void TraverseOrderByClause(QuerySpecification qs, OrderByClause node)
-        {
-            querySpecificationStack.Push(qs);
-            tableContextStack.Push(TableContext | TableContext.OrderBy);
-            columnContextStack.Push(ColumnContext | ColumnContext.OrderBy);
-
-            var obl = node.FindDescendant<OrderByList>();
-            foreach (var arg in obl.EnumerateDescendants<OrderByArgument>())
-            {
-                TraverseExpression(arg.Expression);
-                Sink.VisitOrderByArgument(arg);
-            }
-
-            querySpecificationStack.Pop();
             tableContextStack.Pop();
             columnContextStack.Pop();
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Jhu.Graywulf.Parsing;
+using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
@@ -97,12 +98,27 @@ namespace Jhu.Graywulf.Sql.Parsing
         #endregion
         #region Identifiers and expression elements
 
-
-        public virtual void VisitTableOrViewIdentifier(TableOrViewIdentifier node)
+        public virtual void VisitUnaryOperator(UnaryOperator node)
         {
         }
 
-        public virtual void VisitDataTypeIdentifier(DataTypeIdentifier node)
+        public virtual void VisitArithmeticOperator(ArithmeticOperator node)
+        {
+        }
+
+        public virtual void VisitBitwiseOperator(BitwiseOperator node)
+        {
+        }
+
+        public virtual void VisitExpressionBracketOpen(BracketOpen node)
+        {
+        }
+
+        public virtual void VisitExpressionBracketClose(BracketClose node)
+        {
+        }
+
+        public virtual void VisitConstant(Constant node)
         {
         }
 
@@ -114,27 +130,15 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
         }
 
-        public virtual void VisitConstant(Constant node)
+        public virtual void VisitCountStar(CountStar node)
         {
         }
 
-        public virtual void VisitFunctionCall(FunctionCall node)
-        {
-        }
-
-        public virtual void VisitFunctionArgument(Argument node)
+        public virtual void VisitColumnIdentifier(ColumnIdentifier node)
         {
         }
 
         public virtual void VisitExpressionSubquery(ExpressionSubquery node)
-        {
-        }
-
-        public virtual void VisitUdtStaticMethodCall(UdtStaticMethodCall node)
-        {
-        }
-
-        public virtual void VisitUdtMethodCall(UdtMethodCall node)
         {
         }
 
@@ -146,11 +150,57 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
         }
 
-        public virtual void VisitCountStar(CountStar node)
+        public virtual void VisitUdtStaticMethodCall(UdtStaticMethodCall node)
         {
         }
 
-        public virtual void VisitColumnIdentifier(ColumnIdentifier node)
+        public virtual void VisitUdtMethodCall(UdtMethodCall node)
+        {
+        }
+
+        public virtual void VisitScalarFunctionCall(ScalarFunctionCall node)
+        {
+        }
+
+        public virtual void VisitWindowedFunctionCall(WindowedFunctionCall node)
+        {
+        }
+
+        public virtual void VisitArgumentListStart(ArgumentListStart node)
+        {
+        }
+
+        public virtual void VisitArgumentListEnd(ArgumentListEnd node)
+        {
+        }
+
+        public virtual void VisitArgument(Argument node)
+        {
+        }
+
+        public virtual void VisitPartitionByClause(PartitionByClause node)
+        {
+        }
+
+        public virtual void VisitOrderByClause(OrderByClause node)
+        {
+        }
+
+        public virtual void VisitOrderByArgument(OrderByArgument node)
+        {
+        }
+
+        public virtual void VisitOverClause(OverClause node)
+        {
+        }
+
+        // TODO: move these in different region
+
+        public virtual void VisitDataTypeIdentifier(DataTypeIdentifier node)
+        {
+        }
+
+        public virtual void VisitTableOrViewIdentifier(TableOrViewIdentifier node)
         {
         }
 
@@ -184,10 +234,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         public virtual void VisitColumnExpression(ColumnExpression node)
         {
         }
-
-        public virtual void VisitOrderByArgument(OrderByArgument node)
-        {
-        }
         
         public virtual void VisitTableSourceSpecification(TableSourceSpecification node)
         {
@@ -210,6 +256,29 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         public virtual void VisitSubqueryTableSource(SubqueryTableSource node)
+        {
+        }
+
+        #endregion
+        #region Schema object references
+
+        public virtual void VisitDataTypeReference(IDataTypeReference node)
+        {
+        }
+
+        public virtual void VisitVariableReference(IVariableReference node)
+        {
+        }
+
+        public virtual void VisitFunctionReference(IFunctionReference node)
+        {
+        }
+
+        public virtual void VisitColumnReference(IColumnReference node)
+        {
+        }
+
+        public virtual void VisitTableReference(ITableReference node)
         {
         }
 

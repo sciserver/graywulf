@@ -14,15 +14,20 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<FunctionIdentifier>(); }
         }
 
-        public ArgumentList ArgumentList
+        public MethodName MethodName
         {
-            get { return FindDescendant<ArgumentList>(); }
+            get { return FindDescendant<MethodName>(); }
+        }
+
+        public FunctionArguments FunctionArguments
+        {
+            get { return FindDescendant<FunctionArguments>(); }
         }
 
         public FunctionReference FunctionReference
         {
-            get { return FunctionIdentifier.FunctionReference; }
-            set { FunctionIdentifier.FunctionReference = value; }
+            get { return FunctionIdentifier?.FunctionReference; }
+            set { if (FunctionIdentifier != null) FunctionIdentifier.FunctionReference = value; }
         }
     }
 }

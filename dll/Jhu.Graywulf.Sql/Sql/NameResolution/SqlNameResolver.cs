@@ -146,7 +146,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         private void InitializeMembers()
         {
-            this.visitor = new SqlQueryVisitor(this);
+            this.visitor = new SqlQueryVisitor(this)
+            {
+                Options = new SqlQueryVisitorOptions()
+                {
+                    BooleanExpressionTraversal = ExpressionTraversalMode.Infix,
+                    ExpressionTraversal = ExpressionTraversalMode.Infix,
+                    VisitExpressionSubqueries = true,
+                    VisitSchemaReferences = false
+                }
+            };
 
             this.schemaManager = null;
             this.details = null;
@@ -327,7 +336,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public override void VisitCreateIndexStatement(CreateIndexStatement node)
         {
             // TODO maybe add index to schema?
-            throw new NotImplementedException();
         }
 
         #endregion

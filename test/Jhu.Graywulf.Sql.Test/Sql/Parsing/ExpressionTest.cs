@@ -225,5 +225,77 @@ namespace Jhu.Graywulf.Sql.Parsing
             sql = "dbo.udt::prop";
             exp = ExpressionTestHelper(sql);
         }
+
+        #region Is single column or constant tests
+
+        [TestMethod]
+        public void IsSingleColumnTest()
+        {
+            var sql = "colname";
+            var exp = ExpressionTestHelper(sql);
+            Assert.IsTrue(exp.IsSingleColumn);
+
+            sql = "(colname)";
+            exp = ExpressionTestHelper(sql);
+            Assert.IsTrue(exp.IsSingleColumn);
+
+            sql = "( colname )";
+            exp = ExpressionTestHelper(sql);
+            Assert.IsTrue(exp.IsSingleColumn);
+
+            sql = "( ( colname ) )";
+            exp = ExpressionTestHelper(sql);
+            Assert.IsTrue(exp.IsSingleColumn);
+
+            sql = "a+b";
+            exp = ExpressionTestHelper(sql);
+            Assert.IsFalse(exp.IsSingleColumn);
+
+            sql = "12";
+            exp = ExpressionTestHelper(sql);
+            Assert.IsFalse(exp.IsSingleColumn);
+
+            sql = "@a";
+            exp = ExpressionTestHelper(sql);
+            Assert.IsFalse(exp.IsSingleColumn);
+
+            sql = "udt::Method()";
+            exp = ExpressionTestHelper(sql);
+            Assert.IsFalse(exp.IsSingleColumn);
+        }
+
+        [TestMethod]
+        public void IsConstantNumber()
+        {
+            var sql = "12";
+            var exp = ExpressionTestHelper(sql);
+            Assert.IsTrue(exp.IsConstantNumber);
+
+            sql = "(12)";
+            exp = ExpressionTestHelper(sql);
+            Assert.IsTrue(exp.IsConstantNumber);
+
+            sql = "( 12 )";
+            exp = ExpressionTestHelper(sql);
+            Assert.IsTrue(exp.IsConstantNumber);
+
+            sql = "( ( 12 ) )";
+            exp = ExpressionTestHelper(sql);
+            Assert.IsTrue(exp.IsConstantNumber);
+
+            sql = "1+2";
+            exp = ExpressionTestHelper(sql);
+            Assert.IsFalse(exp.IsConstantNumber);
+
+            sql = "@a";
+            exp = ExpressionTestHelper(sql);
+            Assert.IsFalse(exp.IsConstantNumber);
+
+            sql = "udt::Method()";
+            exp = ExpressionTestHelper(sql);
+            Assert.IsFalse(exp.IsConstantNumber);
+        }
+
+        #endregion
     }
 }

@@ -68,9 +68,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static MethodReference Interpret(UdtStaticMethodCall mc)
         {
-            var mi = mc.FindDescendant<UdtStaticMethodIdentifier>();
-            var di = mi.FindDescendant<DataTypeIdentifier>();
-            var mn = mi.FindDescendant<MethodName>();
+            var di = mc.FindDescendant<DataTypeIdentifier>();
+            var mn = mc.FindDescendant<MethodName>();
 
             var mr = new MethodReference(mc)
             {

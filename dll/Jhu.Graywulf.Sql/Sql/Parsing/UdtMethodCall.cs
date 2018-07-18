@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return methodReference; }
             set { methodReference = value; }
         }
-
+        
         public static UdtMethodCall Create(MethodReference mr, Expression[] args)
         {
             var mc = new UdtMethodCall()

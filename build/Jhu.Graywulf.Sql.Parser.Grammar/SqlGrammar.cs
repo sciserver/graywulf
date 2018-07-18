@@ -146,28 +146,13 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 May(Sequence(UnaryOperator, May(CommentOrWhitespace))),
                 Must
                 (
-                    Constant,
-
-                    ExpressionSubquery,
-                    ExpressionBrackets,
-
-                    SystemVariable,
-                    UserVariable,
-
-                    SimpleCaseExpression,
-                    SearchedCaseExpression,
-
-                    UdtStaticMethodCall,            // ::method() syntax
-                    UdtStaticPropertyAccess,        // ::property syntax
-
-                    WindowedFunctionCall,           // OVER () syntax
-                    ScalarFunctionCall,             // function()
-                    CountStar,
-
-                    ColumnIdentifier                // This parses all name.name.name ...
+                    Operand,
+                    ExpressionBrackets
                 ),
-                May
+                May     
                 (
+                    // This part cannot appear in itself and always have
+                    // highest precedence
                     Sequence
                     (
                         May(CommentOrWhitespace),
@@ -185,6 +170,38 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                         Expression
                     )
                 )
+            );
+
+        public static Expression<Rule> ExpressionBrackets = () =>
+            Sequence
+            (
+                BracketOpen, 
+                May(CommentOrWhitespace), 
+                Expression, 
+                May(CommentOrWhitespace), 
+                BracketClose
+            );
+
+        public static Expression<Rule> Operand = () =>
+            Must
+            (
+                Constant,
+                ExpressionSubquery,
+
+                SystemVariable,
+                UserVariable,
+
+                SimpleCaseExpression,
+                SearchedCaseExpression,
+
+                UdtStaticMethodCall,            // ::method() syntax
+                UdtStaticPropertyAccess,        // ::property syntax
+
+                WindowedFunctionCall,           // OVER () syntax
+                ScalarFunctionCall,             // function()
+                CountStar,
+
+                ColumnIdentifier                // This parses all name.name.name ...
             );
 
         public static Expression<Rule> Constant = () =>
@@ -209,9 +226,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             );
 
         public static Expression<Rule> ExpressionSubquery = () => Inherit(Subquery);
-
-        public static Expression<Rule> ExpressionBrackets = () =>
-            Sequence(BracketOpen, May(CommentOrWhitespace), Expression, May(CommentOrWhitespace), BracketClose);
 
         public static Expression<Rule> Null = () => Keyword("NULL");
 
@@ -238,7 +252,16 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                     Predicate,
                     BooleanExpressionBrackets
                 ),
-                May(Sequence(May(CommentOrWhitespace), LogicalOperator, May(CommentOrWhitespace), BooleanExpression))
+                May
+                (
+                    Sequence
+                    (
+                        May(CommentOrWhitespace), 
+                        LogicalOperator, 
+                        May(CommentOrWhitespace), 
+                        BooleanExpression
+                    )
+                )
             );
 
         public static Expression<Rule> BooleanExpressionBrackets = () =>
@@ -532,36 +555,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
         public static Expression<Rule> FunctionCall = () => Abstract();
 
-        public static Expression<Rule> ScalarFunctionCall = () =>
-            Inherit
-            (
-                FunctionCall,
-                Sequence
-                (
-                    FunctionIdentifier,
-                    May(CommentOrWhitespace),
-                    FunctionArguments
-                )
-            );
-
-        public static Expression<Rule> UdtMethodCall = () =>
-            Sequence
-            (
-                Dot,
-                May(CommentOrWhitespace),
-                MethodName,
-                May(CommentOrWhitespace),
-                FunctionArguments
-            );
-
-        public static Expression<Rule> UdtStaticMethodCall = () =>
-            Sequence
-            (
-                UdtStaticMethodIdentifier,
-                May(CommentOrWhitespace),
-                FunctionArguments
-            );
-
         public static Expression<Rule> FunctionArguments = () =>
             Sequence
             (
@@ -581,16 +574,48 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
         public static Expression<Rule> Argument = () => Expression;
 
-        public static Expression<Rule> UdtStaticMethodIdentifier = () =>
-            Sequence
+        public static Expression<Rule> ScalarFunctionCall = () =>
+            Inherit
             (
-                DataTypeIdentifier,
-                May(CommentOrWhitespace),
-                DoubleColon,
-                May(CommentOrWhitespace),
-                MethodName
+                FunctionCall,
+                Sequence
+                (
+                    FunctionIdentifier,
+                    May(CommentOrWhitespace),
+                    FunctionArguments
+                )
             );
 
+        public static Expression<Rule> UdtMethodCall = () =>
+            Inherit
+            (
+                FunctionCall,
+                Sequence
+                (
+                    Dot,
+                    May(CommentOrWhitespace),
+                    MethodName,
+                    May(CommentOrWhitespace),
+                    FunctionArguments
+                )
+            );
+
+        public static Expression<Rule> UdtStaticMethodCall = () =>
+            Inherit
+            (
+                FunctionCall,
+                Sequence
+                (
+                    DataTypeIdentifier,
+                    May(CommentOrWhitespace),
+                    DoubleColon,
+                    May(CommentOrWhitespace),
+                    MethodName,
+                    May(CommentOrWhitespace),
+                    FunctionArguments
+                )
+            );
+        
         public static Expression<Rule> FunctionIdentifier = () =>
             Sequence
             (
@@ -612,13 +637,17 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             );
 
         public static Expression<Rule> WindowedFunctionCall = () =>
-            Sequence
+            Inherit
             (
-                FunctionIdentifier,
-                May(CommentOrWhitespace),
-                FunctionArguments,
-                May(CommentOrWhitespace),
-                OverClause
+                FunctionCall,
+                Sequence
+                (
+                    FunctionIdentifier,
+                    May(CommentOrWhitespace),
+                    FunctionArguments,
+                    May(CommentOrWhitespace),
+                    OverClause
+                )
             );
 
         public static Expression<Rule> OverClause = () =>
@@ -640,7 +669,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 CommentOrWhitespace,
                 Keyword("BY"),
                 May(CommentOrWhitespace),
-                ArgumentList
+                Expression
             );
 
         #endregion
@@ -1462,15 +1491,15 @@ FOR select_statement
                 CommentOrWhitespace,
                 Keyword("BY"),
                 May(CommentOrWhitespace),
-                OrderByList
+                OrderByArgumentList
             // TODO: add OFFSET .. FETCH but do it as a separate clause to select so that order by clause can be used in ranking functions
             );
 
-        public static Expression<Rule> OrderByList = () =>
+        public static Expression<Rule> OrderByArgumentList = () =>
             Sequence
             (
                 OrderByArgument,
-                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), OrderByList))
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), OrderByArgumentList))
             );
 
         public static Expression<Rule> OrderByArgument = () =>
@@ -1482,6 +1511,25 @@ FOR select_statement
 
         #endregion
         #region Table and query hints
+
+        public static Expression<Rule> HintArguments = () =>
+            Sequence
+            (
+                BracketOpen,
+                May(CommentOrWhitespace),
+                May(HintArgumentList),
+                May(CommentOrWhitespace),
+                BracketClose
+            );
+
+        public static Expression<Rule> HintArgumentList = () =>
+            Sequence
+            (
+                HintArgument,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), HintArgumentList))
+            );
+
+        public static Expression<Rule> HintArgument = () => Expression;
 
         public static Expression<Rule> TableHintClause = () =>
             Sequence
@@ -1504,7 +1552,7 @@ FOR select_statement
 
         public static Expression<Rule> TableHint = () =>
             Must(
-                Sequence(Identifier, May(CommentOrWhitespace), FunctionArguments),
+                Sequence(Identifier, May(CommentOrWhitespace), HintArgumentList),
                 Identifier
             );
 
@@ -1529,7 +1577,7 @@ FOR select_statement
 
         public static Expression<Rule> QueryHint = () =>
             Must(
-                Sequence(Identifier, May(CommentOrWhitespace), FunctionArguments),
+                Sequence(Identifier, May(CommentOrWhitespace), HintArgumentList),
                 Sequence(Identifier, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), NumericConstant),
                 Sequence(Identifier, CommentOrWhitespace, NumericConstant),
                 QueryHintIdentifierList,
