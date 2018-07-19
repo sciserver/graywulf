@@ -27,7 +27,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         private Stack<ColumnContext> columnContextStack;
         private CommonTableExpression commonTableExpression;
         private Stack<QuerySpecification> querySpecificationStack;
-        private Stack<Node> expressionStack;
+
+        private Stack<ExpressionReshuffler> expressionReshufflerStack;
+        private Stack<Token> logicalExpressionOperatorStack;
 
         #endregion
         #region Properties
@@ -88,6 +90,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             get { return querySpecificationStack.Count; }
         }
 
+        private ExpressionReshuffler ExpressionReshuffler
+        {
+            get { return expressionReshufflerStack.Peek(); }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -110,7 +117,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             this.columnContextStack = new Stack<ColumnContext>();
             this.commonTableExpression = null;
             this.querySpecificationStack = new Stack<QuerySpecification>();
-            this.expressionStack = new Stack<Node>();
+            this.expressionReshufflerStack = new Stack<ExpressionReshuffler>();
+            this.logicalExpressionOperatorStack = new Stack<Token>();
         }
 
         #endregion
@@ -150,7 +158,28 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         protected virtual void VisitNode(Token node)
         {
+            // Depending on the traversal mode, we either route nodes to the sink
+            // directly or we reshuffle to produce postfix notation for expression
+            // tree building
+
+            if (options.ExpressionTraversal == ExpressionTraversalMode.Postfix &&
+                QueryContext.HasFlag(QueryContext.Expression))
+            {
+                // We're inside an expression
+                ExpressionReshuffler.Route(node);
+                return;
+            }
+
+            if (options.LogicalExpressionTraversal == ExpressionTraversalMode.Postfix)
+            {
+                //ReshuffleLogicalExpressionPostfix(node);
+            }
+
             sink.AcceptVisitor(this, node);
+        }
+
+        private void ReshuffleLogicalExpressionPostfix(Token node)
+        {
         }
 
         protected virtual void VisitReference(IDatabaseObjectReference node)
@@ -758,6 +787,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             // Visit immediate subquries first, then do a bottom-up
             // traversal of the tree by not going deeper than the subqueries.
 
+            queryContextStack.Push(QueryContext | QueryContext.Expression);
             columnContextStack.Push(ColumnContext | ColumnContext.Expression);
 
             if (options.VisitExpressionSubqueries)
@@ -765,18 +795,21 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 TraverseExpressionSubqueries(node);
             }
 
-            switch (options.ExpressionTraversal)
+            if (options.ExpressionTraversal == ExpressionTraversalMode.Postfix)
             {
-                case ExpressionTraversalMode.Infix:
-                case ExpressionTraversalMode.Postfix:
-                    TraverseExpressionNode(node);
-                    break;
-                case ExpressionTraversalMode.None:
-                    break;
-                default:
-                    throw new NotImplementedException();
+                var reshuffler = new ExpressionPostfixReshuffler(this, sink);
+                expressionReshufflerStack.Push(reshuffler);
             }
 
+            TraverseExpressionNode(node);
+
+            if (options.ExpressionTraversal == ExpressionTraversalMode.Postfix)
+            {
+                var reshuffler = expressionReshufflerStack.Pop();
+                reshuffler.Flush();
+            }
+
+            queryContextStack.Pop();
             columnContextStack.Pop();
         }
 
@@ -810,10 +843,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case UnaryOperator n:
                     VisitNode(n);
                     break;
-                case ArithmeticOperator n:
-                    VisitNode(n);
-                    break;
-                case BitwiseOperator n:
+                case BinaryOperator n:
                     VisitNode(n);
                     break;
                 case ExpressionBrackets n:
@@ -1119,6 +1149,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             // Visit immediate subquries first, then do a bottom-up
             // traversal of the tree by not going deeper than the subqueries.
 
+            queryContextStack.Push(QueryContext | QueryContext.LogicalExpression);
 
             switch (options.LogicalExpressionTraversal)
             {
@@ -1131,6 +1162,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 default:
                     throw new NotImplementedException();
             }
+
+            queryContextStack.Pop();
         }
 
         private void TraverseLogicalExpressionNode(Node node)

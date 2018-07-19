@@ -163,7 +163,6 @@
     <Compile Include="Sql\Parsing\SelectStatementTest.cs" />
     <Compile Include="Sql\Parsing\SimpleTableSourceTest.cs" />
     <Compile Include="Sql\Parsing\SqlParserTest.cs" />
-    <Compile Include="Sql\Parsing\SqlQueryVisitorTest.cs" />
     <Compile Include="Sql\Parsing\StarColumnIdentifierTest.cs" />
     <Compile Include="Sql\Parsing\StatementBlockTest.cs" />
     <Compile Include="Sql\Parsing\SubqueryTest.cs" />
@@ -184,6 +183,9 @@
     <Compile Include="Sql\QueryGeneration\SqlServer\SqlServerQueryGeneratorTest.cs" />
     <Compile Include="Sql\QueryRendering\MySql\MySqlQueryRendererTest.cs" />
     <Compile Include="Sql\QueryRendering\SqlServer\SqlServerQueryRendererTest.cs" />
+    <Compile Include="Sql\QueryTraversal\ExpressionInfixTest.cs" />
+    <Compile Include="Sql\QueryTraversal\ExpressionPostfixTest.cs" />
+    <Compile Include="Sql\QueryTraversal\TestVisitorSink.cs" />
     <Compile Include="Sql\Schema\AppSettings.cs" />
     <Compile Include="Sql\Schema\MySql\MySqlDatasetTest.cs" />
     <Compile Include="Sql\Schema\MySql\MySqlMetadataTest.cs" />

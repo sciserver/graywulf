@@ -8,5 +8,9 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class UnaryOperator
     {
+        public override int Precedence
+        {
+            get { return 1; }
+        }
     }
 }

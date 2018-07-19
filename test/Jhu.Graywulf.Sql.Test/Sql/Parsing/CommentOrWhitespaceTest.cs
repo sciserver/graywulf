@@ -29,7 +29,7 @@ b";
             Assert.IsInstanceOfType(nodes[1], typeof(CommentOrWhitespace));
             Assert.AreEqual(" ", nodes[1].Value);
 
-            Assert.IsInstanceOfType(nodes[2], typeof(ArithmeticOperator));
+            Assert.IsInstanceOfType(nodes[2], typeof(BinaryOperator));
             Assert.AreEqual("+", nodes[2].Value);
 
             Assert.IsInstanceOfType(nodes[3], typeof(CommentOrWhitespace));
@@ -51,7 +51,7 @@ b";
             Assert.IsInstanceOfType(nodes[1], typeof(CommentOrWhitespace));
             Assert.AreEqual("/*...*/", nodes[1].Value);
 
-            Assert.IsInstanceOfType(nodes[2], typeof(ArithmeticOperator));
+            Assert.IsInstanceOfType(nodes[2], typeof(BinaryOperator));
             Assert.AreEqual("+", nodes[2].Value);
 
             Assert.IsInstanceOfType(nodes[3], typeof(Expression));
@@ -72,7 +72,7 @@ b";
             Assert.IsInstanceOfType(nodes[1], typeof(CommentOrWhitespace));
             Assert.AreEqual("/*...\r\n...*/", nodes[1].Value);
 
-            Assert.IsInstanceOfType(nodes[2], typeof(ArithmeticOperator));
+            Assert.IsInstanceOfType(nodes[2], typeof(BinaryOperator));
             Assert.AreEqual("+", nodes[2].Value);
 
             Assert.IsInstanceOfType(nodes[3], typeof(Expression));

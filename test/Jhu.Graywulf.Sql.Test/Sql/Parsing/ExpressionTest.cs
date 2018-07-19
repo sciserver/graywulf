@@ -135,7 +135,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("a|b", exp.Value);
             Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
-            Assert.AreEqual("|", exp.FindDescendantRecursive<BitwiseOperator>().Value);
+            Assert.AreEqual("|", exp.FindDescendantRecursive<BinaryOperator>().Value);
         }
 
         [TestMethod]
@@ -145,7 +145,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("a | b", exp.Value);
             Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
-            Assert.AreEqual("|", exp.FindDescendantRecursive<BitwiseOperator>().Value);
+            Assert.AreEqual("|", exp.FindDescendantRecursive<BinaryOperator>().Value);
         }
 
         [TestMethod]

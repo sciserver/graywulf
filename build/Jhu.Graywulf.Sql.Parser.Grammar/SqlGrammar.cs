@@ -75,16 +75,55 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         #endregion
         #region Arithmetic operators used in expressions
 
+        public static Expression<Rule> Operator = () => Abstract();
+
         public static Expression<Rule> UnaryOperator = () =>
-            Must(Plus, Minus, BitwiseNot);
-        public static Expression<Rule> ArithmeticOperator = () =>
-            Must(Plus, Minus, Mul, Div, Mod);
-        public static Expression<Rule> BitwiseOperator = () =>
-            Must(BitwiseAnd, BitwiseOr, BitwiseXor);
+            Inherit
+            (
+                Operator,
+                Must
+                (
+                    Plus,
+                    Minus,
+                    BitwiseNot
+                )
+            );
+
+        public static Expression<Rule> BinaryOperator = () =>
+            Inherit
+            (
+                Operator,
+                Must
+                (
+                    Plus,
+                    Minus,
+                    Mul,
+                    Div,
+                    Mod,
+                    BitwiseAnd,
+                    BitwiseOr,
+                    BitwiseXor
+                )
+            );
+
         public static Expression<Rule> ComparisonOperator = () =>
-            Must(Equals2, Equals1, LessOrGreaterThan, NotEquals,
-            NotLessThan, NotGreaterThan, LessThanOrEqual, GreaterThanOrEqual,
-            LessThan, GreaterThan);
+            Inherit
+            (
+                Operator,
+                Must
+                (
+                    Equals2,
+                    Equals1,
+                    LessOrGreaterThan,
+                    NotEquals,
+                    NotLessThan,
+                    NotGreaterThan,
+                    LessThanOrEqual,
+                    GreaterThanOrEqual,
+                    LessThan,
+                    GreaterThan
+                )
+            );
 
         #endregion
         #region Logical operators used in search conditions
@@ -165,7 +204,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                     Sequence
                     (
                         May(CommentOrWhitespace),
-                        Must(ArithmeticOperator, BitwiseOperator),
+                        BinaryOperator,
                         May(CommentOrWhitespace),
                         Expression
                     )

@@ -256,9 +256,9 @@
     <Compile Include="Sql\NameResolution\NameResolverException.cs" />
     <Compile Include="Sql\NameResolution\TableReference.cs" />
     <Compile Include="Sql\NameResolution\VariableReferenceEqualityComparer.cs" />
-    <Compile Include="Sql\Parsing\ArithmeticOperator.cs" />
     <Compile Include="Sql\Parsing\BetweenPredicate.cs" />
-    <Compile Include="Sql\Parsing\BitwiseOperator.cs" />
+    <Compile Include="Sql\Parsing\BinaryOperator.cs" />
+    <Compile Include="Sql\Parsing\ComparisonOperator.cs" />
     <Compile Include="Sql\Parsing\ComparisonPredicate.cs" />
     <Compile Include="Sql\Parsing\ExistsSemiJoinPredicate.cs" />
     <Compile Include="Sql\Parsing\ConstraintName.cs" />
@@ -274,6 +274,7 @@
     <Compile Include="Sql\Parsing\LogicalExpressionBrackets.cs" />
     <Compile Include="Sql\Parsing\LogicalNotOperator.cs" />
     <Compile Include="Sql\Parsing\MagicTokenBase.cs" />
+    <Compile Include="Sql\Parsing\Operator.cs" />
     <Compile Include="Sql\Parsing\OrderByArgument.cs" />
     <Compile Include="Sql\Parsing\OrderByClause.cs" />
     <Compile Include="Sql\Parsing\OverClause.cs" />
@@ -413,6 +414,8 @@
     <Compile Include="Sql\QueryRewriting\QueryRewriterBase.cs" />
     <Compile Include="Sql\QueryRewriting\SqlServer\SqlServerQueryRewriter.cs" />
     <Compile Include="Sql\QueryTraversal\Enum.cs" />
+    <Compile Include="Sql\QueryTraversal\ExpressionPostfixReshuffler.cs" />
+    <Compile Include="Sql\QueryTraversal\ExpressionReshuffler.cs" />
     <Compile Include="Sql\QueryTraversal\SqlQueryVisitor.cs" />
     <Compile Include="Sql\QueryTraversal\SqlQueryVisitorOptions.cs" />
     <Compile Include="Sql\QueryTraversal\SqlQueryVisitorSink.cs" />
