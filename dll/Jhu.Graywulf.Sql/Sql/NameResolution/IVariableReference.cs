@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public interface IVariableReference
+    public interface IVariableReference : IDatabaseObjectReference
     {
         VariableReference VariableReference { get; set; }
     }

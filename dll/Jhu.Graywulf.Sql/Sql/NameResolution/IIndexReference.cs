@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public interface IIndexReference
+    public interface IIndexReference : IDatabaseObjectReference
     {
         IndexReference IndexReference { get; set; }
     }

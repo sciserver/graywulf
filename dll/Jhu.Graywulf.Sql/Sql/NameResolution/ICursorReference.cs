@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public interface ICursorReference
+    public interface ICursorReference : IDatabaseObjectReference
     {
         CursorReference CursorReference { get; set; }
     }

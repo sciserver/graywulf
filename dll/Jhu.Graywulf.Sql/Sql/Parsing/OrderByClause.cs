@@ -8,9 +8,9 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class OrderByClause
     {
-        public ArgumentList ArgumentList
+        public OrderByArgumentList ArgumentList
         {
-            get { return FindDescendant<ArgumentList>(); }
+            get { return FindDescendant<OrderByArgumentList>(); }
         }
 
         // TODO: there's a bunch of new features (FETCH syntax)

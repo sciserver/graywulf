@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Jhu.Graywulf.Parsing;
+using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
@@ -33,6 +35,16 @@ namespace Jhu.Graywulf.Sql.Parsing
                 }
             }
 
+            protected override void AcceptVisitor(SqlQueryVisitor visitor, Token node)
+            {
+                Accept((dynamic)node);
+            }
+
+            protected virtual void Accept(Token node)
+            {
+                // Default dispatch, do nothing
+            }
+
             private void Write(string s)
             {
                 w.Write(s);
@@ -43,128 +55,118 @@ namespace Jhu.Graywulf.Sql.Parsing
                 w.Write(token.Value + " ");
             }
 
-            public override void VisitUnaryOperator(UnaryOperator node)
+            public virtual void Accept(UnaryOperator node)
             {
                 Write(node);
             }
 
-            public override void VisitArithmeticOperator(ArithmeticOperator node)
+            public virtual void Accept(ArithmeticOperator node)
             {
                 Write(node);
             }
 
-            public override void VisitBitwiseOperator(BitwiseOperator node)
+            public virtual void Accept(BitwiseOperator node)
             {
                 Write(node);
             }
 
-            public override void VisitExpressionBracketOpen(BracketOpen node)
+            public virtual void Accept(BracketOpen node)
             {
                 Write(node);
             }
 
-            public override void VisitExpressionBracketClose(BracketClose node)
+            public virtual void Accept(BracketClose node)
             {
                 Write(node);
             }
 
-            public override void VisitConstant(Constant node)
+            public virtual void Accept(Constant node)
             {
                 Write(node);
             }
 
-            public override void VisitUserVariable(UserVariable node)
+            public virtual void Accept(UserVariable node)
             {
                 Write(node);
             }
 
-            public override void VisitSystemVariable(SystemVariable node)
+            public virtual void Accept(SystemVariable node)
             {
                 Write(node);
             }
 
-            public override void VisitCountStar(CountStar node)
+            public virtual void Accept(CountStar node)
             {
                 Write(node);
             }
 
-            public override void VisitColumnIdentifier(ColumnIdentifier node)
+            public virtual void Accept(ColumnIdentifier node)
             {
                 Write(node);
             }
 
-            public override void VisitExpressionSubquery(ExpressionSubquery node)
+            public virtual void Accept(ExpressionSubquery node)
             {
                 Write("subquery ");
             }
 
-            public override void VisitUdtStaticPropertyAccess(UdtStaticPropertyAccess node)
+            public virtual void Accept(UdtStaticPropertyAccess node)
             {
                 Write(node.DataTypeIdentifier);
                 Write("::");
                 Write(node.PropertyName);
             }
 
-            public override void VisitUdtStaticMethodCall(UdtStaticMethodCall node)
+            public virtual void Accept(UdtStaticMethodCall node)
             {
                 Write(node.DataTypeIdentifier);
                 Write("::");
                 Write(node.MethodName);
             }
 
-            public override void VisitUdtPropertyAccess(UdtPropertyAccess node)
+            public virtual void Accept(UdtPropertyAccess node)
             {
                 Write(".");
                 Write(node.PropertyName);
             }
 
-            public override void VisitUdtMethodCall(UdtMethodCall node)
+            public virtual void Accept(UdtMethodCall node)
             {
                 Write(".");
                 Write(node.MethodName);
             }
 
-            public override void VisitScalarFunctionCall(ScalarFunctionCall node)
+            public virtual void Accept(ScalarFunctionCall node)
             {
                 Write(node.FunctionIdentifier);
             }
 
-            public override void VisitWindowedFunctionCall(WindowedFunctionCall node)
+            public virtual void Accept(WindowedFunctionCall node)
             {
                 Write(node.FunctionIdentifier);
             }
 
-            public override void VisitArgumentListStart(ArgumentListStart node)
-            {
-                Write("( ");
-            }
-
-            public override void VisitArgumentListEnd(ArgumentListEnd node)
-            {
-                Write(") ");
-            }
-
-            public override void VisitArgument(Argument node)
+            public virtual void Accept(Argument node)
             {
                 Write(", ");
             }
 
-            public override void VisitOrderByArgument(OrderByArgument node)
+            public virtual void Accept(OrderByArgument node)
             {
                 Write(", ");
             }
 
-            public override void VisitOverClause(OverClause node)
+            public virtual void Accept(OverClause node)
             {
                 Write("over ");
             }
 
-            public override void VisitPartitionByClause(PartitionByClause node)
+            public virtual void Accept(PartitionByClause node)
             {
                 Write("partitionby ");
             }
 
-            public override void VisitOrderByClause(OrderByClause node)
+            public virtual void Accept(OrderByClause node)
             {
                 Write("orderby ");
             }
@@ -330,12 +332,12 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "a + ROW_NUMBER() OVER (PARTITION BY a ORDER BY c ASC, d DESC) + e";
             var exp = new SqlParser().Execute<Expression>(sql);
             var res = new TestVisitorSink().Execute(exp, ExpressionTraversalMode.Infix);
-            Assert.AreEqual("a + ROW_NUMBER ( ) over partitionby ( a ) orderby ( , c , d ) + e ", res);
+            Assert.AreEqual("a + ROW_NUMBER ( ) over ( partitionby a orderby , c , d ) + e ", res);
 
             sql = "a + NTILE(4) OVER (PARTITION BY a ORDER BY c ASC, d DESC) + e";
             exp = new SqlParser().Execute<Expression>(sql);
             res = new TestVisitorSink().Execute(exp, ExpressionTraversalMode.Infix);
-            Assert.AreEqual("a + NTILE ( , 4 ) over partitionby ( a ) orderby ( , c , d ) + e ", res);
+            Assert.AreEqual("a + NTILE ( , 4 ) over ( partitionby a orderby , c , d ) + e ", res);
         }
 
         #endregion

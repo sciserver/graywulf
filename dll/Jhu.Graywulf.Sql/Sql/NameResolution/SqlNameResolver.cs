@@ -5,6 +5,7 @@ using System.Text;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Sql.QueryTraversal;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
@@ -171,6 +172,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #endregion
         #region Main entry points
 
+        protected internal override void AcceptVisitor(SqlQueryVisitor visitor, Token node)
+        {
+            Accept((dynamic)node);
+        }
+
+        protected virtual void Accept(Token node)
+        {
+            // Default dispatch, do nothing
+        }
+
         /// <summary>
         /// Executes the name resolution over a query
         /// </summary>
@@ -214,12 +225,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #endregion
         #region Identifier visitors
 
-        public override void VisitSystemVariable(SystemVariable node)
+        protected virtual void Accept(SystemVariable node)
         {
             ResolveScalarVariableReference(node);
         }
 
-        public override void VisitUserVariable(UserVariable node)
+        protected virtual void Accept(UserVariable node)
         {
             if (Visitor.ColumnContext.HasFlag(ColumnContext.Expression) ||
                 Visitor.ColumnContext.HasFlag(ColumnContext.SelectList))
@@ -228,25 +239,25 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        public override void VisitColumnIdentifier(ColumnIdentifier node)
+        protected virtual void Accept(ColumnIdentifier node)
         {
             ResolveColumnReference(node);
         }
 
-        public override void VisitFunctionIdentifier(FunctionIdentifier node)
+        protected virtual void Accept(FunctionIdentifier node)
         {
             SubstituteFunctionDefaults(node);
             ResolveFunctionReference(node);
             CollectFunctionReference(node);
         }
 
-        public override void VisitDataTypeIdentifier(DataTypeIdentifier node)
+        protected virtual void Accept(DataTypeIdentifier node)
         {
             SubstituteDataTypeDefaults(node.DataTypeReference);
             ResolveDataTypeReference(node.DataTypeReference);
         }
 
-        public override void VisitTableOrViewIdentifier(TableOrViewIdentifier node)
+        protected virtual void Accept(TableOrViewIdentifier node)
         {
             ResolveTableReference(node, null);
         }
@@ -254,22 +265,22 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #endregion
         #region Query node visitors
 
-        public override void VisitCommonTableSpecification(CommonTableSpecification cts)
+        protected virtual void Accept(CommonTableSpecification cts)
         {
             Visitor.CommonTableExpression.CommonTableReferences.Add(cts.TableReference.Alias, cts.TableReference);
         }
 
-        public override void VisitQuerySpecification(QuerySpecification qs)
+        protected virtual void Accept(QuerySpecification qs)
         {
             ResolveResultsTableReference(qs);
         }
 
-        public override void VisitVariableTableSource(VariableTableSource node)
+        protected virtual void Accept(VariableTableSource node)
         {
             ResolveTableVariableReference(node);
         }
 
-        public override void VisitFunctionTableSource(FunctionTableSource node)
+        protected virtual void Accept(FunctionTableSource node)
         {
             // Branch landing here:
             // - SELECT ... FROM
@@ -284,7 +295,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             CollectSourceTableReference(node);
         }
 
-        public override void VisitSubqueryTableSource(SubqueryTableSource node)
+        protected virtual void Accept(SubqueryTableSource node)
         {
             ResolveTableReference(node, null);
         }
@@ -292,7 +303,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #endregion
         #region Scalar and table-valued variable visitors
 
-        public override void VisitVariableDeclaration(VariableDeclaration node)
+        protected virtual void Accept(VariableDeclaration node)
         {
             var vr = node.VariableReference;
             var variable = CreateVariable(vr);
@@ -300,7 +311,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             CollectVariableReference(node);
         }
 
-        public override void VisitTableDeclaration(TableDeclaration node)
+        protected virtual void Accept(TableDeclaration node)
         {
             var vr = node.Variable.VariableReference;
             var dr = vr.DataTypeReference;
@@ -312,19 +323,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
             CollectVariableReference(node);
         }
 
-        public override void VisitCreateTableStatement(CreateTableStatement node)
+        protected virtual void Accept(CreateTableStatement node)
         {
             var tr = node.TargetTable.TableReference;
             var td = node.TableDefinition;
             ResolveTableReference(node, td);
         }
 
-        public override void VisitColumnDefinition(ColumnDefinition node)
+        protected virtual void Accept(ColumnDefinition node)
         {
             node.DataTypeIdentifier.DataTypeReference.DataType.IsNullable = node.IsNullable;
         }
 
-        public override void VisitDropTableStatement(DropTableStatement node)
+        protected virtual void Accept(DropTableStatement node)
         {
             var table = (Schema.Table)node.TargetTable.TableReference.DatabaseObject;
 
@@ -334,7 +345,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        public override void VisitCreateIndexStatement(CreateIndexStatement node)
+        protected virtual void Accept(CreateIndexStatement node)
         {
             // TODO maybe add index to schema?
         }

@@ -256,15 +256,12 @@
     <Compile Include="Sql\NameResolution\NameResolverException.cs" />
     <Compile Include="Sql\NameResolution\TableReference.cs" />
     <Compile Include="Sql\NameResolution\VariableReferenceEqualityComparer.cs" />
-    <Compile Include="Sql\Parsing\ArgumentListEnd.cs" />
-    <Compile Include="Sql\Parsing\ArgumentListStart.cs" />
     <Compile Include="Sql\Parsing\ArithmeticOperator.cs" />
     <Compile Include="Sql\Parsing\BetweenPredicate.cs" />
     <Compile Include="Sql\Parsing\BitwiseOperator.cs" />
     <Compile Include="Sql\Parsing\ComparisonPredicate.cs" />
     <Compile Include="Sql\Parsing\ExistsSemiJoinPredicate.cs" />
     <Compile Include="Sql\Parsing\ConstraintName.cs" />
-    <Compile Include="Sql\Parsing\Enum.cs" />
     <Compile Include="Sql\Parsing\ExpressionBrackets.cs" />
     <Compile Include="Sql\Parsing\FunctionCall.cs" />
     <Compile Include="Sql\Parsing\IndexName.cs" />
@@ -281,9 +278,6 @@
     <Compile Include="Sql\Parsing\OrderByClause.cs" />
     <Compile Include="Sql\Parsing\OverClause.cs" />
     <Compile Include="Sql\Parsing\PartitionByClause.cs" />
-    <Compile Include="Sql\Parsing\SqlQueryVisitor.cs" />
-    <Compile Include="Sql\Parsing\SqlQueryVisitorOptions.cs" />
-    <Compile Include="Sql\Parsing\SqlQueryVisitorSink.cs" />
     <Compile Include="Sql\Parsing\StarColumnIdentifier.cs" />
     <Compile Include="Sql\Parsing\Argument.cs" />
     <Compile Include="Sql\Parsing\ArgumentList.cs" />
@@ -418,6 +412,10 @@
     <Compile Include="Sql\QueryRendering\SqlServer\SqlServerQueryRenderer.cs" />
     <Compile Include="Sql\QueryRewriting\QueryRewriterBase.cs" />
     <Compile Include="Sql\QueryRewriting\SqlServer\SqlServerQueryRewriter.cs" />
+    <Compile Include="Sql\QueryTraversal\Enum.cs" />
+    <Compile Include="Sql\QueryTraversal\SqlQueryVisitor.cs" />
+    <Compile Include="Sql\QueryTraversal\SqlQueryVisitorOptions.cs" />
+    <Compile Include="Sql\QueryTraversal\SqlQueryVisitorSink.cs" />
     <Compile Include="Sql\Schema\Column.cs" />
     <Compile Include="Sql\Schema\Constants.cs" />
     <Compile Include="Sql\Schema\Constraint.cs" />
