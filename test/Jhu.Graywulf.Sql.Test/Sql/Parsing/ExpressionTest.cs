@@ -166,14 +166,14 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void RankingFunctionTest()
         {
-            var sql = "ROW_NUMBER() OVER (PARTITION BY a, b ORDER BY c)";
+            var sql = "ROW_NUMBER() OVER (PARTITION BY a ORDER BY b, c)";
             var exp = ExpressionTestHelper(sql);
         }
 
         [TestMethod]
         public void WindowedAggregateFunctionTest()
         {
-            var sql = "AVG(x) OVER (PARTITION BY a, b)";
+            var sql = "AVG(x) OVER (PARTITION BY a)";
             var exp = ExpressionTestHelper(sql);
         }
 

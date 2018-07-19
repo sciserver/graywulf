@@ -35,10 +35,10 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "ROW_NUMBER () OVER ( PARTITION BY ID )";
             new SqlParser().Execute<WindowedFunctionCall>(sql);
 
-            sql = "ROW_NUMBER () OVER ( PARTITION BY ID, ID2 )";
+            sql = "ROW_NUMBER () OVER ( PARTITION BY ID )";
             new SqlParser().Execute<WindowedFunctionCall>(sql);
 
-            sql = "ROW_NUMBER () OVER (PARTITION BY[ID],[ID2])";
+            sql = "ROW_NUMBER () OVER (PARTITION BY[ID])";
             new SqlParser().Execute<WindowedFunctionCall>(sql);
         }
 

@@ -10,14 +10,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
     {
         None = 0x00000000,
         Expression = 0x00000001,
+        Predicate = 0x00000002,
 
-        SelectList = 0x00000002,
-        From = 0x00000004,
-        JoinOn = 0x00000008,
-        Where = 0x00000010,
-        GroupBy = 0x00000020,
-        Having = 0x00000040,
-        OrderBy = 0x00000080,
+        SelectList = 0x00000004,
+        From = 0x00000008,
+        JoinOn = 0x00000010,
+        Where = 0x00000020,
+        GroupBy = 0x00000040,
+        Having = 0x00000080,
+        OrderBy = 0x00000100,
 
         Default = SelectList | From | Where | GroupBy | Having | OrderBy,
 

@@ -12,10 +12,10 @@ namespace Jhu.Graywulf.Sql.Parsing
     [TestClass]
     public class BooleanExpressionTest
     {
-        private BooleanExpression Parse(string query)
+        private LogicalExpression Parse(string query)
         {
             var p = new SqlParser();
-            return p.Execute<BooleanExpression>(query);
+            return p.Execute<LogicalExpression>(query);
         }
 
         [TestMethod]
@@ -80,30 +80,30 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var pre = new SqlParser().Execute<Predicate>("a = b");
 
-            var be = BooleanExpression.Create(false, pre);
+            var be = LogicalExpression.Create(false, pre);
             Assert.AreEqual("a = b", be.Value);
 
-            be = BooleanExpression.Create(true, pre);
+            be = LogicalExpression.Create(true, pre);
             Assert.AreEqual("NOT a = b", be.Value);
         }
 
         [TestMethod]
         public void CreateFromBooleanExpressionsTest()
         {
-            var be1 = new SqlParser().Execute<BooleanExpression>("a = b");
-            var be2 = new SqlParser().Execute<BooleanExpression>("c < d");
+            var be1 = new SqlParser().Execute<LogicalExpression>("a = b");
+            var be2 = new SqlParser().Execute<LogicalExpression>("c < d");
 
-            var be = BooleanExpression.Create(be1, be2, LogicalOperator.CreateAnd());
+            var be = LogicalExpression.Create(be1, be2, LogicalOperator.CreateAnd());
             Assert.AreEqual("a = b AND c < d", be.Value);
         }
 
         [TestMethod]
         public void CreateFromBooleanExpressionsTest2()
         {
-            var be1 = new SqlParser().Execute<LgocalExpressionBrackets>("(a = b)");
-            var be2 = new SqlParser().Execute<BooleanExpression>("c < d");
+            var be1 = new SqlParser().Execute<LogicalExpressionBrackets>("(a = b)");
+            var be2 = new SqlParser().Execute<LogicalExpression>("c < d");
 
-            var be = BooleanExpression.Create(be1, be2, LogicalOperator.CreateAnd());
+            var be = LogicalExpression.Create(be1, be2, LogicalOperator.CreateAnd());
             Assert.AreEqual("(a = b) AND c < d", be.Value);
         }
     }

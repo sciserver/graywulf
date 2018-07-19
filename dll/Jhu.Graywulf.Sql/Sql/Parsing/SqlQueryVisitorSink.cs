@@ -162,6 +162,10 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
         }
 
+        public virtual void VisitTableValuedFunctionCall(TableValuedFunctionCall node)
+        {
+        }
+
         public virtual void VisitWindowedFunctionCall(WindowedFunctionCall node)
         {
         }
@@ -194,6 +198,10 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
         }
 
+        public virtual void VisitSemiJoinSubquery(SemiJoinSubquery node)
+        {
+        }
+
         // TODO: move these in different region
 
         public virtual void VisitDataTypeIdentifier(DataTypeIdentifier node)
@@ -205,6 +213,10 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         public virtual void VisitFunctionIdentifier(FunctionIdentifier node)
+        {
+        }
+
+        public virtual void VisitMethodName(MethodName node)
         {
         }
 

@@ -153,6 +153,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     LogicalExpressionTraversal = ExpressionTraversalMode.Infix,
                     ExpressionTraversal = ExpressionTraversalMode.Infix,
                     VisitExpressionSubqueries = true,
+                    VisitPredicateSubqueries = true,
                     VisitSchemaReferences = false
                 }
             };

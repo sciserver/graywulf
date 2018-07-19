@@ -13,6 +13,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         private ExpressionTraversalMode expressionTraversal;
         private ExpressionTraversalMode logicalExpressionTraversal;
         private bool visitExpressionSubqueries;
+        private bool visitPredicateSubqueries;
         private bool visitSchemaReferences;
 
         #endregion
@@ -34,6 +35,12 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return visitExpressionSubqueries; }
             set { visitExpressionSubqueries = value; }
+        }
+
+        public bool VisitPredicateSubqueries
+        {
+            get { return visitPredicateSubqueries; }
+            set { visitPredicateSubqueries = value; }
         }
 
         public bool VisitSchemaReferences
@@ -60,6 +67,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             this.expressionTraversal = ExpressionTraversalMode.Infix;
             this.logicalExpressionTraversal = ExpressionTraversalMode.Infix;
             this.visitExpressionSubqueries = true;
+            this.visitPredicateSubqueries = true;
             this.visitSchemaReferences = false;
         }
 
@@ -68,6 +76,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             this.expressionTraversal = old.expressionTraversal;
             this.logicalExpressionTraversal = old.logicalExpressionTraversal;
             this.visitExpressionSubqueries = old.visitExpressionSubqueries;
+            this.visitPredicateSubqueries = old.visitPredicateSubqueries;
             this.visitSchemaReferences = old.visitSchemaReferences;
         }
 

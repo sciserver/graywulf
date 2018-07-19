@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            Assert.AreEqual(ColumnContext.Expression | ColumnContext.From | ColumnContext.PrimaryKey | ColumnContext.JoinOn, ts[0].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.Predicate | ColumnContext.From | ColumnContext.PrimaryKey | ColumnContext.JoinOn, ts[0].ColumnReferences[0].ColumnContext);
             Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList, ts[0].ColumnReferences[1].ColumnContext);
 
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
@@ -91,7 +91,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            Assert.AreEqual(ColumnContext.Expression | ColumnContext.Where | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.Predicate | ColumnContext.Where | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
             Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList, ts[0].ColumnReferences[1].ColumnContext);
 
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
@@ -161,7 +161,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual(null, ts[0].Alias);
 
             Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList | ColumnContext.GroupBy | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
-            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList | ColumnContext.Having, ts[0].ColumnReferences[1].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.Predicate | ColumnContext.SelectList | ColumnContext.Having, ts[0].ColumnReferences[1].ColumnContext);
 
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
 

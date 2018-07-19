@@ -103,7 +103,7 @@ SELECT Name FROM Author WHERE ID = 2";
 
             tr = details.SourceTableReferences.Values.First()[1];
             Assert.AreEqual("ID", tr.ColumnReferences[0].ColumnName);
-            Assert.AreEqual(ColumnContext.Expression | ColumnContext.PrimaryKey | ColumnContext.Where, tr.ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.Predicate | ColumnContext.PrimaryKey | ColumnContext.Where, tr.ColumnReferences[0].ColumnContext);
             Assert.AreEqual("Name", tr.ColumnReferences[1].ColumnName);
             Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList, tr.ColumnReferences[1].ColumnContext);
         }

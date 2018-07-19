@@ -11,13 +11,13 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
     [TestClass]
     public class DnfConverterTest
     {
-        private BooleanExpression GetSearchCondition(string sql)
+        private LogicalExpression GetSearchCondition(string sql)
         {
             SqlParser p = new SqlParser();
             var select = (SelectStatement)p.Execute(new SelectStatement(), sql);
 
             var where = select.FindDescendantRecursive<WhereClause>();
-            return where.FindDescendant<BooleanExpression>();
+            return where.FindDescendant<LogicalExpression>();
         }
 
         private string VisitTestHelper(string sql)

@@ -11,13 +11,13 @@ namespace Jhu.Graywulf.Sql.Parsing
     [TestClass]
     public class SearchConditionTest
     {
-        private BooleanExpression GetSearchCondition(string sql)
+        private LogicalExpression GetSearchCondition(string sql)
         {
             SqlParser p = new SqlParser();
             var select = (SelectStatement)p.Execute(new SelectStatement(), sql);
 
             var where = select.FindDescendantRecursive<WhereClause>();
-            return where.FindDescendant<BooleanExpression>();
+            return where.FindDescendant<LogicalExpression>();
         }
 
         // --
@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var sc = GetSearchCondition(sql);
 
-            MethodInfo m = typeof(BooleanExpression).GetMethod(
+            MethodInfo m = typeof(LogicalExpression).GetMethod(
                 "EnumerateRawExpressions",
                 BindingFlags.Instance | BindingFlags.NonPublic);
 

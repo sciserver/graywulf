@@ -31,10 +31,10 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             return details;
         }
 
-        private List<BooleanExpression> GenerateWhereClauseByTable(string sql)
+        private List<LogicalExpression> GenerateWhereClauseByTable(string sql)
         {
             var details = Parse(sql);
-            var res = new List<BooleanExpression>();
+            var res = new List<LogicalExpression>();
 
             var scn = new SearchConditionNormalizer();
             scn.CollectConditions(details.ParsingTree);
@@ -49,10 +49,10 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             return res;
         }
 
-        private List<BooleanExpression> GenerateWhereClauseByTableReference(string sql)
+        private List<LogicalExpression> GenerateWhereClauseByTableReference(string sql)
         {
             var details = Parse(sql);
-            var res = new List<BooleanExpression>();
+            var res = new List<LogicalExpression>();
 
             var scn = new SearchConditionNormalizer();
             scn.CollectConditions(details.ParsingTree);

@@ -10,10 +10,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
 {
     public class PredicateTest : SqlNameResolverTestBase
     {
-        private void GetSearchCondition(string query, out SelectStatement select, out BooleanExpression where)
+        private void GetSearchCondition(string query, out SelectStatement select, out LogicalExpression where)
         {
             select = ParseAndResolveNames<SelectStatement>(query);
-            where = select.FindDescendantRecursive<WhereClause>().FindDescendant<BooleanExpression>();
+            where = select.FindDescendantRecursive<WhereClause>().FindDescendant<LogicalExpression>();
         }
 
         [TestMethod]
@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             string sql;
             SelectStatement select;
-            BooleanExpression where;
+            LogicalExpression where;
             TableReference table;
             Predicate predicate;
 

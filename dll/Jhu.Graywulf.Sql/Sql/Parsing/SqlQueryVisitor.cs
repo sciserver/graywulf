@@ -933,8 +933,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             DispatchFunctionCall(node);
             DispatchSchemaReference(node);
-
-            TraverseFunctionArguments(node.FunctionArguments);
         }
 
         protected virtual void DispatchFunctionCall(FunctionCall node)
@@ -942,13 +940,16 @@ namespace Jhu.Graywulf.Sql.Parsing
             switch (node)
             {
                 case ScalarFunctionCall n:
-                    Sink.VisitScalarFunctionCall(n);
+                    TraverseScalarFunctionCall(n);
+                    break;
+                case TableValuedFunctionCall n:
+                    TraverseTableValuedFunctionCall(n);
                     break;
                 case UdtMethodCall n:
-                    Sink.VisitUdtMethodCall(n);
+                    TraverseUdtMethodCall(n);
                     break;
                 case UdtStaticMethodCall n:
-                    Sink.VisitUdtStaticMethodCall(n);
+                    TraverseUdtStaticMethodCall(n);
                     break;
                 case WindowedFunctionCall n:
                     TraverseWindowedFunctionCall(n);
@@ -958,13 +959,43 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
         }
 
+        private void TraverseScalarFunctionCall(ScalarFunctionCall node)
+        {
+            Sink.VisitFunctionIdentifier(node.FunctionIdentifier);
+            TraverseFunctionArguments(node.FunctionArguments);
+            Sink.VisitScalarFunctionCall(node);
+        }
+
+        private void TraverseTableValuedFunctionCall(TableValuedFunctionCall node)
+        {
+            Sink.VisitFunctionIdentifier(node.FunctionIdentifier);
+            TraverseFunctionArguments(node.FunctionArguments);
+            Sink.VisitTableValuedFunctionCall(node);
+        }
+
+        private void TraverseUdtMethodCall(UdtMethodCall node)
+        {
+            Sink.VisitMethodName(node.MethodName);
+            TraverseFunctionArguments(node.FunctionArguments);
+            Sink.VisitUdtMethodCall(node);
+        }
+
+        private void TraverseUdtStaticMethodCall(UdtStaticMethodCall node)
+        {
+            Sink.VisitDataTypeIdentifier(node.DataTypeIdentifier);
+            Sink.VisitMethodName(node.MethodName);
+            TraverseFunctionArguments(node.FunctionArguments);
+            Sink.VisitUdtStaticMethodCall(node);
+        }
+
         private void TraverseWindowedFunctionCall(WindowedFunctionCall node)
         {
             var over = node.OverClause;
             var partitionby = over.PartitionByClause;
             var orderby = over.OrderByClause;
 
-            Sink.VisitWindowedFunctionCall(node);
+            TraverseFunctionArguments(node.FunctionArguments);
+
             Sink.VisitOverClause(over);
 
             if (partitionby != null)
@@ -976,6 +1007,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             {
                 TraverseOrderByClause(orderby);
             }
+
+            Sink.VisitWindowedFunctionCall(node);
         }
 
         private void TraverseFunctionArguments(FunctionArguments node)
@@ -1069,12 +1102,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             // Visit immediate subquries first, then do a bottom-up
             // traversal of the tree by not going deeper than the subqueries.
 
-            columnContextStack.Push(ColumnContext | ColumnContext.Expression);
-
-            if (options.VisitExpressionSubqueries)
-            {
-                TraverseExpressionSubqueries(node);
-            }
 
             switch (options.LogicalExpressionTraversal)
             {
@@ -1087,9 +1114,6 @@ namespace Jhu.Graywulf.Sql.Parsing
                 default:
                     throw new NotImplementedException();
             }
-
-            columnContextStack.Pop();
-
         }
 
         private void TraverseLogicalExpressionNode(Node node)
@@ -1116,7 +1140,7 @@ namespace Jhu.Graywulf.Sql.Parsing
                 case Predicate n:
                     TraversePredicate(n);
                     break;
-                case Expression n:
+                case LogicalExpression n:
                     TraverseLogicalExpressionNode(n);
                     break;
                 default:
@@ -1147,7 +1171,36 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var predicate = (Node)node.Stack.First.Value;
 
+            columnContextStack.Push(ColumnContext | ColumnContext.Predicate);
+
+            if (options.VisitPredicateSubqueries)
+            {
+                TraversePredicateSubqueries(node);
+            }
+
             DispatchPredicate(predicate);
+
+            columnContextStack.Pop();
+        }
+
+        private void TraversePredicateSubqueries(Node node)
+        {
+            foreach (var n in node.Stack)
+            {
+                if (n is Expression)
+                {
+                    // Do not descend into expressions
+                    continue;
+                }
+                else if (n is Subquery sq)
+                {
+                    TraverseSubquery(sq);
+                }
+                else if (n is Node nn)
+                {
+                    TraversePredicateSubqueries(nn);
+                }
+            };
         }
 
         protected virtual void DispatchPredicate(Node node)
@@ -1225,20 +1278,20 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             Sink.VisitInSemiJoinPredicate(node);
             TraverseExpression(node.Operand);
-            TraverseSubquery(node.Subquery);
+            Sink.VisitSemiJoinSubquery(node.Subquery);
         }
 
         private void TraverseComparisonSemiJoinPredicate(ComparisonSemiJoinPredicate node)
         {
             Sink.VisitComparisonSemiJoinPredicate(node);
             TraverseExpression(node.Operand);
-            TraverseSubquery(node.Subquery);
+            Sink.VisitSemiJoinSubquery(node.Subquery);
         }
 
         private void TraverseExistsSemiJoinPredicate(ExistsSemiJoinPredicate node)
         {
             Sink.VisitExistsSemiJoinPredicate(node);
-            TraverseSubquery(node.Subquery);
+            Sink.VisitSemiJoinSubquery(node.Subquery);
         }
 
         #endregion
