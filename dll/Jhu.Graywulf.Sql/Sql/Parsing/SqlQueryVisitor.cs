@@ -962,30 +962,30 @@ namespace Jhu.Graywulf.Sql.Parsing
         private void TraverseScalarFunctionCall(ScalarFunctionCall node)
         {
             Sink.VisitFunctionIdentifier(node.FunctionIdentifier);
-            TraverseFunctionArguments(node.FunctionArguments);
             Sink.VisitScalarFunctionCall(node);
+            TraverseFunctionArguments(node.FunctionArguments);
         }
 
         private void TraverseTableValuedFunctionCall(TableValuedFunctionCall node)
         {
             Sink.VisitFunctionIdentifier(node.FunctionIdentifier);
-            TraverseFunctionArguments(node.FunctionArguments);
             Sink.VisitTableValuedFunctionCall(node);
+            TraverseFunctionArguments(node.FunctionArguments);
         }
 
         private void TraverseUdtMethodCall(UdtMethodCall node)
         {
             Sink.VisitMethodName(node.MethodName);
-            TraverseFunctionArguments(node.FunctionArguments);
             Sink.VisitUdtMethodCall(node);
+            TraverseFunctionArguments(node.FunctionArguments);
         }
 
         private void TraverseUdtStaticMethodCall(UdtStaticMethodCall node)
         {
             Sink.VisitDataTypeIdentifier(node.DataTypeIdentifier);
             Sink.VisitMethodName(node.MethodName);
-            TraverseFunctionArguments(node.FunctionArguments);
             Sink.VisitUdtStaticMethodCall(node);
+            TraverseFunctionArguments(node.FunctionArguments);
         }
 
         private void TraverseWindowedFunctionCall(WindowedFunctionCall node)
@@ -994,6 +994,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             var partitionby = over.PartitionByClause;
             var orderby = over.OrderByClause;
 
+            Sink.VisitFunctionIdentifier(node.FunctionIdentifier);
+            Sink.VisitWindowedFunctionCall(node);
             TraverseFunctionArguments(node.FunctionArguments);
 
             Sink.VisitOverClause(over);
@@ -1008,7 +1010,7 @@ namespace Jhu.Graywulf.Sql.Parsing
                 TraverseOrderByClause(orderby);
             }
 
-            Sink.VisitWindowedFunctionCall(node);
+            
         }
 
         private void TraverseFunctionArguments(FunctionArguments node)
