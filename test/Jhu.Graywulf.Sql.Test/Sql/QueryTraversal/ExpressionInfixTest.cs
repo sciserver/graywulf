@@ -169,12 +169,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             var sql = "a + ROW_NUMBER() OVER (PARTITION BY a ORDER BY c ASC, d DESC) + e";
             var exp = new SqlParser().Execute<Expression>(sql);
             var res = new TestVisitorSink().Execute(exp, ExpressionTraversalMode.Infix);
-            Assert.AreEqual("a + ROW_NUMBER ( ) over ( partitionby a orderby , c , d ) + e ", res);
+            Assert.AreEqual("a + ROW_NUMBER ( ) over ( partitionby , a orderby , c , d ) + e ", res);
 
             sql = "a + NTILE(4) OVER (PARTITION BY a ORDER BY c ASC, d DESC) + e";
             exp = new SqlParser().Execute<Expression>(sql);
             res = new TestVisitorSink().Execute(exp, ExpressionTraversalMode.Infix);
-            Assert.AreEqual("a + NTILE ( , 4 ) over ( partitionby a orderby , c , d ) + e ", res);
+            Assert.AreEqual("a + NTILE ( , 4 ) over ( partitionby , a orderby , c , d ) + e ", res);
         }
     }
 }

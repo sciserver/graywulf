@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class PartitionByClause
+    public abstract partial class Operator
     {
-        public Argument Argument
-        {
-            get { return FindDescendant<Argument>(); }
-        }
+        public abstract int Precedence { get; }
+
+        public abstract bool LeftAssociative { get; }
     }
 }

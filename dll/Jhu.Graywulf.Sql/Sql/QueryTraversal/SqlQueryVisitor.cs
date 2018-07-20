@@ -1056,8 +1056,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 switch (nn)
                 {
                     case Argument n:
-                        VisitNode(n);
-                        TraverseExpressionNode(n.Expression);
+                        TraverseArgument(n);
                         break;
                     case ArgumentList n:
                         TraverseArgumentList(n);
@@ -1066,9 +1065,18 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
+        private void TraverseArgument(Argument node)
+        {
+            VisitNode(node);
+            TraverseExpressionNode(node.Expression);
+        }
+
         private void TraverseOverClause(OverClause node)
         {
             VisitNode(node);
+
+            // Turn off expression context
+            queryContextStack.Push(QueryContext & ~QueryContext.Expression);
 
             foreach (var nn in node.Stack)
             {
@@ -1088,6 +1096,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         break;
                 }
             }
+
+            queryContextStack.Pop();
         }
 
         private void TraversePartitionByClause(PartitionByClause node)
@@ -1096,7 +1106,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             columnContextStack.Push(ColumnContext | ColumnContext.PartitionBy);
 
             VisitNode(node);
-            TraverseExpressionNode(node.Expression);
+            TraverseArgument(node.Argument);
 
             tableContextStack.Pop();
             columnContextStack.Pop();

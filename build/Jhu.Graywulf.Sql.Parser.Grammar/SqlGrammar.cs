@@ -182,9 +182,14 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> Expression = () =>
             Sequence
             (
-                May(Sequence(UnaryOperator, May(CommentOrWhitespace))),
                 Must
                 (
+                    Sequence
+                    (
+                        UnaryOperator,
+                        May(CommentOrWhitespace),
+                        Expression
+                    ),
                     Operand,
                     ExpressionBrackets
                 ),
@@ -708,7 +713,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 CommentOrWhitespace,
                 Keyword("BY"),
                 May(CommentOrWhitespace),
-                Expression
+                Argument
             );
 
         #endregion

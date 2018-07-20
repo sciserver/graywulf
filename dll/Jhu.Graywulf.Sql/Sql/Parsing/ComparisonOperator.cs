@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class UnaryOperator
+    public partial class ComparisonOperator
     {
         public override int Precedence
         {
-            get { return 1; }
+            get { return 4; }
         }
 
         public override bool LeftAssociative
         {
-            get { return false; }
+            get { return true; }
         }
     }
 }

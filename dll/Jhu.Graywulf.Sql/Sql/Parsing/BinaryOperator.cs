@@ -31,5 +31,10 @@ namespace Jhu.Graywulf.Sql.Parsing
                 }
             }
         }
+
+        public override bool LeftAssociative
+        {
+            get { return true; }
+        }
     }
 }
