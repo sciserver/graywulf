@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Schema\Clr\ClrAggregateFunction.cs" />
     <Compile Include="Schema\Clr\ClrFunction.cs" />
     <Compile Include="Schema\Clr\ClrStoredProc.cs" />
     <Compile Include="Schema\Clr\ClrTableValuedFunction.cs" />
