@@ -8,42 +8,42 @@ using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public class MethodReference : ReferenceBase
+    public class PropertyReference : ReferenceBase
     {
         #region Property storage variables
 
-        private string methodName;
+        private string propertyName;
 
         #endregion
         #region Properties
 
-        public string MethodName
+        public string PropertyName
         {
-            get { return methodName; }
-            set { methodName = value; }
+            get { return propertyName; }
+            set { propertyName = value; }
         }
 
         public override string UniqueName
         {
-            get { return methodName; }
-            set { methodName = value; }
+            get { return propertyName; }
+            set { propertyName = value; }
         }
 
         #endregion
         #region Constructors and initializers
 
-        public MethodReference()
+        public PropertyReference()
         {
             InitializeMembers();
         }
 
-        public MethodReference(Node node)
+        public PropertyReference(Node node)
             : base(node)
         {
             InitializeMembers();
         }
 
-        public MethodReference(MethodReference old)
+        public PropertyReference(PropertyReference old)
             : base(old)
         {
             CopyMembers(old);
@@ -51,29 +51,29 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void InitializeMembers()
         {
-            this.methodName = null;
+            this.propertyName = null;
         }
 
-        private void CopyMembers(MethodReference old)
+        private void CopyMembers(PropertyReference old)
         {
-            this.methodName = old.methodName;
+            this.propertyName = old.propertyName;
         }
 
         public override object Clone()
         {
-            return new MethodReference(this);
+            return new PropertyReference(this);
         }
 
         #endregion
 
-        public static MethodReference Interpret(MethodName mn)
+        public static PropertyReference Interpret(PropertyName pn)
         {
-            var mr = new MethodReference(mn)
+            var pr = new PropertyReference(pn)
             {
-                MethodName = RemoveIdentifierQuotes(mn.Value)
+                PropertyName = RemoveIdentifierQuotes(pn.Value)
             };
 
-            return mr;
+            return pr;
         }
     }
 }

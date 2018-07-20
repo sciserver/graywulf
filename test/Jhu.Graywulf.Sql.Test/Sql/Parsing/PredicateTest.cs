@@ -109,7 +109,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             sb = Parse(sql);
         }
 
-
         [TestMethod]
         public void AllSomeAnyComparisonTest()
         {

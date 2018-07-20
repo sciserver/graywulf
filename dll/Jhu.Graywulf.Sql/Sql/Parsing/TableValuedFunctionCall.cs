@@ -9,15 +9,15 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class TableValuedFunctionCall : IFunctionReference
     {
-        public FunctionReference FunctionReference
-        {
-            get { return UdfIdentifier.FunctionReference; }
-            set { UdfIdentifier.FunctionReference = value; }
-        }
-
-        public FunctionIdentifier UdfIdentifier
+        public FunctionIdentifier FunctionIdentifier
         {
             get { return FindDescendant<FunctionIdentifier>(); }
+        }
+
+        public override FunctionReference FunctionReference
+        {
+            get { return FunctionIdentifier.FunctionReference; }
+            set { FunctionIdentifier.FunctionReference = value; }
         }
 
         public static TableValuedFunctionCall Create(FunctionReference functionReference, params Expression[] arguments)

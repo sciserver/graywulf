@@ -8,5 +8,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
 {
     public interface IPropertyReference : IDatabaseObjectReference
     {
+        PropertyReference PropertyReference { get; set; }
     }
 }

@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NameResolution.NameResolverException))]
+        [ExpectedException(typeof(Jhu.Graywulf.Parsing.ParserException))]
         public void NameTooLongTest()
         {
             var sql = "dataset:database.schema.bla.bla.function(a)";

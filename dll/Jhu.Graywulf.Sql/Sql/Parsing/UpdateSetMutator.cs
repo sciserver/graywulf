@@ -19,8 +19,8 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public MethodReference MethodReference
         {
-            get { return UdtMethodCall.MethodReference; }
-            set { UdtMethodCall.MethodReference = value; }
+            get { return MethodCall.MethodReference; }
+            set { MethodCall.MethodReference = value; }
         }
 
         public ColumnName ColumnName
@@ -28,9 +28,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<ColumnName>(); }
         }
 
-        public UdtMethodCall UdtMethodCall
+        public MethodCall MethodCall
         {
-            get { return FindDescendant<UdtMethodCall>(); }
+            get { return FindDescendant<MethodCall>(); }
         }
 
         protected override void OnInitializeMembers()

@@ -8,25 +8,25 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class MultiPartIdentifier
+    public partial class MemberAccessList
     {
-        private Identifier[] nameParts;
+        private MemberAccess[] parts;
 
-        public Identifier[] NameParts
+        public MemberAccess[] Parts
         {
-            get { return nameParts; }
+            get { return parts; }
         }
 
         public int PartCount
         {
-            get { return nameParts?.Length ?? 0; }
+            get { return parts?.Length ?? 0; }
         }
                 
         public string NamePart3
         {
             get
             {
-                return (nameParts.Length > 2) ? nameParts[nameParts.Length - 3].Value : null;
+                return (parts.Length > 2) ? parts[parts.Length - 3].Value : null;
             }
         }
 
@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get
             {
-                return (nameParts.Length > 1) ? nameParts[nameParts.Length - 2].Value : null;
+                return (parts.Length > 1) ? parts[parts.Length - 2].Value : null;
             }
         }
 
@@ -42,13 +42,13 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get
             {
-                return (nameParts.Length > 0) ? nameParts[nameParts.Length - 1].Value : null;
+                return (parts.Length > 0) ? parts[parts.Length - 1].Value : null;
             }
         }
         
-        public static MultiPartIdentifier Create(string namePart4, string namePart3, string namePart2, string namePart1)
+        public static MemberAccessList Create(string namePart4, string namePart3, string namePart2, string namePart1)
         {
-            var fpi = new MultiPartIdentifier();
+            var fpi = new MemberAccessList();
 
             var npl = fpi.Append(null, namePart4);
             npl = fpi.Append(npl, namePart3);
@@ -58,9 +58,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             return fpi;
         }
 
-        public static MultiPartIdentifier Create(string namePart3, string namePart2, string namePart1)
+        public static MemberAccessList Create(string namePart3, string namePart2, string namePart1)
         {
-            var fpi = new MultiPartIdentifier();
+            var fpi = new MemberAccessList();
 
             var npl = fpi.Append(null, namePart3);
             npl = fpi.Append(npl, namePart2);
@@ -69,9 +69,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             return fpi;
         }
 
-        public static MultiPartIdentifier Create(string namePart2, string namePart1)
+        public static MemberAccessList Create(string namePart2, string namePart1)
         {
-            var fpi = new MultiPartIdentifier();
+            var fpi = new MemberAccessList();
             
             var npl = fpi.Append(null, namePart2);
             npl = fpi.Append(npl, namePart1);
@@ -79,18 +79,18 @@ namespace Jhu.Graywulf.Sql.Parsing
             return fpi;
         }
 
-        public static MultiPartIdentifier Create(string namePart1)
+        public static MemberAccessList Create(string namePart1)
         {
-            var fpi = new MultiPartIdentifier();
+            var fpi = new MemberAccessList();
 
             var npl = fpi.Append(null, namePart1);
 
             return fpi;
         }
 
-        public NamePartList Append(NamePartList npl, string identifier)
+        public MemberAccessList Append(MemberAccessList npl, string identifier)
         {
-            var nn = new NamePartList();
+            var nn = new MemberAccessList();
 
             if (npl == null)
             {
@@ -111,7 +111,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             base.Interpret();
 
-            nameParts = FindDescendant<NamePartList>().EnumerateDescendants<Identifier>().ToArray();
+            parts = EnumerateDescendants<MemberAccess>().ToArray();
         }
     }
 }

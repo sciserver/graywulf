@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var exp = new SqlParser().Execute<Argument>(sql);
             Assert.AreEqual("a+b", exp.Value);
             Assert.AreEqual("+", exp.FindDescendantRecursive<Plus>().Value);
-            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
+            Assert.AreEqual("a", exp.FindDescendantRecursive<Operand>().Value);
         }
 
         [TestMethod]

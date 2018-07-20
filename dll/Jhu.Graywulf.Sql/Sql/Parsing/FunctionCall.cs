@@ -9,25 +9,30 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class FunctionCall : IFunctionReference
     {
-        public FunctionIdentifier FunctionIdentifier
-        {
-            get { return FindDescendant<FunctionIdentifier>(); }
-        }
-
-        public MethodName MethodName
-        {
-            get { return FindDescendant<MethodName>(); }
-        }
+        public abstract FunctionReference FunctionReference { get; set; }
 
         public FunctionArguments FunctionArguments
         {
             get { return FindDescendant<FunctionArguments>(); }
         }
-
-        public FunctionReference FunctionReference
+        
+        // TODO: delete this, only used by unit tests
+        public IEnumerable<Argument> EnumerateArguments()
         {
-            get { return FunctionIdentifier?.FunctionReference; }
-            set { if (FunctionIdentifier != null) FunctionIdentifier.FunctionReference = value; }
+            var args = FindDescendant<FunctionArguments>();
+            var list = args?.FindDescendant<ArgumentList>();
+
+            if (list != null)
+            {
+                foreach (var arg in list.EnumerateArguments())
+                {
+                    yield return arg;
+                }
+            }
+            else
+            {
+                yield break;
+            }
         }
     }
 }

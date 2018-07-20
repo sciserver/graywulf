@@ -111,13 +111,19 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public static Expression Create(VariableReference vr, MethodReference mr, Expression[] args)
         {
+            throw new NotImplementedException();
+
+            // TODO: figure this out
+
+            /*
             var exp = new Expression();
-            var m = UdtMethodCall.Create(mr, args);
+            var m = MethodCall.Create(mr, args);
 
             exp.Stack.AddLast(UserVariable.Create(vr));
             exp.Stack.AddLast(UdtMemberList.Create(m));
 
             return exp;
+            */
         }
         
         public static Expression CreateNumber(string number)

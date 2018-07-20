@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("a+b", exp.Value);
             Assert.AreEqual("+", exp.FindDescendantRecursive<Plus>().Value);
-            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
+            Assert.AreEqual("a", exp.FindDescendantRecursive<Operand>().Value);
         }
 
         // *** TODO: write rest of tests

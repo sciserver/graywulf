@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var sql = "column";
             var exp = Parse(sql);
-            Assert.IsTrue(exp.ColumnReference.IsMultiPartIdentifier);
+            Assert.IsFalse(exp.ColumnReference.IsMultiPartIdentifier);
         }
 
         [TestMethod]
@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "table1.column1";
             var exp = Parse(sql);
             Assert.AreEqual("table1.column1", exp.Value);
-            Assert.IsTrue(exp.ColumnReference.IsMultiPartIdentifier);
+            Assert.IsFalse(exp.ColumnReference.IsMultiPartIdentifier);
         }
 
         [TestMethod]
@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "schema1.table1.column1";
             var exp = Parse(sql);
             Assert.AreEqual("schema1.table1.column1", exp.Value);
-            Assert.IsTrue(exp.ColumnReference.IsMultiPartIdentifier);
+            Assert.IsFalse(exp.ColumnReference.IsMultiPartIdentifier);
         }
         
         [TestMethod]
@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "schema1 . table1 . column1";
             var exp = Parse(sql);
             Assert.AreEqual("schema1 . table1 . column1", exp.Value);
-            Assert.IsTrue(exp.ColumnReference.IsMultiPartIdentifier);
+            Assert.IsFalse(exp.ColumnReference.IsMultiPartIdentifier);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "function()";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("function", exp.UdfIdentifier.Value);
+            Assert.AreEqual("function", exp.FunctionIdentifier.Value);
         }
 
         [TestMethod]
@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "function(a)";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("function", exp.UdfIdentifier.Value);
+            Assert.AreEqual("function", exp.FunctionIdentifier.Value);
             Assert.AreEqual("a", exp.FindDescendantRecursive<Argument>().Value);
         }
 
@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "function(a,b,c)";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("function", exp.UdfIdentifier.Value);
+            Assert.AreEqual("function", exp.FunctionIdentifier.Value);
             Assert.AreEqual("a", exp.FindDescendantRecursive<Argument>().Value);
             Assert.AreEqual(3, exp.EnumerateDescendantsRecursive<Argument>(null).Count());
         }
@@ -52,23 +52,12 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "function ( a , b , c )";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("function", exp.UdfIdentifier.Value);
+            Assert.AreEqual("function", exp.FunctionIdentifier.Value);
             Assert.AreEqual("a", exp.FindDescendantRecursive<Argument>().Value);
             Assert.AreEqual(3, exp.EnumerateDescendantsRecursive<Argument>(null).Count());
         }
 
         // TODO: add more test width UDF etc.
-
-        [TestMethod]
-        public void CreateSystemFunctionCallTest()
-        {
-            var cg = CreateCodeGenerator();
-            var fun = ScalarFunctionCall.CreateSystem("SIN", Expression.CreateNumber("1.1"));
-            Assert.AreEqual("SIN(1.1)", cg.Execute(fun));
-
-            fun = ScalarFunctionCall.CreateSystem("GETDATE", null);
-            Assert.AreEqual("GETDATE()", cg.Execute(fun));
-        }
 
         [TestMethod]
         public void CreateUdfCallTest()

@@ -9,48 +9,26 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class UdtStaticMethodCall : IDataTypeReference, IMethodReference
     {
-        private MethodReference methodReference;
-
         public DataTypeIdentifier DataTypeIdentifier
         {
             get { return FindDescendant<DataTypeIdentifier>(); }
         }
-
-        public MethodName MethodName
-        {
-            get { return FindDescendant<MethodName>(); }
-        }
-
+        
         public DataTypeReference DataTypeReference
         {
             get { return DataTypeIdentifier.DataTypeReference; }
             set { DataTypeIdentifier.DataTypeReference = value; }
         }
-        
-        public MethodReference MethodReference
-        {
-            get { return methodReference; }
-            set { methodReference = value; }
-        }
 
-        protected override void OnInitializeMembers()
+        public static UdtStaticMethodCall Create(DataTypeReference dr, MethodReference mr, Expression[] args)
         {
-            base.OnInitializeMembers();
-            this.methodReference = null;
-        }
+            var mc = new UdtStaticMethodCall();
+            mc.Stack.AddLast(DataTypeIdentifier.Create(dr));
+            mc.Stack.AddLast(DoubleColon.Create());
+            mc.Stack.AddLast(MethodName.Create(mr));
+            mc.Stack.AddLast(FunctionArguments.Create(args));
 
-        protected override void OnCopyMembers(object other)
-        {
-            base.OnCopyMembers(other);
-            var old = (UdtStaticMethodCall)other;
-            this.methodReference = old.methodReference;
-        }
-
-        public override void Interpret()
-        {
-            base.Interpret();
-
-            methodReference = MethodReference.Interpret(this);
+            return mc;
         }
     }
 }

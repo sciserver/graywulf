@@ -16,9 +16,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             var args = new SqlParser().Execute<ArgumentList>(sql).EnumerateArguments().ToArray();
 
             Assert.AreEqual("+", args[0].FindDescendantRecursive<Plus>().Value);
-            Assert.AreEqual("a", args[0].FindDescendantRecursive<ColumnIdentifier>().Value);
+            Assert.AreEqual("a", args[0].FindDescendantRecursive<Operand>().Value);
             Assert.AreEqual("/", args[1].FindDescendantRecursive<Div>().Value);
-            Assert.AreEqual("c", args[1].FindDescendantRecursive<ColumnIdentifier>().Value);
+            Assert.AreEqual("c", args[1].FindDescendantRecursive<Operand>().Value);
         }
 
         [TestMethod]

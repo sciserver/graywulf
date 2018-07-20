@@ -9,44 +9,15 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class ScalarFunctionCall : IFunctionReference
     {
-        public FunctionIdentifier UdfIdentifier
+        public FunctionIdentifier FunctionIdentifier
         {
             get { return FindDescendant<FunctionIdentifier>(); }
         }
 
-        public FunctionReference FunctionReference
+        public override FunctionReference FunctionReference
         {
-            get { return UdfIdentifier.FunctionReference; }
-            set { UdfIdentifier.FunctionReference = value; }
-        }
-
-        public IEnumerable<Argument> EnumerateArguments()
-        {
-            var args = FindDescendant<FunctionArguments>();
-            var list = args?.FindDescendant<ArgumentList>();
-
-            if (list != null)
-            {
-                foreach (var arg in list.EnumerateArguments())
-                {
-                    yield return arg;
-                }
-            }
-            else
-            {
-                yield break;
-            }
-        }
-
-        public static ScalarFunctionCall CreateSystem(string functionName, params Expression[] arguments)
-        {
-            var fr = new FunctionReference()
-            {
-                FunctionName = functionName,
-                IsSystem = true,
-            };
-
-            return Create(fr, arguments);
+            get { return FunctionIdentifier.FunctionReference; }
+            set { FunctionIdentifier.FunctionReference = value; }
         }
 
         public static ScalarFunctionCall Create(FunctionReference functionReference, params Expression[] arguments)

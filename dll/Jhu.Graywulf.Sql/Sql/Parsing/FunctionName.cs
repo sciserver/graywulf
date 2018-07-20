@@ -6,7 +6,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class FunctionIdentifier : IFunctionReference
+    public partial class FunctionName : IFunctionReference
     {
         private FunctionReference functionReference;
 
@@ -25,25 +25,29 @@ namespace Jhu.Graywulf.Sql.Parsing
         protected override void OnCopyMembers(object other)
         {
             base.OnCopyMembers(other);
-
-            var old = (FunctionIdentifier)other;
+            var old = (FunctionName)other;
             this.functionReference = old.functionReference;
         }
 
-        public static FunctionIdentifier Create(FunctionReference functionReference)
-        {
-            // TODO: create token explicitly if necessary,
-            // current version works with fully resolved code generation only
-
-            var nfi = new FunctionIdentifier();
-            nfi.functionReference = functionReference;
-            return nfi;
-        }
-        
         public override void Interpret()
         {
             base.Interpret();
             this.functionReference = FunctionReference.Interpret(this);
+        }
+
+        public static FunctionName Create(string functionName)
+        {
+            var nfn = new FunctionName();
+            nfn.Stack.AddLast(Identifier.Create(functionName));
+
+            return nfn;
+        }
+
+        public static FunctionName Create(FunctionReference functionReference)
+        {
+            var nfn = Create(functionReference.FunctionName);
+            nfn.functionReference = functionReference;
+            return nfn;
         }
     }
 }

@@ -230,7 +230,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             this.columnContext = old.columnContext;
         }
-        
+
         public override object Clone()
         {
             return new ColumnReference(this);
@@ -260,19 +260,23 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static ColumnReference Interpret(ColumnIdentifier ci)
         {
-            // Depending on the number of parts, the column identifier can be
-            // first, second or third; all the rest is property access of UDT columns
-            var mpi = ci.FindDescendant<MultiPartIdentifier>();
-            var cr = new ColumnReference(ci)
+            var database = ci.FindDescendant<DatabaseName>()?.Value;
+            var schema = ci.FindDescendant<SchemaName>()?.Value;
+            var table = ci.FindDescendant<TableName>()?.Value;
+            var column = ci.FindDescendant<ColumnName>()?.Value;
+
+            var tr = new TableReference(ci)
             {
-                isMultiPartIdentifier = true
+                DatabaseName = RemoveIdentifierQuotes(database),
+                SchemaName = RemoveIdentifierQuotes(schema),
+                DatabaseObjectName = RemoveIdentifierQuotes(table),
             };
 
-            cr.nameParts = new List<string>(mpi.PartCount);
-            for (int i = 0; i < mpi.NameParts.Length; i++)
+            var cr = new ColumnReference(ci)
             {
-                cr.nameParts.Add(mpi.NameParts[i].Value);
-            }
+                TableReference = tr,
+                ColumnName = RemoveIdentifierQuotes(column),
+            };
 
             return cr;
         }

@@ -14,15 +14,20 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<DataTypeIdentifier>(); }
         }
 
-        public PropertyName PropertyName
-        {
-            get { return FindDescendant<PropertyName>(); }
-        }
-
         public DataTypeReference DataTypeReference
         {
             get { return DataTypeIdentifier.DataTypeReference; }
             set { DataTypeIdentifier.DataTypeReference = value; }
+        }
+
+        public static UdtStaticPropertyAccess Create(DataTypeReference dr, PropertyReference pr)
+        {
+            var pp = new UdtStaticPropertyAccess();
+            pp.Stack.AddLast(DataTypeIdentifier.Create(dr));
+            pp.Stack.AddLast(DoubleColon.Create());
+            pp.Stack.AddLast(PropertyName.Create(pr));
+
+            return pp;
         }
     }
 }

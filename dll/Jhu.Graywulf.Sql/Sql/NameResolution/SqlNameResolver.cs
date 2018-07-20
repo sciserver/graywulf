@@ -749,11 +749,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             cr.IsResolved = true;
             cr.TableReference = ncr.TableReference;
             cr.ParentDataTypeReference = ncr.ParentDataTypeReference;
-
-            if (cr.IsMultiPartIdentifier)
-            {
-                cr.ColumnName = cr.NameParts[cr.ColumnNamePartIndex];
-            }
         }
 
         protected void ResolveTableReference(ITableReference node, TableDefinition td)

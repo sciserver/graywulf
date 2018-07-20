@@ -26,6 +26,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         public override void Route(Token node)
         {
+            throw new NotImplementedException();
+            // TODO: review
+
             switch (node)
             {
                 case SimpleCaseExpression n:
@@ -46,12 +49,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case ScalarFunctionCall n:
                     Push(n);
                     break;
-                case UdtMethodCall n:
+                case MemberAccess n:
                     Push(n);
                     break;
-                case UdtPropertyAccess n:
+                case MethodCall n:
                     Push(n);
                     break;
+                
 
                 // Windowed functions are rather special
                 case OverClause n:
@@ -86,7 +90,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             stack.Push(n);
         }
 
-        void Push(UdtPropertyAccess n)
+        void Push(MemberAccess n)
+        {
+            stack.Push(n);
+        }
+
+        void Push(MethodCall n)
         {
             stack.Push(n);
         }
@@ -102,9 +111,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             {
                 var p = stack.Peek();
 
-                // TODO: unary operator ?
+                // TODO: member access and method call
 
-                if (p is FunctionCall || p is UdtPropertyAccess)
+                if (p is FunctionCall)
                 {
                     Output(stack.Pop());
                 }

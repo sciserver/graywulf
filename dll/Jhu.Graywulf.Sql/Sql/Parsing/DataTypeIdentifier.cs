@@ -99,5 +99,10 @@ namespace Jhu.Graywulf.Sql.Parsing
             base.Interpret();
             this.dataTypeReference = DataTypeReference.Interpret(this);
         }
+
+        public static DataTypeIdentifier Create(DataTypeReference dr)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

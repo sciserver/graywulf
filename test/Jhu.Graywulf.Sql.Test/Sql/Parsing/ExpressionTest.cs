@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var sql = "alma";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("alma", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
+            Assert.AreEqual("alma", exp.FindDescendantRecursive<Identifier>().Value);
         }
 
         [TestMethod]
@@ -61,7 +61,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "schema1.table1.column1.property1.property2";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("schema1.table1.column1.property1.property2", exp.Value);
-            Assert.IsTrue(exp.FindDescendantRecursive<ColumnIdentifier>().ColumnReference.IsMultiPartIdentifier);
+            Assert.AreEqual("schema1", exp.FindDescendantRecursive<Operand>().FindDescendant<Identifier>().Value);
+            Assert.AreEqual(".table1.column1.property1.property2", exp.FindDescendantRecursive<Operand>().FindDescendant<MemberAccessList>().Value);
         }
 
         [TestMethod]
@@ -69,7 +70,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var sql = "(alma)";
             var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual("alma", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
+            Assert.AreEqual("alma", exp.FindDescendantRecursive<Identifier>().Value);
         }
 
         [TestMethod]
@@ -78,7 +79,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "a + function(b)";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("function", exp.FindDescendantRecursive<ScalarFunctionCall>().FunctionReference.FunctionName);
+            Assert.AreEqual("function", exp.FindDescendantRecursive<SystemFunctionCall>().FunctionReference.FunctionName);
         }
 
         [TestMethod]
@@ -94,9 +95,11 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var sql = "-table1.column1";
             var exp = ExpressionTestHelper(sql);
+            var op = exp.FindDescendantRecursive<Operand>();
             Assert.AreEqual("-table1.column1", exp.Value);
             Assert.AreEqual("-", exp.FindDescendantRecursive<UnaryOperator>().FindDescendantRecursive<Minus>().Value);
-            Assert.IsTrue(exp.FindDescendantRecursive<ColumnIdentifier>().ColumnReference.IsMultiPartIdentifier);
+            Assert.AreEqual("table1", op.FindDescendant<Identifier>().Value);
+            Assert.AreEqual(".column1", op.FindDescendant<MemberAccessList>().Value);
         }
 
         [TestMethod]
@@ -114,7 +117,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "a+b";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("a+b", exp.Value);
-            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
+            Assert.AreEqual("a", exp.FindDescendantRecursive<Identifier>().Value);
             Assert.AreEqual("+", exp.FindDescendantRecursive<Plus>().Value);
         }
 
@@ -124,7 +127,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "a + b";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("a + b", exp.Value);
-            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
+            Assert.AreEqual("a", exp.FindDescendantRecursive<Identifier>().Value);
             Assert.AreEqual("+", exp.FindDescendantRecursive<Plus>().Value);
         }
 
@@ -134,7 +137,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "a|b";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("a|b", exp.Value);
-            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
+            Assert.AreEqual("a", exp.FindDescendantRecursive<Identifier>().Value);
             Assert.AreEqual("|", exp.FindDescendantRecursive<BinaryOperator>().Value);
         }
 
@@ -144,7 +147,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "a | b";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("a | b", exp.Value);
-            Assert.AreEqual("a", exp.FindDescendantRecursive<ColumnIdentifier>().Value);
+            Assert.AreEqual("a", exp.FindDescendantRecursive<Identifier>().Value);
             Assert.AreEqual("|", exp.FindDescendantRecursive<BinaryOperator>().Value);
         }
 

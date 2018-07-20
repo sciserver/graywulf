@@ -142,11 +142,12 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> IndexName = () => Identifier;
         public static Expression<Rule> DerivedTable = () => Identifier;
         public static Expression<Rule> TableAlias = () => Identifier;
+        public static Expression<Rule> FunctionName = () => Identifier;
+        public static Expression<Rule> DataTypeName = () => Identifier;
         public static Expression<Rule> MethodName = () => Identifier;
         public static Expression<Rule> ColumnName = () => Identifier;
         public static Expression<Rule> ColumnAlias = () => Identifier;
         public static Expression<Rule> CursorName = () => Identifier;
-        public static Expression<Rule> UdtColumnName = () => Identifier;
         public static Expression<Rule> PropertyName = () => Identifier;
         public static Expression<Rule> SampleNumber = () => NumericConstant;
         public static Expression<Rule> RepeatSeed = () => NumericConstant;
@@ -158,15 +159,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 DatasetName,
                 May(CommentOrWhitespace),
                 Colon
-            );
-
-        public static Expression<Rule> MultiPartIdentifier = () => NamePartList;
-
-        public static Expression<Rule> NamePartList = () =>
-            Sequence
-            (
-                Identifier,
-                May(Sequence(May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), NamePartList))
             );
 
         #endregion
@@ -190,18 +182,8 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                         May(CommentOrWhitespace),
                         Expression
                     ),
-                    Operand,
-                    ExpressionBrackets
-                ),
-                May     
-                (
-                    // This part cannot appear in itself and always have
-                    // highest precedence
-                    Sequence
-                    (
-                        May(CommentOrWhitespace),
-                        UdtMemberList
-                    )
+                    ExpressionBrackets,
+                    Operand
                 ),
                 May
                 (
@@ -219,33 +201,75 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> ExpressionBrackets = () =>
             Sequence
             (
-                BracketOpen, 
-                May(CommentOrWhitespace), 
-                Expression, 
-                May(CommentOrWhitespace), 
+                BracketOpen,
+                May(CommentOrWhitespace),
+                Expression,
+                May(CommentOrWhitespace),
                 BracketClose
             );
 
         public static Expression<Rule> Operand = () =>
-            Must
+            Sequence
             (
-                Constant,
-                ExpressionSubquery,
+                Must
+                (
+                    Constant,
+                    CountStar,
+                 
+                    SystemVariable,
+                    UserVariable,
 
-                SystemVariable,
-                UserVariable,
+                    ExpressionSubquery,
+                    
+                    SimpleCaseExpression,
+                    SearchedCaseExpression,
 
-                SimpleCaseExpression,
-                SearchedCaseExpression,
+                    UdtStaticMethodCall,            // udt::method() syntax
+                    UdtStaticPropertyAccess,        // udt::property syntax
 
-                UdtStaticMethodCall,            // ::method() syntax
-                UdtStaticPropertyAccess,        // ::property syntax
+                    WindowedFunctionCall,           // dbo.function() OVER () syntax
+                    SystemFunctionCall,             // function()
 
-                WindowedFunctionCall,           // OVER () syntax
-                ScalarFunctionCall,             // function()
-                CountStar,
+                    Identifier
+                ),
+                May
+                (
+                    Sequence
+                    (
+                        May(CommentOrWhitespace),
+                        MemberAccessList
+                    )
+                )
+            );
 
-                ColumnIdentifier                // This parses all name.name.name ...
+        public static Expression<Rule> MemberAccess = () =>
+            Sequence
+            (
+                Dot,
+                May(CommentOrWhitespace),
+                Identifier,
+                May
+                (
+                    Sequence
+                    (
+                        May(CommentOrWhitespace),
+                        FunctionArguments
+                    )
+                )
+            );
+
+        public static Expression<Rule> MemberAccessList = () =>
+            Sequence
+            (
+                MemberAccess,
+                May
+                (
+                    Sequence
+                    (
+                        May(CommentOrWhitespace),
+                        MemberAccessList
+                    )
+                )
             );
 
         public static Expression<Rule> Constant = () =>
@@ -277,13 +301,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
         public static Expression<Rule> SystemVariable = () => Variable2;
 
-        public static Expression<Rule> UdtMemberList = () =>
-            Sequence
-            (
-                Must(UdtMethodCall, UdtPropertyAccess),
-                May(Sequence(May(CommentOrWhitespace), UdtMemberList))
-            );
-
         #endregion
         #region Logical expressions
 
@@ -300,9 +317,9 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 (
                     Sequence
                     (
-                        May(CommentOrWhitespace), 
-                        LogicalOperator, 
-                        May(CommentOrWhitespace), 
+                        May(CommentOrWhitespace),
+                        LogicalOperator,
+                        May(CommentOrWhitespace),
                         LogicalExpression
                     )
                 )
@@ -533,7 +550,17 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 )
             );
 
-        public static Expression<Rule> ColumnIdentifier = () => MultiPartIdentifier;
+        public static Expression<Rule> ColumnIdentifier = () =>
+            Sequence
+            (
+                Must
+                (
+                    Sequence(DatabaseName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), May(Sequence(SchemaName, May(CommentOrWhitespace))), Dot, May(CommentOrWhitespace), TableName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), ColumnName),
+                    Sequence(SchemaName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), TableName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), ColumnName),
+                    Sequence(TableName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), ColumnName),
+                    ColumnName
+                )
+            );
 
         public static Expression<Rule> StarColumnIdentifier = () =>
             Must
@@ -548,14 +575,17 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         // TODO: extend this when implementing array support
 
         // UDT restrictions:
-        // - cannot have a schema name
         // - can only reference types from current database
         // - https://docs.microsoft.com/en-us/previous-versions/sql/sql-server-2008-r2/ms178069(v=sql.105)
 
         public static Expression<Rule> DataTypeIdentifier = () =>
             Sequence
             (
-                MultiPartIdentifier,
+                Must
+                (
+                    Sequence(SchemaName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), DataTypeName),
+                    DataTypeName
+                ),
                 May
                 (
                     Sequence
@@ -595,9 +625,91 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             );
 
         #endregion
-        #region Function call syntax
+        #region Function and method call syntax
 
         public static Expression<Rule> FunctionCall = () => Abstract();
+
+        public static Expression<Rule> ScalarFunctionCall = () =>
+            Inherit
+            (
+                FunctionCall,
+                Sequence
+                (
+                    FunctionIdentifier,
+                    May(CommentOrWhitespace),
+                    FunctionArguments
+                )
+            );
+
+        public static Expression<Rule> SystemFunctionCall = () =>
+            Inherit
+            (
+                FunctionCall,
+                Sequence
+                (
+                    FunctionName,
+                    May(CommentOrWhitespace),
+                    FunctionArguments
+                )
+            );
+
+        public static Expression<Rule> WindowedFunctionCall = () =>
+            Inherit
+            (
+                ScalarFunctionCall,
+                Sequence
+                (
+                    FunctionIdentifier,
+                    May(CommentOrWhitespace),
+                    FunctionArguments,
+                    May(CommentOrWhitespace),
+                    OverClause
+                )
+            );
+
+        public static Expression<Rule> TableValuedFunctionCall = () =>
+            Inherit
+            (
+                FunctionCall,
+                Sequence
+                (
+                    FunctionIdentifier,
+                    May(CommentOrWhitespace),
+                    FunctionArguments
+                )
+            );
+
+        public static Expression<Rule> MethodCall = () => Abstract();
+
+        public static Expression<Rule> UdtMethodCall = () =>
+            Inherit
+            (
+                MethodCall,
+                Sequence
+                (
+                    Dot,
+                    May(CommentOrWhitespace),
+                    MethodName,
+                    May(CommentOrWhitespace),
+                    FunctionArguments
+                )
+            );
+
+        public static Expression<Rule> UdtStaticMethodCall = () =>
+            Inherit
+            (
+                UdtMethodCall,
+                Sequence
+                (
+                    DataTypeIdentifier,
+                    May(CommentOrWhitespace),
+                    DoubleColon,
+                    May(CommentOrWhitespace),
+                    MethodName,
+                    May(CommentOrWhitespace),
+                    FunctionArguments
+                )
+            );
 
         public static Expression<Rule> FunctionArguments = () =>
             Sequence
@@ -618,79 +730,16 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
         public static Expression<Rule> Argument = () => Expression;
 
-        public static Expression<Rule> ScalarFunctionCall = () =>
-            Inherit
-            (
-                FunctionCall,
-                Sequence
-                (
-                    FunctionIdentifier,
-                    May(CommentOrWhitespace),
-                    FunctionArguments
-                )
-            );
-
-        public static Expression<Rule> UdtMethodCall = () =>
-            Inherit
-            (
-                FunctionCall,
-                Sequence
-                (
-                    Dot,
-                    May(CommentOrWhitespace),
-                    MethodName,
-                    May(CommentOrWhitespace),
-                    FunctionArguments
-                )
-            );
-
-        public static Expression<Rule> UdtStaticMethodCall = () =>
-            Inherit
-            (
-                FunctionCall,
-                Sequence
-                (
-                    DataTypeIdentifier,
-                    May(CommentOrWhitespace),
-                    DoubleColon,
-                    May(CommentOrWhitespace),
-                    MethodName,
-                    May(CommentOrWhitespace),
-                    FunctionArguments
-                )
-            );
-        
         public static Expression<Rule> FunctionIdentifier = () =>
             Sequence
             (
-                // Optional dataset prefix
+                
                 May(Sequence(DatasetPrefix, May(CommentOrWhitespace))),
-                MultiPartIdentifier
-            );
-
-        public static Expression<Rule> TableValuedFunctionCall = () =>
-            Inherit
-            (
-                FunctionCall,
-                Sequence
+                Must
                 (
-                    FunctionIdentifier,
-                    May(CommentOrWhitespace),
-                    FunctionArguments
-                )
-            );
-
-        public static Expression<Rule> WindowedFunctionCall = () =>
-            Inherit
-            (
-                FunctionCall,
-                Sequence
-                (
-                    FunctionIdentifier,
-                    May(CommentOrWhitespace),
-                    FunctionArguments,
-                    May(CommentOrWhitespace),
-                    OverClause
+                    Sequence(DatabaseName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), SchemaName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), FunctionName),
+                    Sequence(SchemaName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), FunctionName),
+                    FunctionName
                 )
             );
 
@@ -719,22 +768,32 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         #endregion
         #region Property access syntax
 
+        public static Expression<Rule> PropertyAccess = () => Abstract();
+
         public static Expression<Rule> UdtPropertyAccess = () =>
-            Sequence
+            Inherit
             (
-                Dot,
-                May(CommentOrWhitespace),
-                PropertyName
+                PropertyAccess,
+                Sequence
+                (
+                    Dot,
+                    May(CommentOrWhitespace),
+                    PropertyName
+                )
             );
 
         public static Expression<Rule> UdtStaticPropertyAccess = () =>
-            Sequence
+            Inherit
             (
-                DataTypeIdentifier,
-                May(CommentOrWhitespace),
-                DoubleColon,
-                May(CommentOrWhitespace),
-                PropertyName
+                UdtPropertyAccess,
+                Sequence
+                (
+                    DataTypeIdentifier,
+                    May(CommentOrWhitespace),
+                    DoubleColon,
+                    May(CommentOrWhitespace),
+                    PropertyName
+                )
             );
 
         #endregion
@@ -1170,7 +1229,7 @@ FOR select_statement
                 May(CommentOrWhitespace),
                 TableDefinition
             );
-        
+
         #endregion
 
         #region Common table expressions
@@ -1805,7 +1864,6 @@ FOR select_statement
         public static Expression<Rule> UpdateSetMutator = () =>
             Sequence
             (
-                // TODO: A column identifier megeszi a metódus nevét is
                 ColumnName,
                 May(CommentOrWhitespace),
                 UdtMethodCall
@@ -1864,7 +1922,7 @@ FOR select_statement
         public static Expression<Rule> TableDefinition = () =>
             Sequence
             (
-                    
+
                 BracketOpen,
                 May(CommentOrWhitespace),
                 TableDefinitionList,

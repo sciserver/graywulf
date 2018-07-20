@@ -220,44 +220,46 @@
     <Compile Include="Sql\NameResolution\CursorReference.cs" />
     <Compile Include="Sql\NameResolution\DatabaseObjectReference.cs" />
     <Compile Include="Sql\NameResolution\DatabaseObjectReferenceEqualityComparer.cs" />
+    <Compile Include="Sql\NameResolution\DataTypeReference.cs" />
     <Compile Include="Sql\NameResolution\DataTypeReferenceEqualityComparer.cs" />
+    <Compile Include="Sql\NameResolution\Enum.cs" />
+    <Compile Include="Sql\NameResolution\ExceptionMessages.Designer.cs">
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Sql\NameResolution\FunctionReference.cs" />
     <Compile Include="Sql\NameResolution\FunctionReferenceEqualityComparer.cs" />
+    <Compile Include="Sql\NameResolution\IColumnReference.cs" />
     <Compile Include="Sql\NameResolution\IColumnReferences.cs" />
     <Compile Include="Sql\NameResolution\IConstraintReference.cs" />
     <Compile Include="Sql\NameResolution\ICursorReference.cs" />
     <Compile Include="Sql\NameResolution\IDatabaseObjectReference.cs" />
+    <Compile Include="Sql\NameResolution\IDataTypeReference.cs" />
+    <Compile Include="Sql\NameResolution\IFunctionReference.cs" />
     <Compile Include="Sql\NameResolution\IIndexReference.cs" />
     <Compile Include="Sql\NameResolution\IMethodReference.cs" />
     <Compile Include="Sql\NameResolution\IndexReference.cs" />
     <Compile Include="Sql\NameResolution\IOutputTableProvider.cs" />
     <Compile Include="Sql\NameResolution\IPropertyReference.cs" />
     <Compile Include="Sql\NameResolution\ISourceTableProvider.cs" />
+    <Compile Include="Sql\NameResolution\ITableReference.cs" />
     <Compile Include="Sql\NameResolution\ITargetTableProvider.cs" />
+    <Compile Include="Sql\NameResolution\IVariableReference.cs" />
     <Compile Include="Sql\NameResolution\MethodReference.cs" />
     <Compile Include="Sql\NameResolution\NameResolutionError.cs" />
+    <Compile Include="Sql\NameResolution\NameResolverException.cs" />
+    <Compile Include="Sql\NameResolution\PropertyReference.cs" />
     <Compile Include="Sql\NameResolution\QueryDetails.cs" />
     <Compile Include="Sql\NameResolution\ReferenceBase.cs" />
     <Compile Include="Sql\NameResolution\SqlNameResolver.cs" />
+    <Compile Include="Sql\NameResolution\TableReference.cs" />
     <Compile Include="Sql\NameResolution\TableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\VariableReference.cs" />
-    <Compile Include="Sql\NameResolution\DataTypeReference.cs" />
-    <Compile Include="Sql\NameResolution\Enum.cs" />
-    <Compile Include="Sql\NameResolution\ExceptionMessages.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ExceptionMessages.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Sql\NameResolution\FunctionReference.cs" />
-    <Compile Include="Sql\NameResolution\IColumnReference.cs" />
-    <Compile Include="Sql\NameResolution\IDataTypeReference.cs" />
-    <Compile Include="Sql\NameResolution\IFunctionReference.cs" />
-    <Compile Include="Sql\NameResolution\ITableReference.cs" />
-    <Compile Include="Sql\NameResolution\IVariableReference.cs" />
-    <Compile Include="Sql\NameResolution\NameResolverException.cs" />
-    <Compile Include="Sql\NameResolution\TableReference.cs" />
     <Compile Include="Sql\NameResolution\VariableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\Parsing\BetweenPredicate.cs" />
     <Compile Include="Sql\Parsing\BinaryOperator.cs" />
+    <Compile Include="Sql\Parsing\FunctionName.cs" />
     <Compile Include="Sql\Parsing\ComparisonOperator.cs" />
     <Compile Include="Sql\Parsing\ComparisonPredicate.cs" />
     <Compile Include="Sql\Parsing\ExistsSemiJoinPredicate.cs" />
@@ -274,11 +276,15 @@
     <Compile Include="Sql\Parsing\LogicalExpressionBrackets.cs" />
     <Compile Include="Sql\Parsing\LogicalNotOperator.cs" />
     <Compile Include="Sql\Parsing\MagicTokenBase.cs" />
+    <Compile Include="Sql\Parsing\MemberAccessList.cs" />
+    <Compile Include="Sql\Parsing\MethodCall.cs" />
+    <Compile Include="Sql\Parsing\PropertyName.cs" />
     <Compile Include="Sql\Parsing\Operator.cs" />
     <Compile Include="Sql\Parsing\OrderByArgument.cs" />
     <Compile Include="Sql\Parsing\OrderByClause.cs" />
     <Compile Include="Sql\Parsing\OverClause.cs" />
     <Compile Include="Sql\Parsing\PartitionByClause.cs" />
+    <Compile Include="Sql\Parsing\PropertyAccess.cs" />
     <Compile Include="Sql\Parsing\StarColumnIdentifier.cs" />
     <Compile Include="Sql\Parsing\Argument.cs" />
     <Compile Include="Sql\Parsing\ArgumentList.cs" />
@@ -298,7 +304,6 @@
     <Compile Include="Sql\Parsing\IncludedColumnDefinition.cs" />
     <Compile Include="Sql\Parsing\IndexColumnDefinition.cs" />
     <Compile Include="Sql\Parsing\MethodName.cs" />
-    <Compile Include="Sql\Parsing\MultiPartIdentifier.cs" />
     <Compile Include="Sql\Parsing\Null.cs" />
     <Compile Include="Sql\Parsing\NumericConstant.cs" />
     <Compile Include="Sql\Parsing\PrintStatement.cs" />
@@ -306,6 +311,7 @@
     <Compile Include="Sql\Parsing\Statement.cs" />
     <Compile Include="Sql\Parsing\StatementSeparator.cs" />
     <Compile Include="Sql\Parsing\StatementType.cs" />
+    <Compile Include="Sql\Parsing\SystemFunctionCall.cs" />
     <Compile Include="Sql\Parsing\SystemVariable.cs" />
     <Compile Include="Sql\Parsing\TableConstraint.cs" />
     <Compile Include="Sql\Parsing\TableDeclaration.cs" />
@@ -316,7 +322,6 @@
     <Compile Include="Sql\Parsing\TableOrViewIdentifier.cs" />
     <Compile Include="Sql\Parsing\TableSourceSpecification.cs" />
     <Compile Include="Sql\Parsing\TargetTableSpecification.cs" />
-    <Compile Include="Sql\Parsing\UdtMemberList.cs" />
     <Compile Include="Sql\Parsing\UdtMethodCall.cs" />
     <Compile Include="Sql\Parsing\UdtPropertyAccess.cs" />
     <Compile Include="Sql\Parsing\UdtStaticMethodCall.cs" />

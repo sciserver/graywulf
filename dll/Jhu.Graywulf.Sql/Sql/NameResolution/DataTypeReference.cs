@@ -95,21 +95,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static DataTypeReference Interpret(DataTypeIdentifier di)
         {
-            var mpi = di.FindDescendant<MultiPartIdentifier>();
-
-            if (mpi.PartCount > 3)
-            {
-                throw NameResolutionError.DataTypeIdentifierTooManyParts(di);
-            }
+            var schema = di.FindDescendant<SchemaName>()?.Value;
+            var datatype = di.FindDescendant<DataTypeName>().Value; 
 
             var dr = new DataTypeReference()
             {
-                SchemaName = RemoveIdentifierQuotes(mpi.NamePart2),
-                DatabaseObjectName = RemoveIdentifierQuotes(mpi.NamePart1),
+                SchemaName = RemoveIdentifierQuotes(schema),
+                DatabaseObjectName = RemoveIdentifierQuotes(datatype),
             };
 
-            if (dr.DatasetName == null &&  dr.DatabaseName == null && dr.SchemaName == null &&
-                Schema.SqlServer.Constants.SqlDataTypes.ContainsKey(dr.DatabaseObjectName))
+            if (dr.SchemaName == null && Schema.SqlServer.Constants.SqlDataTypes.ContainsKey(dr.DatabaseObjectName))
             {
                 // System type, this needs to be resolved here to have
                 // access to precision, scale and length

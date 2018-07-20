@@ -231,7 +231,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
         
         [TestMethod]
-        [ExpectedException(typeof(NameResolution.NameResolverException))]
+        [ExpectedException(typeof(Jhu.Graywulf.Parsing.ParserException))]
         public void UdtNameWithTooManyPartsTest()
         {
             // This is not standard T-SQL which doesn't support cross-database UDTs
