@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class MethodCall : IMethodReference
+    public partial class MemberCall
     {
-        public abstract MethodReference MethodReference { get; set; }
+        public MemberName MemberName
+        {
+            get { return FindDescendant<MemberName>(); }
+        }
 
         public FunctionArguments FunctionArguments
         {

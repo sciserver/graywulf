@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().Value);
             Assert.AreEqual("table1", exp.FindDescendantRecursive<TableOrViewIdentifier>().Value);
-            Assert.AreEqual("a", exp.FindDescendantRecursive<OrderByClause>().FindDescendantRecursive<ColumnIdentifier>().Value);
+            Assert.AreEqual("a", exp.FindDescendantRecursive<OrderByClause>().FindDescendantRecursive<Operand>().Value);
         }
 
         [TestMethod]

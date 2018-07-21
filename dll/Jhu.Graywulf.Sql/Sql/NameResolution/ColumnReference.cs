@@ -344,12 +344,20 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var star = ce.StarColumnIdentifier;
             var alias = ce.ColumnAlias;
 
+            /*
+            /* TODO: review this, determining if it's a single column is
+             * only possible once columns name are resolved but not right
+             * after parsing */
+            /*
             if (exp != null && exp.IsSingleColumn)
             {
                 var ci = exp.FindDescendantRecursive<ColumnIdentifier>();
                 cr = ci.ColumnReference;
             }
-            else if (star != null)
+            else
+            */
+            
+            if (star != null)
             {
                 cr = star.ColumnReference;
             }

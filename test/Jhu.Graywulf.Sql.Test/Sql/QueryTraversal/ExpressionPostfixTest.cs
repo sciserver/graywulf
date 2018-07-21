@@ -82,22 +82,22 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         public void FunctionTest()
         {
             var res = Execute("f(a)");
-            Assert.AreEqual(", a f ", res);
+            Assert.AreEqual("a f `1 ", res);
 
             res = Execute("f()");
-            Assert.AreEqual("f ", res);
+            Assert.AreEqual("f `0 ", res);
 
             res = Execute("f(a, b)");
-            Assert.AreEqual(", a , b f ", res);
+            Assert.AreEqual("a , b f `2 ", res);
 
             res = Execute("f(a, b) * g(c, d)");
-            Assert.AreEqual(", a , b f , c , d g * ", res);
+            Assert.AreEqual("a , b f `2 c , d g `2 * ", res);
 
             res = Execute("f(a, g(b))");
-            Assert.AreEqual(", a , , b g f ", res);
+            Assert.AreEqual("a , b g `1 f `2 ", res);
 
             res = Execute("f(a, g(b)) * (a + b)");
-            Assert.AreEqual(", a , , b g f a b + * ", res);
+            Assert.AreEqual("a , b g `1 f `2 a b + * ", res);
         }
 
 
@@ -105,28 +105,28 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         public void WindowedFunctionCallTest()
         {
             var res = Execute("ROW_NUMBER() OVER (ORDER BY x)");
-            Assert.AreEqual("( orderby , x ) over ROW_NUMBER ", res);
+            Assert.AreEqual("( orderby x ) over ROW_NUMBER `0 ", res);
 
             res = Execute("ROW_NUMBER() OVER (ORDER BY x, y)");
-            Assert.AreEqual("( orderby , x , y ) over ROW_NUMBER ", res);
+            Assert.AreEqual("( orderby x , y ) over ROW_NUMBER `0 ", res);
 
             res = Execute("ROW_NUMBER() OVER (ORDER BY x + b * c)");
-            Assert.AreEqual("( orderby , x b c * + ) over ROW_NUMBER ", res);
+            Assert.AreEqual("( orderby x b c * + ) over ROW_NUMBER `0 ", res);
 
             res = Execute("ROW_NUMBER() OVER (PARTITION BY z ORDER BY x)");
-            Assert.AreEqual("( partitionby , z orderby , x ) over ROW_NUMBER ", res);
+            Assert.AreEqual("( partitionby z orderby x ) over ROW_NUMBER `0 ", res);
 
             res = Execute("NTILE(4) OVER (ORDER BY x)");
-            Assert.AreEqual(", 4 ( orderby , x ) over NTILE ", res);
+            Assert.AreEqual("4 ( orderby x ) over NTILE `1 ", res);
 
             res = Execute("NTILE(4) OVER (ORDER BY x, y)");
-            Assert.AreEqual(", 4 ( orderby , x , y ) over NTILE ", res);
+            Assert.AreEqual("4 ( orderby x , y ) over NTILE `1 ", res);
 
             res = Execute("NTILE(4) OVER (ORDER BY x + b * c)");
-            Assert.AreEqual(", 4 ( orderby , x b c * + ) over NTILE ", res);
+            Assert.AreEqual("4 ( orderby x b c * + ) over NTILE `1 ", res);
 
             res = Execute("NTILE(4) OVER (PARTITION BY z ORDER BY x)");
-            Assert.AreEqual(", 4 ( partitionby , z orderby , x ) over NTILE ", res);
+            Assert.AreEqual("4 ( partitionby z orderby x ) over NTILE `1 ", res);
         }
 
         [TestMethod]
@@ -143,34 +143,47 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         public void UdtStaticMethodCallTest()
         {
             var res = Execute("udt::statmethod(a)");
-            Assert.AreEqual(", a udt ::statmethod ", res);
+            Assert.AreEqual("a udt ::statmethod `1 ", res);
 
             res = Execute("udt::statmethod()");
-            Assert.AreEqual("udt ::statmethod ", res);
+            Assert.AreEqual("udt ::statmethod `0 ", res);
 
             res = Execute("udt::statmethod(a, b)");
-            Assert.AreEqual(", a , b udt ::statmethod ", res);
+            Assert.AreEqual("a , b udt ::statmethod `2 ", res);
 
             res = Execute("udt::statmethod1(a, b) * udt::statmethod2(c, d)");
-            Assert.AreEqual(", a , b udt ::statmethod1 , c , d udt ::statmethod2 * ", res);
+            Assert.AreEqual("a , b udt ::statmethod1 `2 c , d udt ::statmethod2 `2 * ", res);
 
             res = Execute("udt::statmethod1(a, udt::statmethod2(b))");
-            Assert.AreEqual(", a , , b udt ::statmethod2 udt ::statmethod1 ", res);
+            Assert.AreEqual("a , b udt ::statmethod2 `1 udt ::statmethod1 `2 ", res);
 
             res = Execute("fudt::statmethod1(a, udt::statmethod2(b)) * (a + b)");
-            Assert.AreEqual(", a , , b udt ::statmethod2 fudt ::statmethod1 a b + * ", res);
+            Assert.AreEqual("a , b udt ::statmethod2 `1 fudt ::statmethod1 `2 a b + * ", res);
         }
 
         [TestMethod]
         public void UdtPropertyAccessAndMethodCallTest()
         {
-            // TODO: how to deal with resolved multi-part identifiers?
-            // the resolves should maybe rewrite the parsing tree?
-
             var res = Execute("udtcol.method1()");
-            Assert.AreEqual("", res);
+            Assert.AreEqual("udtcol .method1 `0 ", res);
 
+            res = Execute("udtcol.method1(a, b)");
+            Assert.AreEqual("udtcol a , b .method1 `2 ", res);
+
+            res = Execute("udtcol.method1(a, b).prop1.method2(c, d)");
+            Assert.AreEqual("udtcol a , b .method1 `2 .prop1 c , d .method2 `2 ", res);
+
+            res = Execute("udtcol.method1(a.prop1, b.method2()).prop2");
+            Assert.AreEqual("udtcol a .prop1 , b .method2 `0 .method1 `2 .prop2 ", res);
+
+            res = Execute("udtcol.method1(a.prop1, b.method2(c)).method3()");
+            Assert.AreEqual("udtcol a .prop1 , b c .method2 `1 .method1 `2 .method3 `0 ", res);
+
+            res = Execute("udtcol.method1(a.prop1, b.method2(c)).method3(d)");
+            Assert.AreEqual("udtcol a .prop1 , b c .method2 `1 .method1 `2 d .method3 `1 ", res);
         }
 
+
+        // TODO: tests with OVER and properties/methods
     }
 }

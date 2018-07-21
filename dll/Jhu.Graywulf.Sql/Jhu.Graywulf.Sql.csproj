@@ -276,8 +276,9 @@
     <Compile Include="Sql\Parsing\LogicalExpressionBrackets.cs" />
     <Compile Include="Sql\Parsing\LogicalNotOperator.cs" />
     <Compile Include="Sql\Parsing\MagicTokenBase.cs" />
+    <Compile Include="Sql\Parsing\MemberAccess.cs" />
     <Compile Include="Sql\Parsing\MemberAccessList.cs" />
-    <Compile Include="Sql\Parsing\MethodCall.cs" />
+    <Compile Include="Sql\Parsing\MemberCall.cs" />
     <Compile Include="Sql\Parsing\PropertyName.cs" />
     <Compile Include="Sql\Parsing\Operator.cs" />
     <Compile Include="Sql\Parsing\OrderByArgument.cs" />

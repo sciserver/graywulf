@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<FunctionName>(); }
         }
 
-        public override FunctionReference FunctionReference
+        public FunctionReference FunctionReference
         {
             get { return FunctionName.FunctionReference; }
             set { FunctionName.FunctionReference = value; }

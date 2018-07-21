@@ -7,15 +7,35 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class FunctionCall : IFunctionReference
+    public partial class FunctionCall
     {
-        public abstract FunctionReference FunctionReference { get; set; }
+        private int argumentCount;
+
+        public int ArgumentCount
+        {
+            get { return argumentCount; }
+            set { argumentCount = value; }
+        }
 
         public FunctionArguments FunctionArguments
         {
             get { return FindDescendant<FunctionArguments>(); }
         }
-        
+
+        protected override void OnInitializeMembers()
+        {
+            base.OnInitializeMembers();
+            this.argumentCount = 0;
+        }
+
+        protected override void OnCopyMembers(object other)
+        {
+            base.OnCopyMembers(other);
+            var old = (FunctionCall)other;
+            this.argumentCount = old.argumentCount;
+        }
+
+
         // TODO: delete this, only used by unit tests
         public IEnumerable<Argument> EnumerateArguments()
         {

@@ -28,9 +28,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<ColumnName>(); }
         }
 
-        public MethodCall MethodCall
+        public UdtMethodCall MethodCall
         {
-            get { return FindDescendant<MethodCall>(); }
+            get { return FindDescendant<UdtMethodCall>(); }
         }
 
         protected override void OnInitializeMembers()

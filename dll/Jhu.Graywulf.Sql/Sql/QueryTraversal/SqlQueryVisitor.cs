@@ -838,9 +838,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         protected void DispatchExpressionNode(Token node)
         {
-            throw new NotImplementedException();
-
-            /*
             switch (node)
             {
                 case UnaryOperator n:
@@ -849,16 +846,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case BinaryOperator n:
                     VisitNode(n);
                     break;
-                case ExpressionBrackets n:
-                    TraverseExpressionBrackets(n);
-                    break;
                 case Operand n:
                     TraverseOperand(n);
-                    break;
-                case MethodCall n:
-                    throw new NotImplementedException();
-                case UdtMemberList n:
-                    TraverseUdtMembersList(n);
                     break;
                 case Expression n:
                     TraverseExpressionNode(n);
@@ -866,7 +855,97 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 default:
                     break;
             }
-            */
+        }
+
+        private void TraverseOperand(Operand node)
+        {
+            var operand = (Node)node.Stack.First.Value;
+            var memberlist = node.FindDescendant<MemberAccessList>();
+
+            DispatchOperand(operand);
+
+            if (memberlist != null)
+            {
+                TraverseMemberAccessList(memberlist);
+            }
+        }
+
+        protected virtual void DispatchOperand(Node node)
+        {
+            switch (node)
+            {
+                case Constant n:
+                    VisitNode(n);
+                    break;
+                case CountStar n:
+                    VisitNode(n);
+                    break;
+
+                case SystemVariable n:
+                    VisitNode(n);
+                    VisitReference(n);
+                    break;
+                case UserVariable n:
+                    VisitNode(n);
+                    VisitReference(n);
+                    break;
+
+                case ExpressionSubquery n:
+                    VisitNode(n);
+                    break;
+                case ExpressionBrackets n:
+                    TraverseExpressionBrackets(n);
+                    break;
+
+                case SimpleCaseExpression n:
+                    TraverseSimpleCaseExpression(n);
+                    break;
+                case SearchedCaseExpression n:
+                    TraverseSearchedCaseExpression(n);
+                    break;
+
+                case SystemFunctionCall n:
+                    TraverseSystemFunctionCall(n);
+                    VisitReference(n);
+                    break;
+                case WindowedFunctionCall n:
+                    TraverseWindowedFunctionCall(n);
+                    VisitReference(n);
+                    break;
+                case ScalarFunctionCall n:
+                    TraverseScalarFunctionCall(n);
+                    VisitReference(n);
+                    break;
+                case TableValuedFunctionCall n:
+                    TraverseTableValuedFunctionCall(n);
+                    VisitReference(n);
+                    break;
+
+                case UdtStaticMethodCall n:
+                    TraverseUdtStaticMethodCall(n);
+                    VisitReference(n);
+                    break;
+                case UdtMethodCall n:
+                    TraverseUdtMethodCall(n);
+                    VisitReference(n);
+                    break;
+
+                case UdtStaticPropertyAccess n:
+                    TraverseUdtStaticPropertyAccess(n);
+                    VisitReference(n);
+                    break;
+                case UdtPropertyAccess n:
+                    TraverseUdtPropertyAccess(n);
+                    VisitReference(n);
+                    break;
+
+                case ObjectName n:
+                    VisitNode(n);
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         private void TraverseExpressionBrackets(ExpressionBrackets node)
@@ -888,140 +967,70 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseOperand(Operand node)
+        private void TraverseMemberAccessList(MemberAccessList node)
         {
-            var operand = (Node)node.Stack.First.Value;
-
-            DispatchOperand(operand);
-        }
-
-        protected virtual void DispatchOperand(Node node)
-        {
-            switch (node)
+            foreach (var nn in node.Stack)
             {
-                case Constant n:
-                    VisitNode(n);
-                    break;
-                case ExpressionSubquery n:
-                    VisitNode(n);
-                    break;
-                case SystemVariable n:
-                    VisitNode(n);
-                    VisitReference(n);
-                    break;
-                case UserVariable n:
-                    VisitNode(n);
-                    VisitReference(n);
-                    break;
-                case CountStar n:
-                    VisitNode(n);
-                    break;
-                case ColumnIdentifier n:
-                    TraverseColumnIdentifier(n);
-                    break;
-                case UdtStaticPropertyAccess n:
-                    VisitNode(n);
-                    VisitReference(n);
-                    break;
-                case FunctionCall n:
-                    TraverseFunctionCall(n);
-                    break;
-                case SimpleCaseExpression n:
-                    TraverseSimpleCaseExpression(n);
-                    break;
-                case SearchedCaseExpression n:
-                    TraverseSearchedCaseExpression(n);
-                    break;
-                default:
-                    throw new NotImplementedException();
+                switch (nn)
+                {
+                    case MemberCall n:
+                        TraverseMemberCall(n);
+                        break;
+                    case MemberAccess n:
+                        TraverseMemberAccess(n);
+                        break;
+                    case MemberAccessList n:
+                        TraverseMemberAccessList(n);
+                        break;
+                }
             }
         }
-        
-        private void TraverseColumnIdentifier(ColumnIdentifier node)
-        {
-            // TODO: if resolved, try to split into column name and property access
 
+        private void TraverseMemberAccess(MemberAccess node)
+        {
+            VisitNode(node.MemberName);
             VisitNode(node);
-            VisitReference(node);
-        }
-
-        private void TraversePropertyAccess(PropertyAccess node)
-        {
-            VisitReference(node);
-            DispatchPropertyAccess(node);
-        }
-
-        protected virtual void DispatchPropertyAccess(PropertyAccess node)
-        {
-            switch (node)
-            {
-                case UdtStaticPropertyAccess n:
-                    TraverseUdtStaticPropertyAccess(n);
-                    break;
-                case UdtPropertyAccess n:
-                    TraverseUdtPropertyAccess(n);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        private void TraverseUdtStaticPropertyAccess(UdtStaticPropertyAccess node)
-        {
-            throw new NotImplementedException();
         }
 
         private void TraverseUdtPropertyAccess(UdtPropertyAccess node)
         {
-            throw new NotImplementedException();
+            VisitNode(node.PropertyName);
+            VisitNode(node);
         }
 
-        private void TraverseFunctionCall(FunctionCall node)
+        private void TraverseUdtStaticPropertyAccess(UdtStaticPropertyAccess node)
         {
-            VisitReference(node);
-            DispatchFunctionCall(node);
+            VisitNode(node.DataTypeIdentifier);
+            VisitNode(node.PropertyName);
+            VisitNode(node);
         }
 
-        protected virtual void DispatchFunctionCall(FunctionCall node)
+        private void TraverseMemberCall(MemberCall node)
         {
-            switch (node)
-            {
-                case SystemFunctionCall n:
-                    TraverseSystemFunctionCall(n);
-                    break;
-                case WindowedFunctionCall n:
-                    TraverseWindowedFunctionCall(n);
-                    break;
-                case ScalarFunctionCall n:
-                    TraverseScalarFunctionCall(n);
-                    break;
-                case TableValuedFunctionCall n:
-                    TraverseTableValuedFunctionCall(n);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
+            VisitNode(node.MemberName);
+            VisitNode(node);
+            TraverseFunctionArguments(node);
         }
 
         private void TraverseSystemFunctionCall(SystemFunctionCall node)
         {
             VisitNode(node.FunctionName);
             VisitNode(node);
-            TraverseFunctionArguments(node.FunctionArguments);
+            TraverseFunctionArguments(node);
         }
 
         private void TraverseScalarFunctionCall(ScalarFunctionCall node)
         {
             VisitNode(node.FunctionIdentifier);
             VisitNode(node);
-            TraverseFunctionArguments(node.FunctionArguments);
+            TraverseFunctionArguments(node);
         }
 
         private void TraverseTableValuedFunctionCall(TableValuedFunctionCall node)
         {
             VisitNode(node.FunctionIdentifier);
             VisitNode(node);
-            TraverseFunctionArguments(node.FunctionArguments);
+            TraverseFunctionArguments(node);
         }
 
         private void TraverseWindowedFunctionCall(WindowedFunctionCall node)
@@ -1032,30 +1041,15 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             VisitNode(node.FunctionIdentifier);
             VisitNode(node);
-            TraverseFunctionArguments(node.FunctionArguments);
+            TraverseFunctionArguments(node);
             TraverseOverClause(node.OverClause);
         }
-
-        protected virtual void DispatchMethodCall(MethodCall node)
-        {
-            switch (node)
-            {
-                case UdtStaticMethodCall n:
-                    TraverseUdtStaticMethodCall(n);
-                    break;
-                case UdtMethodCall n:
-                    TraverseUdtMethodCall(n);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
+        
         private void TraverseUdtMethodCall(UdtMethodCall node)
         {
             VisitNode(node.MethodName);
             VisitNode(node);
-            TraverseFunctionArguments(node.FunctionArguments);
+            TraverseFunctionArguments(node);
         }
 
         private void TraverseUdtStaticMethodCall(UdtStaticMethodCall node)
@@ -1063,12 +1057,14 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             VisitNode(node.DataTypeIdentifier);
             VisitNode(node.MethodName);
             VisitNode(node);
-            TraverseFunctionArguments(node.FunctionArguments);
+            TraverseFunctionArguments(node);
         }
 
-        private void TraverseFunctionArguments(FunctionArguments node)
+        private void TraverseFunctionArguments(FunctionCall node)
         {
-            foreach (var nn in node.Stack)
+            int argumentCount = 0;
+
+            foreach (var nn in node.FunctionArguments.Stack)
             {
                 switch (nn)
                 {
@@ -1076,7 +1072,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         VisitNode(n);
                         break;
                     case ArgumentList n:
-                        TraverseArgumentList(n);
+                        TraverseArgumentList(n, ref argumentCount);
+                        node.ArgumentCount = argumentCount;
                         break;
                     case BracketClose n:
                         VisitNode(n);
@@ -1085,17 +1082,21 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseArgumentList(ArgumentList node)
+        private void TraverseArgumentList(ArgumentList node, ref int argumentCount)
         {
             foreach (var nn in node.Stack)
             {
                 switch (nn)
                 {
+                    case Comma n:
+                        VisitNode(n);
+                        break;
                     case Argument n:
                         TraverseArgument(n);
+                        argumentCount++;
                         break;
                     case ArgumentList n:
-                        TraverseArgumentList(n);
+                        TraverseArgumentList(n, ref argumentCount);
                         break;
                 }
             }
@@ -1103,8 +1104,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseArgument(Argument node)
         {
-            VisitNode(node);
             TraverseExpressionNode(node.Expression);
+            VisitNode(node);
         }
 
         private void TraverseOverClause(OverClause node)
@@ -1166,9 +1167,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             {
                 switch (nn)
                 {
-                    case OrderByArgument n:
+                    case Comma n:
                         VisitNode(n);
+                        break;
+                    case OrderByArgument n:
                         TraverseExpression(n.Expression);
+                        VisitNode(n);
                         break;
                     case OrderByArgumentList n:
                         TraverseOrderByArgumentList(n);
@@ -1367,7 +1371,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             VisitNode(node);
             TraverseExpression(node.Operand);
-            TraverseArgumentList(node.ArgumentList);
+            int argc = 0;
+            TraverseArgumentList(node.ArgumentList, ref argc);
         }
 
         private void TraverseInSemiJoinPredicate(InSemiJoinPredicate node)
@@ -1583,7 +1588,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseFunctionTableSource(FunctionTableSource node)
         {
-            TraverseFunctionCall(node.FunctionCall);
+            TraverseTableValuedFunctionCall(node.FunctionCall);
             VisitNode(node);
         }
 

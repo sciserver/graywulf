@@ -151,8 +151,12 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> PropertyName = () => Identifier;
         public static Expression<Rule> SampleNumber = () => NumericConstant;
         public static Expression<Rule> RepeatSeed = () => NumericConstant;
-        public static Expression<Rule> IndexValue = () => Identifier;
 
+        // There are used for the generic multi-part names before name resolution,
+        // then replaced with context-specific nodes
+        public static Expression<Rule> ObjectName = () => Identifier;
+        public static Expression<Rule> MemberName = () => Identifier;
+        
         public static Expression<Rule> DatasetPrefix = () =>
             Sequence
             (
@@ -182,7 +186,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                         May(CommentOrWhitespace),
                         Expression
                     ),
-                    ExpressionBrackets,
                     Operand
                 ),
                 May
@@ -198,16 +201,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 )
             );
 
-        public static Expression<Rule> ExpressionBrackets = () =>
-            Sequence
-            (
-                BracketOpen,
-                May(CommentOrWhitespace),
-                Expression,
-                May(CommentOrWhitespace),
-                BracketClose
-            );
-
         public static Expression<Rule> Operand = () =>
             Sequence
             (
@@ -215,12 +208,13 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 (
                     Constant,
                     CountStar,
-                 
+
                     SystemVariable,
                     UserVariable,
 
                     ExpressionSubquery,
-                    
+                    ExpressionBrackets,
+
                     SimpleCaseExpression,
                     SearchedCaseExpression,
 
@@ -230,7 +224,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                     WindowedFunctionCall,           // dbo.function() OVER () syntax
                     SystemFunctionCall,             // function()
 
-                    Identifier
+                    ObjectName
                 ),
                 May
                 (
@@ -242,26 +236,24 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 )
             );
 
-        public static Expression<Rule> MemberAccess = () =>
+        public static Expression<Rule> ExpressionBrackets = () =>
             Sequence
             (
-                Dot,
+                BracketOpen,
                 May(CommentOrWhitespace),
-                Identifier,
-                May
-                (
-                    Sequence
-                    (
-                        May(CommentOrWhitespace),
-                        FunctionArguments
-                    )
-                )
+                Expression,
+                May(CommentOrWhitespace),
+                BracketClose
             );
 
         public static Expression<Rule> MemberAccessList = () =>
             Sequence
             (
-                MemberAccess,
+                Must
+                (
+                    MemberCall,
+                    MemberAccess
+                ),
                 May
                 (
                     Sequence
@@ -269,6 +261,29 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                         May(CommentOrWhitespace),
                         MemberAccessList
                     )
+                )
+            );
+
+
+        public static Expression<Rule> MemberAccess = () =>
+            Sequence
+            (
+                Dot,
+                May(CommentOrWhitespace),
+                MemberName
+            );
+
+        public static Expression<Rule> MemberCall = () =>
+            Inherit
+            (
+                FunctionCall,
+                Sequence
+                (
+                    Dot,
+                    May(CommentOrWhitespace),
+                    MemberName,
+                    May(CommentOrWhitespace),
+                    FunctionArguments
                 )
             );
 
@@ -679,7 +694,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 )
             );
 
-        public static Expression<Rule> MethodCall = () => Abstract();
+        public static Expression<Rule> MethodCall = () => Abstract(FunctionCall);
 
         public static Expression<Rule> UdtMethodCall = () =>
             Inherit
@@ -733,7 +748,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> FunctionIdentifier = () =>
             Sequence
             (
-                
+
                 May(Sequence(DatasetPrefix, May(CommentOrWhitespace))),
                 Must
                 (

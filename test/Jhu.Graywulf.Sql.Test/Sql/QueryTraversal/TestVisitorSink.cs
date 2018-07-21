@@ -52,6 +52,14 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             w.Write(token.Value + " ");
         }
 
+        private void Write(FunctionCall node)
+        {
+            if (visitor.Options.ExpressionTraversal != ExpressionTraversalMode.Infix)
+            {
+                w.Write("`" + node.ArgumentCount + " ");
+            }
+        }
+
         public virtual void Accept(UnaryOperator node)
         {
             Write(node);
@@ -69,6 +77,24 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         public virtual void Accept(BracketClose node)
         {
+            Write(node);
+        }
+
+        public virtual void Accept(ObjectName node)
+        {
+            Write(node);
+        }
+
+        public virtual void Accept(MemberAccess node)
+        {
+            Write(".");
+            Write(node.MemberName);
+        }
+
+        public virtual void Accept(MemberCall node)
+        {
+            Write(".");
+            Write(node.MemberName);
             Write(node);
         }
 
@@ -109,41 +135,46 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             Write(node.PropertyName);
         }
 
-        public virtual void Accept(UdtStaticMethodCall node)
-        {
-            Write(node.DataTypeIdentifier);
-            Write("::");
-            Write(node.MethodName);
-        }
-
         public virtual void Accept(UdtPropertyAccess node)
         {
             Write(".");
             Write(node.PropertyName);
         }
 
+        public virtual void Accept(UdtStaticMethodCall node)
+        {
+            Write(node.DataTypeIdentifier);
+            Write("::");
+            Write(node.MethodName);
+            Write(node);
+        }
+
         public virtual void Accept(UdtMethodCall node)
         {
             Write(".");
             Write(node.MethodName);
+            Write(node);
+        }
+
+        public virtual void Accept(SystemFunctionCall node)
+        {
+            Write(node.FunctionName);
+            Write(node);
         }
 
         public virtual void Accept(ScalarFunctionCall node)
         {
             Write(node.FunctionIdentifier);
+            Write(node);
         }
 
         public virtual void Accept(WindowedFunctionCall node)
         {
             Write(node.FunctionIdentifier);
+            Write(node);
         }
 
-        public virtual void Accept(Argument node)
-        {
-            Write(", ");
-        }
-
-        public virtual void Accept(OrderByArgument node)
+        public virtual void Accept(Comma node)
         {
             Write(", ");
         }

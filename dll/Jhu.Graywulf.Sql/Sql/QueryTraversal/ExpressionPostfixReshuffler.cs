@@ -8,13 +8,16 @@ using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.QueryTraversal
 {
+    /// <summary>
+    /// Implements a specialized version of the shuntling yard algorithm to output
+    /// expressions in reverse polish notation.
+    /// </summary>
     class ExpressionPostfixReshuffler : ExpressionReshuffler
     {
-
         private Stack<Token> stack;
 
         public ExpressionPostfixReshuffler(SqlQueryVisitor visitor, SqlQueryVisitorSink sink)
-            :base(visitor, sink)
+            : base(visitor, sink)
         {
             InitializeMembers();
         }
@@ -26,9 +29,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         public override void Route(Token node)
         {
-            throw new NotImplementedException();
-            // TODO: review
-
             switch (node)
             {
                 case SimpleCaseExpression n:
@@ -37,10 +37,14 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     throw new NotImplementedException();
 
                 // Function calls and property/member access
-                case UdtStaticPropertyAccess n:
-                    Output(node);
+                case MemberAccess n:
+                    Push(n);
                     break;
-                case UdtStaticMethodCall n:
+                case PropertyAccess n:
+                    Push(n);
+                    break;
+
+                case SystemFunctionCall n:
                     Push(n);
                     break;
                 case WindowedFunctionCall n:
@@ -49,14 +53,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case ScalarFunctionCall n:
                     Push(n);
                     break;
-                case MemberAccess n:
-                    Push(n);
-                    break;
                 case MethodCall n:
                     Push(n);
                     break;
-                
-
+                case MemberCall n:
+                    Push(n);
+                    break;
+                    
                 // Windowed functions are rather special
                 case OverClause n:
                     Push(n);
@@ -70,6 +73,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     Push(n);
                     break;
 
+                case Comma n:
+                    Push(n);
+                    break;
+
                 // Brackets
                 case BracketOpen n:
                     Push(n);
@@ -78,24 +85,42 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     Pop(n);
                     break;
 
-                // Default behavior
-                default:
+                // Operands and other important tokens that go directly
+                // to the output
+                case Constant c:
+                case CountStar cs:
+                case SystemVariable sv:
+                case UserVariable uv:
+                case ExpressionSubquery sq:
+                case ObjectName on:
                     Output(node);
+                    break;
+
+                // Default behavior: skip token
+                default:
                     break;
             }
         }
 
+        #region Method and function calls
+
+        // Methods act on the previous result so must empty the top of
+        // the operator stack first. Functions are simply pushed to the top
+        // and arguments are counted.
+
+        private void Push(MethodCall n)
+        {
+            FlushTop(n);
+            stack.Push(n);
+        }
+
+        private void Push(MemberCall n)
+        {
+            FlushTop(n);
+            stack.Push(n);
+        }
+
         void Push(FunctionCall n)
-        {
-            stack.Push(n);
-        }
-
-        void Push(MemberAccess n)
-        {
-            stack.Push(n);
-        }
-
-        void Push(MethodCall n)
         {
             stack.Push(n);
         }
@@ -104,40 +129,44 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             stack.Push(n);
         }
+
+        #endregion
         
-        void Push(Operator n)
+        void Push(PropertyAccess n)
         {
-            while (stack.Count > 0)
+            FlushTop(n);
+            Output(n);
+        }
+
+        private void Push(MemberAccess n)
+        {
+            FlushTop(n);
+            Output(n);
+        }
+
+
+        private void Push(Operator n)
+        {
+            FlushTop(n);
+            stack.Push(n);
+        }
+
+        private void Push(Comma n)
+        {
+            // Pop operator stack to have the function call on top
+            while (!(stack.Peek() is BracketOpen))
             {
-                var p = stack.Peek();
-
-                // TODO: member access and method call
-
-                if (p is FunctionCall)
-                {
-                    Output(stack.Pop());
-                }
-                else if (p is Operator op &&
-                        (op.Precedence < n.Precedence ||
-                         op.LeftAssociative && op.Precedence == n.Precedence))
-                {
-                    Output(stack.Pop());
-                }
-                else
-                {
-                    break;
-                }
+                Output(stack.Pop());
             }
-
-            stack.Push(n);
+            Output(n);
         }
-
-        void Push(BracketOpen n)
+        
+        private void Push(BracketOpen n)
         {
             stack.Push(n);
         }
 
-        void Pop(BracketClose n)
+        private void Pop(BracketClose n)
         {
             // Empty down stack to first opening bracket
             // No need to test bracket pairing, that's done by parser
@@ -152,6 +181,35 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 {
                     Output(op);
                 }
+            }
+        }
+
+        private void FlushTop(Node n)
+        {
+            while (stack.Count > 0)
+            {
+                var p = stack.Peek();
+
+                if (p is FunctionCall || p is MethodCall || p is MemberCall)
+                {
+                    Output(stack.Pop());
+                    continue;
+                }
+                else
+                {
+                    var op1 = p as Operator;
+                    var op2 = n as Operator;
+
+                    if (op1 != null && op2 != null &&
+                       (op1.Precedence < op2.Precedence ||
+                        op1.LeftAssociative && op1.Precedence == op2.Precedence))
+                    {
+                        Output(stack.Pop());
+                        continue;
+                    }
+                }
+
+                break;
             }
         }
 
