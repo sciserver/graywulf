@@ -51,6 +51,11 @@ namespace Jhu.Graywulf.Parsing.Generator
             return null;
         }
 
+        public static Expression Abstract(Expression<Rule> inheritedRule)
+        {
+            return null;
+        }
+
         public static Expression Inherit()
         {
             return null;

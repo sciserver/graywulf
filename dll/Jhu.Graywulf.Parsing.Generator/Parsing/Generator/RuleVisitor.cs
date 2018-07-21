@@ -64,6 +64,18 @@ namespace Jhu.Graywulf.Parsing.Generator
             if (method.Name == nameof(Grammar.Abstract))
             {
                 isAbstractRule = true;
+
+                if (args.Length == 0)
+                {
+                    baseRule = null;
+                    skipArgument = false;
+                }
+                else if (args.Length == 1)
+                {
+                    baseRule = ((MemberExpression)args[0]).Member.Name;
+                    skipArgument = true;
+                    isInheritRule = true;
+                }
             }
             else if (method.Name == nameof(Grammar.Inherit))
             {

@@ -434,8 +434,19 @@ namespace Jhu.Graywulf.Parsing.Generator
                 // No Match algorithm will be generated
                 isAbstract = true;
                 rule = null;
+
+                if (args.Length == 0)
+                {
+                }
+                else if (args.Length == 1)
+                {
+                    // Override the rule but keep abstract
+                    inheritedRule = ((MemberExpression)args[0]).Member.Name;
+                    inheritedGrammar = FindDefiningGrammar(inheritedRule, true);
+                    isInherited = true;
+                }
             }
-            if (rule != null && method != null && method.Name == nameof(Grammar.Override))
+            else if (rule != null && method != null && method.Name == nameof(Grammar.Override))
             {
                 if (args.Length == 0)
                 {
