@@ -15,12 +15,12 @@ namespace Jhu.Graywulf.Parsing
     {
         #region Private member variables
 
-        private TokenStack stack;
+        private TokenList stack;
 
         #endregion
         #region Properties
 
-        public TokenStack Stack
+        public TokenList Stack
         {
             get { return stack; }
         }
@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Parsing
         {
             get
             {
-                foreach (var i in stack)
+                foreach (var i in stack.Forward)
                 {
                     // this part rools up tree if the same node is found as child
                     if (i.GetType() == this.GetType())
@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Parsing
             get
             {
                 var sb = new StringBuilder();
-                foreach (var n in stack)
+                foreach (var n in stack.Forward)
                 {
                     sb.Append(n.Value);
                 }
@@ -95,7 +95,7 @@ namespace Jhu.Graywulf.Parsing
         {
             base.OnInitializeMembers();
 
-            this.stack = new TokenStack();
+            this.stack = new TokenList();
         }
 
         protected override void OnCopyMembers(object other)
@@ -104,9 +104,9 @@ namespace Jhu.Graywulf.Parsing
 
             var old = (Node)other;
 
-            this.stack = new TokenStack();
+            this.stack = new TokenList();
 
-            foreach (var t in old.stack)
+            foreach (var t in old.stack.Forward)
             {
                 var nt = (Token)t.Clone();
                 nt.Parent = this;
@@ -218,7 +218,7 @@ namespace Jhu.Graywulf.Parsing
         public T FindDescendant<T>()
             where T : Token
         {
-            return (T)stack.FirstOrDefault(i => i is T);
+            return (T)stack.Forward.FirstOrDefault(i => i is T);
         }
 
         /// <summary>
@@ -283,7 +283,7 @@ namespace Jhu.Graywulf.Parsing
         public T FindDescendantRecursive<T>()
             where T : Token
         {
-            foreach (var item in stack)
+            foreach (var item in stack.Forward)
             {
                 if ((item is T) && !(item is Whitespace))
                 {
@@ -330,7 +330,7 @@ namespace Jhu.Graywulf.Parsing
         {
             if (stopAtType == null || !stopAtType.IsAssignableFrom(node.GetType()))
             {
-                foreach (object n in node.Stack)
+                foreach (object n in node.Stack.Forward)
                 {
                     // TODO: add parameter to skip whitespaces
                     if ((n is T) && !(n is Whitespace))
@@ -355,30 +355,29 @@ namespace Jhu.Graywulf.Parsing
 
         internal void ExchangeChildren(Parser parser)
         {
-            var item = stack.First;
-
-            while (item != null)
+            for (int i = 0; i < stack.Count; i ++)
             {
-                var o = item.Value;
+                var o = stack[i];
 
                 if (o is Node)
                 {
                     var node = (Node)o;
                     node.ExchangeChildren(parser);
-                    item.Value = parser.Exchange(node);
-                }
+                    var nn = parser.Exchange(node);
 
-                item = item.Next;
+                    if (o != nn)
+                    {
+                        stack[i] = nn;
+                    }
+                }
             }
         }
         
         internal void InterpretChildren()
         {
-            var item = stack.First;
-
-            while (item != null)
+            for (int i = 0; i <stack.Count; i ++)
             {
-                var o = item.Value;
+                var o = stack[i];
 
                 if (o is Node)
                 {
@@ -386,8 +385,6 @@ namespace Jhu.Graywulf.Parsing
                     node.InterpretChildren();
                     node.Interpret();
                 }
-
-                item = item.Next;
             }
         }
 
@@ -399,7 +396,7 @@ namespace Jhu.Graywulf.Parsing
 
         public void ReplaceWith(Node other)
         {
-            this.Parent.Stack.Exchange(this, other);
+            this.Parent.Stack.Replace(this, other);
         }
 
         public void Remove()

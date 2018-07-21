@@ -115,20 +115,5 @@ namespace Jhu.Graywulf.Sql.Parsing
             sl.Stack.AddLast(CommentOrWhitespace.Create(Whitespace.Create()));
             sl.Stack.AddLast(last);
         }
-
-        public void Replace(SelectList last)
-        {
-            var n = Stack.First;
-
-            while (n != null)
-            {
-                if (n.Value is SelectList)
-                {
-                    n.Value = last;
-                }
-
-                n = n.Next;
-            }
-        }
     }
 }

@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             foreach (var v in EnumerateDescendantsRecursive<ValueList>())
             {
-                yield return (Node)v.Stack.First.Value;
+                yield return (Node)v.Stack.First;
             }
         }
     }

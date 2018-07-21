@@ -22,9 +22,12 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             var script = p.Execute<StatementBlock>(query);
 
             SqlNameResolver nr = new SqlNameResolver();
-            nr.DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
-            nr.DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName;
-            nr.DefaultDataTypeDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName;
+            nr.Options = new SqlNameResolverOptions()
+            {
+                DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName,
+                DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName,
+                DefaultDataTypeDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName
+            };
             nr.SchemaManager = CreateSchemaManager();
             var details = nr.Execute(script);
 
@@ -302,7 +305,7 @@ WHERE c.Name = 'test5'";
         [TestMethod]
         public void NoPredicateTest2()
         {
-            var sql = 
+            var sql =
 @"SELECT Title FROM Book
 SELECT Title FROM Book WHERE Year > 2000";
 

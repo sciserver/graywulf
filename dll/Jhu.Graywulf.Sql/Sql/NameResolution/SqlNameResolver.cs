@@ -74,24 +74,32 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #endregion
         #region Private member variables
 
+        private SqlNameResolverOptions options;
         private SqlQueryVisitor visitor;
+        private TokenList memberNameParts;
 
         // The schema manager is used to resolve identifiers that are not local to the details,
         // i.e. database, table, columns etc. names
         private SchemaManager schemaManager;
         private QueryDetails details;
 
-        private string defaultTableDatasetName;
-        private string defaultFunctionDatasetName;
-        private string defaultDataTypeDatasetName;
-        private string defaultOutputDatasetName;
-
         #endregion
         #region Properties
 
-        private SqlQueryVisitor Visitor
+        public SqlNameResolverOptions Options
+        {
+            get { return options; }
+            set { options = value; }
+        }
+
+        protected SqlQueryVisitor Visitor
         {
             get { return visitor; }
+        }
+
+        protected TokenList MemberNameParts
+        {
+            get { return memberNameParts; }
         }
 
         /// <summary>
@@ -103,33 +111,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             set { schemaManager = value; }
         }
 
-        /// <summary>
-        /// Gets or sets the default dataset name to be assumed when no
-        /// dataset is specified
-        /// </summary>
-        public string DefaultTableDatasetName
-        {
-            get { return defaultTableDatasetName; }
-            set { defaultTableDatasetName = value; }
-        }
-
-        public string DefaultFunctionDatasetName
-        {
-            get { return defaultFunctionDatasetName; }
-            set { defaultFunctionDatasetName = value; }
-        }
-
-        public string DefaultDataTypeDatasetName
-        {
-            get { return defaultDataTypeDatasetName; }
-            set { defaultDataTypeDatasetName = value; }
-        }
-
-        public string DefaultOutputDatasetName
-        {
-            get { return defaultOutputDatasetName; }
-            set { defaultOutputDatasetName = value; }
-        }
+        
 
         #endregion
         #region Constructors and initializers
@@ -147,6 +129,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         private void InitializeMembers()
         {
+            this.options = new SqlNameResolverOptions();
             this.visitor = new SqlQueryVisitor(this)
             {
                 Options = new SqlQueryVisitorOptions()
@@ -158,29 +141,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     VisitSchemaReferences = false
                 }
             };
-
+            this.memberNameParts = new TokenList();
             this.schemaManager = null;
             this.details = null;
-
-            this.defaultTableDatasetName = String.Empty;
-            this.defaultFunctionDatasetName = String.Empty;
-            this.defaultDataTypeDatasetName = String.Empty;
-            this.defaultOutputDatasetName = String.Empty;
         }
 
 
         #endregion
         #region Main entry points
-
-        protected internal override void AcceptVisitor(SqlQueryVisitor visitor, Token node)
-        {
-            Accept((dynamic)node);
-        }
-
-        protected virtual void Accept(Token node)
-        {
-            // Default dispatch, do nothing
-        }
 
         /// <summary>
         /// Executes the name resolution over a query
@@ -223,7 +191,20 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         #endregion
-        #region Identifier visitors
+        #region Visitor dispatch functions
+
+        protected internal override void AcceptVisitor(SqlQueryVisitor visitor, Token node)
+        {
+            Accept((dynamic)node);
+        }
+
+        protected virtual void Accept(Token node)
+        {
+            // Default dispatch, do nothing
+        }
+
+        #endregion
+        #region Qualified identifier visitors
 
         protected virtual void Accept(SystemVariable node)
         {
@@ -260,6 +241,29 @@ namespace Jhu.Graywulf.Sql.NameResolution
         protected virtual void Accept(TableOrViewIdentifier node)
         {
             ResolveTableReference(node, null);
+        }
+
+        #endregion
+        #region Multi-part identifier and UDT member access logic
+
+        // These functions implement column name and UDP property/method binding
+        // The logic is the following:
+        // - collect member names during the traversal of ObjectName and member access nodes
+        // - the end of the chain will be marked with a
+
+        protected virtual void Accept(ObjectName node)
+        {
+            memberNameParts.AddLast(node);
+        }
+
+        protected virtual void Accept(MemberAccess node)
+        {
+            memberNameParts.AddLast(node);
+        }
+
+        protected virtual void Accept(MemberCall node)
+        {
+            memberNameParts.AddLast(node);
         }
 
         #endregion
@@ -979,7 +983,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 else if (tr.TableContext.HasFlag(TableContext.UserDefinedFunction))
                 {
-                    tr.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
+                    tr.SubstituteDefaults(SchemaManager, options.DefaultFunctionDatasetName);
                 }
                 else if (tr.TableContext.HasFlag(TableContext.Variable))
                 {
@@ -987,7 +991,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 else
                 {
-                    tr.SubstituteDefaults(SchemaManager, defaultTableDatasetName);
+                    tr.SubstituteDefaults(SchemaManager, options.DefaultTableDatasetName);
                 }
             }
             catch (KeyNotFoundException ex)
@@ -1004,7 +1008,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             try
             {
-                node.TableReference.SubstituteDefaults(SchemaManager, defaultOutputDatasetName);
+                node.TableReference.SubstituteDefaults(SchemaManager, options.DefaultOutputDatasetName);
             }
             catch (KeyNotFoundException ex)
             {
@@ -1027,7 +1031,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 try
                 {
-                    node.FunctionReference.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
+                    node.FunctionReference.SubstituteDefaults(SchemaManager, options.DefaultFunctionDatasetName);
                 }
                 catch (KeyNotFoundException ex)
                 {
@@ -1042,7 +1046,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 try
                 {
-                    dr.SubstituteDefaults(SchemaManager, defaultDataTypeDatasetName);
+                    dr.SubstituteDefaults(SchemaManager, options.DefaultDataTypeDatasetName);
                 }
                 catch (KeyNotFoundException ex)
                 {

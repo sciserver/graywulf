@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         public Statement SpecificStatement
         {
-            get { return (Statement)Stack.First.Value; }
+            get { return (Statement)Stack.First; }
         }
     }
 }

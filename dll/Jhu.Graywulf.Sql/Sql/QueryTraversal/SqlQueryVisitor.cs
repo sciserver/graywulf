@@ -859,7 +859,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseOperand(Operand node)
         {
-            var operand = (Node)node.Stack.First.Value;
+            var operand = (Node)node.Stack.First;
             var memberlist = node.FindDescendant<MemberAccessList>();
 
             DispatchOperand(operand);
@@ -1269,7 +1269,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraversePredicate(Predicate node)
         {
-            var predicate = (Node)node.Stack.First.Value;
+            var predicate = (Node)node.Stack.First;
 
             columnContextStack.Push(ColumnContext | ColumnContext.Predicate);
 

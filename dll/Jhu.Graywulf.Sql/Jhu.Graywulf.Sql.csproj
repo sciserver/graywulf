@@ -253,6 +253,7 @@
     <Compile Include="Sql\NameResolution\QueryDetails.cs" />
     <Compile Include="Sql\NameResolution\ReferenceBase.cs" />
     <Compile Include="Sql\NameResolution\SqlNameResolver.cs" />
+    <Compile Include="Sql\NameResolution\SqlNameResolverOptions.cs" />
     <Compile Include="Sql\NameResolution\TableReference.cs" />
     <Compile Include="Sql\NameResolution\TableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\VariableReference.cs" />

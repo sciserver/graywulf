@@ -131,11 +131,13 @@ namespace Jhu.Graywulf.Test
         {
             nameResolver = new SqlNameResolver();
             nameResolver.SchemaManager = CreateSchemaManager();
-            nameResolver.DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
-            nameResolver.DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
-            nameResolver.DefaultDataTypeDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
-            nameResolver.DefaultOutputDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
-
+            nameResolver.Options = new SqlNameResolverOptions()
+            {
+                DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName,
+                DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName,
+                DefaultDataTypeDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName,
+                DefaultOutputDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName,
+            };
             return nameResolver;
         }
 
@@ -343,7 +345,7 @@ WHERE DateFinished IS NULL";
                 var ef = new EntityFactory(context);
                 var qi = ef.LoadEntity<QueueInstance>(queue);
                 var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Scheduler.Jobs.Test.TestJob).Name);
-                
+
                 JobInstance job = jd.CreateJobInstance(queue, ScheduleType.Queued, timeout);
 
                 job.Parameters["DelayPeriod"].Value = (int)delayPeriod.TotalMilliseconds;

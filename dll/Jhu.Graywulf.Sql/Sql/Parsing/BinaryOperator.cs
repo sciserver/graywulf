@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get
             {
-                switch (Stack.First.Value.Value)
+                switch (Stack.First.Value)
                 {
                     case "*":
                     case "/":

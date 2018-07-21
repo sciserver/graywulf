@@ -147,7 +147,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             {
                 if (subsl != null)
                 {
-                    selectList.Replace(SubstituteStars(qs, subsl, depth));
+                    selectList.Stack.Replace<SelectList>(SubstituteStars(qs, subsl, depth));
+                    // TODO: delete selectList.Replace(SubstituteStars(qs, subsl, depth));
                 }
 
                 return selectList;

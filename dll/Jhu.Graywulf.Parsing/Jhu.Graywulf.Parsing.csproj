@@ -119,7 +119,7 @@
     <Compile Include="Parsing\Symbol.cs" />
     <Compile Include="Parsing\Terminal.cs" />
     <Compile Include="Parsing\Token.cs" />
-    <Compile Include="Parsing\TokenStack.cs" />
+    <Compile Include="Parsing\TokenList.cs" />
     <Compile Include="Parsing\Whitespace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="post-build.ps1" />

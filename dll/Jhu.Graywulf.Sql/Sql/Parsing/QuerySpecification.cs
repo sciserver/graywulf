@@ -133,8 +133,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             // The where clause follows the from clause but a
             // whitespace needs to be added first
             var ws = Whitespace.CreateNewLine();
-            var wsn = Stack.AddAfter(Stack.Find(FromClause), ws);
-            Stack.AddAfter(wsn, where);
+            var wsn = Stack.Insert(Stack.IndexOf(FromClause), ws);
+            Stack.Insert(wsn, where);
         }
 
         public void AppendSearchCondition(LogicalExpression condition, string op)

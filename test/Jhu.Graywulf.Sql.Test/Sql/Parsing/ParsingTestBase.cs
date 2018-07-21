@@ -39,9 +39,12 @@ namespace Jhu.Graywulf.Sql.Parsing
             var script = p.Execute<StatementBlock>(query);
 
             SqlNameResolver nr = new SqlNameResolver();
-            nr.DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
-            nr.DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName;
-            nr.DefaultDataTypeDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName;
+            nr.Options = new SqlNameResolverOptions()
+            {
+                DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName,
+                DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName,
+                DefaultDataTypeDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName,
+            };
             nr.SchemaManager = CreateSchemaManager();
             nr.Execute(script);
 
