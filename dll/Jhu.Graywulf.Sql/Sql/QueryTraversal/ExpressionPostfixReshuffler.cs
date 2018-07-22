@@ -37,6 +37,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             switch (node)
             {
                 case OverClause oc:
+                case CaseExpression ce:
                     visitor.TraverseInline(node);
                     break;
                 default:
@@ -48,11 +49,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             switch (node)
             {
-                case SimpleCaseExpression n:
-                    throw new NotImplementedException();
-                case SearchedCaseExpression n:
-                    throw new NotImplementedException();
-
                 // Brackets
                 case BracketOpen n:
                     Push(n);
@@ -110,6 +106,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case ObjectName on:
                 case DataTypeIdentifier di:
                     Output(node);
+                    break;
+
+                // Case expression are operands, just push to output
+                case CaseExpression n:
+                    Output(n);
                     break;
 
                 // Default behavior: skip token

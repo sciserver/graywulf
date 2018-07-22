@@ -204,6 +204,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case OverClause n:
                     TraverseOverClause(n);
                     break;
+                case SimpleCaseExpression n:
+                    TraverseSimpleCaseExpression(n);
+                    break;
+                case SearchedCaseExpression n:
+                    TraverseSearchedCaseExpression(n);
+                    break;
                 default:
                     throw new NotImplementedException();
             }
@@ -1277,7 +1283,59 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseSimpleCaseExpression(SimpleCaseExpression node)
         {
-            throw new NotImplementedException();
+            // If inside an expression context, just pass the node to the reshuffler
+            // if it is an inline callback from the reshuffler already, just traverse
+
+            if (QueryContext.HasFlag(QueryContext.Expression))
+            {
+                VisitInlineNode(node);
+            }
+            else
+            {
+                foreach (var nn in SelectDirection(node.Stack))
+                {
+                    switch (nn)
+                    {
+                        case Expression n:
+                            TraverseExpression(n);
+                            break;
+                        case SimpleCaseWhenList n:
+                            TraverseSimpleCaseWhenList(n);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+        private void TraverseSimpleCaseWhenList(SimpleCaseWhenList node)
+        {
+            foreach (var nn in SelectDirection(node.Stack))
+            {
+                switch (nn)
+                {
+                    case SimpleCaseWhen n:
+                        TraverseSimpleCaseWhen(n);
+                        break;
+                    case SimpleCaseWhenList n:
+                        TraverseSimpleCaseWhenList(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraverseSimpleCaseWhen(SimpleCaseWhen node)
+        {
+            foreach (var nn in SelectDirection(node.Stack))
+            {
+                switch(nn)
+                {
+                    case Expression n:
+                        TraverseExpression(n);
+                        break;
+                }
+            }
         }
 
         private void TraverseSearchedCaseExpression(SearchedCaseExpression node)

@@ -141,5 +141,17 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             Assert.AreEqual("subquery . method1 ( ) . method2 ( b , c ) ", res);
         }
 
+        [TestMethod]
+        public void SimpleCaseTest()
+        {
+            var res = Execute("CASE x WHEN y THEN z END");
+            Assert.AreEqual("case x y z ", res);
+
+            res = Execute("CASE x + 1 WHEN y + 2 THEN z + 3 END");
+            Assert.AreEqual("case x + 1 y + 2 z + 3 ", res);
+
+            res = Execute("a + CASE x WHEN y THEN z END * b");
+            Assert.AreEqual("a + case x y z * b ", res);
+        }
     }
 }

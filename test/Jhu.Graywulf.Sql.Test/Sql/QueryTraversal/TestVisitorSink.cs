@@ -185,5 +185,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             Write("orderby ");
         }
+
+        public virtual void Accept(CaseExpression node)
+        {
+            Write("case ");
+        }
     }
 }

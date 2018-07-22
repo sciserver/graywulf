@@ -493,23 +493,29 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         #endregion
         #region Case-When constructs
 
+        public static Expression<Rule> CaseExpression = () => Abstract();
+
         public static Expression<Rule> SimpleCaseExpression = () =>
-            Sequence
+            Inherit
             (
-                Keyword("CASE"),
-                May(CommentOrWhitespace),
-                Expression,
-                May(CommentOrWhitespace),
-                SimpleCaseWhenList,
-                May(Sequence
+                CaseExpression,
+                Sequence
                 (
+                    Keyword("CASE"),
                     May(CommentOrWhitespace),
-                    Keyword("ELSE"),
+                    Expression,
                     May(CommentOrWhitespace),
-                    Expression
-                )),
-                May(CommentOrWhitespace),
-                Keyword("END")
+                    SimpleCaseWhenList,
+                    May(Sequence
+                    (
+                        May(CommentOrWhitespace),
+                        Keyword("ELSE"),
+                        May(CommentOrWhitespace),
+                        Expression
+                    )),
+                    May(CommentOrWhitespace),
+                    Keyword("END")
+                )
             );
 
         public static Expression<Rule> SimpleCaseWhenList = () =>
@@ -528,20 +534,24 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
             );
 
         public static Expression<Rule> SearchedCaseExpression = () =>
-            Sequence
+            Inherit
             (
-                Keyword("CASE"),
-                CommentOrWhitespace,
-                SearchedCaseWhenList,
-                May(Sequence
+                CaseExpression,
+                Sequence
                 (
+                    Keyword("CASE"),
+                    CommentOrWhitespace,
+                    SearchedCaseWhenList,
+                    May(Sequence
+                    (
+                        May(CommentOrWhitespace),
+                        Keyword("ELSE"),
+                        May(CommentOrWhitespace),
+                        Expression
+                    )),
                     May(CommentOrWhitespace),
-                    Keyword("ELSE"),
-                    May(CommentOrWhitespace),
-                    Expression
-                )),
-                May(CommentOrWhitespace),
-                Keyword("END")
+                    Keyword("END")
+                )
             );
 
         public static Expression<Rule> SearchedCaseWhenList = () =>
