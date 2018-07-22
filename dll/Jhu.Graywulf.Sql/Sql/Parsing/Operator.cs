@@ -10,6 +10,6 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         public abstract int Precedence { get; }
 
-        public abstract bool LeftAssociative { get; }
+        public abstract bool IsLeftAssociative { get; }
     }
 }

@@ -183,6 +183,8 @@
     <Compile Include="Sql\QueryGeneration\SqlServer\SqlServerQueryGeneratorTest.cs" />
     <Compile Include="Sql\QueryRendering\MySql\MySqlQueryRendererTest.cs" />
     <Compile Include="Sql\QueryRendering\SqlServer\SqlServerQueryRendererTest.cs" />
+    <Compile Include="Sql\QueryTraversal\LogicalExpressionPostfixTest.cs" />
+    <Compile Include="Sql\QueryTraversal\LogicalExpressionInfixTest.cs" />
     <Compile Include="Sql\QueryTraversal\ExpressionInfixTest.cs" />
     <Compile Include="Sql\QueryTraversal\ExpressionPrefixTest.cs" />
     <Compile Include="Sql\QueryTraversal\ExpressionPostfixTest.cs" />

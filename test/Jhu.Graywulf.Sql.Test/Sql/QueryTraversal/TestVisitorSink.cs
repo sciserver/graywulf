@@ -23,6 +23,25 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 {
                     ExpressionTraversal = direction,
                     VisitExpressionSubqueries = false,
+                    VisitPredicateSubqueries = false
+                }
+            };
+            using (w = new StringWriter())
+            {
+                visitor.Execute(node);
+                return w.ToString();
+            }
+        }
+
+        public string Execute(LogicalExpression node, ExpressionTraversalMethod direction)
+        {
+            visitor = new SqlQueryVisitor(this)
+            {
+                Options = new SqlQueryVisitorOptions()
+                {
+                    LogicalExpressionTraversal = direction,
+                    VisitExpressionSubqueries = false,
+                    VisitPredicateSubqueries = false
                 }
             };
             using (w = new StringWriter())
@@ -61,6 +80,16 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         }
         
         public virtual void Accept(Operator node)
+        {
+            Write(node);
+        }
+
+        public virtual void Accept(Literal node)
+        {
+            Write(node);
+        }
+
+        public virtual void Accept(Symbol node)
         {
             Write(node);
         }

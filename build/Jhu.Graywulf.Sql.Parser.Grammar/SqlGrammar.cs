@@ -142,8 +142,23 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         #endregion
         #region Logical operators used in search conditions
 
-        public static Expression<Rule> LogicalNotOperator = () => Keyword("NOT");
-        public static Expression<Rule> LogicalOperator = () => Must(Keyword("AND"), Keyword("OR"));
+        public static Expression<Rule> LogicalNotOperator = () =>
+            Inherit
+            (
+                Operator,
+                Keyword("NOT")
+            );
+
+        public static Expression<Rule> LogicalOperator = () => 
+            Inherit
+            (
+                Operator,
+                Must
+                (
+                    Keyword("AND"), 
+                    Keyword("OR")
+                )
+            );
 
         #endregion
         #region Identifiers

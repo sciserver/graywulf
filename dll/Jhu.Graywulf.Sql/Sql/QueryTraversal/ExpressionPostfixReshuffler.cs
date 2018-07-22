@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             {
                 case OverClause oc:
                 case CaseExpression ce:
-                    visitor.TraverseInline(node);
+                    visitor.TraverseExpressionInlineNode(node);
                     break;
                 default:
                     break;
@@ -220,7 +220,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
                     if (op1 != null && op2 != null &&
                        (op1.Precedence < op2.Precedence ||
-                        op1.LeftAssociative && op1.Precedence == op2.Precedence))
+                        op1.IsLeftAssociative && op1.Precedence == op2.Precedence))
                     {
                         Output(operatorStack.Pop());
                         continue;

@@ -8,11 +8,31 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class LogicalOperator
     {
+        public override int Precedence
+        {
+            get
+            {
+                if (IsAnd)
+                {
+                    return 2;
+                }
+                else
+                {
+                    return 3;
+                }
+            }
+        }
+
+        public override bool IsLeftAssociative
+        {
+            get { return false; }
+        }
+
         public bool IsOr
         {
             get
             {
-                return SqlParser.ComparerInstance.Compare(Value, "OR") == 0; 
+                return SqlParser.ComparerInstance.Compare(Stack.First.Value, "OR") == 0;
             }
         }
 
@@ -20,7 +40,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get
             {
-                return SqlParser.ComparerInstance.Compare(Value, "AND") == 0; 
+                return SqlParser.ComparerInstance.Compare(Stack.First.Value, "AND") == 0;
             }
         }
 

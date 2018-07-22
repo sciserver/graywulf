@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return 4; }
         }
 
-        public override bool LeftAssociative
+        public override bool IsLeftAssociative
         {
             get { return true; }
         }
