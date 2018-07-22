@@ -8,8 +8,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 {
     public enum ExpressionTraversalMode
     {
-        None,
         Infix,
+        Prefix,
         Postfix,
     }
 }

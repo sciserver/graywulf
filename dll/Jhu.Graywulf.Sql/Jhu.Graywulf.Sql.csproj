@@ -422,6 +422,7 @@
     <Compile Include="Sql\QueryRewriting\SqlServer\SqlServerQueryRewriter.cs" />
     <Compile Include="Sql\QueryTraversal\Enum.cs" />
     <Compile Include="Sql\QueryTraversal\ExpressionPostfixReshuffler.cs" />
+    <Compile Include="Sql\QueryTraversal\ExpressionPrefixReshuffler.cs" />
     <Compile Include="Sql\QueryTraversal\ExpressionReshuffler.cs" />
     <Compile Include="Sql\QueryTraversal\SqlQueryVisitor.cs" />
     <Compile Include="Sql\QueryTraversal\SqlQueryVisitorOptions.cs" />

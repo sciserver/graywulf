@@ -162,12 +162,14 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             // directly or we reshuffle to produce postfix notation for expression
             // tree building
 
-            if (options.ExpressionTraversal == ExpressionTraversalMode.Postfix &&
-                QueryContext.HasFlag(QueryContext.Expression))
+            if (QueryContext.HasFlag(QueryContext.Expression))
             {
-                // We're inside an expression
-                ExpressionReshuffler.Route(node);
-                return;
+                var reshuffler = ExpressionReshuffler;
+                if (reshuffler != null)
+                {
+                    reshuffler.Route(node);
+                    return;
+                }
             }
 
             if (options.LogicalExpressionTraversal == ExpressionTraversalMode.Postfix)
@@ -177,11 +179,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             sink.AcceptVisitor(this, node);
         }
-
-        private void ReshuffleLogicalExpressionPostfix(Token node)
-        {
-        }
-
+        
         protected virtual void VisitReference(IDatabaseObjectReference node)
         {
             if (options.VisitSchemaReferences)
@@ -782,6 +780,48 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         #endregion
         #region Expressions
 
+        private void CreateReshuffler()
+        {
+            switch (options.ExpressionTraversal)
+            {
+                case ExpressionTraversalMode.Infix:
+                    expressionReshufflerStack.Push(null);
+                    break;
+                case ExpressionTraversalMode.Postfix:
+                    expressionReshufflerStack.Push(new ExpressionPostfixReshuffler(this, sink));
+                    break;
+                case ExpressionTraversalMode.Prefix:
+                    expressionReshufflerStack.Push(new ExpressionPrefixReshuffler(this, sink));
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void DestroyReshuffler()
+        {
+            var reshuffler = expressionReshufflerStack.Pop();
+            if (reshuffler != null)
+            {
+                reshuffler.Flush();
+            }
+        }
+
+        private IEnumerable<Token> SelectDirection(TokenList tokens)
+        {
+            switch (options.ExpressionTraversal)
+            {
+                case ExpressionTraversalMode.Infix:
+                    return tokens.Forward;
+                case ExpressionTraversalMode.Postfix:
+                    return tokens.Forward;
+                case ExpressionTraversalMode.Prefix:
+                    return tokens.Backward;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
         protected void TraverseExpression(Expression node)
         {
             // Visit immediate subquries first, then do a bottom-up
@@ -795,19 +835,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 TraverseExpressionSubqueries(node);
             }
 
-            if (options.ExpressionTraversal == ExpressionTraversalMode.Postfix)
-            {
-                var reshuffler = new ExpressionPostfixReshuffler(this, sink);
-                expressionReshufflerStack.Push(reshuffler);
-            }
-
+            CreateReshuffler();
             TraverseExpressionNode(node);
-
-            if (options.ExpressionTraversal == ExpressionTraversalMode.Postfix)
-            {
-                var reshuffler = expressionReshufflerStack.Pop();
-                reshuffler.Flush();
-            }
+            DestroyReshuffler();
 
             queryContextStack.Pop();
             columnContextStack.Pop();
@@ -830,43 +860,43 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseExpressionNode(Node node)
         {
-            foreach (var n in node.Stack)
+            foreach (var nn in SelectDirection(node.Stack))
             {
-                DispatchExpressionNode(n);
-            }
-        }
-
-        protected void DispatchExpressionNode(Token node)
-        {
-            switch (node)
-            {
-                case UnaryOperator n:
-                    VisitNode(n);
-                    break;
-                case BinaryOperator n:
-                    VisitNode(n);
-                    break;
-                case Operand n:
-                    TraverseOperand(n);
-                    break;
-                case Expression n:
-                    TraverseExpressionNode(n);
-                    break;
-                default:
-                    break;
+                switch (nn)
+                {
+                    case UnaryOperator n:
+                        VisitNode(n);
+                        break;
+                    case BinaryOperator n:
+                        VisitNode(n);
+                        break;
+                    case Operand n:
+                        TraverseOperand(n);
+                        break;
+                    case Expression n:
+                        TraverseExpressionNode(n);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
         private void TraverseOperand(Operand node)
         {
-            var operand = (Node)node.Stack.First;
-            var memberlist = node.FindDescendant<MemberAccessList>();
-
-            DispatchOperand(operand);
-
-            if (memberlist != null)
+            foreach (var nn in SelectDirection(node.Stack))
             {
-                TraverseMemberAccessList(memberlist);
+                switch (nn)
+                {
+                    case MemberAccessList n:
+                        TraverseMemberAccessList(n);
+                        break;
+                    case Node n:
+                        DispatchOperand(n);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -950,7 +980,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseExpressionBrackets(ExpressionBrackets node)
         {
-            foreach (var nn in node.Stack)
+            foreach (var nn in SelectDirection(node.Stack))
             {
                 switch (nn)
                 {
@@ -969,7 +999,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseMemberAccessList(MemberAccessList node)
         {
-            foreach (var nn in node.Stack)
+            foreach (var nn in SelectDirection(node.Stack))
             {
                 switch (nn)
                 {
@@ -1044,7 +1074,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             TraverseFunctionArguments(node);
             TraverseOverClause(node.OverClause);
         }
-        
+
         private void TraverseUdtMethodCall(UdtMethodCall node)
         {
             VisitNode(node.MethodName);
@@ -1064,7 +1094,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             int argumentCount = 0;
 
-            foreach (var nn in node.FunctionArguments.Stack)
+            foreach (var nn in SelectDirection(node.FunctionArguments.Stack))
             {
                 switch (nn)
                 {
@@ -1084,7 +1114,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseArgumentList(ArgumentList node, ref int argumentCount)
         {
-            foreach (var nn in node.Stack)
+            foreach (var nn in SelectDirection(node.Stack))
             {
                 switch (nn)
                 {
@@ -1163,7 +1193,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseOrderByArgumentList(OrderByArgumentList node)
         {
-            foreach (var nn in node.Stack)
+            foreach (var nn in SelectDirection(node.Stack))
             {
                 switch (nn)
                 {
@@ -1206,8 +1236,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case ExpressionTraversalMode.Infix:
                 case ExpressionTraversalMode.Postfix:
                     TraverseLogicalExpressionNode(node);
-                    break;
-                case ExpressionTraversalMode.None:
                     break;
                 default:
                     throw new NotImplementedException();

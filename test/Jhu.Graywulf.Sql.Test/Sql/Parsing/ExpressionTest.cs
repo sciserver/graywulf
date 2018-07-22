@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "schema1.table1.column1.property1.property2";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual("schema1.table1.column1.property1.property2", exp.Value);
-            Assert.AreEqual("schema1", exp.FindDescendantRecursive<Operand>().FindDescendant<Identifier>().Value);
+            Assert.AreEqual("schema1", exp.FindDescendantRecursive<Operand>().FindDescendant<ObjectName>().Value);
             Assert.AreEqual(".table1.column1.property1.property2", exp.FindDescendantRecursive<Operand>().FindDescendant<MemberAccessList>().Value);
         }
 
@@ -98,7 +98,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var op = exp.FindDescendantRecursive<Operand>();
             Assert.AreEqual("-table1.column1", exp.Value);
             Assert.AreEqual("-", exp.FindDescendantRecursive<UnaryOperator>().FindDescendantRecursive<Minus>().Value);
-            Assert.AreEqual("table1", op.FindDescendant<Identifier>().Value);
+            Assert.AreEqual("table1", op.FindDescendant<ObjectName>().Value);
             Assert.AreEqual(".column1", op.FindDescendant<MemberAccessList>().Value);
         }
 

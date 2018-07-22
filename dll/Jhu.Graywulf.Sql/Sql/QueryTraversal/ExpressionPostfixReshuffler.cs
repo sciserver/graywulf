@@ -14,17 +14,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
     /// </summary>
     class ExpressionPostfixReshuffler : ExpressionReshuffler
     {
-        private Stack<Token> stack;
+        protected Stack<Token> operatorStack;
 
         public ExpressionPostfixReshuffler(SqlQueryVisitor visitor, SqlQueryVisitorSink sink)
             : base(visitor, sink)
         {
-            InitializeMembers();
-        }
-
-        private void InitializeMembers()
-        {
-            this.stack = new Stack<Token>();
+            this.operatorStack = new Stack<Token>();
         }
 
         public override void Route(Token node)
@@ -36,13 +31,28 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case SearchedCaseExpression n:
                     throw new NotImplementedException();
 
+                // Brackets
+                case BracketOpen n:
+                    Push(n);
+                    break;
+                case BracketClose n:
+                    Pop(n);
+                    break;
+
                 // Function calls and property/member access
                 case MemberAccess n:
+                    Push(n);
+                    break;
+                case MemberCall n:
                     Push(n);
                     break;
                 case PropertyAccess n:
                     Push(n);
                     break;
+                case MethodCall n:
+                    Push(n);
+                    break;
+                
 
                 case SystemFunctionCall n:
                     Push(n);
@@ -53,13 +63,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case ScalarFunctionCall n:
                     Push(n);
                     break;
-                case MethodCall n:
-                    Push(n);
-                    break;
-                case MemberCall n:
-                    Push(n);
-                    break;
-                    
+
                 // Windowed functions are rather special
                 case OverClause n:
                     Push(n);
@@ -75,14 +79,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
                 case Comma n:
                     Push(n);
-                    break;
-
-                // Brackets
-                case BracketOpen n:
-                    Push(n);
-                    break;
-                case BracketClose n:
-                    Pop(n);
                     break;
 
                 // Operands and other important tokens that go directly
@@ -111,68 +107,68 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         private void Push(MethodCall n)
         {
             FlushTop(n);
-            stack.Push(n);
+            operatorStack.Push(n);
         }
 
         private void Push(MemberCall n)
         {
             FlushTop(n);
-            stack.Push(n);
+            operatorStack.Push(n);
         }
 
         void Push(FunctionCall n)
         {
-            stack.Push(n);
+            operatorStack.Push(n);
         }
 
         void Push(OverClause n)
         {
-            stack.Push(n);
+            operatorStack.Push(n);
         }
 
         #endregion
-        
+
         void Push(PropertyAccess n)
         {
             FlushTop(n);
-            Output(n);
+            operatorStack.Push(n);
         }
 
         private void Push(MemberAccess n)
         {
             FlushTop(n);
-            Output(n);
+            operatorStack.Push(n);
         }
 
 
         private void Push(Operator n)
         {
             FlushTop(n);
-            stack.Push(n);
+            operatorStack.Push(n);
         }
 
         private void Push(Comma n)
         {
             // Pop operator stack to have the function call on top
-            while (!(stack.Peek() is BracketOpen))
+            while (!(operatorStack.Peek() is BracketOpen))
             {
-                Output(stack.Pop());
+                Output(operatorStack.Pop());
             }
             Output(n);
         }
-        
+
         private void Push(BracketOpen n)
         {
-            stack.Push(n);
+            operatorStack.Push(n);
         }
 
         private void Pop(BracketClose n)
         {
             // Empty down stack to first opening bracket
             // No need to test bracket pairing, that's done by parser
-            while (stack.Count > 0)
+            while (operatorStack.Count > 0)
             {
-                var op = stack.Pop();
+                var op = operatorStack.Pop();
                 if (op is BracketOpen)
                 {
                     break;
@@ -186,13 +182,14 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void FlushTop(Node n)
         {
-            while (stack.Count > 0)
+            while (operatorStack.Count > 0)
             {
-                var p = stack.Peek();
+                var p = operatorStack.Peek();
 
-                if (p is FunctionCall || p is MethodCall || p is MemberCall)
+                if (p is FunctionCall || p is MethodCall || p is MemberCall ||
+                    p is MemberAccess || p is PropertyAccess)
                 {
-                    Output(stack.Pop());
+                    Output(operatorStack.Pop());
                     continue;
                 }
                 else
@@ -204,7 +201,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                        (op1.Precedence < op2.Precedence ||
                         op1.LeftAssociative && op1.Precedence == op2.Precedence))
                     {
-                        Output(stack.Pop());
+                        Output(operatorStack.Pop());
                         continue;
                     }
                 }
@@ -215,9 +212,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         public override void Flush()
         {
-            while (stack.Count > 0)
+            while (operatorStack.Count > 0)
             {
-                Output(stack.Pop());
+                Output(operatorStack.Pop());
             }
         }
     }

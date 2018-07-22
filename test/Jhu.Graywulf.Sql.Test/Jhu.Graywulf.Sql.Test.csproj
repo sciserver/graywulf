@@ -184,6 +184,7 @@
     <Compile Include="Sql\QueryRendering\MySql\MySqlQueryRendererTest.cs" />
     <Compile Include="Sql\QueryRendering\SqlServer\SqlServerQueryRendererTest.cs" />
     <Compile Include="Sql\QueryTraversal\ExpressionInfixTest.cs" />
+    <Compile Include="Sql\QueryTraversal\ExpressionPrefixTest.cs" />
     <Compile Include="Sql\QueryTraversal\ExpressionPostfixTest.cs" />
     <Compile Include="Sql\QueryTraversal\TestVisitorSink.cs" />
     <Compile Include="Sql\Schema\AppSettings.cs" />
