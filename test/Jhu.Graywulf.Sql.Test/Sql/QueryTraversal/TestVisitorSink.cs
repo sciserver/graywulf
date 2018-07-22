@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         private SqlQueryVisitor visitor;
         private StringWriter w;
 
-        public string Execute(Expression node, ExpressionTraversalMode direction)
+        public string Execute(Expression node, ExpressionTraversalMethod direction)
         {
             visitor = new SqlQueryVisitor(this)
             {
@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         protected virtual void Accept(Token node)
         {
-            // Default dispatch, do nothing
+            // Default dispatch, write out token
         }
 
         private void Write(string s)
@@ -54,18 +54,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void Write(FunctionCall node)
         {
-            if (visitor.Options.ExpressionTraversal != ExpressionTraversalMode.Infix)
+            if (visitor.Options.ExpressionTraversal != ExpressionTraversalMethod.Infix)
             {
                 w.Write("`" + node.ArgumentCount + " ");
             }
         }
-
-        public virtual void Accept(UnaryOperator node)
-        {
-            Write(node);
-        }
-
-        public virtual void Accept(BinaryOperator node)
+        
+        public virtual void Accept(Operator node)
         {
             Write(node);
         }
@@ -80,6 +75,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             Write(node);
         }
 
+        public virtual void Accept(DataTypeIdentifier node)
+        {
+            Write(node);
+        }
+
         public virtual void Accept(ObjectName node)
         {
             Write(node);
@@ -87,13 +87,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         public virtual void Accept(MemberAccess node)
         {
-            Write(".");
             Write(node.MemberName);
         }
 
         public virtual void Accept(MemberCall node)
         {
-            Write(".");
             Write(node.MemberName);
             Write(node);
         }
@@ -130,28 +128,22 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         public virtual void Accept(UdtStaticPropertyAccess node)
         {
-            Write(node.DataTypeIdentifier);
-            Write("::");
             Write(node.PropertyName);
         }
 
         public virtual void Accept(UdtPropertyAccess node)
         {
-            Write(".");
             Write(node.PropertyName);
         }
 
         public virtual void Accept(UdtStaticMethodCall node)
         {
-            Write(node.DataTypeIdentifier);
-            Write("::");
             Write(node.MethodName);
             Write(node);
         }
 
         public virtual void Accept(UdtMethodCall node)
         {
-            Write(".");
             Write(node.MethodName);
             Write(node);
         }

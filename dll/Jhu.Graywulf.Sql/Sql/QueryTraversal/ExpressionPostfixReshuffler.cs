@@ -16,10 +16,32 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
     {
         protected Stack<Token> operatorStack;
 
+        public override TraversalDirection Direction
+        {
+            get { return TraversalDirection.Forward; }
+        }
+
         public ExpressionPostfixReshuffler(SqlQueryVisitor visitor, SqlQueryVisitorSink sink)
             : base(visitor, sink)
         {
             this.operatorStack = new Stack<Token>();
+        }
+
+        public override void Output(Token node)
+        {
+            base.Output(node);
+
+            // Inline constructs such as OVER and CASE needs to be passed back to the
+            // query visitor for further traversal
+
+            switch (node)
+            {
+                case OverClause oc:
+                    visitor.TraverseInline(node);
+                    break;
+                default:
+                    break;
+            }
         }
 
         public override void Route(Token node)
@@ -52,7 +74,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case MethodCall n:
                     Push(n);
                     break;
-                
 
                 case SystemFunctionCall n:
                     Push(n);
@@ -64,16 +85,14 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     Push(n);
                     break;
 
-                // Windowed functions are rather special
+                // Windowed functions are rather special, for postfix, push to stack to
+                // put it before function just like its arguments
                 case OverClause n:
                     Push(n);
                     break;
 
                 // Operators
-                case UnaryOperator n:
-                    Push(n);
-                    break;
-                case BinaryOperator n:
+                case Operator n:
                     Push(n);
                     break;
 
@@ -89,6 +108,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case UserVariable uv:
                 case ExpressionSubquery sq:
                 case ObjectName on:
+                case DataTypeIdentifier di:
                     Output(node);
                     break;
 

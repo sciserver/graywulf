@@ -10,8 +10,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
     {
         #region Private member variables
 
-        private ExpressionTraversalMode expressionTraversal;
-        private ExpressionTraversalMode logicalExpressionTraversal;
+        private ExpressionTraversalMethod expressionTraversal;
+        private ExpressionTraversalMethod logicalExpressionTraversal;
         private bool visitExpressionSubqueries;
         private bool visitPredicateSubqueries;
         private bool visitSchemaReferences;
@@ -19,13 +19,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         #endregion
         #region Properties
 
-        public ExpressionTraversalMode ExpressionTraversal
+        public ExpressionTraversalMethod ExpressionTraversal
         {
             get { return expressionTraversal; }
             set { expressionTraversal = value; }
         }
 
-        public ExpressionTraversalMode LogicalExpressionTraversal
+        public ExpressionTraversalMethod LogicalExpressionTraversal
         {
             get { return logicalExpressionTraversal; }
             set { logicalExpressionTraversal = value; }
@@ -64,8 +64,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void InitializeMembers()
         {
-            this.expressionTraversal = ExpressionTraversalMode.Infix;
-            this.logicalExpressionTraversal = ExpressionTraversalMode.Infix;
+            this.expressionTraversal = ExpressionTraversalMethod.Infix;
+            this.logicalExpressionTraversal = ExpressionTraversalMethod.Infix;
             this.visitExpressionSubqueries = true;
             this.visitPredicateSubqueries = true;
             this.visitSchemaReferences = false;

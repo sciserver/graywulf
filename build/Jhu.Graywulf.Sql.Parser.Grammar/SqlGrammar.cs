@@ -77,6 +77,20 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
         public static Expression<Rule> Operator = () => Abstract();
 
+        public static Expression<Rule> MemberAccessOperator = () =>
+            Inherit
+            (
+                Operator,
+                Dot
+            );
+
+        public static Expression<Rule> StaticMemberAccessOperator = () =>
+            Inherit
+            (
+                Operator,
+                DoubleColon
+            );
+
         public static Expression<Rule> UnaryOperator = () =>
             Inherit
             (
@@ -218,8 +232,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                     SimpleCaseExpression,
                     SearchedCaseExpression,
 
-                    UdtStaticMethodCall,            // udt::method() syntax
-                    UdtStaticPropertyAccess,        // udt::property syntax
+                    UdtStaticMemberAccessList,
 
                     WindowedFunctionCall,           // dbo.function() OVER () syntax
                     SystemFunctionCall,             // function()
@@ -246,9 +259,25 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 BracketClose
             );
 
+        public static Expression<Rule> UdtStaticMemberAccessList = () =>
+            Sequence
+            (
+                DataTypeIdentifier,
+                May(CommentOrWhitespace),
+                StaticMemberAccessOperator,
+                May(CommentOrWhitespace),
+                Must
+                (
+                    UdtStaticMethodCall,
+                    UdtStaticPropertyAccess
+                )
+            );
+
         public static Expression<Rule> MemberAccessList = () =>
             Sequence
             (
+                MemberAccessOperator,
+                May(CommentOrWhitespace),
                 Must
                 (
                     MemberCall,
@@ -268,8 +297,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> MemberAccess = () =>
             Sequence
             (
-                Dot,
-                May(CommentOrWhitespace),
                 MemberName
             );
 
@@ -279,8 +306,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 FunctionCall,
                 Sequence
                 (
-                    Dot,
-                    May(CommentOrWhitespace),
                     MemberName,
                     May(CommentOrWhitespace),
                     FunctionArguments
@@ -702,8 +727,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 MethodCall,
                 Sequence
                 (
-                    Dot,
-                    May(CommentOrWhitespace),
                     MethodName,
                     May(CommentOrWhitespace),
                     FunctionArguments
@@ -716,10 +739,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 UdtMethodCall,
                 Sequence
                 (
-                    DataTypeIdentifier,
-                    May(CommentOrWhitespace),
-                    DoubleColon,
-                    May(CommentOrWhitespace),
                     MethodName,
                     May(CommentOrWhitespace),
                     FunctionArguments
@@ -791,8 +810,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 PropertyAccess,
                 Sequence
                 (
-                    Dot,
-                    May(CommentOrWhitespace),
                     PropertyName
                 )
             );
@@ -803,10 +820,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 UdtPropertyAccess,
                 Sequence
                 (
-                    DataTypeIdentifier,
-                    May(CommentOrWhitespace),
-                    DoubleColon,
-                    May(CommentOrWhitespace),
                     PropertyName
                 )
             );

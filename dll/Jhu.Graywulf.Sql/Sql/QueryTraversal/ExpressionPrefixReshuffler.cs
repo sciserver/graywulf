@@ -12,13 +12,18 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
     {
         private Stack<Token> outputStack;
 
+        public override TraversalDirection Direction
+        {
+            get { return TraversalDirection.Backward; }
+        }
+
         public ExpressionPrefixReshuffler(SqlQueryVisitor visitor, SqlQueryVisitorSink sink)
             : base(visitor, sink)
         {
             this.outputStack = new Stack<Token>();
         }
 
-        protected override void Output(Token n)
+        public override void Output(Token n)
         {
             outputStack.Push(n);
         }
@@ -36,6 +41,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     break;
                 default:
                     base.Route(node);
+                    break;
+
+                // Windowed functions are rather special, for prefix, push to output
+                // to put it after function just like its arguments
+                case OverClause n:
+                    Output(n);
                     break;
 
                 case Comma n:

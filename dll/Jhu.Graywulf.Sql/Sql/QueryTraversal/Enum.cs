@@ -6,10 +6,16 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Sql.QueryTraversal
 {
-    public enum ExpressionTraversalMode
+    public enum ExpressionTraversalMethod
     {
         Infix,
         Prefix,
         Postfix,
+    }
+
+    public enum TraversalDirection
+    {
+        Forward,
+        Backward
     }
 }

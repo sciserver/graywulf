@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         private string Execute(string code)
         {
             var exp = new SqlParser().Execute<Expression>(code);
-            return new TestVisitorSink().Execute(exp, ExpressionTraversalMode.Postfix);
+            return new TestVisitorSink().Execute(exp, ExpressionTraversalMethod.Postfix);
         }
 
         [TestMethod]
@@ -105,85 +105,95 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         public void WindowedFunctionCallTest()
         {
             var res = Execute("ROW_NUMBER() OVER (ORDER BY x)");
-            Assert.AreEqual("( orderby x ) over ROW_NUMBER `0 ", res);
+            Assert.AreEqual("over ( orderby x ) ROW_NUMBER `0 ", res);
 
             res = Execute("ROW_NUMBER() OVER (ORDER BY x, y)");
-            Assert.AreEqual("( orderby x , y ) over ROW_NUMBER `0 ", res);
+            Assert.AreEqual("over ( orderby x , y ) ROW_NUMBER `0 ", res);
 
             res = Execute("ROW_NUMBER() OVER (ORDER BY x + b * c)");
-            Assert.AreEqual("( orderby x b c * + ) over ROW_NUMBER `0 ", res);
+            Assert.AreEqual("over ( orderby x b c * + ) ROW_NUMBER `0 ", res);
 
             res = Execute("ROW_NUMBER() OVER (PARTITION BY z ORDER BY x)");
-            Assert.AreEqual("( partitionby z orderby x ) over ROW_NUMBER `0 ", res);
+            Assert.AreEqual("over ( partitionby z orderby x ) ROW_NUMBER `0 ", res);
 
             res = Execute("NTILE(4) OVER (ORDER BY x)");
-            Assert.AreEqual("4 ( orderby x ) over NTILE `1 ", res);
+            Assert.AreEqual("4 over ( orderby x ) NTILE `1 ", res);
 
             res = Execute("NTILE(4) OVER (ORDER BY x, y)");
-            Assert.AreEqual("4 ( orderby x , y ) over NTILE `1 ", res);
+            Assert.AreEqual("4 over ( orderby x , y ) NTILE `1 ", res);
 
             res = Execute("NTILE(4) OVER (ORDER BY x + b * c)");
-            Assert.AreEqual("4 ( orderby x b c * + ) over NTILE `1 ", res);
+            Assert.AreEqual("4 over ( orderby x b c * + ) NTILE `1 ", res);
 
             res = Execute("NTILE(4) OVER (PARTITION BY z ORDER BY x)");
-            Assert.AreEqual("4 ( partitionby z orderby x ) over NTILE `1 ", res);
+            Assert.AreEqual("4 over ( partitionby z orderby x ) NTILE `1 ", res);
+
+            res = Execute("NTILE(4) OVER (PARTITION BY z + 1 ORDER BY x * y + z DESC, w ASC)");
+            Assert.AreEqual("4 over ( partitionby z 1 + orderby x y * z + , w ) NTILE `1 ", res);
         }
 
         [TestMethod]
         public void UdtStaticPropertyAccessTest()
         {
             var res = Execute("dbo.udt::statprop + b * c");
-            Assert.AreEqual("dbo.udt ::statprop b c * + ", res);
+            Assert.AreEqual("dbo.udt statprop :: b c * + ", res);
 
             res = Execute("dbo.udt::statprop * b");
-            Assert.AreEqual("dbo.udt ::statprop b * ", res);
+            Assert.AreEqual("dbo.udt statprop :: b * ", res);
+
+            res = Execute("dbo.udt::statprop + dbo.udt2::statprop2");
+            Assert.AreEqual("dbo.udt statprop :: dbo.udt2 statprop2 :: + ", res);
         }
 
         [TestMethod]
         public void UdtStaticMethodCallTest()
         {
             var res = Execute("udt::statmethod(a)");
-            Assert.AreEqual("a udt ::statmethod `1 ", res);
+            Assert.AreEqual("udt a statmethod `1 :: ", res);
 
             res = Execute("udt::statmethod()");
-            Assert.AreEqual("udt ::statmethod `0 ", res);
+            Assert.AreEqual("udt statmethod `0 :: ", res);
 
             res = Execute("udt::statmethod(a, b)");
-            Assert.AreEqual("a , b udt ::statmethod `2 ", res);
+            Assert.AreEqual("udt a , b statmethod `2 :: ", res);
 
             res = Execute("udt::statmethod1(a, b) * udt::statmethod2(c, d)");
-            Assert.AreEqual("a , b udt ::statmethod1 `2 c , d udt ::statmethod2 `2 * ", res);
+            Assert.AreEqual("udt a , b statmethod1 `2 :: udt c , d statmethod2 `2 :: * ", res);
 
             res = Execute("udt::statmethod1(a, udt::statmethod2(b))");
-            Assert.AreEqual("a , b udt ::statmethod2 `1 udt ::statmethod1 `2 ", res);
+            Assert.AreEqual("udt a , udt b statmethod2 `1 :: statmethod1 `2 :: ", res);
 
-            res = Execute("fudt::statmethod1(a, udt::statmethod2(b)) * (a + b)");
-            Assert.AreEqual("a , b udt ::statmethod2 `1 fudt ::statmethod1 `2 a b + * ", res);
+            res = Execute("udt::statmethod1(a, udt::statmethod2(b)) * (a + b)");
+            Assert.AreEqual("udt a , udt b statmethod2 `1 :: statmethod1 `2 :: a b + * ", res);
         }
 
         [TestMethod]
         public void UdtPropertyAccessAndMethodCallTest()
         {
             var res = Execute("udtcol.method1()");
-            Assert.AreEqual("udtcol .method1 `0 ", res);
+            Assert.AreEqual("udtcol method1 `0 . ", res);
 
             res = Execute("udtcol.method1(a, b)");
-            Assert.AreEqual("udtcol a , b .method1 `2 ", res);
+            Assert.AreEqual("udtcol a , b method1 `2 . ", res);
 
             res = Execute("udtcol.method1(a, b).prop1.method2(c, d)");
-            Assert.AreEqual("udtcol a , b .method1 `2 .prop1 c , d .method2 `2 ", res);
+            Assert.AreEqual("udtcol a , b method1 `2 . prop1 . c , d method2 `2 . ", res);
 
             res = Execute("udtcol.method1(a.prop1, b.method2()).prop2");
-            Assert.AreEqual("udtcol a .prop1 , b .method2 `0 .method1 `2 .prop2 ", res);
+            Assert.AreEqual("udtcol a prop1 . , b method2 `0 . method1 `2 . prop2 . ", res);
 
             res = Execute("udtcol.method1(a.prop1, b.method2(c)).method3()");
-            Assert.AreEqual("udtcol a .prop1 , b c .method2 `1 .method1 `2 .method3 `0 ", res);
+            Assert.AreEqual("udtcol a prop1 . , b c method2 `1 . method1 `2 . method3 `0 . ", res);
 
             res = Execute("udtcol.method1(a.prop1, b.method2(c)).method3(d)");
-            Assert.AreEqual("udtcol a .prop1 , b c .method2 `1 .method1 `2 d .method3 `1 ", res);
+            Assert.AreEqual("udtcol a prop1 . , b c method2 `1 . method1 `2 . d method3 `1 . ", res);
         }
 
-
-        // TODO: tests with OVER and properties/methods
+        [TestMethod]
+        public void SubqueryTest()
+        {
+            var res = Execute("(SELECT a + b)");
+            Assert.AreEqual("subquery ", res);
+        }
     }
 }

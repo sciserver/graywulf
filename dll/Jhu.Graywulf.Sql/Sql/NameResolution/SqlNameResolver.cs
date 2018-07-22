@@ -134,8 +134,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 Options = new SqlQueryVisitorOptions()
                 {
-                    LogicalExpressionTraversal = ExpressionTraversalMode.Infix,
-                    ExpressionTraversal = ExpressionTraversalMode.Infix,
+                    LogicalExpressionTraversal = ExpressionTraversalMethod.Infix,
+                    ExpressionTraversal = ExpressionTraversalMethod.Infix,
                     VisitExpressionSubqueries = true,
                     VisitPredicateSubqueries = true,
                     VisitSchemaReferences = false

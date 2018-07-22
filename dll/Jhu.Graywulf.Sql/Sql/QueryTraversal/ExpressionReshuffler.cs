@@ -10,8 +10,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 {
     abstract class ExpressionReshuffler
     {
-        private SqlQueryVisitor visitor;
-        private SqlQueryVisitorSink sink;
+        protected SqlQueryVisitor visitor;
+        protected SqlQueryVisitorSink sink;
+
+        public abstract TraversalDirection Direction { get; }
 
         protected ExpressionReshuffler(SqlQueryVisitor visitor, SqlQueryVisitorSink sink)
         {
@@ -19,7 +21,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             this.sink = sink;
         }
 
-        protected virtual void Output(Token n)
+        public virtual void Output(Token n)
         {
             sink.AcceptVisitor(visitor, n);
         }

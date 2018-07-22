@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         public DataTypeIdentifier DataTypeIdentifier
         {
-            get { return FindDescendant<DataTypeIdentifier>(); }
+            get { return Parent.FindDescendant<DataTypeIdentifier>(); }
         }
 
         public DataTypeReference DataTypeReference

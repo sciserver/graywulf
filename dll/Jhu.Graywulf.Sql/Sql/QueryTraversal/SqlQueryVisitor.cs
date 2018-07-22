@@ -92,7 +92,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private ExpressionReshuffler ExpressionReshuffler
         {
-            get { return expressionReshufflerStack.Peek(); }
+            get { return expressionReshufflerStack.Count == 0 ? null : expressionReshufflerStack.Peek(); }
         }
 
         #endregion
@@ -162,24 +162,56 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             // directly or we reshuffle to produce postfix notation for expression
             // tree building
 
-            if (QueryContext.HasFlag(QueryContext.Expression))
+            var reshuffler = ExpressionReshuffler;
+            if (reshuffler != null)
             {
-                var reshuffler = ExpressionReshuffler;
-                if (reshuffler != null)
-                {
-                    reshuffler.Route(node);
-                    return;
-                }
+                reshuffler.Route(node);
+                return;
             }
 
-            if (options.LogicalExpressionTraversal == ExpressionTraversalMode.Postfix)
+            if (options.LogicalExpressionTraversal == ExpressionTraversalMethod.Postfix)
             {
                 //ReshuffleLogicalExpressionPostfix(node);
             }
 
             sink.AcceptVisitor(this, node);
         }
-        
+
+        protected virtual void VisitInlineNode(Token node)
+        {
+            // Inline nodes are typically sent to the reshuffler for processing except
+            // in infix mode where the callback is short-circuited
+
+            VisitNode(node);
+
+            if (ExpressionReshuffler == null)
+            {
+                TraverseInline(node);
+            }
+        }
+
+        public virtual void TraverseInline(Token node)
+        {
+            // This is an expression inline that needs special handling such
+            // as the OVER clause of windowed function calls.
+
+            // Turn off expression context
+            queryContextStack.Push(QueryContext & ~QueryContext.Expression);
+            expressionReshufflerStack.Push(null);
+
+            switch (node)
+            {
+                case OverClause n:
+                    TraverseOverClause(n);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            queryContextStack.Pop();
+            expressionReshufflerStack.Pop();
+        }
+
         protected virtual void VisitReference(IDatabaseObjectReference node)
         {
             if (options.VisitSchemaReferences)
@@ -784,13 +816,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             switch (options.ExpressionTraversal)
             {
-                case ExpressionTraversalMode.Infix:
+                case ExpressionTraversalMethod.Infix:
                     expressionReshufflerStack.Push(null);
                     break;
-                case ExpressionTraversalMode.Postfix:
+                case ExpressionTraversalMethod.Postfix:
                     expressionReshufflerStack.Push(new ExpressionPostfixReshuffler(this, sink));
                     break;
-                case ExpressionTraversalMode.Prefix:
+                case ExpressionTraversalMethod.Prefix:
                     expressionReshufflerStack.Push(new ExpressionPrefixReshuffler(this, sink));
                     break;
                 default:
@@ -809,18 +841,26 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private IEnumerable<Token> SelectDirection(TokenList tokens)
         {
-            switch (options.ExpressionTraversal)
+            var reshuffler = ExpressionReshuffler;
+
+            if (reshuffler == null)
             {
-                case ExpressionTraversalMode.Infix:
-                    return tokens.Forward;
-                case ExpressionTraversalMode.Postfix:
-                    return tokens.Forward;
-                case ExpressionTraversalMode.Prefix:
-                    return tokens.Backward;
-                default:
-                    throw new NotImplementedException();
+                return tokens.Forward;
+            }
+            else if (reshuffler.Direction == TraversalDirection.Forward)
+            {
+                return tokens.Forward;
+            }
+            else if (reshuffler.Direction == TraversalDirection.Backward)
+            {
+                return tokens.Backward;
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
         }
+
 
         protected void TraverseExpression(Expression node)
         {
@@ -921,6 +961,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     break;
 
                 case ExpressionSubquery n:
+                    // Do not traverse here, subqueries should have been traversed
+                    // earlier if requested
                     VisitNode(n);
                     break;
                 case ExpressionBrackets n:
@@ -951,17 +993,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     VisitReference(n);
                     break;
 
-                case UdtStaticMethodCall n:
-                    TraverseUdtStaticMethodCall(n);
-                    VisitReference(n);
-                    break;
-                case UdtMethodCall n:
-                    TraverseUdtMethodCall(n);
-                    VisitReference(n);
+                case UdtStaticMemberAccessList n:
+                    TraverseUdtStaticMemberAccessList(n);
                     break;
 
-                case UdtStaticPropertyAccess n:
-                    TraverseUdtStaticPropertyAccess(n);
+                case UdtMethodCall n:
+                    TraverseUdtMethodCall(n);
                     VisitReference(n);
                     break;
                 case UdtPropertyAccess n:
@@ -997,12 +1034,37 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
+        private void TraverseUdtStaticMemberAccessList(UdtStaticMemberAccessList node)
+        {
+            foreach (var nn in SelectDirection(node.Stack))
+            {
+                switch (nn)
+                {
+                    case DataTypeIdentifier n:
+                        VisitNode(n);
+                        break;
+                    case StaticMemberAccessOperator n:
+                        VisitNode(n);
+                        break;
+                    case UdtStaticMethodCall n:
+                        TraverseUdtStaticMethodCall(n);
+                        break;
+                    case UdtStaticPropertyAccess n:
+                        TraverseUdtStaticPropertyAccess(n);
+                        break;
+                }
+            }
+        }
+
         private void TraverseMemberAccessList(MemberAccessList node)
         {
             foreach (var nn in SelectDirection(node.Stack))
             {
                 switch (nn)
                 {
+                    case MemberAccessOperator n:
+                        VisitNode(n);
+                        break;
                     case MemberCall n:
                         TraverseMemberCall(n);
                         break;
@@ -1012,6 +1074,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     case MemberAccessList n:
                         TraverseMemberAccessList(n);
                         break;
+
+                        // TODO: extend this with property and method calls
+                        // to handle resolved parsing trees
                 }
             }
         }
@@ -1030,7 +1095,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseUdtStaticPropertyAccess(UdtStaticPropertyAccess node)
         {
-            VisitNode(node.DataTypeIdentifier);
             VisitNode(node.PropertyName);
             VisitNode(node);
         }
@@ -1066,8 +1130,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         private void TraverseWindowedFunctionCall(WindowedFunctionCall node)
         {
             var over = node.OverClause;
-            var partitionby = over.PartitionByClause;
-            var orderby = over.OrderByClause;
 
             VisitNode(node.FunctionIdentifier);
             VisitNode(node);
@@ -1084,7 +1146,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseUdtStaticMethodCall(UdtStaticMethodCall node)
         {
-            VisitNode(node.DataTypeIdentifier);
             VisitNode(node.MethodName);
             VisitNode(node);
             TraverseFunctionArguments(node);
@@ -1140,31 +1201,34 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseOverClause(OverClause node)
         {
-            VisitNode(node);
+            // If inside expression context, just pass the node to the reshuffler
+            // If it's a callback from the reshuffler already, just traverse
 
-            // Turn off expression context
-            queryContextStack.Push(QueryContext & ~QueryContext.Expression);
-
-            foreach (var nn in node.Stack)
+            if (QueryContext.HasFlag(QueryContext.Expression))
             {
-                switch (nn)
+                VisitInlineNode(node);
+            }
+            else
+            {
+                foreach (var nn in SelectDirection(node.Stack))
                 {
-                    case BracketOpen n:
-                        VisitNode(n);
-                        break;
-                    case PartitionByClause n:
-                        TraversePartitionByClause(n);
-                        break;
-                    case OrderByClause n:
-                        TraverseOrderByClause(n);
-                        break;
-                    case BracketClose n:
-                        VisitNode(n);
-                        break;
+                    switch (nn)
+                    {
+                        case BracketOpen n:
+                            VisitNode(n);
+                            break;
+                        case PartitionByClause n:
+                            TraversePartitionByClause(n);
+                            break;
+                        case OrderByClause n:
+                            TraverseOrderByClause(n);
+                            break;
+                        case BracketClose n:
+                            VisitNode(n);
+                            break;
+                    }
                 }
             }
-
-            queryContextStack.Pop();
         }
 
         private void TraversePartitionByClause(PartitionByClause node)
@@ -1173,7 +1237,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             columnContextStack.Push(ColumnContext | ColumnContext.PartitionBy);
 
             VisitNode(node);
-            TraverseArgument(node.Argument);
+            TraverseExpression(node.Argument.Expression);
 
             tableContextStack.Pop();
             columnContextStack.Pop();
@@ -1233,8 +1297,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             switch (options.LogicalExpressionTraversal)
             {
-                case ExpressionTraversalMode.Infix:
-                case ExpressionTraversalMode.Postfix:
+                case ExpressionTraversalMethod.Infix:
+                case ExpressionTraversalMethod.Postfix:
                     TraverseLogicalExpressionNode(node);
                     break;
                 default:
