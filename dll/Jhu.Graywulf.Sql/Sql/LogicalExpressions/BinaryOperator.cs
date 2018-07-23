@@ -6,18 +6,18 @@ using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.LogicalExpressions
 {
-    public abstract class BinaryExpression : ExpressionTreeNode
+    public abstract class BinaryOperator : ExpressionTreeNode
     {
         public ExpressionTreeNode Left;
         public ExpressionTreeNode Right;
 
-        public BinaryExpression()
+        public BinaryOperator()
         {
             this.Left = null;
             this.Right = null;
         }
 
-        public BinaryExpression(ExpressionTreeNode left, ExpressionTreeNode right)
+        public BinaryOperator(ExpressionTreeNode left, ExpressionTreeNode right)
         {
             this.Left = left;
             this.Right = right;

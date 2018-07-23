@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Sql.LogicalExpressions
 {
-    public class OperatorAnd : BinaryExpression
+    public class OperatorAnd : BinaryOperator
     {
         public override int Precedence
         {

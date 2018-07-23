@@ -5,16 +5,16 @@ using System.Text;
 
 namespace Jhu.Graywulf.Sql.LogicalExpressions
 {
-    public abstract class UnaryExpression : ExpressionTreeNode
+    public abstract class UnaryOperator : ExpressionTreeNode
     {
         public ExpressionTreeNode Operand;
 
-        public UnaryExpression()
+        public UnaryOperator()
         {
             Operand = null;
         }
 
-        public UnaryExpression(ExpressionTreeNode operand)
+        public UnaryOperator(ExpressionTreeNode operand)
         {
             Operand = operand;
         }

@@ -6,7 +6,7 @@ using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.LogicalExpressions
 {
-    public class OperatorNot : UnaryExpression
+    public class OperatorNot : UnaryOperator
     {
         public override int Precedence
         {

@@ -200,7 +200,7 @@
     <Compile Include="Data\SmartDataReader.cs" />
     <Compile Include="Data\TypeMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sql\LogicalExpressions\BinaryExpression.cs" />
+    <Compile Include="Sql\LogicalExpressions\BinaryOperator.cs" />
     <Compile Include="Sql\LogicalExpressions\CnfConverter.cs" />
     <Compile Include="Sql\LogicalExpressions\DnfConverter.cs" />
     <Compile Include="Sql\LogicalExpressions\ExpressionTreeBuilder.cs" />
@@ -212,7 +212,7 @@
     <Compile Include="Sql\LogicalExpressions\OperatorOr.cs" />
     <Compile Include="Sql\LogicalExpressions\Predicate.cs" />
     <Compile Include="Sql\LogicalExpressions\SearchConditionNormalizer.cs" />
-    <Compile Include="Sql\LogicalExpressions\UnaryExpression.cs" />
+    <Compile Include="Sql\LogicalExpressions\UnaryOperator.cs" />
     <Compile Include="Sql\NameResolution\ColumnReference.cs" />
     <Compile Include="Sql\NameResolution\ColumnReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\Constants.cs" />
