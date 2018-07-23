@@ -8,7 +8,7 @@ using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.QueryTraversal
 {
-    class LogicalExpressionPrefixReshuffler : LogicalExpressionPostfixReshuffler
+    class ArithmeticExpressionPrefixReshuffler : ArithmeticExpressionPostfixReshuffler
     {
         private Stack<Token> outputStack;
 
@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             get { return TraversalDirection.Backward; }
         }
 
-        public LogicalExpressionPrefixReshuffler(SqlQueryVisitor visitor, SqlQueryVisitorSink sink)
+        public ArithmeticExpressionPrefixReshuffler(SqlQueryVisitor visitor, SqlQueryVisitorSink sink)
             : base(visitor, sink)
         {
             this.outputStack = new Stack<Token>();
@@ -41,6 +41,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     break;
                 default:
                     base.Route(node);
+                    break;
+
+                // Windowed functions are rather special, for prefix, push to output
+                // to put it after function just like its arguments
+                case OverClause n:
+                    Output(n);
                     break;
 
                 case Comma n:

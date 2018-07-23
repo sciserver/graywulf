@@ -191,13 +191,15 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             // tree building
 
             var reshuffler = ExpressionReshuffler;
+
             if (reshuffler != null)
             {
                 reshuffler.Route(node);
-                return;
             }
-            
-            sink.AcceptVisitor(this, node);
+            else
+            {
+                sink.AcceptVisitor(this, node);
+            }
         }
 
         protected virtual void VisitReference(IDatabaseObjectReference node)
@@ -229,6 +231,57 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     sink.Accept(tr);
                 }
             }
+        }
+
+        protected virtual void VisitInlineNode(Token node)
+        {
+            // Depending on the traversal mode, we either route nodes to the sink
+            // directly or we reshuffle to produce postfix notation for expression
+            // tree building
+
+            var reshuffler = ExpressionReshuffler;
+
+            if (reshuffler != null)
+            {
+                reshuffler.Route(node);
+            }
+            else
+            {
+                TraverseInlineNode(node);
+            }
+        }
+
+        public virtual void TraverseInlineNode(Token node)
+        {
+            // This is an expression inline or predicate inline that needs special handling such
+            // as the OVER clause of windowed function calls.
+
+            // Turn off expression context
+            queryContextStack.Push(QueryContext & ~QueryContext.Expression & ~QueryContext.LogicalExpression);
+            expressionReshufflerStack.Push(null);
+
+            VisitNode(node);
+
+            switch (node)
+            {
+                case OverClause n:
+                    TraverseOverClause(n);
+                    break;
+                case SimpleCaseExpression n:
+                    TraverseSimpleCaseExpression(n);
+                    break;
+                case SearchedCaseExpression n:
+                    TraverseSearchedCaseExpression(n);
+                    break;
+                case Predicate n:
+                    TraversePredicate(n);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            queryContextStack.Pop();
+            expressionReshufflerStack.Pop();
         }
 
         #endregion
@@ -809,10 +862,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     expressionReshufflerStack.Push(null);
                     break;
                 case ExpressionTraversalMethod.Postfix:
-                    expressionReshufflerStack.Push(new ExpressionPostfixReshuffler(this, sink));
+                    expressionReshufflerStack.Push(new ExpressionReshuffler(this, sink, ExpressionTraversalMethod.Postfix, new ArithmeticExpressionRules()));
                     break;
                 case ExpressionTraversalMethod.Prefix:
-                    expressionReshufflerStack.Push(new ExpressionPrefixReshuffler(this, sink));
+                    expressionReshufflerStack.Push(new ExpressionReshuffler(this, sink, ExpressionTraversalMethod.Prefix, new ArithmeticExpressionRules()));
                     break;
                 default:
                     throw new NotImplementedException();
@@ -826,47 +879,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             {
                 reshuffler.Flush();
             }
-        }
-
-        protected virtual void VisitExpressionInlineNode(Token node)
-        {
-            // Inline nodes are typically sent to the reshuffler for processing except
-            // in infix mode where the callback is short-circuited
-
-            VisitNode(node);
-
-            if (ExpressionReshuffler == null)
-            {
-                TraverseExpressionInlineNode(node);
-            }
-        }
-
-        public virtual void TraverseExpressionInlineNode(Token node)
-        {
-            // This is an expression inline that needs special handling such
-            // as the OVER clause of windowed function calls.
-
-            // Turn off expression context
-            queryContextStack.Push(QueryContext & ~QueryContext.Expression);
-            expressionReshufflerStack.Push(null);
-
-            switch (node)
-            {
-                case OverClause n:
-                    TraverseOverClause(n);
-                    break;
-                case SimpleCaseExpression n:
-                    TraverseSimpleCaseExpression(n);
-                    break;
-                case SearchedCaseExpression n:
-                    TraverseSearchedCaseExpression(n);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            queryContextStack.Pop();
-            expressionReshufflerStack.Pop();
         }
 
         protected void TraverseExpression(Expression node)
@@ -1215,7 +1227,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             if (QueryContext.HasFlag(QueryContext.Expression))
             {
-                VisitExpressionInlineNode(node);
+                VisitInlineNode(node);
             }
             else
             {
@@ -1291,7 +1303,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             if (QueryContext.HasFlag(QueryContext.Expression))
             {
-                VisitExpressionInlineNode(node);
+                VisitInlineNode(node);
             }
             else
             {
@@ -1357,10 +1369,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     expressionReshufflerStack.Push(null);
                     break;
                 case ExpressionTraversalMethod.Postfix:
-                    expressionReshufflerStack.Push(new LogicalExpressionPostfixReshuffler(this, sink));
+                    expressionReshufflerStack.Push(new ExpressionReshuffler(this, sink, ExpressionTraversalMethod.Postfix, new LogicalExpressionRules()));
                     break;
                 case ExpressionTraversalMethod.Prefix:
-                    expressionReshufflerStack.Push(new LogicalExpressionPrefixReshuffler(this, sink));
+                    expressionReshufflerStack.Push(new ExpressionReshuffler(this, sink, ExpressionTraversalMethod.Prefix, new LogicalExpressionRules()));
                     break;
                 default:
                     throw new NotImplementedException();
@@ -1374,40 +1386,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             {
                 reshuffler.Flush();
             }
-        }
-
-        protected virtual void VisitLogicalExpressionInlineNode(Token node)
-        {
-            // Inline nodes are typically sent to the reshuffler for processing except
-            // in infix mode where the callback is short-circuited
-
-            VisitNode(node);
-
-            if (ExpressionReshuffler == null)
-            {
-                TraverseLogicalExpressionInlineNode(node);
-            }
-        }
-
-        public virtual void TraverseLogicalExpressionInlineNode(Token node)
-        {
-            // This is a predicate inline that needs special handling such
-
-            // Turn off expression context
-            queryContextStack.Push(QueryContext & ~QueryContext.LogicalExpression);
-            expressionReshufflerStack.Push(null);
-
-            switch (node)
-            {
-                case Predicate n:
-                    TraversePredicate(n);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            queryContextStack.Pop();
-            expressionReshufflerStack.Pop();
         }
 
         protected void TraverseLogicalExpression(LogicalExpression node)
@@ -1455,17 +1433,17 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             columnContextStack.Push(ColumnContext | ColumnContext.Predicate);
 
-            // All predicates are inlines
+            if (options.VisitPredicateSubqueries)
+            {
+                TraversePredicateSubqueries(node);
+            }
+
             if (QueryContext.HasFlag(QueryContext.LogicalExpression))
             {
-                VisitLogicalExpressionInlineNode(node);
+                VisitInlineNode(node);
             }
             else
             {
-                if (options.VisitPredicateSubqueries)
-                {
-                    TraversePredicateSubqueries(node);
-                }
 
                 // TODO: add option not to traverse predicates, just run
                 // over the logical expression (as required for CNF/DNF)
@@ -1531,7 +1509,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 }
             }
         }
-        
+
         #endregion
         #region Queries
 

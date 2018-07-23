@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
     /// Implements a specialized version of the shuntling yard algorithm to output
     /// expressions in reverse polish notation.
     /// </summary>
-    abstract class ExpressionPostfixReshuffler : ExpressionReshufflerRules
+    class ArithmeticExpressionRules : ExpressionReshufflerRules
     {
         public override void Route(Token node)
         {
@@ -22,20 +22,16 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 // the operator stack first. Functions are simply pushed to the top
                 // and arguments are counted.
                 case MemberAccess n:
-                    FlushTop(n);
-                    Push(n);
+                    EmptyAndPush(n);
                     break;
                 case MemberCall n:
-                    FlushTop(n);
-                    Push(n);
+                    EmptyAndPush(n);
                     break;
                 case PropertyAccess n:
-                    FlushTop(n);
-                    Push(n);
+                    EmptyAndPush(n);
                     break;
                 case MethodCall n:
-                    FlushTop(n);
-                    Push(n);
+                    EmptyAndPush(n);
                     break;
 
                 // Function calls and property/member access
@@ -64,12 +60,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 // Windowed functions are rather special, for postfix, push to stack to
                 // put it before function just like its arguments
                 case OverClause n:
-                    Push(n);
+                    Inline(n);
                     break;
 
                 // Case expression are operands, just push to output
                 case CaseExpression n:
-                    Output(n);
+                    Inline(n);
                     break;
 
                 // Default behavior: skip token

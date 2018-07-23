@@ -44,16 +44,28 @@ SET ID = 1,Data=2 , Data2 = 3 + 4";
         [TestMethod]
         public void VariousSetFormatsTest()
         {
-            var sql =
-@"UPDATE test
-SET ID = 1,
-    @var = 1 + 2,
-    col += 12,
-    col = (SELECT 1),
-    @var = col = 8,
-    @var = col -= 12,
-    col.property = 'test',
-    col.mutator(1, 2)";
+            var sql = "UPDATE test SET ID = 1";
+            new SqlParser().Execute<UpdateStatement>(sql);
+
+            sql = "UPDATE test SET @var = 1 + 2";
+            new SqlParser().Execute<UpdateStatement>(sql);
+
+            sql = "UPDATE test SET col += 12";
+            new SqlParser().Execute<UpdateStatement>(sql);
+
+            sql = "UPDATE test SET col = (SELECT 1)";
+            new SqlParser().Execute<UpdateStatement>(sql);
+
+            sql = "UPDATE test SET @var = col = 8";
+            new SqlParser().Execute<UpdateStatement>(sql);
+
+            sql = "UPDATE test SET @var = col -= 12";
+            new SqlParser().Execute<UpdateStatement>(sql);
+
+            sql = "UPDATE test SET col.property = 'test'";
+            new SqlParser().Execute<UpdateStatement>(sql);
+
+            sql = "UPDATE test SET col.mutator(1, 2)";
             new SqlParser().Execute<UpdateStatement>(sql);
         }
 
