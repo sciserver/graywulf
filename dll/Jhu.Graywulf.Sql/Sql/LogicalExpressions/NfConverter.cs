@@ -7,7 +7,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 {
     public abstract class NfConverter : ExpressionVisitor
     {
-        protected internal override Expression VisitOperatorNot(OperatorNot node)
+        protected internal override ExpressionTreeNode VisitOperatorNot(OperatorNot node)
         {
             if (node.Operand is Predicate)
             {

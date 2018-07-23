@@ -9,7 +9,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 {
     public class SearchConditionNormalizer
     {
-        private List<LogicalExpressions.Expression> conditions;
+        private List<LogicalExpressions.ExpressionTreeNode> conditions;
 
         public SearchConditionNormalizer()
         {
@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 
         private void InitializeMembers()
         {
-            conditions = new List<LogicalExpressions.Expression>();
+            conditions = new List<LogicalExpressions.ExpressionTreeNode>();
         }
 
         public void CollectConditions(Parsing.StatementBlock script)
@@ -143,7 +143,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
         /// <param name="node"></param>
         /// <returns></returns>
         /// <remarks>The expression tree must be in CNF</remarks>
-        private static IEnumerable<LogicalExpressions.Expression> EnumerateCnfTerms(LogicalExpressions.Expression node)
+        private static IEnumerable<LogicalExpressions.ExpressionTreeNode> EnumerateCnfTerms(LogicalExpressions.ExpressionTreeNode node)
         {
             if (node == null)
             {
@@ -179,7 +179,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
         /// <param name="table"></param>
         /// <returns></returns>
         /// <remarks>The expression must be in CNF</remarks>
-        private static IEnumerable<LogicalExpressions.Expression> EnumerateCnfTermsSpecificToTable(LogicalExpressions.Expression node, TableReference tr, DatabaseObject dbobj)
+        private static IEnumerable<LogicalExpressions.ExpressionTreeNode> EnumerateCnfTermsSpecificToTable(LogicalExpressions.ExpressionTreeNode node, TableReference tr, DatabaseObject dbobj)
         {
             bool specifictotable;
 
@@ -241,7 +241,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
         /// </summary>
         /// <param name="term"></param>
         /// <returns></returns>
-        private static Parsing.Predicate GetCnfLiteralPredicate(LogicalExpressions.Expression term)
+        private static Parsing.Predicate GetCnfLiteralPredicate(LogicalExpressions.ExpressionTreeNode term)
         {
             if (term is LogicalExpressions.OperatorNot)
             {
@@ -257,7 +257,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             }
         }
 
-        private static IEnumerable<LogicalExpressions.Expression> EnumerateCnfTermPredicates(LogicalExpressions.Expression node)
+        private static IEnumerable<LogicalExpressions.ExpressionTreeNode> EnumerateCnfTermPredicates(LogicalExpressions.ExpressionTreeNode node)
         {
             if (node == null)
             {
@@ -282,17 +282,17 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             }
         }
 
-        private LogicalExpressions.Expression GetDisjunctiveNormalForm(Parsing.LogicalExpression sc)
+        private LogicalExpressions.ExpressionTreeNode GetDisjunctiveNormalForm(Parsing.LogicalExpression sc)
         {
-            var exp = sc.GetExpressionTree();
-            var dnf = new LogicalExpressions.DnfConverter();
+            var exp = new ExpressionTreeBuilder().Execute(sc);
+            var dnf = new DnfConverter();
             return dnf.Visit(exp);
         }
 
-        private LogicalExpressions.Expression GetConjunctiveNormalForm(Parsing.LogicalExpression sc)
+        private LogicalExpressions.ExpressionTreeNode GetConjunctiveNormalForm(Parsing.LogicalExpression sc)
         {
-            var exp = sc.GetExpressionTree();
-            var cnf = new LogicalExpressions.CnfConverter();
+            var exp = new ExpressionTreeBuilder().Execute(sc);
+            var cnf = new CnfConverter();
             return cnf.Visit(exp);
         }
     }

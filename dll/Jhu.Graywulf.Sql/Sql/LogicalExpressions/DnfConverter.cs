@@ -7,14 +7,14 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 {
     public class DnfConverter : NfConverter
     {
-        protected internal override Expression VisitOperatorAnd(OperatorAnd node)
+        protected internal override ExpressionTreeNode VisitOperatorAnd(OperatorAnd node)
         {
             // Both operands must be in DNF
             var left = Visit(node.Left);
             var right = Visit(node.Right);
 
             // Form Cartesian product of terms
-            Expression[] leftterms, rightterms;
+            ExpressionTreeNode[] leftterms, rightterms;
 
             if (left is OperatorOr)
             {
@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             }
             else
             {
-                leftterms = new Expression[] { left };
+                leftterms = new ExpressionTreeNode[] { left };
             }
 
             if (right is OperatorOr)
@@ -31,10 +31,10 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             }
             else
             {
-                rightterms = new Expression[] { right };
+                rightterms = new ExpressionTreeNode[] { right };
             }
 
-            Expression res = null;
+            ExpressionTreeNode res = null;
 
             for (int i = 0; i < leftterms.Length; i++)
             {

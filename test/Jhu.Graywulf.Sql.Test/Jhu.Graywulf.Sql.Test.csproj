@@ -92,6 +92,7 @@
     <Compile Include="Data\SmartDataReaderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sql\LogicalExpressions\DnfConverterTest.cs" />
+    <Compile Include="Sql\LogicalExpressions\ExpressionTreeBuilderTest.cs" />
     <Compile Include="Sql\LogicalExpressions\SearchConditionNormalizerTest.cs" />
     <Compile Include="Sql\NameResolution\ColumnReferenceTest.cs" />
     <Compile Include="Sql\NameResolution\PredicateTest.cs" />

@@ -5,11 +5,11 @@ using System.Text;
 
 namespace Jhu.Graywulf.Sql.LogicalExpressions
 {
-    public class Predicate : Expression
+    public class Predicate : ExpressionTreeNode
     {
         public override int Precedence
         {
-            get { return 0; }
+            get { return 4; }
         }
 
         public Parsing.Predicate Value;
@@ -19,12 +19,12 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             this.Value = value;
         }
 
-        protected internal override Expression Accept(ExpressionVisitor visitor)
+        protected internal override ExpressionTreeNode Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitPredicate(this);
         }
 
-        public override Parsing.LogicalExpression GetParsingTree()
+        protected internal override Parsing.LogicalExpression GetParsingTree(ExpressionTreeNode parent)
         {
             // *** TODO Value.AddLeadingWhitespace();
 

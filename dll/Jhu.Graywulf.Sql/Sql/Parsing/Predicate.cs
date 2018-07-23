@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             */
         }
 
-        public LogicalExpressions.Expression GetExpressionTree()
+        public LogicalExpressions.ExpressionTreeNode GetExpressionTree()
         {
             return new LogicalExpressions.Predicate(this);
         }

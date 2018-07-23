@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         // --
 
-        private IEnumerable<LogicalExpressions.Expression> EnumerateRawExpressionsTestHelper(string sql)
+        private IEnumerable<LogicalExpressions.ExpressionTreeNode> EnumerateRawExpressionsTestHelper(string sql)
         {
             var sc = GetSearchCondition(sql);
 
@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Sql.Parsing
                 "EnumerateRawExpressions",
                 BindingFlags.Instance | BindingFlags.NonPublic);
 
-            return (IEnumerable<LogicalExpressions.Expression>)m.Invoke(sc, null);
+            return (IEnumerable<LogicalExpressions.ExpressionTreeNode>)m.Invoke(sc, null);
         }
 
         [TestMethod]
@@ -57,8 +57,8 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private string GetExpressionTreeTestHelper(string sql)
         {
-            var exp = GetSearchCondition(sql).GetExpressionTree();
-            return exp.ToString();
+            var tree = new LogicalExpressions.ExpressionTreeBuilder().Execute(GetSearchCondition(sql));
+            return tree.ToString();
         }
 
         [TestMethod]
@@ -118,8 +118,8 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         private string GetParsingTreeTestHelper(string sql)
         {
-            var exp = GetSearchCondition(sql).GetExpressionTree();
-            return exp.GetParsingTree().Value;
+            var tree = new LogicalExpressions.ExpressionTreeBuilder().Execute(GetSearchCondition(sql));
+            return tree.GetParsingTree().Value;
         }
 
         [TestMethod]

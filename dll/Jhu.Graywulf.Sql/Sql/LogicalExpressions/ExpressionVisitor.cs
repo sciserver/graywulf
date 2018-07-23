@@ -7,12 +7,12 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 {
     public abstract class ExpressionVisitor
     {
-        public Expression Visit(Expression node)
+        public ExpressionTreeNode Visit(ExpressionTreeNode node)
         {
             return node.Accept(this);
         }
 
-        protected internal virtual Expression VisitOperatorAnd(OperatorAnd node)
+        protected internal virtual ExpressionTreeNode VisitOperatorAnd(OperatorAnd node)
         {
             var left = Visit(node.Left);
             var right = Visit(node.Right);
@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             }
         }
 
-        protected internal virtual Expression VisitOperatorOr(OperatorOr node)
+        protected internal virtual ExpressionTreeNode VisitOperatorOr(OperatorOr node)
         {
             var left = Visit(node.Left);
             var right = Visit(node.Right);
@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             }
         }
 
-        protected internal virtual Expression VisitOperatorNot(OperatorNot node)
+        protected internal virtual ExpressionTreeNode VisitOperatorNot(OperatorNot node)
         {
             var op = Visit(node.Operand);
 
@@ -56,7 +56,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             }
         }
 
-        protected internal virtual Expression VisitPredicate(Predicate node)
+        protected internal virtual ExpressionTreeNode VisitPredicate(Predicate node)
         {
             return node;
         }

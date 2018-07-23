@@ -19,10 +19,5 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             return scb;
         }
-
-        public LogicalExpressions.Expression GetExpressionTree()
-        {
-            return new LogicalExpressions.Brackets(FindDescendant<LogicalExpression>().GetExpressionTree());
-        }
     }
 }

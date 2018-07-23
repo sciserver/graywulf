@@ -43,6 +43,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         }
 
         [TestMethod]
+        public void UnaryOperatorTest()
+        {
+            var res = Execute("NOT (a = b OR c > d) OR e < f");
+            Assert.AreEqual("a = b c > d OR NOT e < f OR ", res);
+        }
+
+        [TestMethod]
         public void PredicateTypesTest()
         {
             var res = Execute("a = b OR c < d");

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.LogicalExpressions
 {
@@ -16,19 +17,19 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
         {
         }
 
-        public OperatorNot(Expression operand)
+        public OperatorNot(ExpressionTreeNode operand)
             : base(operand)
         {
         }
 
-        protected internal override Expression Accept(ExpressionVisitor visitor)
+        protected internal override ExpressionTreeNode Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitOperatorNot(this);
         }
-
-        public override Parsing.LogicalExpression GetParsingTree()
+        
+        protected internal override LogicalExpression GetParsingTree(ExpressionTreeNode parent)
         {
-            var sc = Operand.GetParsingTree();
+            var sc = Operand.GetParsingTree(this);
             sc.Stack.AddFirst(Parsing.Whitespace.Create());
             sc.Stack.AddFirst(Parsing.LogicalNotOperator.Create());
             return sc;
@@ -36,7 +37,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 
         public override string ToString()
         {
-            return String.Format("NOT {0}", Operand.ToString());
+            return String.Format("NOT {0}", Operand.ToString(this));
         }
     }
 }

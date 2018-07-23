@@ -23,7 +23,8 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
         private string VisitTestHelper(string sql)
         {
             var dnf = new LogicalExpressions.DnfConverter();
-            return dnf.Visit(GetSearchCondition(sql).GetExpressionTree()).ToString();
+            var tree = new LogicalExpressions.ExpressionTreeBuilder().Execute(GetSearchCondition(sql));
+            return dnf.Visit(tree).ToString();
         }
 
         [TestMethod]

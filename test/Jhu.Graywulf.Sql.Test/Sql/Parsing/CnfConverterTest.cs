@@ -22,7 +22,8 @@ namespace Jhu.Graywulf.Sql.Parsing
         private string VisitTestHelper(string sql)
         {
             var cnf = new LogicalExpressions.CnfConverter();
-            return cnf.Visit(GetSearchCondition(sql).GetExpressionTree()).ToString();
+            var tree = new LogicalExpressions.ExpressionTreeBuilder().Execute(GetSearchCondition(sql));
+            return cnf.Visit(tree).ToString();
         }
 
         [TestMethod]

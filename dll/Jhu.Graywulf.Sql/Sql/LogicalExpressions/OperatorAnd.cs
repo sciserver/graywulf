@@ -16,25 +16,25 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
         {
         }
 
-        public OperatorAnd(Expression left, Expression right)
+        public OperatorAnd(ExpressionTreeNode left, ExpressionTreeNode right)
             : base(left, right)
         {
         }
 
-        protected internal override Expression Accept(ExpressionVisitor visitor)
+        protected internal override ExpressionTreeNode Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitOperatorAnd(this);
         }
 
-        public IEnumerable<Expression> EnumerateTerms()
+        public IEnumerable<ExpressionTreeNode> EnumerateTerms()
         {
-            var stack = new Stack<Expression>();
+            var stack = new Stack<ExpressionTreeNode>();
             EnumerateTermsInternal(this, stack);
 
             return stack;
         }
 
-        private void EnumerateTermsInternal(OperatorAnd node, Stack<Expression> stack)
+        private void EnumerateTermsInternal(OperatorAnd node, Stack<ExpressionTreeNode> stack)
         {
             if (node.Left is OperatorAnd)
             {

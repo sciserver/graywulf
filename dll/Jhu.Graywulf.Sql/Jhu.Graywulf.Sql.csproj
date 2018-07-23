@@ -201,10 +201,10 @@
     <Compile Include="Data\TypeMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sql\LogicalExpressions\BinaryExpression.cs" />
-    <Compile Include="Sql\LogicalExpressions\Brackets.cs" />
     <Compile Include="Sql\LogicalExpressions\CnfConverter.cs" />
     <Compile Include="Sql\LogicalExpressions\DnfConverter.cs" />
-    <Compile Include="Sql\LogicalExpressions\Expression.cs" />
+    <Compile Include="Sql\LogicalExpressions\ExpressionTreeBuilder.cs" />
+    <Compile Include="Sql\LogicalExpressions\ExpressionTreeNode.cs" />
     <Compile Include="Sql\LogicalExpressions\ExpressionVisitor.cs" />
     <Compile Include="Sql\LogicalExpressions\NfConverter.cs" />
     <Compile Include="Sql\LogicalExpressions\OperatorAnd.cs" />

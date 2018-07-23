@@ -113,7 +113,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             return res.ToArray();
         }
 
-        private IEnumerable<LogicalExpressions.Expression> EnumerateCnfTermsTestHelper(string query)
+        private IEnumerable<LogicalExpressions.ExpressionTreeNode> EnumerateCnfTermsTestHelper(string query)
         {
             var select = CreateSelect(query);
 
@@ -123,7 +123,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             var conditions = typeof(LogicalExpressions.SearchConditionNormalizer).GetField("conditions", BindingFlags.Instance | BindingFlags.NonPublic);
             var enumterms = typeof(LogicalExpressions.SearchConditionNormalizer).GetMethod("EnumerateCnfTerms", BindingFlags.Static | BindingFlags.NonPublic);
 
-            return (IEnumerable<LogicalExpressions.Expression>)enumterms.Invoke(null, new object[] { ((List<LogicalExpressions.Expression>)conditions.GetValue(scn)).First() });
+            return (IEnumerable<LogicalExpressions.ExpressionTreeNode>)enumterms.Invoke(null, new object[] { ((List<LogicalExpressions.ExpressionTreeNode>)conditions.GetValue(scn)).First() });
         }
 
         // ---
@@ -341,7 +341,7 @@ SELECT Title FROM Book WHERE Year > 2000";
 
         // ---
 
-        private IEnumerable<LogicalExpressions.Expression> EnumerateCnfTermsSpecificToTableTestHelper(string query)
+        private IEnumerable<LogicalExpressions.ExpressionTreeNode> EnumerateCnfTermsSpecificToTableTestHelper(string query)
         {
             var select = CreateSelect(query);
 
@@ -351,7 +351,7 @@ SELECT Title FROM Book WHERE Year > 2000";
             var conditions = typeof(LogicalExpressions.SearchConditionNormalizer).GetField("conditions", BindingFlags.Instance | BindingFlags.NonPublic);
             var enumterms = typeof(LogicalExpressions.SearchConditionNormalizer).GetMethod("EnumerateCnfTermsSpecificToTable", BindingFlags.Static | BindingFlags.NonPublic);
 
-            return (IEnumerable<LogicalExpressions.Expression>)enumterms.Invoke(null, new object[] { ((List<LogicalExpressions.Expression>)conditions.GetValue(scn)).FirstOrDefault(), select.QueryExpression.FirstQuerySpecification.SourceTableReferences.Values.First(), null });
+            return (IEnumerable<LogicalExpressions.ExpressionTreeNode>)enumterms.Invoke(null, new object[] { ((List<LogicalExpressions.ExpressionTreeNode>)conditions.GetValue(scn)).FirstOrDefault(), select.QueryExpression.FirstQuerySpecification.SourceTableReferences.Values.First(), null });
         }
 
         [TestMethod]
@@ -377,13 +377,13 @@ SELECT Title FROM Book WHERE Year > 2000";
 
         // ---
 
-        private IEnumerable<LogicalExpressions.Expression> EnumerateCnfTermPredicatesTestHelper(string query)
+        private IEnumerable<LogicalExpressions.ExpressionTreeNode> EnumerateCnfTermPredicatesTestHelper(string query)
         {
             var terms = EnumerateCnfTermsTestHelper(query);
 
             var enumpreds = typeof(LogicalExpressions.SearchConditionNormalizer).GetMethod("EnumerateCnfTermPredicates", BindingFlags.Static | BindingFlags.NonPublic);
 
-            return (IEnumerable<LogicalExpressions.Expression>)enumpreds.Invoke(null, new object[] { terms.First() });
+            return (IEnumerable<LogicalExpressions.ExpressionTreeNode>)enumpreds.Invoke(null, new object[] { terms.First() });
         }
 
         [TestMethod]
