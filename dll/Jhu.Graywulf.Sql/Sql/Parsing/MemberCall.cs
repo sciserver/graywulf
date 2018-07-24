@@ -12,5 +12,10 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return FindDescendant<MemberName>(); }
         }
+
+        public FunctionArguments FunctionArguments
+        {
+            get { return FindDescendant<FunctionArguments>(); }
+        }
     }
 }

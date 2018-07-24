@@ -118,6 +118,7 @@
     <Compile Include="Sql\NameResolution\SelectStatementTest.cs" />
     <Compile Include="Sql\NameResolution\SqlNameResolverTestBase.cs" />
     <Compile Include="Sql\NameResolution\SubqueryTest.cs" />
+    <Compile Include="Sql\Parsing\SpecialFunctionsTest.cs" />
     <Compile Include="Sql\Parsing\ArgumentListTest.cs" />
     <Compile Include="Sql\Parsing\ArgumentTest.cs" />
     <Compile Include="Sql\Parsing\ArithmeticOperatorTest.cs" />
@@ -184,6 +185,7 @@
     <Compile Include="Sql\QueryGeneration\SqlServer\SqlServerQueryGeneratorTest.cs" />
     <Compile Include="Sql\QueryRendering\MySql\MySqlQueryRendererTest.cs" />
     <Compile Include="Sql\QueryRendering\SqlServer\SqlServerQueryRendererTest.cs" />
+    <Compile Include="Sql\QueryTraversal\SpecialFunctionTest.cs" />
     <Compile Include="Sql\QueryTraversal\ExpressionInlineTest.cs" />
     <Compile Include="Sql\QueryTraversal\LogicalExpressionPrefixTest.cs" />
     <Compile Include="Sql\QueryTraversal\LogicalExpressionPostfixTest.cs" />

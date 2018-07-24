@@ -20,48 +20,46 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         [TestMethod]
         public void InlinedInfixExpressions()
         {
-            var exp = "a + b = 1 OR c + d = 2 AND e + f * g < 0";
+            var exp = "MAX(a, b) = 1 OR c + d = 2 AND e + f * g < 0";
 
             var res = Execute(exp, ExpressionTraversalMethod.Infix, ExpressionTraversalMethod.Postfix);
-            Assert.AreEqual("a + b = 1 c + d = 2 e + f * g < 0 AND OR ", res);
+            Assert.AreEqual("MAX ( a , b ) = 1 c + d = 2 e + f * g < 0 AND OR ", res);
 
             res = Execute(exp, ExpressionTraversalMethod.Infix, ExpressionTraversalMethod.Prefix);
-            Assert.AreEqual("OR a + b = 1 AND c + d = 2 e + f * g < 0 ", res);
+            Assert.AreEqual("OR MAX ( a , b ) = 1 AND c + d = 2 e + f * g < 0 ", res);
 
             res = Execute(exp, ExpressionTraversalMethod.Infix, ExpressionTraversalMethod.Infix);
-            Assert.AreEqual("a + b = 1 OR c + d = 2 AND e + f * g < 0 ", res);
+            Assert.AreEqual("MAX ( a , b ) = 1 OR c + d = 2 AND e + f * g < 0 ", res);
         }
 
         [TestMethod]
         public void InlinedPrefixExpressions()
         {
-            var exp = "a + b = 1 OR c + d = 2 AND e + f * g < 0";
+            var exp = "MAX(a, b) = 1 OR c + d = 2 AND e + f * g < 0";
 
             var res = Execute(exp, ExpressionTraversalMethod.Prefix, ExpressionTraversalMethod.Postfix);
-            Assert.AreEqual("+ a b = 1 + c d = 2 + e * f g < 0 AND OR ", res);
+            Assert.AreEqual("MAX `2 a , b = 1 + c d = 2 + e * f g < 0 AND OR ", res);
 
             res = Execute(exp, ExpressionTraversalMethod.Prefix, ExpressionTraversalMethod.Prefix);
-            Assert.AreEqual("OR + a b = 1 AND + c d = 2 + e * f g < 0 ", res);
+            Assert.AreEqual("OR MAX `2 a , b = 1 AND + c d = 2 + e * f g < 0 ", res);
 
             res = Execute(exp, ExpressionTraversalMethod.Prefix, ExpressionTraversalMethod.Infix);
-            Assert.AreEqual("+ a b = 1 OR + c d = 2 AND + e * f g < 0 ", res);
+            Assert.AreEqual("MAX `2 a , b = 1 OR + c d = 2 AND + e * f g < 0 ", res);
         }
 
         [TestMethod]
         public void InlinedPostfixExpressions()
         {
-            var exp = "a + b = 1 OR c + d = 2 AND e + f * g < 0";
+            var exp = "MAX(a, b) = 1 OR c + d = 2 AND e + f * g < 0";
 
             var res = Execute(exp, ExpressionTraversalMethod.Postfix, ExpressionTraversalMethod.Postfix);
-            Assert.AreEqual("a b + = 1 c d + = 2 e f g * + < 0 AND OR ", res);
+            Assert.AreEqual("a , b MAX `2 = 1 c d + = 2 e f g * + < 0 AND OR ", res);
 
             res = Execute(exp, ExpressionTraversalMethod.Postfix, ExpressionTraversalMethod.Prefix);
-            Assert.AreEqual("OR a b + = 1 AND c d + = 2 e f g * + < 0 ", res);
+            Assert.AreEqual("OR a , b MAX `2 = 1 AND c d + = 2 e f g * + < 0 ", res);
 
             res = Execute(exp, ExpressionTraversalMethod.Postfix, ExpressionTraversalMethod.Infix);
-            Assert.AreEqual("+ a b = 1 OR + c d = 2 AND + e * f g < 0 ", res);
+            Assert.AreEqual("a , b MAX `2 = 1 OR c d + = 2 AND e f g * + < 0 ", res);
         }
-
-        // TODO: add expressions containing logical expressions once IIF is implemented
     }
 }

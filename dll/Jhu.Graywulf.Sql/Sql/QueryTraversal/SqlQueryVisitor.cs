@@ -276,6 +276,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case Predicate n:
                     TraversePredicate(n);
                     break;
+
+                // Special function arguments
+                case LogicalArgument n:
+                    TraverseLogicalArgument(n);
+                    break;
                 default:
                     throw new NotImplementedException();
             }
@@ -904,11 +909,14 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseExpressionSubqueries(Node node)
         {
-            // TODO: Definitely do not descend into other expression or predicates
-
             foreach (var n in node.Stack)
             {
-                if (n is Subquery sq)
+                if (n is LogicalExpression)
+                {
+                    // Do not descend into logical expressions
+                    continue;
+                }
+                else if (n is Subquery sq)
                 {
                     TraverseSubquery(sq);
                 }
@@ -995,6 +1003,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     break;
                 case SearchedCaseExpression n:
                     TraverseSearchedCaseExpression(n);
+                    break;
+
+                case SpecialFunctionCall n:
+                    TraverseSpecialFunctionCall(n);
                     break;
 
                 case SystemFunctionCall n:
@@ -1124,28 +1136,28 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             VisitNode(node.MemberName);
             VisitNode(node);
-            TraverseFunctionArguments(node);
+            TraverseFunctionArguments(node, node.FunctionArguments);
         }
 
         private void TraverseSystemFunctionCall(SystemFunctionCall node)
         {
             VisitNode(node.FunctionName);
             VisitNode(node);
-            TraverseFunctionArguments(node);
+            TraverseFunctionArguments(node, node.FunctionArguments);
         }
 
         private void TraverseScalarFunctionCall(ScalarFunctionCall node)
         {
             VisitNode(node.FunctionIdentifier);
             VisitNode(node);
-            TraverseFunctionArguments(node);
+            TraverseFunctionArguments(node, node.FunctionArguments);
         }
 
         private void TraverseTableValuedFunctionCall(TableValuedFunctionCall node)
         {
             VisitNode(node.FunctionIdentifier);
             VisitNode(node);
-            TraverseFunctionArguments(node);
+            TraverseFunctionArguments(node, node.FunctionArguments);
         }
 
         private void TraverseWindowedFunctionCall(WindowedFunctionCall node)
@@ -1154,7 +1166,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             VisitNode(node.FunctionIdentifier);
             VisitNode(node);
-            TraverseFunctionArguments(node);
+            TraverseFunctionArguments(node, node.FunctionArguments);
             TraverseOverClause(node.OverClause);
         }
 
@@ -1162,21 +1174,21 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             VisitNode(node.MethodName);
             VisitNode(node);
-            TraverseFunctionArguments(node);
+            TraverseFunctionArguments(node, node.FunctionArguments);
         }
 
         private void TraverseUdtStaticMethodCall(UdtStaticMethodCall node)
         {
             VisitNode(node.MethodName);
             VisitNode(node);
-            TraverseFunctionArguments(node);
+            TraverseFunctionArguments(node, node.FunctionArguments);
         }
 
-        private void TraverseFunctionArguments(FunctionCall node)
+        private void TraverseFunctionArguments(FunctionCall node, Node arguments)
         {
             int argumentCount = 0;
 
-            foreach (var nn in SelectDirection(node.FunctionArguments.Stack))
+            foreach (var nn in SelectDirection(arguments.Stack))
             {
                 switch (nn)
                 {
@@ -1359,6 +1371,65 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         }
 
         #endregion
+        #region Special functions
+
+        private void TraverseSpecialFunctionCall(SpecialFunctionCall node)
+        {            
+            VisitNode(node.FunctionName);
+            VisitNode(node.Stack.First);
+            VisitNode(node);
+
+            int argumentCount = 0;
+
+            foreach (var nn in SelectDirection(((Node)node.Stack.First).Stack))
+            {
+                switch (nn)
+                {
+                    case BracketOpen n:
+                        VisitNode(n);
+                        break;
+                    case Comma n:
+                        VisitNode(n);
+                        break;
+                    case LogicalArgument n:
+                        TraverseLogicalArgument(n);
+                        argumentCount++;
+                        break;
+                    case DataTypeArgument n:
+                        TraverseDataTypeArgument(n);
+                        argumentCount++;
+                        break;
+                    case ArgumentList n:
+                        TraverseArgumentList(n, ref argumentCount);
+                        break;
+                    case BracketClose n:
+                        VisitNode(n);
+                        break;
+                }
+            }
+
+            node.ArgumentCount = argumentCount;
+        }
+
+        private void TraverseLogicalArgument(LogicalArgument node)
+        {
+            if (QueryContext.HasFlag(QueryContext.Expression))
+            {
+                VisitInlineNode(node);
+            }
+            else
+            {
+                TraverseLogicalExpression((LogicalExpression)node.Stack.First);
+            }
+        }
+
+        private void TraverseDataTypeArgument(DataTypeArgument node)
+        {
+            VisitReference(node);
+            VisitNode(node);
+        }
+
+        #endregion
         #region Boolean expression traversal
 
         private void CreateLogicalExpressionReshuffler()
@@ -1395,11 +1466,36 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             queryContextStack.Push(QueryContext | QueryContext.LogicalExpression);
 
+            if (options.VisitPredicateSubqueries)
+            {
+                TraverseLogicalExpressionSubqueries(node);
+            }
+
             CreateLogicalExpressionReshuffler();
             TraverseLogicalExpressionNode(node);
             DestroyExpressionReshuffler();
 
             queryContextStack.Pop();
+        }
+
+        private void TraverseLogicalExpressionSubqueries(Node node)
+        {
+            foreach (var n in node.Stack)
+            {
+                if (n is Expression)
+                {
+                    // Do not descend into expressions
+                    continue;
+                }
+                else if (n is Subquery sq)
+                {
+                    TraverseSubquery(sq);
+                }
+                else if (n is Node nn)
+                {
+                    TraverseLogicalExpressionSubqueries(nn);
+                }
+            };
         }
 
         private void TraverseLogicalExpressionNode(Node node)
@@ -1433,18 +1529,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             columnContextStack.Push(ColumnContext | ColumnContext.Predicate);
 
-            if (options.VisitPredicateSubqueries)
-            {
-                TraversePredicateSubqueries(node);
-            }
-
             if (QueryContext.HasFlag(QueryContext.LogicalExpression))
             {
                 VisitInlineNode(node);
             }
             else
             {
-
                 // TODO: add option not to traverse predicates, just run
                 // over the logical expression (as required for CNF/DNF)
 
@@ -1469,26 +1559,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
 
             columnContextStack.Pop();
-        }
-
-        private void TraversePredicateSubqueries(Node node)
-        {
-            foreach (var n in node.Stack)
-            {
-                if (n is Expression)
-                {
-                    // Do not descend into expressions
-                    continue;
-                }
-                else if (n is Subquery sq)
-                {
-                    TraverseSubquery(sq);
-                }
-                else if (n is Node nn)
-                {
-                    TraversePredicateSubqueries(nn);
-                }
-            };
         }
 
         private void TraverseLogicalExpressionBrackets(LogicalExpressionBrackets node)

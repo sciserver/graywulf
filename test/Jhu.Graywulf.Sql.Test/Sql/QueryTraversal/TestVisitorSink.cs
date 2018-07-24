@@ -51,6 +51,25 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
+        public string Execute(Expression node, ExpressionTraversalMethod expressionTraversal, ExpressionTraversalMethod logicalExpressionTraversal)
+        {
+            visitor = new SqlQueryVisitor(this)
+            {
+                Options = new SqlQueryVisitorOptions()
+                {
+                    ExpressionTraversal = expressionTraversal,
+                    LogicalExpressionTraversal = logicalExpressionTraversal,
+                    VisitPredicateSubqueries = false,
+                    VisitExpressionSubqueries = false,
+                }
+            };
+            using (w = new StringWriter())
+            {
+                visitor.Execute(node);
+                return w.ToString();
+            }
+        }
+
         public string Execute(LogicalExpression node, ExpressionTraversalMethod expressionTraversal, ExpressionTraversalMethod logicalExpressionTraversal)
         {
             visitor = new SqlQueryVisitor(this)
@@ -211,6 +230,17 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         public virtual void Accept(WindowedFunctionCall node)
         {
             Write(node.FunctionIdentifier);
+            Write(node);
+        }
+
+        public virtual void Accept(SpecialFunctionCall node)
+        {
+            Write(node.FunctionName);
+            Write(node);
+        }
+
+        public virtual void Accept(DataTypeArgument node)
+        {
             Write(node);
         }
 

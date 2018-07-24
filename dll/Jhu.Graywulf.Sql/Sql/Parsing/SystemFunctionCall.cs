@@ -20,6 +20,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             set { FunctionName.FunctionReference = value; }
         }
 
+        public FunctionArguments FunctionArguments
+        {
+            get { return FindDescendant<FunctionArguments>(); }
+        }
+
         public static SystemFunctionCall Create(string functionName, params Expression[] arguments)
         {
             var fr = new FunctionReference()

@@ -57,6 +57,19 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     Output(node);
                     break;
 
+                // Special functions and operands
+                case SpecialFunctionCall n:
+                    Push(n);
+                    break;
+
+                case DataTypeArgument dt:
+                case StarArgument so:
+                    Output(node);
+                    break;
+                case LogicalArgument lo:
+                    Inline(lo);
+                    break;
+
                 // Windowed functions are rather special, for postfix, push to stack to
                 // put it before function just like its arguments
                 case OverClause n:

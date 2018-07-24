@@ -149,13 +149,13 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 Keyword("NOT")
             );
 
-        public static Expression<Rule> LogicalOperator = () => 
+        public static Expression<Rule> LogicalOperator = () =>
             Inherit
             (
                 Operator,
                 Must
                 (
-                    Keyword("AND"), 
+                    Keyword("AND"),
                     Keyword("OR")
                 )
             );
@@ -185,7 +185,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         // then replaced with context-specific nodes
         public static Expression<Rule> ObjectName = () => Identifier;
         public static Expression<Rule> MemberName = () => Identifier;
-        
+
         public static Expression<Rule> DatasetPrefix = () =>
             Sequence
             (
@@ -236,7 +236,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 Must
                 (
                     Constant,
-                    CountStar,
 
                     SystemVariable,
                     UserVariable,
@@ -249,6 +248,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
                     UdtStaticMemberAccessList,
 
+                    SpecialFunctionCall,            // COUNT(*), CAST, CONVERT etc.
                     WindowedFunctionCall,           // dbo.function() OVER () syntax
                     SystemFunctionCall,             // function()
 
@@ -336,18 +336,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                     StringConstant
             );
 
-        public static Expression<Rule> CountStar = () =>
-            Sequence
-            (
-                Keyword("COUNT"),
-                May(CommentOrWhitespace),
-                BracketOpen,
-                May(CommentOrWhitespace),
-                Mul,
-                May(CommentOrWhitespace),
-                BracketClose
-            );
-
         public static Expression<Rule> ExpressionSubquery = () => Inherit(Subquery);
 
         public static Expression<Rule> Null = () => Keyword("NULL");
@@ -355,6 +343,89 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> UserVariable = () => Variable;
 
         public static Expression<Rule> SystemVariable = () => Variable2;
+
+        #endregion
+        #region Special functions
+
+        public static Expression<Rule> StarArgument = () => Mul;
+
+        public static Expression<Rule> LogicalArgument = () => LogicalExpression;
+
+        public static Expression<Rule> DataTypeArgument = () => DataTypeWithSize;
+
+        public static Expression<Rule> SpecialFunctionCall = () => 
+            Inherit
+            (
+                FunctionCall,
+                Must
+                (
+                    CountStar,
+                    SpecialFunctionCall_Convert,
+                    SpecialFunctionCall_Cast,
+                    SpecialFunctionCall_Iif
+                )
+            );
+
+        // TODO: COUNT(*) could be merged with a bunch of other functions accepting * as parameter
+        public static Expression<Rule> CountStar = () =>
+            Sequence
+            (
+                Keyword("COUNT"),
+                May(CommentOrWhitespace),
+                BracketOpen,
+                May(CommentOrWhitespace),
+                StarArgument,
+                May(CommentOrWhitespace),
+                BracketClose
+            );
+
+        public static Expression<Rule> SpecialFunctionCall_Convert = () =>
+            Sequence
+            (
+                Literal("CONVERT"),
+                May(CommentOrWhitespace),
+                BracketOpen,
+                May(CommentOrWhitespace),
+                DataTypeArgument,
+                May(CommentOrWhitespace),
+                Comma,
+                May(CommentOrWhitespace),
+                ArgumentList,
+                May(CommentOrWhitespace),
+                BracketClose
+            );
+
+        public static Expression<Rule> SpecialFunctionCall_Cast = () =>
+            Sequence
+            (
+                Literal("CAST"),
+                May(CommentOrWhitespace),
+                BracketOpen,
+                May(CommentOrWhitespace),
+                Argument,
+                May(CommentOrWhitespace),
+                Comma,
+                May(CommentOrWhitespace),
+                DataTypeWithSize,
+                May(CommentOrWhitespace),
+                BracketClose
+            );
+
+        public static Expression<Rule> SpecialFunctionCall_Iif = () =>
+            Sequence
+            (
+                Literal("IIF"),
+                May(CommentOrWhitespace),
+                BracketOpen,
+                May(CommentOrWhitespace),
+                LogicalArgument,
+                May(CommentOrWhitespace),
+                Comma,
+                May(CommentOrWhitespace),
+                ArgumentList,
+                May(CommentOrWhitespace),
+                BracketClose
+            );
 
         #endregion
         #region Logical expressions
@@ -650,7 +721,13 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 (
                     Sequence(SchemaName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), DataTypeName),
                     DataTypeName
-                ),
+                )
+            );
+
+        public static Expression<Rule> DataTypeWithSize = () =>
+            Sequence
+            (
+                DataTypeIdentifier,
                 May
                 (
                     Sequence
@@ -1102,7 +1179,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 UserVariable,
                 May(Sequence(CommentOrWhitespace, Keyword("AS"))),
                 May(CommentOrWhitespace),
-                DataTypeIdentifier,
+                DataTypeWithSize,
                 May(
                     Sequence
                     (
@@ -2003,7 +2080,7 @@ FOR select_statement
             (
                 ColumnName,
                 May(CommentOrWhitespace),
-                DataTypeIdentifier,
+                DataTypeWithSize,
                 May
                 (
                     Sequence

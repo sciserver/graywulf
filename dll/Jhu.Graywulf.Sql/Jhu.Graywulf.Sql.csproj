@@ -260,6 +260,7 @@
     <Compile Include="Sql\NameResolution\VariableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\Parsing\BetweenPredicate.cs" />
     <Compile Include="Sql\Parsing\BinaryOperator.cs" />
+    <Compile Include="Sql\Parsing\DataTypeArgument.cs" />
     <Compile Include="Sql\Parsing\FunctionName.cs" />
     <Compile Include="Sql\Parsing\ComparisonOperator.cs" />
     <Compile Include="Sql\Parsing\ComparisonPredicate.cs" />
@@ -279,6 +280,8 @@
     <Compile Include="Sql\Parsing\MagicTokenBase.cs" />
     <Compile Include="Sql\Parsing\MemberAccess.cs" />
     <Compile Include="Sql\Parsing\MemberAccessList.cs" />
+    <Compile Include="Sql\Parsing\SpecialFunctionCall.cs" />
+    <Compile Include="Sql\Parsing\SpecialFunctionCall_Iif.cs" />
     <Compile Include="Sql\Parsing\StaticMemberAccessOperator.cs" />
     <Compile Include="Sql\Parsing\MemberAccessOperator.cs" />
     <Compile Include="Sql\Parsing\MemberCall.cs" />

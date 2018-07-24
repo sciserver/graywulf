@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
@@ -15,11 +16,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return argumentCount; }
             set { argumentCount = value; }
-        }
-
-        public FunctionArguments FunctionArguments
-        {
-            get { return FindDescendant<FunctionArguments>(); }
         }
 
         protected override void OnInitializeMembers()
