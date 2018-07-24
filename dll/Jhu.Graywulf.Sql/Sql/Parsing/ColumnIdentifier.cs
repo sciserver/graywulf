@@ -41,42 +41,26 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public static ColumnIdentifier Create(ColumnReference cr)
         {
-            // TODO: this is fine but expressions no longer reference
-            // columns with IdentifierPartChain
-
-            throw new NotImplementedException();
-
-            /*
-            if (cr.IsStar)
-            {
-                throw new InvalidOperationException();
-            }
-
-            IdentifierChain mpi;
+            var nci = new ColumnIdentifier();
+            nci.ColumnReference = cr;
 
             if (cr.TableReference != null && !cr.TableReference.IsUndefined)
             {
                 if (String.IsNullOrEmpty(cr.TableReference.Alias))
                 {
-                    // TODO: maybe add schema too?
-                    mpi = IdentifierChain.Create(cr.TableReference.DatabaseObjectName, cr.ColumnName);
+                    nci.Stack.AddLast(TableName.Create(cr.TableReference.DatabaseObjectName));
+                    nci.Stack.AddLast(Dot.Create());
                 }
                 else
                 {
-                    mpi = IdentifierChain.Create(cr.TableReference.Alias, cr.ColumnName);
+                    nci.Stack.AddLast(TableName.Create(cr.TableReference.Alias));
+                    nci.Stack.AddLast(Dot.Create());
                 }
             }
-            else
-            {
-                mpi = IdentifierChain.Create(cr.ColumnName);
-            }
 
-            var nci = new ColumnIdentifier();
-            nci.ColumnReference = cr;
-            nci.Stack.AddLast(mpi);
+            nci.Stack.AddLast(ColumnName.Create(cr.ColumnName));
 
             return nci;
-            */
         }
 
         public override void Interpret()

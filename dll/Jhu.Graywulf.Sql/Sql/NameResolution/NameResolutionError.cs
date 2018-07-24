@@ -63,40 +63,40 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return CreateException(ExceptionMessages.UnresolvableDatasetReference, innerException, dr.DatasetName, dr.Node);
         }
         
-        public static NameResolverException AmbigousTableReference(ITableReference node)
+        public static NameResolverException AmbigousTableReference(TableReference tr)
         {
-            return CreateException(ExceptionMessages.AmbigousTableReference, null, node.TableReference.DatabaseObjectName, (Node)node);
+            return CreateException(ExceptionMessages.AmbigousTableReference, null, tr.DatabaseObjectName, tr.Node);
         }
 
-        public static NameResolverException UnresolvableTableReference(ITableReference node)
+        public static NameResolverException UnresolvableTableReference(TableReference tr)
         {
-            return CreateException(ExceptionMessages.UnresolvableTableReference, null, node.TableReference.DatabaseObjectName, (Node)node);
+            return CreateException(ExceptionMessages.UnresolvableTableReference, null, tr.DatabaseObjectName, tr.Node);
         }
 
-        public static NameResolverException UnresolvableColumnReference(IColumnReference node)
+        public static NameResolverException UnresolvableColumnReference(ColumnReference cr)
         {
-            var name = String.IsNullOrWhiteSpace(node.ColumnReference.ColumnName) ? node.ToString() : node.ColumnReference.ColumnName;
-            return CreateException(ExceptionMessages.UnresolvableColumnReference, null, node.ColumnReference.ColumnName, (Node)node);
+            var name = String.IsNullOrWhiteSpace(cr.ColumnName) ? cr.Node.ToString() : cr.ColumnName;
+            return CreateException(ExceptionMessages.UnresolvableColumnReference, null, cr.ColumnName, cr.Node);
         }
 
-        public static NameResolverException AmbigousColumnReference(IColumnReference node)
+        public static NameResolverException AmbigousColumnReference(ColumnReference cr)
         {
-            return CreateException(ExceptionMessages.AmbigousColumnReference, null, node.ColumnReference.ColumnName, (Node)node);
+            return CreateException(ExceptionMessages.AmbigousColumnReference, null, cr.ColumnName, cr.Node);
         }
 
-        public static NameResolverException UnknownFunctionName(IFunctionReference node)
+        public static NameResolverException UnknownFunctionName(FunctionReference fr)
         {
-            return CreateException(ExceptionMessages.UnknownFunctionName, null, node.FunctionReference.FunctionName, (Node)node);
+            return CreateException(ExceptionMessages.UnknownFunctionName, null, fr.FunctionName, fr.Node);
         }
 
-        public static NameResolverException UnresolvableFunctionReference(IFunctionReference node)
+        public static NameResolverException UnresolvableFunctionReference(FunctionReference fr)
         {
-            return CreateException(ExceptionMessages.UnresolvableFunctionReference, null, node.FunctionReference.DatabaseObjectName, (Node)node);
+            return CreateException(ExceptionMessages.UnresolvableFunctionReference, null, fr.DatabaseObjectName, fr.Node);
         }
 
-        public static NameResolverException UnresolvableVariableReference(IVariableReference node)
+        public static NameResolverException UnresolvableVariableReference(VariableReference vr)
         {
-            return CreateException(ExceptionMessages.UnresolvableVariableReference, null, node.VariableReference.VariableName, (Node)node);
+            return CreateException(ExceptionMessages.UnresolvableVariableReference, null, vr.VariableName, vr.Node);
         }
 
         public static NameResolverException DuplicateVariableName(VariableReference vr)
@@ -104,14 +104,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return CreateException(ExceptionMessages.DuplicateVariableName, null, vr.VariableName, vr.Node);
         }
 
-        public static NameResolverException ScalarVariableExpected(IVariableReference node)
+        public static NameResolverException ScalarVariableExpected(VariableReference vr)
         {
-            return CreateException(ExceptionMessages.ScalarVariableExpected, null, node.VariableReference.VariableName, (Node)node);
+            return CreateException(ExceptionMessages.ScalarVariableExpected, null, vr.VariableName, vr.Node);
         }
 
-        public static NameResolverException TableVariableExpected(IVariableReference node)
+        public static NameResolverException TableVariableExpected(VariableReference vr)
         {
-            return CreateException(ExceptionMessages.TableVariableExpected, null, node.VariableReference.VariableName, (Node)node);
+            return CreateException(ExceptionMessages.TableVariableExpected, null, vr.VariableName, vr.Node);
         }
 
         public static NameResolverException TargetDatasetReadOnly(ITableReference node)
@@ -129,9 +129,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return CreateException(ExceptionMessages.SingleColumnSubqueryRequired, null, null, node);
         }
 
-        public static NameResolverException ColumnNotPartOfTargetTable(Node node)
+        public static NameResolverException ColumnNotPartOfTargetTable(ColumnReference cr)
         {
-            return CreateException(ExceptionMessages.ColumnNotPartOfTargetTable, null, null, node);
+            return CreateException(ExceptionMessages.ColumnNotPartOfTargetTable, null, null, cr.Node);
         }
 
         public static NameResolverException TableAlreadyExists(Node node)
@@ -159,9 +159,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return CreateException(ExceptionMessages.FunctionIdentifierTooManyParts, null, null, node);
         }
 
-        public static NameResolverException DifferentTableReferenceInHintNotAllowed(ITableReference node)
+        public static NameResolverException DifferentTableReferenceInHintNotAllowed(TableReference tr)
         {
-            return CreateException(ExceptionMessages.DifferentTableReferenceInHintNotAllowed, null, null, (Node)node);
+            return CreateException(ExceptionMessages.DifferentTableReferenceInHintNotAllowed, null, null, tr.Node);
         }
     }
 }

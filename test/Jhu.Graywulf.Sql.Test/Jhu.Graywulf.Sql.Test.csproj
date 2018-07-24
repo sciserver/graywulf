@@ -95,6 +95,7 @@
     <Compile Include="Sql\LogicalExpressions\ExpressionTreeBuilderTest.cs" />
     <Compile Include="Sql\LogicalExpressions\SearchConditionNormalizerTest.cs" />
     <Compile Include="Sql\NameResolution\ColumnReferenceTest.cs" />
+    <Compile Include="Sql\NameResolution\MemberAccessListTest.cs" />
     <Compile Include="Sql\NameResolution\PredicateTest.cs" />
     <Compile Include="Sql\NameResolution\QuerySpecificationTest.cs" />
     <Compile Include="Sql\NameResolution\SemiJoinTest.cs" />

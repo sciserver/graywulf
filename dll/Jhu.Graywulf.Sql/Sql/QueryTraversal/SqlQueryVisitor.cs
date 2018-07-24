@@ -27,8 +27,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         private Stack<ColumnContext> columnContextStack;
         private CommonTableExpression commonTableExpression;
         private Stack<QuerySpecification> querySpecificationStack;
-
         private Stack<ExpressionReshuffler> expressionReshufflerStack;
+        private Stack<TokenList> memberAccessListStack;
 
         #endregion
         #region Properties
@@ -94,6 +94,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             get { return expressionReshufflerStack.Count == 0 ? null : expressionReshufflerStack.Peek(); }
         }
 
+        public TokenList CurrentMemberAccessList
+        {
+            get { return memberAccessListStack.Peek(); }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -117,6 +122,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             this.commonTableExpression = null;
             this.querySpecificationStack = new Stack<QuerySpecification>();
             this.expressionReshufflerStack = new Stack<ExpressionReshuffler>();
+            this.memberAccessListStack = new Stack<TokenList>();
         }
 
         #endregion
@@ -124,35 +130,35 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         public void Execute(StatementBlock node)
         {
-            PushAllNone();
+            PushAllContextNone();
             TraverseStatementBlock(node);
-            PopAll();
+            PopAllContext();
         }
 
         // TODO: add entry points for expressions
 
         public void Execute(Expression node)
         {
-            PushAllNone();
+            PushAllContextNone();
             TraverseExpression(node);
-            PopAll();
+            PopAllContext();
         }
 
         public void Execute(LogicalExpression node)
         {
-            PushAllNone();
+            PushAllContextNone();
             TraverseLogicalExpression(node);
-            PopAll();
+            PopAllContext();
         }
 
-        private void PushAllNone()
+        private void PushAllContextNone()
         {
             queryContextStack.Push(QueryContext.None);
             tableContextStack.Push(TableContext.None);
             columnContextStack.Push(ColumnContext.None);
         }
 
-        private void PopAll()
+        private void PopAllContext()
         {
             queryContextStack.Pop();
             tableContextStack.Pop();
@@ -953,6 +959,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseOperand(Operand node)
         {
+            memberAccessListStack.Push(new TokenList());
+
             foreach (var nn in SelectDirection(node.Stack))
             {
                 switch (nn)
@@ -962,11 +970,15 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         break;
                     case Node n:
                         DispatchOperand(n);
+                        memberAccessListStack.Peek().AddLast(n);
                         break;
                     default:
                         break;
                 }
             }
+
+            VisitNode(node);
+            memberAccessListStack.Pop();
         }
 
         protected virtual void DispatchOperand(Node node)
@@ -976,9 +988,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case Constant n:
                     VisitNode(n);
                     break;
+
+                    // TODO: move this elsewhere
+                    /*
                 case CountStar n:
                     VisitNode(n);
                     break;
+                    */
 
                 case SystemVariable n:
                     VisitNode(n);
@@ -1100,9 +1116,19 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         break;
                     case MemberCall n:
                         TraverseMemberCall(n);
+                        memberAccessListStack.Peek().AddLast(n);
+                        break;
+                    case UdtMethodCall n:
+                        TraverseUdtMethodCall(n);
+                        memberAccessListStack.Peek().AddLast(n);
                         break;
                     case MemberAccess n:
                         TraverseMemberAccess(n);
+                        memberAccessListStack.Peek().AddLast(n);
+                        break;
+                    case UdtPropertyAccess n:
+                        TraverseUdtPropertyAccess(n);
+                        memberAccessListStack.Peek().AddLast(n);
                         break;
                     case MemberAccessList n:
                         TraverseMemberAccessList(n);

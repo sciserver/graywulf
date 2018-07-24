@@ -96,7 +96,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         #endregion
 
-        protected static string RemoveIdentifierQuotes(string id)
+        public static string RemoveIdentifierQuotes(string id)
         {
             if (id == null)
             {

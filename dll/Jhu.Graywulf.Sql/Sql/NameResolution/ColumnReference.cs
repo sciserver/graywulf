@@ -22,7 +22,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private DataTypeReference dataTypeReference;
 
         private bool isStar;
-        private bool isMultiPartIdentifier;
         private bool isComplexExpression;
         private int selectListIndex;
 
@@ -81,12 +80,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get { return isStar; }
             set { isStar = value; }
-        }
-
-        public bool IsMultiPartIdentifier
-        {
-            get { return isMultiPartIdentifier; }
-            set { isMultiPartIdentifier = value; }
         }
 
         public bool IsComplexExpression
@@ -205,7 +198,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.dataTypeReference = null;
 
             this.isStar = false;
-            this.isMultiPartIdentifier = false;
             this.isComplexExpression = false;
             this.selectListIndex = -1;
 
@@ -224,7 +216,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.dataTypeReference = old.dataTypeReference;
 
             this.isStar = old.isStar;
-            this.isMultiPartIdentifier = old.isMultiPartIdentifier;
             this.isComplexExpression = old.isComplexExpression;
             this.selectListIndex = old.selectListIndex;
 
@@ -356,7 +347,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
             else
             */
-            
+
             if (star != null)
             {
                 cr = star.ColumnReference;
@@ -386,6 +377,21 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return cr;
         }
 
+        public static ColumnReference Interpret(TokenList tokens, int colpart)
+        {
+            if (colpart < 4)
+            {
+                return new ColumnReference((Node)tokens[colpart])
+                {
+                    ColumnName = RemoveIdentifierQuotes(tokens[colpart].Value),
+                };
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
         public bool TryMatch(TableReference tr, ColumnReference other)
         {
             if (tr == null && !other.isComplexExpression)
@@ -396,54 +402,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
             else if ((tableReference == null || tableReference.IsUndefined) && !isComplexExpression)
             {
-                if (!String.IsNullOrWhiteSpace(columnName))
-                {
-                    // No table is specified, only compare by column name
-                    return CompareByColumnName(columnName, other.columnName, other.columnAlias);
-                }
-                else if (isMultiPartIdentifier)
-                {
-                    // This is a real multi-part identifier with at least two parts
-                    // Matching logic is as follows:
-                    // 1) if first part matches column name or alias, the rest is properties
-                    // 2) if first part doesn't match a column name or alias, try as table name and
-                    //    then the column names must match
-                    // 3) if first part doesn't match as table name, try as a schema, etc.
-
-                    if (CompareByColumnName(nameParts[0], other.columnName, other.columnAlias))
-                    {
-                        // 1)
-                        columnNamePartIndex = 0;
-                        return true;
-                    }
-                    else if (
-                        nameParts.Count > 1 &&
-                        CompareByTableName(nameParts[0], tr.TableName, tr.Alias) &&
-                        CompareByColumnName(nameParts[1], other.columnName, other.columnAlias))
-                    {
-                        // 2)
-                        columnNamePartIndex = 1;
-                        return true;
-                    }
-                    else if (
-                        nameParts.Count > 2 &&
-                        CompareByTableName(nameParts[0], nameParts[1], tr.SchemaName, tr.TableName, tr.Alias) &&
-                        CompareByColumnName(nameParts[2], other.columnName, other.columnAlias))
-                    {
-                        // 3)
-                        columnNamePartIndex = 2;
-                        return true;
-                    }
-                    else
-                    {
-                        // Multi-part identifier cannot be bound
-                        return false;
-                    }
-                }
-                else
-                {
-                    throw new InvalidOperationException();
-                }
+                return CompareByColumnName(columnName, other.columnName, other.columnAlias);
             }
             else if (tr == null || tr.IsUndefined)
             {
@@ -456,22 +415,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
             else
             {
-                if (isMultiPartIdentifier)
+                // Now both have the table reference set, make sure they are equal
+                if (tableReference.TryMatch(tr) &&
+                CompareByColumnName(columnName, other.columnName, other.columnAlias))
                 {
-                    throw new InvalidOperationException();
+                    return true;
                 }
                 else
                 {
-                    // Now both have the table reference set, make sure they are equal
-                    if (tableReference.TryMatch(tr) &&
-                    CompareByColumnName(columnName, other.columnName, other.columnAlias))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
         }

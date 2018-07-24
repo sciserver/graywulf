@@ -31,6 +31,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         //       the schema objects should be the same since they're cached
 
         private Dictionary<string, VariableReference> variableReferences;
+        private Dictionary<string, DataTypeReference> dataTypeReferences;
         private Dictionary<string, List<TableReference>> sourceTableReferences;
         private Dictionary<string, List<TableReference>> targetTableReferences;
         private Dictionary<string, List<TableReference>> outputTableReferences;
@@ -63,6 +64,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public Dictionary<string, VariableReference> VariableReferences
         {
             get { return variableReferences; }
+        }
+
+        /// <summary>
+        /// A collection of data type referenced by the query
+        /// </summary>
+        public Dictionary<string, DataTypeReference> DataTypeReferences
+        {
+            get { return dataTypeReferences; }
         }
 
         /// <summary>
@@ -121,6 +130,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.partitioningTable = null;
             this.partitioningKey = null;
             this.variableReferences = new Dictionary<string, VariableReference>(Schema.SchemaManager.Comparer);
+            this.dataTypeReferences = new Dictionary<string, DataTypeReference>(Schema.SchemaManager.Comparer);
             this.sourceTableReferences = new Dictionary<string, List<TableReference>>(Schema.SchemaManager.Comparer);
             this.targetTableReferences = new Dictionary<string, List<TableReference>>(Schema.SchemaManager.Comparer);
             this.outputTableReferences = new Dictionary<string, List<TableReference>>(Schema.SchemaManager.Comparer);
@@ -135,6 +145,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.partitioningTable = old.partitioningTable;
             this.partitioningKey = old.partitioningKey;
             this.variableReferences = new Dictionary<string, VariableReference>(old.variableReferences);
+            this.dataTypeReferences = new Dictionary<string, DataTypeReference>(old.dataTypeReferences);
             this.sourceTableReferences = new Dictionary<string, List<TableReference>>(old.sourceTableReferences);
             this.targetTableReferences = new Dictionary<string, List<TableReference>>(old.targetTableReferences);
             this.outputTableReferences = new Dictionary<string, List<TableReference>>(old.outputTableReferences);

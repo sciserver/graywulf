@@ -337,6 +337,35 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return tr;
         }
 
+        public static TableReference Interpret(TokenList tokens, int colpart)
+        {
+            switch (colpart)
+            {
+                case 0:
+                    return null;
+                case 1:
+                    return new TableReference((Node)tokens[0])
+                    {
+                        TableName = RemoveIdentifierQuotes(tokens[0].Value),
+                    };
+                case 2:
+                    return new TableReference((Node)tokens[0])
+                    {
+                        SchemaName = RemoveIdentifierQuotes(tokens[0].Value),
+                        TableName = RemoveIdentifierQuotes(tokens[1].Value),
+                    };
+                case 3:
+                    return new TableReference((Node)tokens[0])
+                    {
+                        DatabaseName = RemoveIdentifierQuotes(tokens[0].Value),
+                        SchemaName = RemoveIdentifierQuotes(tokens[1].Value),
+                        TableName = RemoveIdentifierQuotes(tokens[2].Value),
+                    };
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+
         public void CopyColumnReferences(IEnumerable<IColumnReference> other)
         {
             CopyColumnReferences(other.Select(cr => cr.ColumnReference));

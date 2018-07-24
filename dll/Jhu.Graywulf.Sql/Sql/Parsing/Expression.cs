@@ -16,12 +16,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         public bool IsSingleColumn
         {
             get
-            {
-                // TODO: review this because determining this is only possible
-                // after name resolution
-
-                throw new NotImplementedException();
-                               
+            {                             
                 // A single column expression can only have the following nodes:
                 // - CommentOrWhitespace
                 // - ExpressionBrackets
