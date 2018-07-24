@@ -13,7 +13,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         private ExpressionTraversalMethod expressionTraversal;
         private ExpressionTraversalMethod logicalExpressionTraversal;
         private bool visitExpressionSubqueries;
+        private bool visitExpressionPredicates;
         private bool visitPredicateSubqueries;
+        private bool visitPredicateExpressions;
         private bool visitSchemaReferences;
 
         #endregion
@@ -37,10 +39,22 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             set { visitExpressionSubqueries = value; }
         }
 
+        public bool VisitExpressionPredicates
+        {
+            get { return visitExpressionPredicates; }
+            set { visitExpressionPredicates = value; }
+        }
+
         public bool VisitPredicateSubqueries
         {
             get { return visitPredicateSubqueries; }
             set { visitPredicateSubqueries = value; }
+        }
+
+        public bool VisitPredicateExpressions
+        {
+            get { return visitPredicateExpressions; }
+            set { visitPredicateExpressions = value; }
         }
 
         public bool VisitSchemaReferences
@@ -67,7 +81,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             this.expressionTraversal = ExpressionTraversalMethod.Infix;
             this.logicalExpressionTraversal = ExpressionTraversalMethod.Infix;
             this.visitExpressionSubqueries = true;
+            this.visitExpressionPredicates = true;
             this.visitPredicateSubqueries = true;
+            this.visitPredicateExpressions = true;
             this.visitSchemaReferences = false;
         }
 
@@ -76,7 +92,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             this.expressionTraversal = old.expressionTraversal;
             this.logicalExpressionTraversal = old.logicalExpressionTraversal;
             this.visitExpressionSubqueries = old.visitExpressionSubqueries;
+            this.visitExpressionPredicates = old.visitExpressionPredicates;
             this.visitPredicateSubqueries = old.visitPredicateSubqueries;
+            this.visitPredicateExpressions = old.visitPredicateExpressions;
             this.visitSchemaReferences = old.visitSchemaReferences;
         }
 

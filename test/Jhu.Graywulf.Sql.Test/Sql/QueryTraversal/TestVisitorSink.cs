@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 {
                     ExpressionTraversal = direction,
                     VisitExpressionSubqueries = false,
-                    VisitPredicateSubqueries = false
+                    VisitExpressionPredicates = false,
                 }
             };
             using (w = new StringWriter())
@@ -40,8 +40,27 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 Options = new SqlQueryVisitorOptions()
                 {
                     LogicalExpressionTraversal = direction,
+                    VisitPredicateSubqueries = false,
+                    VisitPredicateExpressions = false,
+                }
+            };
+            using (w = new StringWriter())
+            {
+                visitor.Execute(node);
+                return w.ToString();
+            }
+        }
+
+        public string Execute(LogicalExpression node, ExpressionTraversalMethod expressionTraversal, ExpressionTraversalMethod logicalExpressionTraversal)
+        {
+            visitor = new SqlQueryVisitor(this)
+            {
+                Options = new SqlQueryVisitorOptions()
+                {
+                    ExpressionTraversal = expressionTraversal,
+                    LogicalExpressionTraversal = logicalExpressionTraversal,
+                    VisitPredicateSubqueries = false,
                     VisitExpressionSubqueries = false,
-                    VisitPredicateSubqueries = false
                 }
             };
             using (w = new StringWriter())
