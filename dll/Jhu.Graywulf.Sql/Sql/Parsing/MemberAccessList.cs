@@ -10,108 +10,27 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class MemberAccessList
     {
-        private MemberAccess[] parts;
+        public static MemberAccessList Create(Node[] nodes)
+        {
+            MemberAccessList mal = null;
+            MemberAccessList cmal = null;
 
-        public MemberAccess[] Parts
-        {
-            get { return parts; }
-        }
-
-        public int PartCount
-        {
-            get { return parts?.Length ?? 0; }
-        }
-                
-        public string NamePart3
-        {
-            get
+            for (int i = 0; i < nodes.Length; i++)
             {
-                return (parts.Length > 2) ? parts[parts.Length - 3].Value : null;
-            }
-        }
+                var nmal = new MemberAccessList();
+                nmal.Stack.AddLast(MemberAccessOperator.Create());
+                nmal.Stack.AddLast(nodes[i]);
 
-        public string NamePart2
-        {
-            get
-            {
-                return (parts.Length > 1) ? parts[parts.Length - 2].Value : null;
-            }
-        }
+                if (mal == null)
+                {
+                    mal = cmal = nmal;
+                }
 
-        public string NamePart1
-        {
-            get
-            {
-                return (parts.Length > 0) ? parts[parts.Length - 1].Value : null;
-            }
-        }
-        
-        public static MemberAccessList Create(string namePart4, string namePart3, string namePart2, string namePart1)
-        {
-            var fpi = new MemberAccessList();
-
-            var npl = fpi.Append(null, namePart4);
-            npl = fpi.Append(npl, namePart3);
-            npl = fpi.Append(npl, namePart2);
-            npl = fpi.Append(npl, namePart1);
-
-            return fpi;
-        }
-
-        public static MemberAccessList Create(string namePart3, string namePart2, string namePart1)
-        {
-            var fpi = new MemberAccessList();
-
-            var npl = fpi.Append(null, namePart3);
-            npl = fpi.Append(npl, namePart2);
-            npl = fpi.Append(npl, namePart1);
-
-            return fpi;
-        }
-
-        public static MemberAccessList Create(string namePart2, string namePart1)
-        {
-            var fpi = new MemberAccessList();
-            
-            var npl = fpi.Append(null, namePart2);
-            npl = fpi.Append(npl, namePart1);
-
-            return fpi;
-        }
-
-        public static MemberAccessList Create(string namePart1)
-        {
-            var fpi = new MemberAccessList();
-
-            var npl = fpi.Append(null, namePart1);
-
-            return fpi;
-        }
-
-        public MemberAccessList Append(MemberAccessList npl, string identifier)
-        {
-            var nn = new MemberAccessList();
-
-            if (npl == null)
-            {
-                Stack.AddLast(nn);
-            }
-            else
-            {
-                npl.Stack.AddLast(Dot.Create());
-                npl.Stack.AddLast(nn);
+                cmal.Stack.AddLast(nmal);
+                cmal = nmal;
             }
 
-            nn.Stack.AddLast(Identifier.Create(identifier));
-
-            return nn;
-        }
-
-        public override void Interpret()
-        {
-            base.Interpret();
-
-            parts = EnumerateDescendants<MemberAccess>().ToArray();
+            return mal;
         }
     }
 }

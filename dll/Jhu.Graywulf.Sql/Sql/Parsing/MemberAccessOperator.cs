@@ -17,5 +17,11 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return true; }
         }
+
+        public static MemberAccessOperator Create()
+        {
+            var ma = new MemberAccessOperator(Dot.Create());
+            return ma;
+        }
     }
 }

@@ -92,5 +92,25 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         // TODO: we could actually support missing schema name here...
+
+        [TestMethod]
+        public void TableAliasTest()
+        {
+            var sql = "SELECT a.Name FROM Author a";
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
+
+            var res = GenerateCode(qs);
+            Assert.AreEqual("SELECT [a].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a]", res);
+
+            var ts = qs.SourceTableReferences.Values.ToArray();
+
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual("a", ts[0].Alias);
+
+            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+
+            Assert.AreEqual(1, cs.Length);
+            Assert.AreEqual("Name", cs[0].ColumnName);
+        }
     }
 }

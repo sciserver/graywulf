@@ -280,6 +280,7 @@
     <Compile Include="Sql\Parsing\MagicTokenBase.cs" />
     <Compile Include="Sql\Parsing\MemberAccess.cs" />
     <Compile Include="Sql\Parsing\MemberAccessList.cs" />
+    <Compile Include="Sql\Parsing\Operand.cs" />
     <Compile Include="Sql\Parsing\SpecialFunctionCall.cs" />
     <Compile Include="Sql\Parsing\SpecialFunctionCall_Iif.cs" />
     <Compile Include="Sql\Parsing\StaticMemberAccessOperator.cs" />

@@ -599,7 +599,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                         // Look into all source tables
                         foreach (var tr in sourceTables)
                         {
-                            ncr = ResolveColumnReference(cr, tr, ref matches);
+                            ncr = ResolveColumnReference(cr, tr, ref matches) ?? ncr;
                         }
 
                         if (matches == 1)
@@ -668,7 +668,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             if (tr != null && !tr.IsUndefined && !tr.IsResolved)
             {
-                
+
                 string alias = null;
 
                 if (tr.Alias != null)
@@ -922,7 +922,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // This is a reference to a CTE query
                 ntr = Visitor.CommonTableExpression.CommonTableReferences[tr.DatabaseObjectName];
             }
-            else if (tr.IsPossiblyAlias && resolvedSourceTables.SourceTableReferences.ContainsKey(tr.TableName))
+            else if (resolvedSourceTables.SourceTableReferences.ContainsKey(tr.TableName))
             {
                 // This a reference from a target table to an already resolved source table
                 // This happens with UPDATE etc.
@@ -931,33 +931,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
             else if (!tr.IsComputed)
             {
                 // This is a direct reference to a table or a view but not to a function or subquery
+                // Load object from the schema
                 ntr = tr;
 
-                // Load table description from underlying schema
-                // Attempt to load dataset and throw exception of name cannot be resolved
-                DatasetBase ds;
-
-                try
+                ntr.LoadDatabaseObject(schemaManager);
+                if (ntr.DatabaseObject == null)
                 {
-                    ds = schemaManager.Datasets[ntr.DatasetName];
-                }
-                catch (KeyNotFoundException ex)
-                {
-                    throw NameResolutionError.UnresolvableDatasetReference(ex, ntr);
-                }
-                catch (SchemaException ex)
-                {
-                    throw NameResolutionError.UnresolvableDatasetReference(ex, ntr);
+                    return null;
                 }
 
-                ntr.DatabaseObject = ds.GetObject(ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName);
-
-                if (ntr.DatabaseObject is TableOrView)
-                {
-                    ntr.TableContext |= TableContext.TableOrView;
-                }
-
-                // Load column descriptions for the table
                 ntr.LoadColumnReferences(schemaManager);
             }
             else
@@ -965,8 +947,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 throw new NotImplementedException();
             }
 
-            ntr.IsResolved = true;
-            ntr.TableContext |= Visitor.TableContext;
+            if (ntr != null)
+            {
+                ntr.IsResolved = true;
+                ntr.TableContext |= Visitor.TableContext;
+            }
 
             return ntr;
         }
@@ -1001,7 +986,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
 
             ColumnReference cr = null;
-            int matchcolpart;
+            int matchcolpart = 0;
             int matches = 0;
 
             for (int i = 0; i <= lastcolpart; i++)
@@ -1032,8 +1017,62 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 var ci = ColumnIdentifier.Create(cr);
                 ((ObjectName)tokens[0]).ReplaceWith(ci);
+            }
 
-                // TODO: iterate through the rest and create properties / method calls
+            // Tterate through the rest of the tokens and create properties / method calls
+            if (matchcolpart < tokens.Count)
+            {
+                var nma = new Node[tokens.Count - lastcolpart - 1];
+
+                // Everything else after the column name is properties or methods
+                for (int i = matchcolpart + 1; i < tokens.Count; i++)
+                {
+                    if (tokens[i] is MemberAccess)
+                    {
+                        var pr = new PropertyReference()
+                        {
+                            PropertyName = ReferenceBase.RemoveIdentifierQuotes(tokens[i].Value)
+                        };
+                        nma[i] = UdtPropertyAccess.Create(pr);
+                    }
+                    else if (tokens[i] is MemberCall)
+                    {
+                        // TODO; figure out arguments etc.
+                        throw new NotImplementedException();
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
+
+                var mal = MemberAccessList.Create(nma);
+                var oml = operand.MemberAccessList;
+
+                if (mal != null)
+                {
+                    if (oml != null)
+                    {
+                        oml.ReplaceWith(mal);
+                    }
+                    else
+                    {
+                        operand.Stack.AddLast(mal);
+                    }
+                }
+                else if (oml != null)
+                {
+                    oml.Remove();
+                }
+            }
+            else
+            {
+                var oml = operand.MemberAccessList;
+
+                if (oml != null)
+                {
+                    oml.Remove();
+                }
             }
         }
 
@@ -1045,7 +1084,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             if (tr == null)
             {
-                 ncr = ResolveColumnReference(cr);
+                ncr = ResolveColumnReference(cr);
             }
             else
             {
@@ -1054,6 +1093,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     Visitor.CurrentQuerySpecification as ISourceTableProvider ??
                     Visitor.CurrentStatement as ISourceTableProvider;
 
+                SubstituteSourceTableDefaults(sourceTableCollection, tr);
                 tr = ResolveSourceTableReference(sourceTableCollection, tr);
                 cr.TableReference = tr;
                 ncr = ResolveColumnReference(cr);

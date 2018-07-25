@@ -366,6 +366,77 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
+        public void LoadDatabaseObject(SchemaManager schemaManager)
+        {
+            if (tableContext.HasFlag(TableContext.CommonTable) ||
+                tableContext.HasFlag(TableContext.Subquery) ||
+                tableContext.HasFlag(TableContext.Variable))
+            {
+                throw new InvalidOperationException();
+            }
+            else if (tableContext.HasFlag(TableContext.UserDefinedFunction))
+            {
+                LoadTableValuedFunction(schemaManager);
+            }
+            else if (tableContext.HasFlag(TableContext.TableOrView) ||
+                tableContext.HasFlag(TableContext.Target))
+            {
+                LoadTableOrView(schemaManager);
+            }
+            else
+            {
+                LoadTableOrView(schemaManager);
+
+                if (DatabaseObject == null)
+                {
+                    LoadTableValuedFunction(schemaManager);
+                }
+            }
+        }
+
+        private void LoadTableOrView(SchemaManager schemaManager)
+        {
+            var ds = LoadDataset(schemaManager);
+
+            if (ds.Tables.ContainsKey(DatabaseName, SchemaName, DatabaseObjectName))
+            {
+                DatabaseObject = ds.Tables[DatabaseName, SchemaName, DatabaseObjectName];
+                tableContext |= TableContext.TableOrView;
+            }
+            else if (ds.Views.ContainsKey(DatabaseName, SchemaName, DatabaseObjectName))
+            {
+                DatabaseObject = ds.Views[DatabaseName, SchemaName, DatabaseObjectName];
+                tableContext |= TableContext.TableOrView;
+            }
+        }
+
+        private void LoadTableValuedFunction(SchemaManager schemaManager)
+        {
+            var ds = LoadDataset(schemaManager);
+            
+            if (ds.TableValuedFunctions.ContainsKey(DatabaseName, SchemaName, DatabaseObjectName))
+            {
+                DatabaseObject = ds.TableValuedFunctions[DatabaseName, SchemaName, DatabaseObjectName];
+                tableContext |= TableContext.UserDefinedFunction;
+            }
+        }
+
+        private DatasetBase LoadDataset(SchemaManager schemaManager)
+        {
+            try
+            {
+                return schemaManager.Datasets[DatasetName];
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw NameResolutionError.UnresolvableDatasetReference(ex, this);
+            }
+            catch (SchemaException ex)
+            {
+                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableDatasetReference, DatasetName, Node.Line, Node.Col), ex);
+            }
+        }
+
         public void CopyColumnReferences(IEnumerable<IColumnReference> other)
         {
             CopyColumnReferences(other.Select(cr => cr.ColumnReference));
@@ -394,11 +465,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 throw new InvalidOperationException();
             }
-            else if (tableContext.HasFlag(TableContext.UserDefinedFunction))
+            else if (DatabaseObject is TableValuedFunction ||
+                tableContext.HasFlag(TableContext.UserDefinedFunction))
             {
                 LoadUdfColumnReferences(schemaManager);
             }
-            else if (tableContext.HasFlag(TableContext.TableOrView) ||
+            else if (DatabaseObject is TableOrView ||
+                tableContext.HasFlag(TableContext.TableOrView) ||
                 tableContext.HasFlag(TableContext.Target))
             {
                 LoadTableOrViewColumnReferences(schemaManager);
@@ -416,6 +489,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private void LoadUdfColumnReferences(SchemaManager schemaManager)
         {
             // TVF calls can have a column alias list
+            throw new NotImplementedException();
+
+            // TODO: this must be moved into the name resolver
             List<ColumnAlias> calist = null;
             var cal = this.Node.FindDescendant<ColumnAliasList>();
             if (cal != null)
@@ -423,31 +499,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 calist = new List<ColumnAlias>(cal.EnumerateDescendants<ColumnAlias>());
             }
 
-            // Get dataset description
-            DatasetBase ds;
-            try
-            {
-                ds = schemaManager.Datasets[DatasetName];
-            }
-            catch (SchemaException ex)
-            {
-                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableDatasetReference, DatasetName, Node.Line, Node.Col), ex);
-            }
-
-            // TODO: at this points the database object have had to be loaded by the name resolver
             int q = 0;
-            TableValuedFunction tvf;
-            if (ds.TableValuedFunctions.ContainsKey(DatabaseName, SchemaName, DatabaseObjectName))
-            {
-                tvf = ds.TableValuedFunctions[DatabaseName, SchemaName, DatabaseObjectName];
-            }
-            else
-            {
-                // TODO: move this to name resolver instead
-                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableUdfReference, DatabaseObjectName, Node.Line, Node.Col));
-            }
-
-            foreach (var cd in tvf.Columns.Values)
+            foreach (var cd in ((TableValuedFunction)DatabaseObject).Columns.Values)
             {
                 var cr = new ColumnReference(cd, this, new DataTypeReference(cd.DataType));
 
@@ -457,41 +510,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     cr.ColumnName = RemoveIdentifierQuotes(calist[q].Value);
                 }
 
-                this.columnReferences.Add(cr);
+                columnReferences.Add(cr);
                 q++;
             }
         }
 
         private void LoadTableOrViewColumnReferences(SchemaManager schemaManager)
         {
-            // Get dataset description
-            DatasetBase ds;
-            try
-            {
-                ds = schemaManager.Datasets[DatasetName];
-            }
-            catch (SchemaException ex)
-            {
-                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableDatasetReference, DatasetName, Node.Line, Node.Col), ex);
-            }
-
-            // Get table description
-            TableOrView td;
-            if (ds.Tables.ContainsKey(DatabaseName, SchemaName, DatabaseObjectName))
-            {
-                td = ds.Tables[DatabaseName, SchemaName, DatabaseObjectName];
-            }
-            else if (ds.Views.ContainsKey(DatabaseName, SchemaName, DatabaseObjectName))
-            {
-                td = ds.Views[DatabaseName, SchemaName, DatabaseObjectName];
-            }
-            else
-            {
-                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableTableReference, DatabaseObjectName, Node.Line, Node.Col));
-            }
-
             // Copy columns to the table reference in appropriate order
-            this.columnReferences.AddRange(td.Columns.Values.OrderBy(c => c.ID).Select(c => new ColumnReference(c, this, new DataTypeReference(c.DataType))));
+            var table = (TableOrView)DatabaseObject;
+            columnReferences.AddRange(table.Columns.Values.OrderBy(c => c.ID).Select(c => new ColumnReference(c, this, new DataTypeReference(c.DataType))));
         }
 
         /// <summary>
