@@ -236,10 +236,17 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
+        protected virtual void Accept(ColumnExpression node)
+        {
+            node.ColumnReference = ColumnReference.Interpret(node);
+        }
+
         protected virtual void Accept(FunctionIdentifier node)
         {
             SubstituteFunctionDefaults(node.FunctionReference);
-            node.FunctionReference = ResolveFunctionReference(node.FunctionReference);
+            node.FunctionReference =
+                ResolveFunctionReference(node.FunctionReference) ??
+                throw NameResolutionError.UnresolvableFunctionReference(node.FunctionReference);
             CollectFunctionReference(node.FunctionReference);
         }
 
@@ -265,10 +272,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         protected virtual void Accept(Operand node)
         {
-            // This is where we can figure out if we have a column name or else
-            var tokens = visitor.CurrentMemberAccessList;
-
-            ResolveMemberAccessList(node, tokens);
+            if (node.Stack.First is ObjectName)
+            {
+                // This is where we can figure out if we have a column name or else
+                ResolveObjectNameAndMemberAccessList(node);
+            }
+            else
+            {
+                // These are just property and method calls, run a simple substitution
+                ResolveMemberAccessList(node, 0);
+            }
         }
 
         #endregion
@@ -298,7 +311,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             // SELECT ... FROM ...()
             SubstituteFunctionDefaults(node.FunctionReference);
-            node.FunctionReference = ResolveFunctionReference(node.FunctionReference);
+            node.FunctionReference = 
+                ResolveFunctionReference(node.FunctionReference) ??
+                throw NameResolutionError.UnresolvableFunctionReference(node.FunctionReference);
             CollectFunctionReference(node.FunctionReference);
 
             throw new NotImplementedException();
@@ -338,12 +353,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             node.TableReference = ResolveTableReference(node.TableReference, node.TableDefinition);
         }
-
-        protected virtual void Accept(ColumnDefinition node)
-        {
-            node.DataTypeIdentifier.DataTypeReference.DataType.IsNullable = node.IsNullable;
-        }
-
+        
         protected virtual void Accept(DropTableStatement node)
         {
             var table = (Schema.Table)node.TargetTable.TableReference.DatabaseObject;
@@ -453,25 +463,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
             else
             {
-                // Check if dataset specified and make sure it's valid
-                if (fr.DatasetName != null)
+                fr.LoadDatabaseObject(schemaManager);
+                if (fr.DatabaseObject == null)
                 {
-                    if (!schemaManager.Datasets.ContainsKey(fr.DatasetName))
-                    {
-                        throw NameResolutionError.UnresolvableDatasetReference(fr);
-                    }
+                    return null;
                 }
-
-                var ds = schemaManager.Datasets[fr.DatasetName];
-
-                var dbo = ds.GetObject(fr.DatabaseName, fr.SchemaName, fr.DatabaseObjectName);
-
-                if (dbo == null)
-                {
-                    throw NameResolutionError.UnresolvableFunctionReference(fr);
-                }
-
-                fr.DatabaseObject = dbo;
             }
 
             return fr;
@@ -852,7 +848,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (cd != null)
                 {
-                    var ncr = new ColumnReference(tr, null, cd.ColumnReference, cd.DataTypeIdentifier.DataTypeReference);
+                    var ncr = new ColumnReference(tr, null, cd.ColumnReference, cd.DataTypeWithSize.DataTypeReference);
                     if (tr != null)
                     {
                         tr.ColumnReferences.Add(ncr);
@@ -883,7 +879,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 if (cd != null)
                 {
-                    var ncr = new ColumnReference(null, dr, cd.ColumnReference, cd.DataTypeIdentifier.DataTypeReference);
+                    var ncr = new ColumnReference(null, dr, cd.ColumnReference, cd.DataTypeWithSize.DataTypeReference);
                     if (dr != null)
                     {
                         dr.ColumnReferences.Add(ncr);
@@ -956,7 +952,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return ntr;
         }
 
-        private void ResolveMemberAccessList(Operand operand, TokenList tokens)
+        private void ResolveObjectNameAndMemberAccessList(Operand operand)
         {
             // Name resolution goes as follows
             // 1. First try to resolve member access list as a column identifier then
@@ -969,6 +965,42 @@ namespace Jhu.Graywulf.Sql.NameResolution
             //    - schema.function
             // 4. Try both column and function resolution; if both match the name is ambiguos
             // 5. Everything else after the resolved part is property and method calls
+
+            var tokens = visitor.CurrentMemberAccessList;
+
+            var cr = ResolveMemberAccessListAsColumn(out int matchcolpart);
+            var fr = ResolveMemberAccessListAsFunction(out int matchfunpart);
+
+            if (cr != null && fr != null)
+            {
+                throw NameResolutionError.AmbigousColumnOrFunctionReference(operand);
+            }
+            else if (cr != null)
+            {
+                // matchcolpart now tells how many of the tokens describe the column
+                // exchange these with a single ColumnIdentifier and the rest is all
+                // properties and method calls.
+
+                var ci = ColumnIdentifier.Create(cr);
+                ((ObjectName)tokens[0]).ReplaceWith(ci);
+                ResolveMemberAccessList(operand, matchcolpart);
+            }
+            else if (fr != null)
+            {
+                var args = ((MemberCall)tokens[matchfunpart]).EnumerateArguments().Select(a => a.Expression).ToArray();
+                var fc = ScalarFunctionCall.Create(fr, args);
+                ((ObjectName)tokens[0]).ReplaceWith(fc);
+                ResolveMemberAccessList(operand, matchfunpart);
+            }
+            else
+            {
+                throw NameResolutionError.UnresolvableMemberAccessList(operand);
+            }
+        }
+
+        private ColumnReference ResolveMemberAccessListAsColumn(out int matchcolpart)
+        {
+            var tokens = visitor.CurrentMemberAccessList;
 
             // Find the last token in the list which can still be a column name
             // The first token can always be a column name
@@ -985,13 +1017,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
             }
 
+            // Columns names can at most be in the form of database.schema.table.column
+            if (lastcolpart > 3)
+            {
+                lastcolpart = 3;
+            }
+
             ColumnReference cr = null;
-            int matchcolpart = 0;
             int matches = 0;
+            matchcolpart = 0;
 
             for (int i = 0; i <= lastcolpart; i++)
             {
-                var ncr = ResolverMemberAccessListAsColumn(tokens, i);
+                var ncr = ResolveMemberAccessListAsColumn(i);
 
                 if (ncr != null)
                 {
@@ -1007,38 +1045,96 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
             }
 
-            // TODO: try to resolve as function call
+            return cr;
+        }
 
-            if (cr != null)
+        private ColumnReference ResolveMemberAccessListAsColumn(int colpart)
+        {
+            ColumnReference ncr;
+            var tokens = visitor.CurrentMemberAccessList;
+            var tr = TableReference.Interpret(tokens, colpart);
+            var cr = ColumnReference.Interpret(tokens, colpart);
+
+            if (tr == null)
             {
-                // matchcolpart now tells how many of the tokens describe the column
-                // exchange these with a single ColumnIdentifier and the rest is all
-                // properties and method calls.
+                ncr = ResolveColumnReference(cr);
+            }
+            else
+            {
+                // TODO: consider pushing it down to column resolver function
+                var sourceTableCollection =
+                    Visitor.CurrentQuerySpecification as ISourceTableProvider ??
+                    Visitor.CurrentStatement as ISourceTableProvider;
 
-                var ci = ColumnIdentifier.Create(cr);
-                ((ObjectName)tokens[0]).ReplaceWith(ci);
+                SubstituteSourceTableDefaults(sourceTableCollection, tr);
+                tr = ResolveSourceTableReference(sourceTableCollection, tr);
+                cr.TableReference = tr;
+                ncr = ResolveColumnReference(cr);
             }
 
-            // Tterate through the rest of the tokens and create properties / method calls
-            if (matchcolpart < tokens.Count)
+            return ncr;
+        }
+
+        private FunctionReference ResolveMemberAccessListAsFunction(out int matchcolpart)
+        {
+            var tokens = visitor.CurrentMemberAccessList;
+
+            // Find the very first MemberCall token which could be a function call
+            // instead of a method call
+            matchcolpart = -1;
+            for (int i = 1; i < tokens.Count; i++)
             {
-                var nma = new Node[tokens.Count - lastcolpart - 1];
+                if (tokens[i] is MemberCall)
+                {
+                    matchcolpart = i;
+                    break;
+                }
+            }
+
+            // Function names can at most be in the form of schema.function
+            // or database.schema.function
+            if (matchcolpart < 1 || matchcolpart > 2)
+            {
+                return null;
+            }
+
+            var fr = FunctionReference.Interpret(tokens, matchcolpart);
+            SubstituteFunctionDefaults(fr);
+            fr = ResolveFunctionReference(fr);
+
+            return fr;
+        }
+
+        private void ResolveMemberAccessList(Operand operand, int matchcolpart)
+        {
+            var tokens = visitor.CurrentMemberAccessList;
+
+            // Iterate through the rest of the tokens and create properties / method calls
+            if (matchcolpart + 1 < tokens.Count)
+            {
+                var nma = new Node[tokens.Count - matchcolpart - 1];
 
                 // Everything else after the column name is properties or methods
-                for (int i = matchcolpart + 1; i < tokens.Count; i++)
+                for (int i = 0; i < nma.Length; i++)
                 {
-                    if (tokens[i] is MemberAccess)
+                    var token = tokens[i + matchcolpart + 1];
+
+                    if (token is MemberAccess)
                     {
                         var pr = new PropertyReference()
                         {
-                            PropertyName = ReferenceBase.RemoveIdentifierQuotes(tokens[i].Value)
+                            PropertyName = ReferenceBase.RemoveIdentifierQuotes(token.Value)
                         };
                         nma[i] = UdtPropertyAccess.Create(pr);
                     }
-                    else if (tokens[i] is MemberCall)
+                    else if (token is MemberCall)
                     {
-                        // TODO; figure out arguments etc.
-                        throw new NotImplementedException();
+                        var args = ((MemberCall)token).EnumerateArguments().Select(a => a.Expression).ToArray();
+                        var mr = new MethodReference()
+                        {
+                            MethodName = ReferenceBase.RemoveIdentifierQuotes(((MemberCall)token).MemberName.Value)
+                        };
+                        nma[i] = UdtMethodCall.Create(mr, args);
                     }
                     else
                     {
@@ -1074,32 +1170,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     oml.Remove();
                 }
             }
-        }
-
-        private ColumnReference ResolverMemberAccessListAsColumn(TokenList tokens, int colpart)
-        {
-            ColumnReference ncr;
-            var tr = TableReference.Interpret(tokens, colpart);
-            var cr = ColumnReference.Interpret(tokens, colpart);
-
-            if (tr == null)
-            {
-                ncr = ResolveColumnReference(cr);
-            }
-            else
-            {
-                // TODO: consider pushing it down to column resolver function
-                var sourceTableCollection =
-                    Visitor.CurrentQuerySpecification as ISourceTableProvider ??
-                    Visitor.CurrentStatement as ISourceTableProvider;
-
-                SubstituteSourceTableDefaults(sourceTableCollection, tr);
-                tr = ResolveSourceTableReference(sourceTableCollection, tr);
-                cr.TableReference = tr;
-                ncr = ResolveColumnReference(cr);
-            }
-
-            return ncr;
         }
 
         #endregion

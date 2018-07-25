@@ -111,5 +111,37 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             return fr;
         }
+
+        public static FunctionReference Interpret(TokenList tokens, int colpart)
+        {
+            switch (colpart)
+            {
+                case 1:
+                    return new FunctionReference((Node)tokens[0])
+                    {
+                        SchemaName = RemoveIdentifierQuotes(tokens[0].Value),
+                        FunctionName = RemoveIdentifierQuotes(((MemberCall)tokens[1]).MemberName.Value),
+                        IsUserDefined = true,
+                    };
+                case 2:
+                    return new FunctionReference((Node)tokens[0])
+                    {
+                        DatabaseName = RemoveIdentifierQuotes(tokens[0].Value),
+                        SchemaName = RemoveIdentifierQuotes(tokens[1].Value),
+                        FunctionName = RemoveIdentifierQuotes(((MemberCall)tokens[2]).MemberName.Value),
+                        IsUserDefined = true,
+                    };
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+
+        public void LoadDatabaseObject(SchemaManager schemaManager)
+        {
+            var ds = LoadDataset(schemaManager);
+            DatabaseObject = ds.GetObject(DatabaseName, SchemaName, DatabaseObjectName);
+            
+            // TODO: we could figure out here if it's a scalar function or else
+        }
     }
 }

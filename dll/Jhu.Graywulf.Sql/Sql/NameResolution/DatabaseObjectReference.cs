@@ -184,6 +184,22 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
+        protected DatasetBase LoadDataset(SchemaManager schemaManager)
+        {
+            try
+            {
+                return schemaManager.Datasets[DatasetName];
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw NameResolutionError.UnresolvableDatasetReference(ex, this);
+            }
+            catch (SchemaException ex)
+            {
+                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableDatasetReference, DatasetName, Node.Line, Node.Col), ex);
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>

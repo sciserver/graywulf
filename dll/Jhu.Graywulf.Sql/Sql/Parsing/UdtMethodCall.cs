@@ -28,7 +28,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         public static UdtMethodCall Create(MethodReference mr, Expression[] args)
         {
             var mc = new UdtMethodCall();
-            mc.Stack.AddLast(Dot.Create());
             mc.Stack.AddLast(MethodName.Create(mr));
             mc.Stack.AddLast(FunctionArguments.Create(args));
 

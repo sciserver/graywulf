@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Sql
             cg.TableNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.TableAliasRendering = resolveAliases ? AliasRendering.Always : AliasRendering.Never;
             cg.ColumnNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
+            cg.UdtMemberNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.ColumnAliasRendering = resolveAliases ? AliasRendering.Always : AliasRendering.Never;
             cg.DataTypeNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.FunctionNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;

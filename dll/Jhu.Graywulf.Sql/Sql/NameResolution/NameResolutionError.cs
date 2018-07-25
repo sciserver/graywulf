@@ -84,6 +84,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return CreateException(ExceptionMessages.AmbigousColumnReference, null, cr.ColumnName, cr.Node);
         }
 
+        public static NameResolverException AmbigousColumnOrFunctionReference(Operand node)
+        {
+            return CreateException(ExceptionMessages.AmbigousColumnOrFunctionReference, null, node.Value, node);
+        }
+
+        public static NameResolverException UnresolvableMemberAccessList(Operand node)
+        {
+            return CreateException(ExceptionMessages.UnresolvableMemberAccessList, null, node.Value, node);
+        }
+
         public static NameResolverException UnknownFunctionName(FunctionReference fr)
         {
             return CreateException(ExceptionMessages.UnknownFunctionName, null, fr.FunctionName, fr.Node);

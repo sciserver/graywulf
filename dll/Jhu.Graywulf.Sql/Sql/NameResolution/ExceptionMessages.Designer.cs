@@ -61,6 +61,15 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ambigous column or function reference &apos;{0}&apos; found at ({1},{2})..
+        /// </summary>
+        internal static string AmbigousColumnOrFunctionReference {
+            get {
+                return ResourceManager.GetString("AmbigousColumnOrFunctionReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ambigous column reference &apos;{0}&apos; found at ({1},{2})..
         /// </summary>
         internal static string AmbigousColumnReference {
@@ -282,6 +291,15 @@ namespace Jhu.Graywulf.Sql.NameResolution {
         internal static string UnresolvableFunctionReference {
             get {
                 return ResourceManager.GetString("UnresolvableFunctionReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The identifier &apos;{0}&apos; found at ({1},{2}) cannot be bound..
+        /// </summary>
+        internal static string UnresolvableMemberAccessList {
+            get {
+                return ResourceManager.GetString("UnresolvableMemberAccessList", resourceCulture);
             }
         }
         

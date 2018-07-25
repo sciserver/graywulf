@@ -26,6 +26,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             return new QueryRendering.SqlServer.SqlServerQueryRenderer()
             {
                 ColumnNameRendering = QueryRendering.NameRendering.FullyQualified,
+                UdtMemberNameRendering = QueryRendering.NameRendering.FullyQualified,
                 TableNameRendering = QueryRendering.NameRendering.FullyQualified,
                 FunctionNameRendering = QueryRendering.NameRendering.FullyQualified,
                 IndexNameRendering = QueryRendering.NameRendering.FullyQualified,

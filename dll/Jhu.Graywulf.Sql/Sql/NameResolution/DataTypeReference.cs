@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             get { return (Schema.DataType)DatabaseObject; }
             set { DatabaseObject = value; }
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -64,11 +64,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         public DataTypeReference(Schema.DataType dataType)
-            :base(dataType)
+            : base(dataType)
         {
             InitializeMembers();
         }
-        
+
         private void InitializeMembers()
         {
             this.columnReferences = new List<ColumnReference>();
@@ -96,20 +96,28 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public static DataTypeReference Interpret(DataTypeIdentifier di)
         {
             var schema = di.FindDescendant<SchemaName>()?.Value;
-            var datatype = di.FindDescendant<DataTypeName>().Value; 
+            var datatype = di.FindDescendant<DataTypeName>().Value;
 
             var dr = new DataTypeReference()
             {
                 SchemaName = RemoveIdentifierQuotes(schema),
                 DatabaseObjectName = RemoveIdentifierQuotes(datatype),
+                IsUserDefined = true
             };
+
+            return dr;
+        }
+
+        public static DataTypeReference Interpret(DataTypeWithSize dtws)
+        {
+            var dr = dtws.DataTypeIdentifier.DataTypeReference;
 
             if (dr.SchemaName == null && Schema.SqlServer.Constants.SqlDataTypes.ContainsKey(dr.DatabaseObjectName))
             {
                 // System type, this needs to be resolved here to have
                 // access to precision, scale and length
                 var sqltype = Schema.SqlServer.Constants.SqlDataTypes[dr.DatabaseObjectName];
-                var dt = Schema.DataType.Create(sqltype, di.Length, di.Precision, di.Scale, false);
+                var dt = Schema.DataType.Create(sqltype, dtws.Length, dtws.Precision, dtws.Scale, false);
 
                 dr.IsUserDefined = false;
                 dr.DatabaseObject = dt;

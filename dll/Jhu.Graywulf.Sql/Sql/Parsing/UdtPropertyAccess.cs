@@ -23,9 +23,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         public static UdtPropertyAccess Create(PropertyReference pr)
         {
             var pp = new UdtPropertyAccess();
-            pp.Stack.AddLast(Dot.Create());
             pp.Stack.AddLast(PropertyName.Create(pr));
-
             return pp;
         }
     }

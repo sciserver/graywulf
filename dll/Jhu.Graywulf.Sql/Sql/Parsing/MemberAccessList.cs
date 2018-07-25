@@ -25,9 +25,11 @@ namespace Jhu.Graywulf.Sql.Parsing
                 {
                     mal = cmal = nmal;
                 }
-
-                cmal.Stack.AddLast(nmal);
-                cmal = nmal;
+                else
+                {
+                    cmal.Stack.AddLast(nmal);
+                    cmal = nmal;
+                }
             }
 
             return mal;

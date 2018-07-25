@@ -93,6 +93,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 
                         cg.TableNameRendering = QueryRendering.NameRendering.FullyQualified;
                         cg.ColumnNameRendering = QueryRendering.NameRendering.IdentifierOnly;
+                        cg.UdtMemberNameRendering = QueryRendering.NameRendering.IdentifierOnly;
                         cg.DataTypeNameRendering = QueryRendering.NameRendering.FullyQualified;
                         cg.FunctionNameRendering = QueryRendering.NameRendering.FullyQualified;
                         cg.IndexNameRendering = QueryRendering.NameRendering.IdentifierOnly;

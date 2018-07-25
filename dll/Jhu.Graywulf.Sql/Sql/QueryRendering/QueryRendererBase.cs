@@ -22,6 +22,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
         private NameRendering tableNameRendering;
         private AliasRendering tableAliasRendering;
         private NameRendering columnNameRendering;
+        private NameRendering udtMemberNameRendering;
         private AliasRendering columnAliasRendering;
         private NameRendering dataTypeNameRendering;
         private NameRendering functionNameRendering;
@@ -69,6 +70,12 @@ namespace Jhu.Graywulf.Sql.QueryRendering
         {
             get { return columnNameRendering; }
             set { columnNameRendering = value; }
+        }
+
+        public NameRendering UdtMemberNameRendering
+        {
+            get { return udtMemberNameRendering; }
+            set { udtMemberNameRendering = value; }
         }
 
         public AliasRendering ColumnAliasRendering
@@ -154,6 +161,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             this.tableNameRendering = NameRendering.Default;
             this.tableAliasRendering = AliasRendering.Default;
             this.columnNameRendering = NameRendering.Default;
+            this.udtMemberNameRendering = NameRendering.Default;
             this.columnAliasRendering = AliasRendering.Default;
             this.dataTypeNameRendering = NameRendering.Default;
             this.functionNameRendering = NameRendering.Default;
@@ -427,6 +435,32 @@ namespace Jhu.Graywulf.Sql.QueryRendering
                 case NameRendering.FullyQualified:
                 case NameRendering.IdentifierOnly:
                     Writer.Write(GetQuotedIdentifier(node.ColumnReference.ColumnName));
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        protected virtual bool WriteNode(PropertyName node)
+        {
+            switch (udtMemberNameRendering)
+            {
+                case NameRendering.FullyQualified:
+                case NameRendering.IdentifierOnly:
+                    Writer.Write(GetQuotedIdentifier(node.PropertyReference.PropertyName));
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        protected virtual bool WriteNode(MethodName node)
+        {
+            switch (udtMemberNameRendering)
+            {
+                case NameRendering.FullyQualified:
+                case NameRendering.IdentifierOnly:
+                    Writer.Write(GetQuotedIdentifier(node.MethodReference.MethodName));
                     return true;
                 default:
                     return false;

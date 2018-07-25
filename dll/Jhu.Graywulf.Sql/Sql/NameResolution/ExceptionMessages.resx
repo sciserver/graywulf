@@ -201,4 +201,10 @@
   <data name="TableVariableExpected" xml:space="preserve">
     <value>Table variable expected at ({1},{2}).</value>
   </data>
+  <data name="AmbigousColumnOrFunctionReference" xml:space="preserve">
+    <value>Ambigous column or function reference '{0}' found at ({1},{2}).</value>
+  </data>
+  <data name="UnresolvableMemberAccessList" xml:space="preserve">
+    <value>The identifier '{0}' found at ({1},{2}) cannot be bound.</value>
+  </data>
 </root>

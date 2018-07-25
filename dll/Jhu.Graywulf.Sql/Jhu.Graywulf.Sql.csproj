@@ -261,6 +261,7 @@
     <Compile Include="Sql\Parsing\BetweenPredicate.cs" />
     <Compile Include="Sql\Parsing\BinaryOperator.cs" />
     <Compile Include="Sql\Parsing\DataTypeArgument.cs" />
+    <Compile Include="Sql\Parsing\DataTypeWithSize.cs" />
     <Compile Include="Sql\Parsing\FunctionName.cs" />
     <Compile Include="Sql\Parsing\ComparisonOperator.cs" />
     <Compile Include="Sql\Parsing\ComparisonPredicate.cs" />

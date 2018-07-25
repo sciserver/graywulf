@@ -421,22 +421,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        private DatasetBase LoadDataset(SchemaManager schemaManager)
-        {
-            try
-            {
-                return schemaManager.Datasets[DatasetName];
-            }
-            catch (KeyNotFoundException ex)
-            {
-                throw NameResolutionError.UnresolvableDatasetReference(ex, this);
-            }
-            catch (SchemaException ex)
-            {
-                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableDatasetReference, DatasetName, Node.Line, Node.Col), ex);
-            }
-        }
-
         public void CopyColumnReferences(IEnumerable<IColumnReference> other)
         {
             CopyColumnReferences(other.Select(cr => cr.ColumnReference));

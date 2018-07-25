@@ -28,8 +28,8 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public DataTypeReference DataTypeReference
         {
-            get { return DataTypeIdentifier.DataTypeReference; }
-            set { DataTypeIdentifier.DataTypeReference = value; }
+            get { return DataTypeWithSize.DataTypeReference; }
+            set { DataTypeWithSize.DataTypeReference = value; }
         }
 
         public ColumnName ColumnName
@@ -37,9 +37,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<ColumnName>(); }
         }
 
-        public DataTypeIdentifier DataTypeIdentifier
+        public DataTypeWithSize DataTypeWithSize
         {
-            get { return FindDescendant<DataTypeIdentifier>(); }
+            get { return FindDescendant<DataTypeWithSize>(); }
         }
 
         public bool IsNullable
@@ -76,7 +76,9 @@ namespace Jhu.Graywulf.Sql.Parsing
         public override void Interpret()
         {
             base.Interpret();
+
             ColumnReference = ColumnReference.Interpret(this);
+            DataTypeWithSize.DataTypeReference.DataType.IsNullable = IsNullable;
         }
     }
 }

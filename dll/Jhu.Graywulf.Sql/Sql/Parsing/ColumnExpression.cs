@@ -112,12 +112,5 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             return ce;
         }
-
-        public override void Interpret()
-        {
-            base.Interpret();
-
-            this.columnReference = ColumnReference.Interpret(this);
-        }
     }
 }

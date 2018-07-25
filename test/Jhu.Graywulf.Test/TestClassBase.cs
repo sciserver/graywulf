@@ -186,6 +186,7 @@ namespace Jhu.Graywulf.Test
 
             cg.TableNameRendering = NameRendering.FullyQualified;
             cg.ColumnNameRendering = NameRendering.FullyQualified;
+            cg.UdtMemberNameRendering = NameRendering.FullyQualified;
             cg.ColumnAliasRendering = AliasRendering.Always;
             cg.DataTypeNameRendering = NameRendering.FullyQualified;
             cg.FunctionNameRendering = NameRendering.FullyQualified;

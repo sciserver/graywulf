@@ -18,6 +18,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering.SqlServer
 
             cg.TableNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.ColumnNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
+            cg.UdtMemberNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.DataTypeNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.FunctionNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.IndexNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
