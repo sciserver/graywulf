@@ -7,13 +7,18 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class DropTableStatement : ITableReference
+    public partial class DropTableStatement : ITableReference, ISourceTableProvider, ITargetTableProvider
     {
         public TableOrViewIdentifier TargetTable
         {
             get { return FindDescendant<TableOrViewIdentifier>(); }
         }
-        
+
+        public TableReference TargetTableReference
+        {
+            get { return TargetTable.TableReference; }
+        }
+
         public TableReference TableReference
         {
             get { return TargetTable.TableReference; }

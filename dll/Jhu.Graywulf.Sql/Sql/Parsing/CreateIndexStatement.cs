@@ -7,11 +7,16 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class CreateIndexStatement : ITableReference, IIndexReference
+    public partial class CreateIndexStatement : ITableReference, IIndexReference, ISourceTableProvider, ITargetTableProvider
     {
         public TableOrViewIdentifier TargetTable
         {
             get { return FindDescendant<TableOrViewIdentifier>(); }
+        }
+
+        public TableReference TargetTableReference
+        {
+            get { return TargetTable.TableReference; }
         }
 
         public IndexName IndexName

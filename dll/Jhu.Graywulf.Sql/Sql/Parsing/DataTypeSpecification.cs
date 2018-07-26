@@ -7,7 +7,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class DataTypeWithSize : IDataTypeReference
+    public partial class DataTypeSpecification : IDataTypeReference
     {
         public DataTypeIdentifier DataTypeIdentifier
         {

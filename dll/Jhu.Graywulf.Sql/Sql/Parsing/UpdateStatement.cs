@@ -9,12 +9,6 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class UpdateStatement : ISourceTableProvider, ITargetTableProvider
     {
-        #region Private member variables
-
-        private Dictionary<string, TableReference> sourceTableReferences;
-
-        #endregion
-
         public CommonTableExpression CommonTableExpression
         {
             get { return FindDescendant<CommonTableExpression>(); }
@@ -23,6 +17,11 @@ namespace Jhu.Graywulf.Sql.Parsing
         public TargetTableSpecification TargetTable
         {
             get { return FindDescendant<TargetTableSpecification>(); }
+        }
+
+        public TableReference TargetTableReference
+        {
+            get { return TargetTable.TableReference; }
         }
 
         public UpdateSetList UpdateSetList
@@ -39,30 +38,5 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get { return FindDescendant<WhereClause>(); }
         }
-
-        public Dictionary<string, TableReference> SourceTableReferences
-        {
-            get { return sourceTableReferences; }
-        }
-        
-        #region Constructors and initializers
-
-        protected override void OnInitializeMembers()
-        {
-            base.OnInitializeMembers();
-
-            this.sourceTableReferences = new Dictionary<string, TableReference>(Schema.SchemaManager.Comparer);
-        }
-
-        protected override void OnCopyMembers(object other)
-        {
-            base.OnCopyMembers(other);
-
-            var old = (UpdateStatement)other;
-
-            this.sourceTableReferences = new Dictionary<string, TableReference>(old.sourceTableReferences);
-        }
-
-        #endregion
     }
 }

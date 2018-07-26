@@ -14,7 +14,6 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         #region Private member variables
 
-        private Dictionary<string, TableReference> sourceTableReferences;
         private TableReference outputTableReference;
 
         #endregion
@@ -58,11 +57,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             }
         }
 
-        public Dictionary<string, TableReference> SourceTableReferences
-        {
-            get { return sourceTableReferences; }
-        }
-
         /// <summary>
         /// Gets the reference to the table that represents
         /// the resultset of the query
@@ -81,8 +75,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         protected override void OnInitializeMembers()
         {
             base.OnInitializeMembers();
-
-            this.sourceTableReferences = new Dictionary<string, TableReference>(Schema.SchemaManager.Comparer);
             this.outputTableReference = null;
         }
 
@@ -91,8 +83,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             base.OnCopyMembers(other);
 
             var old = (SelectStatement)other;
-
-            this.sourceTableReferences = new Dictionary<string, TableReference>(old.sourceTableReferences);
             this.outputTableReference = new TableReference(old.outputTableReference);
         }
 

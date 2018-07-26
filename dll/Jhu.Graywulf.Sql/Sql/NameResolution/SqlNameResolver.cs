@@ -236,6 +236,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
+        protected virtual void Accept(ColumnDefinition node)
+        {
+            // This must happen here because it requires a resolved data type
+            node.DataTypeWithSize.DataTypeReference.DataType.IsNullable = node.IsNullable;
+        }
+
         protected virtual void Accept(ColumnExpression node)
         {
             node.ColumnReference = ColumnReference.Interpret(node);
@@ -560,7 +566,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var stp = qs as ISourceTableProvider ?? Visitor.CurrentStatement as ISourceTableProvider;
             var sourceTables = stp?.SourceTableReferences.Values;
             var ttp = Visitor.CurrentStatement as ITargetTableProvider;
-            var targetTable = ttp?.TargetTable.TableReference;
+            var targetTable = ttp?.TargetTableReference;
 
             // Star columns cannot be resolved, treat them separately
             // Also, UPDATE SET ... and INSERT (...) columns must be resolved against the target table

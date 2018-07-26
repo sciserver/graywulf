@@ -188,7 +188,7 @@ namespace Jhu.Graywulf.Sql.Schema
         /// is the format of objecttype|dataset|database|schema|object
         /// </remarks>
         [IgnoreDataMember]
-        public string UniqueKey
+        public virtual string UniqueKey
         {
             get { return dataset.GetObjectUniqueKey(this); }
             set { dataset.GetNamePartsFromObjectUniqueKey(this, value); }

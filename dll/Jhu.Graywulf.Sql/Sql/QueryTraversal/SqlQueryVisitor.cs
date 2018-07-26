@@ -848,7 +848,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 TraverseExpression(exp);
             }
 
-            VisitNode(node.DataTypeWithSize);
+            TraverseDataTypeWithSize(node.DataTypeWithSize);
+            VisitNode(node);
+        }
+
+        private void TraverseDataTypeWithSize(DataTypeSpecification node)
+        {
+            VisitNode(node.DataTypeIdentifier);
             VisitNode(node);
         }
 

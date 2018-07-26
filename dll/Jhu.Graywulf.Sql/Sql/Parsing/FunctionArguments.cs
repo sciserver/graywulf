@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             args.Stack.AddLast(BracketOpen.Create());
 
-            if (expressions != null)
+            if (expressions != null && expressions.Length > 0)
             {
                 var arglist = ArgumentList.Create(expressions);
                 args.Stack.AddLast(arglist);

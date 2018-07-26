@@ -117,7 +117,7 @@ namespace Jhu.Graywulf.Sql.Schema
                 default:
                     throw new NotImplementedException();
             }
-            
+
             dt.SetDetails(length, scale, precision, isNullable);
 
             return dt;
@@ -214,7 +214,7 @@ namespace Jhu.Graywulf.Sql.Schema
 
             return dt;
         }
-        
+
         #endregion
         #region Private variables for property storage
 
@@ -316,6 +316,33 @@ namespace Jhu.Graywulf.Sql.Schema
         {
             get { return ObjectName; }
             internal set { ObjectName = value; }
+        }
+
+        [IgnoreDataMember]
+        public override string UniqueKey
+        {
+            get
+            {
+                if (!IsUserDefined)
+                {
+                    return TypeName;
+                }
+                else
+                {
+                    return base.UniqueKey;
+                }
+            }
+            set
+            {
+                if (!IsUserDefined)
+                {
+                    throw new NotImplementedException();
+                }
+                else
+                {
+                    base.UniqueKey = value;
+                }
+            }
         }
 
         /// <summary>
@@ -529,7 +556,7 @@ namespace Jhu.Graywulf.Sql.Schema
                     byteSize == 2;
             }
         }
-        
+
         [DataMember]
         public bool IsTableType
         {
@@ -805,7 +832,7 @@ namespace Jhu.Graywulf.Sql.Schema
         }
 
         internal DataType(DataType old)
-            :base(old)
+            : base(old)
         {
             CopyMembers(old);
         }
@@ -899,7 +926,7 @@ namespace Jhu.Graywulf.Sql.Schema
                 this.sqlDbType = null;
             }
         }
-        
+
         public bool Compare(DataType other)
         {
             var res = true;

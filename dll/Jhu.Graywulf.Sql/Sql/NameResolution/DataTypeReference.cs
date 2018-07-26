@@ -108,7 +108,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return dr;
         }
 
-        public static DataTypeReference Interpret(DataTypeWithSize dtws)
+        public static DataTypeReference Interpret(DataTypeSpecification dtws)
         {
             var dr = dtws.DataTypeIdentifier.DataTypeReference;
 

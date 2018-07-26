@@ -351,7 +351,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
         public static Expression<Rule> LogicalArgument = () => LogicalExpression;
 
-        public static Expression<Rule> DataTypeArgument = () => DataTypeWithSize;
+        public static Expression<Rule> DataTypeArgument = () => DataTypeSpecification;
 
         public static Expression<Rule> SpecialFunctionCall = () => 
             Inherit
@@ -406,7 +406,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 May(CommentOrWhitespace),
                 Comma,
                 May(CommentOrWhitespace),
-                DataTypeWithSize,
+                DataTypeSpecification,
                 May(CommentOrWhitespace),
                 BracketClose
             );
@@ -724,7 +724,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 )
             );
 
-        public static Expression<Rule> DataTypeWithSize = () =>
+        public static Expression<Rule> DataTypeSpecification = () =>
             Sequence
             (
                 DataTypeIdentifier,
@@ -1179,7 +1179,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 UserVariable,
                 May(Sequence(CommentOrWhitespace, Keyword("AS"))),
                 May(CommentOrWhitespace),
-                DataTypeWithSize,
+                DataTypeSpecification,
                 May(
                     Sequence
                     (
@@ -2080,7 +2080,7 @@ FOR select_statement
             (
                 ColumnName,
                 May(CommentOrWhitespace),
-                DataTypeWithSize,
+                DataTypeSpecification,
                 May
                 (
                     Sequence

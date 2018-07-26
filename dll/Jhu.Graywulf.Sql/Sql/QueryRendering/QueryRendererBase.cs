@@ -467,6 +467,12 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             }
         }
 
+        protected virtual bool WriteNode(DataTypeSpecification node)
+        {
+            WriteDataTypeName(node);
+            return true;
+        }
+
         protected virtual bool WriteNode(DataTypeIdentifier node)
         {
             return WriteDataTypeName(node);

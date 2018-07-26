@@ -9,6 +9,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
 {
     public interface ITargetTableProvider
     {
-        TargetTableSpecification TargetTable { get; }
+        TableReference TargetTableReference { get; }
     }
 }
