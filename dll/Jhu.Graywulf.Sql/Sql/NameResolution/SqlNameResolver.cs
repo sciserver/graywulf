@@ -987,6 +987,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // exchange these with a single ColumnIdentifier and the rest is all
                 // properties and method calls.
 
+                cr.ColumnContext |= visitor.ColumnContext;
+
                 var ci = ColumnIdentifier.Create(cr);
                 ((ObjectName)tokens[0]).ReplaceWith(ci);
                 ResolveMemberAccessList(operand, matchcolpart);
