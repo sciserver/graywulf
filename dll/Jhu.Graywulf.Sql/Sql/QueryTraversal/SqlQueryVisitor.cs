@@ -778,10 +778,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseVariableDeclaration(VariableDeclaration node)
         {
-            var dt = node.DataTypeIdentifier;
+            var dt = node.DataTypeSpecification;
             var exp = node.Expression;
 
-            VisitNode(node.DataTypeIdentifier);
+            VisitNode(node.DataTypeSpecification);
 
             if (exp != null)
             {

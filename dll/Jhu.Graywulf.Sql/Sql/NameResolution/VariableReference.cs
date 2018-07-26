@@ -143,7 +143,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 this.variableContext = VariableContext.Scalar;
             }
 
-            dataTypeReference = vd.DataTypeIdentifier.DataTypeReference;
+            dataTypeReference = vd.DataTypeSpecification.DataTypeReference;
         }
 
         public void Interpret(Parsing.TableDeclaration td)
