@@ -337,8 +337,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             if (exp != null && exp.IsSingleColumn)
             {
+                // Make a copy here because the alias might be overwritten
                 var ci = exp.FindDescendantRecursive<ColumnIdentifier>();
-                cr = ci.ColumnReference;
+                cr = new ColumnReference(ci.ColumnReference);
             }
             else if (star != null)
             {

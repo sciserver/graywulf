@@ -342,6 +342,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         protected virtual void Accept(SubqueryTableSource node)
         {
+            // This is fishy here
             node.TableReference = ResolveTableReference(node.TableReference, null);
         }
 
@@ -777,6 +778,49 @@ namespace Jhu.Graywulf.Sql.NameResolution
             cr.ParentDataTypeReference = ncr.ParentDataTypeReference;
         }
 
+        protected TableReference FindTableByAlias(TableReference tr)
+        {
+            var sourceTableCollection =
+                Visitor.CurrentQuerySpecification as ISourceTableProvider ??
+                Visitor.CurrentStatement as ISourceTableProvider;
+
+            var targetTableProvider =
+                Visitor.CurrentStatement as ITargetTableProvider;
+
+            var alias = tr.TableName ?? tr.Alias;
+
+            if (targetTableProvider != null && SchemaManager.Comparer.Compare(targetTableProvider.TargetTableReference.Alias, alias) == 0)
+            {
+                // TODO: Can this happen? Can target table be aliased?
+                return targetTableProvider.TargetTableReference;
+            }
+            else if (Visitor.CommonTableExpression != null && Visitor.CommonTableExpression.CommonTableReferences.ContainsKey(alias))
+            {
+                return Visitor.CommonTableExpression.CommonTableReferences[alias];
+            }
+            else
+            {
+                var qs = Visitor.CurrentQuerySpecification;
+                var sourceTables = qs?.SourceTableReferences;
+
+                while (sourceTables != null)
+                {
+                    if (sourceTables.ContainsKey(alias))
+                    {
+                        return sourceTables[alias];
+                    }
+                    else
+                    {
+                        // Try to go one query specification up
+                        qs = qs?.ParentQuerySpecification;
+                        sourceTables = qs?.SourceTableReferences;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         protected TableReference ResolveTableReference(TableReference tr, TableDefinition td)
         {
             TableReference ntr = null;
@@ -828,6 +872,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // Case 3: aliased subquery
                 // SELECT ... FROM (SELECT ...) sq
                 // Everything is resolved, just copy to source tables
+                ntr = tr;
                 CollectSourceTableReference(tr);
             }
             else if ((Visitor.TableContext & TableContext.From) != 0)
@@ -938,11 +983,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // This is a reference to a CTE query
                 ntr = Visitor.CommonTableExpression.CommonTableReferences[tr.DatabaseObjectName];
             }
-            else if (resolvedSourceTables.SourceTableReferences.ContainsKey(tr.TableName))
+            else if (tr.IsPossiblyAlias && (ntr = FindTableByAlias(tr)) != null)
             {
                 // This a reference from a target table to an already resolved source table
-                // This happens with UPDATE etc.
-                ntr = resolvedSourceTables.SourceTableReferences[tr.TableName];
+                // This happens with UPDATE etc. and subqueries referencing outer query specifications
             }
             else if (!tr.IsComputed)
             {
@@ -1088,7 +1132,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 var sourceTableCollection =
                     Visitor.CurrentQuerySpecification as ISourceTableProvider ??
                     Visitor.CurrentStatement as ISourceTableProvider;
-
+                
+                // A behelyettesítéskor nem csak azt kell nézni, hogy az alias
+                // bent van-e a sourceTableCollection listában, hanem azt is
+                // hogy valami superquery-nek része-e.
                 SubstituteSourceTableDefaults(sourceTableCollection, tr);
                 tr = ResolveSourceTableReference(sourceTableCollection, tr);
                 cr.TableReference = tr;
@@ -1207,9 +1254,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             try
             {
-                if (tr.IsPossiblyAlias &&
-                    (Visitor.CommonTableExpression != null && Visitor.CommonTableExpression.CommonTableReferences.ContainsKey(tr.DatabaseObjectName) ||
-                     resolvedSourceTables != null && resolvedSourceTables.SourceTableReferences.ContainsKey(tr.DatabaseObjectName)))
+                if (tr.IsPossiblyAlias && FindTableByAlias(tr) != null)
                 {
                     // Don't do any substitution if referencing a common table or anything that aliased
                 }

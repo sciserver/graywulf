@@ -971,6 +971,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             {
                 switch (nn)
                 {
+                    case Subquery n:
+                        // Do not traverse subqueries again, they've been processed
+                        // in a previous pass
+                        break;
                     case MemberAccessList n:
                         TraverseMemberAccessList(n);
                         break;

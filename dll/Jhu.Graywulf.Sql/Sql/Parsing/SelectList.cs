@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         public IEnumerable<ColumnExpression> EnumerateColumnExpressions()
         {
-            return EnumerateDescendantsRecursive<ColumnExpression>();
+            return EnumerateDescendants<ColumnExpression>();
         }
 
         public static SelectList CreateStar()

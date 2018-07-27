@@ -32,6 +32,63 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         [TestMethod]
+        public void SameColumnTest()
+        {
+            var sql = "SELECT ID, ID FROM Author";
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
+
+            var res = GenerateCode(qs);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[ID] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
+
+            var ts = qs.SourceTableReferences.Values.ToArray();
+
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
+
+            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+
+            Assert.AreEqual(2, cs.Length);
+        }
+
+        [TestMethod]
+        public void SameColumnTest2()
+        {
+            var sql = "SELECT ID a, ID b FROM Author";
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
+
+            var res = GenerateCode(qs);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [a], [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [b] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
+
+            var ts = qs.SourceTableReferences.Values.ToArray();
+
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
+
+            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+
+            Assert.AreEqual(2, cs.Length);
+        }
+
+        [TestMethod]
+        public void ExpressionTest()
+        {
+            var sql = "SELECT Name + Name FROM Author";
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
+
+            var res = GenerateCode(qs);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] + [Graywulf_Schema_Test].[dbo].[Author].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author]", res);
+
+            var ts = qs.SourceTableReferences.Values.ToArray();
+
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
+
+            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+
+            Assert.AreEqual(1, cs.Length);
+        }
+
+        [TestMethod]
         public void SingleColumnWithPropertiesTest()
         {
             var sql = "SELECT Name.UdtProperty1.UdtProperty2 FROM Author";
@@ -172,7 +229,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
 
             Assert.AreEqual(1, cs.Length);
-            Assert.AreEqual("Name", cs[0].ColumnName);
+            Assert.AreEqual(null, cs[0].ColumnName);
         }
 
 
