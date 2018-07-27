@@ -771,18 +771,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
         public static Expression<Rule> FunctionCall = () => Abstract();
 
-        public static Expression<Rule> ScalarFunctionCall = () =>
-            Inherit
-            (
-                FunctionCall,
-                Sequence
-                (
-                    FunctionIdentifier,
-                    May(CommentOrWhitespace),
-                    FunctionArguments
-                )
-            );
-
         public static Expression<Rule> SystemFunctionCall = () =>
             Inherit
             (
@@ -790,6 +778,18 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 Sequence
                 (
                     FunctionName,
+                    May(CommentOrWhitespace),
+                    FunctionArguments
+                )
+            );
+
+        public static Expression<Rule> ScalarFunctionCall = () =>
+            Inherit
+            (
+                FunctionCall,
+                Sequence
+                (
+                    FunctionIdentifier,
                     May(CommentOrWhitespace),
                     FunctionArguments
                 )

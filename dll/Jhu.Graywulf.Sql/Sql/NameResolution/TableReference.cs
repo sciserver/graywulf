@@ -472,28 +472,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void LoadUdfColumnReferences(SchemaManager schemaManager)
         {
-            // TVF calls can have a column alias list
-            throw new NotImplementedException();
-
-            // TODO: this must be moved into the name resolver
-            List<ColumnAlias> calist = null;
-            var cal = this.Node.FindDescendant<ColumnAliasList>();
-            if (cal != null)
-            {
-                calist = new List<ColumnAlias>(cal.EnumerateDescendants<ColumnAlias>());
-            }
-
             int q = 0;
             foreach (var cd in ((TableValuedFunction)DatabaseObject).Columns.Values)
             {
                 var cr = new ColumnReference(cd, this, new DataTypeReference(cd.DataType));
-
-                // if column alias list is present, use the alias instead of the original name
-                if (calist != null)
-                {
-                    cr.ColumnName = RemoveIdentifierQuotes(calist[q].Value);
-                }
-
                 columnReferences.Add(cr);
                 q++;
             }

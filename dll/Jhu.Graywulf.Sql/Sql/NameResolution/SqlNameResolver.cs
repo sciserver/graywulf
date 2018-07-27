@@ -313,18 +313,30 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // Branch landing here:
             // - SELECT ... FROM
 
-            node.TableReference.TableContext |= Visitor.TableContext;
+            node.TableReference.DatabaseObject = node.FunctionReference.DatabaseObject;
+            node.TableReference.LoadColumnReferences(schemaManager);
 
-            // SELECT ... FROM ...()
-            SubstituteFunctionDefaults(node.FunctionReference);
-            node.FunctionReference = 
-                ResolveFunctionReference(node.FunctionReference) ??
-                throw NameResolutionError.UnresolvableFunctionReference(node.FunctionReference);
-            CollectFunctionReference(node.FunctionReference);
+            /*
+             * TODO: only OPENROWSET etc. and VALUES constructs can have alias lists!
+             * move this elsewhere
+            // The function call can also have an alias list
+            List<ColumnAlias> calist = null;
+            var cal = node.FindDescendant<ColumnAliasList>();
+            if (cal != null)
+            {
+                calist = new List<ColumnAlias>(cal.EnumerateDescendants<ColumnAlias>());
 
-            throw new NotImplementedException();
-            // TODO: review this here, do we have a table reference here?
+                int q = 0;
+                foreach (var cr in node.TableReference.ColumnReferences)
+                {
+                    // if column alias list is present, use the alias instead of the original name
+                    cr.ColumnName = ReferenceBase.RemoveIdentifierQuotes(calist[q].Value);
+                    q++;
+                }
+            }
+            */
 
+            node.TableReference.TableContext |= Visitor.TableContext | TableContext.UserDefinedFunction;
             CollectSourceTableReference(node.TableReference);
         }
 
@@ -359,7 +371,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             node.TableReference = ResolveTableReference(node.TableReference, node.TableDefinition);
         }
-        
+
         protected virtual void Accept(DropTableStatement node)
         {
             var table = (Schema.Table)node.TargetTable.TableReference.DatabaseObject;
@@ -460,16 +472,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private FunctionReference ResolveFunctionReference(FunctionReference fr)
         {
-            if (!fr.IsUserDefined)
+            // TODO: scalar CLR function calls must have the schema name specified
+            // but table valued functions don't
+
+            if (String.IsNullOrWhiteSpace(fr.SchemaName) && IsSystemFunctionName(fr.FunctionName))
             {
-                if (!IsSystemFunctionName(fr.FunctionName))
-                {
-                    throw NameResolutionError.UnknownFunctionName(fr);
-                }
+                fr.IsSystem = true;
             }
             else
             {
+                fr.IsUserDefined = true;
                 fr.LoadDatabaseObject(schemaManager);
+
                 if (fr.DatabaseObject == null)
                 {
                     return null;
@@ -998,6 +1012,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 var args = ((MemberCall)tokens[matchfunpart]).EnumerateArguments().Select(a => a.Expression).ToArray();
                 var fc = ScalarFunctionCall.Create(fr, args);
                 ((ObjectName)tokens[0]).ReplaceWith(fc);
+                CollectFunctionReference(fr);
                 ResolveMemberAccessList(operand, matchfunpart);
             }
             else
@@ -1244,10 +1259,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// <param name="node"></param>
         private void SubstituteFunctionDefaults(FunctionReference fr)
         {
-            if (!fr.IsSystem)
+            if (String.IsNullOrWhiteSpace(fr.SchemaName) && IsSystemFunctionName(fr.FunctionName))
+            {
+                fr.IsSystem = true;
+            }
+            else
             {
                 try
                 {
+
                     fr.SubstituteDefaults(SchemaManager, options.DefaultFunctionDatasetName);
                 }
                 catch (KeyNotFoundException ex)

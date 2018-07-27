@@ -81,7 +81,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var fr = new FunctionReference(fn)
             {
                 FunctionName = RemoveIdentifierQuotes(fn.Value),
-                IsUserDefined = false,
             };
 
             return fr;
@@ -100,7 +99,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 DatabaseName = RemoveIdentifierQuotes(database),
                 SchemaName = RemoveIdentifierQuotes(schema),
                 FunctionName = RemoveIdentifierQuotes(function),
-                IsUserDefined = true
             };
 
             // This is a system function call
@@ -121,7 +119,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     {
                         SchemaName = RemoveIdentifierQuotes(tokens[0].Value),
                         FunctionName = RemoveIdentifierQuotes(((MemberCall)tokens[1]).MemberName.Value),
-                        IsUserDefined = true,
                     };
                 case 2:
                     return new FunctionReference((Node)tokens[0])
@@ -129,7 +126,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                         DatabaseName = RemoveIdentifierQuotes(tokens[0].Value),
                         SchemaName = RemoveIdentifierQuotes(tokens[1].Value),
                         FunctionName = RemoveIdentifierQuotes(((MemberCall)tokens[2]).MemberName.Value),
-                        IsUserDefined = true,
                     };
                 default:
                     throw new InvalidOperationException();
