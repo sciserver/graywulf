@@ -1996,6 +1996,8 @@ FOR select_statement
             (
                 ColumnName,
                 May(CommentOrWhitespace),
+                Dot,
+                May(CommentOrWhitespace),
                 UdtMethodCall
             );
 
