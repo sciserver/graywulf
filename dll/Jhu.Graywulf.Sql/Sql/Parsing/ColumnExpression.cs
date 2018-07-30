@@ -16,13 +16,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return columnReference; }
             set { columnReference = value; }
         }
-
-        public DatabaseObjectReference DatabaseObjectReference
-        {
-            get { return columnReference.TableReference; }
-            set { throw new InvalidOperationException(); }
-        }
-
+        
         /// <summary>
         /// Gets or sets the table reference associated with this column expression
         /// </summary>
@@ -56,7 +50,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         protected override void OnInitializeMembers()
         {
             base.OnInitializeMembers();
-
             this.columnReference = null;
         }
 
@@ -65,8 +58,13 @@ namespace Jhu.Graywulf.Sql.Parsing
             base.OnCopyMembers(other);
 
             var old = (ColumnExpression)other;
-
             this.columnReference = old.columnReference;
+        }
+
+        public override void Interpret()
+        {
+            base.Interpret();
+            this.columnReference = ColumnReference.Interpret(this);
         }
 
         public static ColumnExpression CreateStar()

@@ -881,6 +881,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // SELECT ... FROM
                 SubstituteSourceTableDefaults(sourceTableCollection, tr);
                 ntr = ResolveSourceTableReference(sourceTableCollection, tr);
+
+                if (ntr == null)
+                {
+                    throw NameResolutionError.UnresolvableTableReference(tr);
+                }
+
                 CollectSourceTableReference(ntr);
             }
             else

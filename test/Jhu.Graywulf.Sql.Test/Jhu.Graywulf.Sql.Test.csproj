@@ -94,8 +94,10 @@
     <Compile Include="Sql\LogicalExpressions\DnfConverterTest.cs" />
     <Compile Include="Sql\LogicalExpressions\ExpressionTreeBuilderTest.cs" />
     <Compile Include="Sql\LogicalExpressions\SearchConditionNormalizerTest.cs" />
+    <Compile Include="Sql\NameResolution\ColumnExpressionTest.cs" />
     <Compile Include="Sql\NameResolution\ColumnReferenceTest.cs" />
     <Compile Include="Sql\NameResolution\MemberAccessListTest.cs" />
+    <Compile Include="Sql\NameResolution\NameResolutionErrorTest.cs" />
     <Compile Include="Sql\NameResolution\PredicateTest.cs" />
     <Compile Include="Sql\NameResolution\QuerySpecificationTest.cs" />
     <Compile Include="Sql\NameResolution\SemiJoinTest.cs" />
@@ -119,6 +121,7 @@
     <Compile Include="Sql\NameResolution\SelectStatementTest.cs" />
     <Compile Include="Sql\NameResolution\SqlNameResolverTestBase.cs" />
     <Compile Include="Sql\NameResolution\SubqueryTest.cs" />
+    <Compile Include="Sql\Parsing\ColumnExpressionTest.cs" />
     <Compile Include="Sql\Parsing\SpecialFunctionsTest.cs" />
     <Compile Include="Sql\Parsing\ArgumentListTest.cs" />
     <Compile Include="Sql\Parsing\ArgumentTest.cs" />
@@ -127,7 +130,6 @@
     <Compile Include="Sql\Parsing\BitwiseOperatorTest.cs" />
     <Compile Include="Sql\Parsing\BooleanExpressionBracketsTest.cs" />
     <Compile Include="Sql\Parsing\CnfConverterTest.cs" />
-    <Compile Include="Sql\Parsing\ColumnExpressionTest.cs" />
     <Compile Include="Sql\Parsing\ColumnDefinitionTest.cs" />
     <Compile Include="Sql\Parsing\ColumnIdentifierTest.cs" />
     <Compile Include="Sql\Parsing\CommentOrWhitespaceTest.cs" />

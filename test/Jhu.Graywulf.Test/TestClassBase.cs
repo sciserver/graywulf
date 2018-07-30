@@ -141,6 +141,21 @@ namespace Jhu.Graywulf.Test
             return nameResolver;
         }
 
+        protected QueryRendererBase CreateCodeGenerator()
+        {
+            return new SqlServerQueryRenderer()
+            {
+                ColumnNameRendering = NameRendering.FullyQualified,
+                ColumnAliasRendering = AliasRendering.Always,
+                DataTypeNameRendering = NameRendering.FullyQualified,
+                UdtMemberNameRendering = NameRendering.FullyQualified,
+                TableNameRendering = NameRendering.FullyQualified,
+                FunctionNameRendering = NameRendering.FullyQualified,
+                IndexNameRendering = NameRendering.FullyQualified,
+                ConstraintNameRendering = NameRendering.FullyQualified,
+            };
+        }
+
         protected QueryDetails ResolveNames(StatementBlock script)
         {
             CreateNameResolver();
@@ -182,17 +197,7 @@ namespace Jhu.Graywulf.Test
 
         protected string GenerateCode(Jhu.Graywulf.Parsing.Node node)
         {
-            var cg = new SqlServerQueryRenderer();
-
-            cg.TableNameRendering = NameRendering.FullyQualified;
-            cg.ColumnNameRendering = NameRendering.FullyQualified;
-            cg.UdtMemberNameRendering = NameRendering.FullyQualified;
-            cg.ColumnAliasRendering = AliasRendering.Always;
-            cg.DataTypeNameRendering = NameRendering.FullyQualified;
-            cg.FunctionNameRendering = NameRendering.FullyQualified;
-            cg.IndexNameRendering = NameRendering.FullyQualified;
-            cg.ConstraintNameRendering = NameRendering.FullyQualified;
-
+            var cg = CreateCodeGenerator();
             var sw = new StringWriter();
             cg.Execute(sw, node);
 

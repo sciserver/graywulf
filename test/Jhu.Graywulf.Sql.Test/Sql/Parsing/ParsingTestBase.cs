@@ -9,31 +9,8 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public abstract class ParsingTestBase
+    public abstract class ParsingTestBase : Jhu.Graywulf.Test.TestClassBase
     {
-        protected SchemaManager CreateSchemaManager()
-        {
-            var sm = new SqlServerSchemaManager();
-            var ds = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString);
-
-            sm.Datasets[ds.Name] = ds;
-
-            return sm;
-        }
-
-        protected QueryRendering.QueryRendererBase CreateCodeGenerator()
-        {
-            return new QueryRendering.SqlServer.SqlServerQueryRenderer()
-            {
-                ColumnNameRendering = QueryRendering.NameRendering.FullyQualified,
-                UdtMemberNameRendering = QueryRendering.NameRendering.FullyQualified,
-                TableNameRendering = QueryRendering.NameRendering.FullyQualified,
-                FunctionNameRendering = QueryRendering.NameRendering.FullyQualified,
-                IndexNameRendering = QueryRendering.NameRendering.FullyQualified,
-                ConstraintNameRendering = QueryRendering.NameRendering.FullyQualified,
-            };
-        }
-
         protected SelectStatement CreateSelect(string query)
         {
             SqlParser p = new SqlParser();
