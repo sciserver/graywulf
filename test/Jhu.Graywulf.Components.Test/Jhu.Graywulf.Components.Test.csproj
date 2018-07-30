@@ -86,6 +86,7 @@
     <Compile Include="CommandLineParser\Program.cs" />
     <Compile Include="CommandLineParser\RunParameters.cs" />
     <Compile Include="Components\CacheTest.cs" />
+    <Compile Include="Components\IndexedDictionaryTest.cs" />
     <Compile Include="Components\LazyDictionaryTest.cs" />
     <Compile Include="Components\ObjectPoolTest.cs" />
     <Compile Include="GenericParameterHelper.cs">
