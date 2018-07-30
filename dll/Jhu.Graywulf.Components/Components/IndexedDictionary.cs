@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Components
 {
-    public class IndexedDictionary<TKey, TValue> : IList<TValue>, IDictionary<TKey, TValue>, IEnumerable<TValue>
+    public class IndexedDictionary<TKey, TValue> : IList<KeyValuePair<TKey, TValue>>, IDictionary<TKey, TValue>, IEnumerable<TValue>
     {
         public class IndexedDictionaryEnumerator : IEnumerator<TValue>
         {
@@ -48,16 +48,26 @@ namespace Jhu.Graywulf.Components
         private List<KeyValuePair<TKey, TValue>> list;
         private Dictionary<TKey, KeyValuePair<int, TValue>> dict;
 
-        public TValue this[int index]
+        public KeyValuePair<TKey, TValue> this[int index]
         {
-            get { return list[index].Value; }
-            set { throw new InvalidOperationException(); }
+            get { return list[index]; }
+            set
+            {
+                dict.Remove(list[index].Key);
+                dict.Add(value.Key, new KeyValuePair<int, TValue>(index, value.Value));
+                list[index] = new KeyValuePair<TKey, TValue>(value.Key, value.Value);
+            }
         }
 
         public TValue this[TKey key]
         {
             get { return dict[key].Value; }
-            set { throw new InvalidOperationException(); }
+            set
+            {
+                var index = dict[key].Key;
+                list[index] = new KeyValuePair<TKey, TValue>(key, value);
+                dict[key] = new KeyValuePair<int, TValue>(index, value);
+            }
         }
 
         public int Count
@@ -145,11 +155,6 @@ namespace Jhu.Graywulf.Components
             }
         }
 
-        public void Add(TValue item)
-        {
-            throw new InvalidOperationException();
-        }
-
         public void Add(TKey key, TValue value)
         {
             dict.Add(key, new KeyValuePair<int, TValue>(list.Count, value));
@@ -206,9 +211,22 @@ namespace Jhu.Graywulf.Components
             return -1;
         }
 
-        public void Insert(int index, TValue item)
+        public int IndexOf(KeyValuePair<TKey, TValue> item)
         {
-            throw new InvalidOperationException();
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (EqualityComparer<KeyValuePair<TKey, TValue>>.Default.Equals(list[i], item))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        public void Insert(int index, KeyValuePair<TKey, TValue> item)
+        {
+            Insert(index, item.Key, item.Value);
         }
 
         public void Insert(int index, TKey key, TValue value)
@@ -217,23 +235,7 @@ namespace Jhu.Graywulf.Components
             list.Insert(index, new KeyValuePair<TKey, TValue>(key, value));
             Renumber();
         }
-
-        public bool Remove(TValue item)
-        {
-            if (Contains(item))
-            {
-                var index = IndexOf(item);
-                dict.Remove(list[index].Key);
-                list.RemoveAt(index);
-                Renumber();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
+        
         public bool Remove(TKey key)
         {
             if (dict.ContainsKey(key))

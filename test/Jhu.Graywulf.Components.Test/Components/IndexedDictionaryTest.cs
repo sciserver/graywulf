@@ -27,7 +27,12 @@ namespace Jhu.Graywulf.Components
         public void ListIndexerTest()
         {
             var id = Create();
-            Assert.AreEqual("one", id[1]);
+            Assert.AreEqual("one", id[1].Value);
+
+            id[2] = new KeyValuePair<string, string>("five", "five");
+            Assert.AreEqual("five", id["five"]);
+            Assert.AreEqual("five", id[2].Value);
+            Assert.AreEqual(2, id.IndexOf("five"));
         }
 
         [TestMethod]
@@ -35,6 +40,11 @@ namespace Jhu.Graywulf.Components
         {
             var id = Create();
             Assert.AreEqual("two", id["two"]);
+
+            id["two"] = "five";
+
+            Assert.AreEqual("five", id["two"]);
+            Assert.AreEqual("five", id[2].Value);
         }
 
         [TestMethod]
@@ -102,7 +112,7 @@ namespace Jhu.Graywulf.Components
             var q = 0;
             foreach (var v in id)
             {
-                Assert.AreEqual(id[q], v);
+                Assert.AreEqual(id[q].Value, v);
                 q++;
             }
         }
@@ -113,19 +123,19 @@ namespace Jhu.Graywulf.Components
             var id = Create();
             id.Insert(3, "five", "five");
 
-            Assert.AreEqual("two", id[2]);
-            Assert.AreEqual("five", id[3]);
-            Assert.AreEqual("three", id[4]);
+            Assert.AreEqual("two", id[2].Value);
+            Assert.AreEqual("five", id[3].Value);
+            Assert.AreEqual("three", id[4].Value);
         }
 
         [TestMethod]
         public void RemoveTest1()
         {
             var id = Create();
-            ((IList<string>)id).Remove("two");
+            id.Remove("two");
 
-            Assert.AreEqual("one", id[1]);
-            Assert.AreEqual("three", id[2]);
+            Assert.AreEqual("one", id[1].Value);
+            Assert.AreEqual("three", id[2].Value);
         }
 
         [TestMethod]
@@ -134,8 +144,8 @@ namespace Jhu.Graywulf.Components
             var id = Create();
             ((IDictionary<string, string>)id).Remove("two");
 
-            Assert.AreEqual("one", id[1]);
-            Assert.AreEqual("three", id[2]);
+            Assert.AreEqual("one", id[1].Value);
+            Assert.AreEqual("three", id[2].Value);
         }
 
         [TestMethod]
@@ -144,8 +154,8 @@ namespace Jhu.Graywulf.Components
             var id = Create();
             id.RemoveAt(2);
 
-            Assert.AreEqual("one", id[1]);
-            Assert.AreEqual("three", id[2]);
+            Assert.AreEqual("one", id[1].Value);
+            Assert.AreEqual("three", id[2].Value);
         }
     }
 }
