@@ -232,42 +232,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         #region Is single column or constant tests
 
         [TestMethod]
-        public void IsSingleColumnTest()
-        {
-            var sql = "colname";
-            var exp = ExpressionTestHelper(sql);
-            Assert.IsTrue(exp.IsSingleColumn);
-
-            sql = "(colname)";
-            exp = ExpressionTestHelper(sql);
-            Assert.IsTrue(exp.IsSingleColumn);
-
-            sql = "( colname )";
-            exp = ExpressionTestHelper(sql);
-            Assert.IsTrue(exp.IsSingleColumn);
-
-            sql = "( ( colname ) )";
-            exp = ExpressionTestHelper(sql);
-            Assert.IsTrue(exp.IsSingleColumn);
-
-            sql = "a+b";
-            exp = ExpressionTestHelper(sql);
-            Assert.IsFalse(exp.IsSingleColumn);
-
-            sql = "12";
-            exp = ExpressionTestHelper(sql);
-            Assert.IsFalse(exp.IsSingleColumn);
-
-            sql = "@a";
-            exp = ExpressionTestHelper(sql);
-            Assert.IsFalse(exp.IsSingleColumn);
-
-            sql = "udt::Method()";
-            exp = ExpressionTestHelper(sql);
-            Assert.IsFalse(exp.IsSingleColumn);
-        }
-
-        [TestMethod]
         public void IsConstantNumber()
         {
             var sql = "12";

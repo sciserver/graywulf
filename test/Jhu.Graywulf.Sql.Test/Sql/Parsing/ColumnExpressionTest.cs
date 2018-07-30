@@ -89,5 +89,25 @@ namespace Jhu.Graywulf.Sql.Parsing
             var ce = ColumnExpression.Create(exp, "alias");
             Assert.AreEqual("a + b AS alias", ce.Value);
         }
+
+        [TestMethod]
+        public void IsSingleColumnTest()
+        {
+            var sql = "a+b";
+            var ce = Parse<ColumnExpression>(sql);
+            Assert.IsFalse(ce.Expression.IsSingleColumn);
+
+            sql = "12";
+            ce = Parse<ColumnExpression>(sql);
+            Assert.IsFalse(ce.Expression.IsSingleColumn);
+
+            sql = "@a";
+            ce = Parse<ColumnExpression>(sql);
+            Assert.IsFalse(ce.Expression.IsSingleColumn);
+
+            sql = "udt::Method()";
+            ce = Parse<ColumnExpression>(sql);
+            Assert.IsFalse(ce.Expression.IsSingleColumn);
+        }
     }
 }

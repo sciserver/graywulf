@@ -19,40 +19,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var where = select.FindDescendantRecursive<WhereClause>();
             return where.FindDescendant<LogicalExpression>();
         }
-
-        // --
-
-        private IEnumerable<LogicalExpressions.ExpressionTreeNode> EnumerateRawExpressionsTestHelper(string sql)
-        {
-            var sc = GetSearchCondition(sql);
-
-            MethodInfo m = typeof(LogicalExpression).GetMethod(
-                "EnumerateRawExpressions",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-
-            return (IEnumerable<LogicalExpressions.ExpressionTreeNode>)m.Invoke(sc, null);
-        }
-
-        [TestMethod]
-        public void EnumerateRawExpressionsTest()
-        {
-            var sql = "SELECT * WHERE a = 1";
-            Assert.AreEqual(1, EnumerateRawExpressionsTestHelper(sql).Count());
-
-            sql = "SELECT * WHERE a = 1 OR b = 2";
-            Assert.AreEqual(3, EnumerateRawExpressionsTestHelper(sql).Count());
-
-            sql = "SELECT * WHERE a = 1 OR b = 2 AND b = 3";
-            Assert.AreEqual(5, EnumerateRawExpressionsTestHelper(sql).Count());
-
-            // Test brackets
-            sql = "SELECT * WHERE a = 1 OR (b = 2 AND b = 3)";
-            Assert.AreEqual(3, EnumerateRawExpressionsTestHelper(sql).Count());
-
-            sql = "SELECT * WHERE a = 1 OR (b = 2 AND c = 3) AND d = 4";
-            Assert.AreEqual(5, EnumerateRawExpressionsTestHelper(sql).Count());
-        }
-
+        
         // --
 
         private string GetExpressionTreeTestHelper(string sql)
