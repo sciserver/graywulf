@@ -778,12 +778,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             cr.ParentDataTypeReference = ncr.ParentDataTypeReference;
         }
 
-        protected TableReference FindTableByAlias(TableReference tr)
+        protected TableReference FindTableByAlias(TableReference tr, bool excludeOuterQueries)
         {
-            var sourceTableCollection =
-                Visitor.CurrentQuerySpecification as ISourceTableProvider ??
-                Visitor.CurrentStatement as ISourceTableProvider;
-
             var targetTableProvider =
                 Visitor.CurrentStatement as ITargetTableProvider;
 
@@ -801,7 +797,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
             else
             {
                 var qs = Visitor.CurrentQuerySpecification;
-                var sourceTables = qs?.SourceTableReferences;
+                var sourceTables = 
+                    qs?.SourceTableReferences ??
+                    Visitor.CurrentStatement.SourceTableReferences;
 
                 while (sourceTables != null)
                 {
@@ -809,11 +807,19 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     {
                         return sourceTables[alias];
                     }
-                    else
+                    else if (!excludeOuterQueries && qs != null)
                     {
                         // Try to go one query specification up
                         qs = qs?.ParentQuerySpecification;
                         sourceTables = qs?.SourceTableReferences;
+                    }
+                    else if (sourceTables != Visitor.CurrentStatement.SourceTableReferences)
+                    {
+                        sourceTables = Visitor.CurrentStatement.SourceTableReferences;
+                    }
+                    else
+                    {
+                        return null;
                     }
                 }
             }
@@ -859,8 +865,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 // Case 2: target table already in schema
                 // INSERT, UPDATE, DELETE, etc.
-                SubstituteSourceTableDefaults(sourceTableCollection, tr);
-                ntr = ResolveSourceTableReference(sourceTableCollection, tr);
+                SubstituteSourceTableDefaults(sourceTableCollection, tr, true);
+                ntr = ResolveSourceTableReference(sourceTableCollection, tr, true);
                 CollectTargetTableReference(targetTableProvider, ntr);
 
                 // For statement with query parts target table can also
@@ -879,8 +885,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 // Case 4: simple source table
                 // SELECT ... FROM
-                SubstituteSourceTableDefaults(sourceTableCollection, tr);
-                ntr = ResolveSourceTableReference(sourceTableCollection, tr);
+                SubstituteSourceTableDefaults(sourceTableCollection, tr, true);
+                ntr = ResolveSourceTableReference(sourceTableCollection, tr, true);
 
                 if (ntr == null)
                 {
@@ -892,8 +898,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             else
             {
                 // Case 4: Table reference in from of SELECT ....*
-                // Source table (table.* syntax only)
-                SubstituteSourceTableDefaults(sourceTableCollection, tr);
+                // Source table (table.* and table.columnname syntax only)
+                SubstituteSourceTableDefaults(sourceTableCollection, tr, false);
                 ntr = ResolveColumnTableReference(sourceTableCollection, tr);
             }
 
@@ -967,7 +973,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// <param name="cte"></param>
         /// <param name="tr"></param>
         /// <returns></returns>
-        public TableReference ResolveSourceTableReference(ISourceTableProvider resolvedSourceTables, TableReference tr)
+        public TableReference ResolveSourceTableReference(ISourceTableProvider resolvedSourceTables, TableReference tr, bool excludeOuterQueries)
         {
             TableReference ntr;
 
@@ -989,7 +995,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // This is a reference to a CTE query
                 ntr = Visitor.CommonTableExpression.CommonTableReferences[tr.DatabaseObjectName];
             }
-            else if (tr.IsPossiblyAlias && (ntr = FindTableByAlias(tr)) != null)
+            else if (tr.IsPossiblyAlias && (ntr = FindTableByAlias(tr, excludeOuterQueries)) != null)
             {
                 // This a reference from a target table to an already resolved source table
                 // This happens with UPDATE etc. and subqueries referencing outer query specifications
@@ -1142,10 +1148,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // A behelyettesítéskor nem csak azt kell nézni, hogy az alias
                 // bent van-e a sourceTableCollection listában, hanem azt is
                 // hogy valami superquery-nek része-e.
-                SubstituteSourceTableDefaults(sourceTableCollection, tr);
-                tr = ResolveSourceTableReference(sourceTableCollection, tr);
-                cr.TableReference = tr;
-                ncr = ResolveColumnReference(cr);
+                SubstituteSourceTableDefaults(sourceTableCollection, tr, false);
+                tr = ResolveSourceTableReference(sourceTableCollection, tr, false);
+
+                if (tr == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    cr.TableReference = tr;
+                    ncr = ResolveColumnReference(cr);
+                }
             }
 
             return ncr;
@@ -1256,11 +1270,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         /// <param name="resolvedSourceTables"></param>
         /// <param name="tr"></param>
-        protected void SubstituteSourceTableDefaults(ISourceTableProvider resolvedSourceTables, TableReference tr)
+        protected void SubstituteSourceTableDefaults(ISourceTableProvider resolvedSourceTables, TableReference tr, bool excludeOuterQueries)
         {
             try
             {
-                if (tr.IsPossiblyAlias && FindTableByAlias(tr) != null)
+                if (tr.IsPossiblyAlias && FindTableByAlias(tr, excludeOuterQueries) != null)
                 {
                     // Don't do any substitution if referencing a common table or anything that aliased
                 }

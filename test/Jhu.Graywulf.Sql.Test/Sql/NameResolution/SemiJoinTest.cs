@@ -290,8 +290,7 @@ WHERE EXISTS
 @"SELECT Name 
 FROM Author
 WHERE EXISTS 
-    (
-     SELECT a.ID
+    (SELECT a.ID
      FROM Author a, Book b
      WHERE a.ID = Author.ID)";
 
@@ -299,8 +298,7 @@ WHERE EXISTS
 @"SELECT [Graywulf_Schema_Test].[dbo].[Author].[Name] 
 FROM [Graywulf_Schema_Test].[dbo].[Author]
 WHERE EXISTS 
-    (
-     SELECT [a].[ID]
+    (SELECT [a].[ID]
      FROM [Graywulf_Schema_Test].[dbo].[Author] [a], [Graywulf_Schema_Test].[dbo].[Book] [b]
      WHERE [a].[ID] = [Graywulf_Schema_Test].[dbo].[Author].[ID])";
 
