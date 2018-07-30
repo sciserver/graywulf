@@ -39,5 +39,25 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual(null, ce.ColumnReference.ColumnAlias);
             Assert.AreEqual("Author.ID", ce.Expression.Value);
         }
+
+        [TestMethod]
+        public void IsSingleColumnTest()
+        {
+            var sql = "SELECT Author.ID FROM Author";
+            var ce = ParseAndResolveNames<ColumnExpression>(sql);
+            Assert.IsTrue(ce.Expression.IsSingleColumn);
+
+            sql = "SELECT (Author.ID) FROM Author";
+            ce = ParseAndResolveNames<ColumnExpression>(sql);
+            Assert.IsTrue(ce.Expression.IsSingleColumn);
+
+            sql = "SELECT ( Author.ID ) FROM Author";
+            ce = ParseAndResolveNames<ColumnExpression>(sql);
+            Assert.IsTrue(ce.Expression.IsSingleColumn);
+
+            sql = "SELECT ( ( Author.ID ) ) FROM Author";
+            ce = ParseAndResolveNames<ColumnExpression>(sql);
+            Assert.IsTrue(ce.Expression.IsSingleColumn);
+        }
     }
 }
