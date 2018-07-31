@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var sql = "function(a)";
             var exp = ExpressionTestHelper(sql);
-            var args = exp.EnumerateArguments().ToArray();
+            var args = exp.FindDescendant<ArgumentList>().EnumerateDescendants<Argument>().ToArray();
             Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual(1, args.Length);
 
@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             var sql = "function(a,b,c,d)";
             var exp = ExpressionTestHelper(sql);
-            var args = exp.EnumerateArguments().ToArray();
+            var args = exp.FindDescendant<ArgumentList>().EnumerateDescendants<Argument>().ToArray();
             Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual(4, args.Length);
 

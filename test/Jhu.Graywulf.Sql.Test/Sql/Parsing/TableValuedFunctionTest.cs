@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             fun = TableValuedFunctionCall.Create(fr, new[] { Expression.CreateNumber("1.1"), Expression.CreateString("'test'") });
             Assert.AreEqual("[dbo].[test](1.1, 'test')", cg.Execute(fun));
 
-            fun = TableValuedFunctionCall.Create(fr, null);
+            fun = TableValuedFunctionCall.Create(fr, new Expression[0]);
             Assert.AreEqual("[dbo].[test]()", cg.Execute(fun));
         }
     }

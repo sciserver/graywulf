@@ -31,23 +31,26 @@ namespace Jhu.Graywulf.Sql.Parsing
             this.argumentCount = old.argumentCount;
         }
 
-        // TODO: delete this, only used by unit tests
-        public IEnumerable<Argument> EnumerateArguments()
+        public Expression[] GetArguments()
         {
-            var args = FindDescendant<FunctionArguments>();
-            var list = args?.FindDescendant<ArgumentList>();
+            var arglist = FindDescendant<ArgumentList>();
+            var args = arglist == null ? new Expression[0] : arglist.EnumerateDescendants<Argument>().Select(a => a.Expression).ToArray();
 
-            if (list != null)
+            return args;
+        }
+
+        protected void AppendArguments(params Expression[] arguments)
+        {
+            var args = ArgumentList.Create(arguments);
+
+            Stack.AddLast(BracketOpen.Create());
+
+            if (args != null)
             {
-                foreach (var arg in list.EnumerateArguments())
-                {
-                    yield return arg;
-                }
+                Stack.AddLast(args);
             }
-            else
-            {
-                yield break;
-            }
+
+            Stack.AddLast(BracketClose.Create());
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             mc.Stack.AddLast(DataTypeIdentifier.Create(dr));
             mc.Stack.AddLast(DoubleColon.Create());
             mc.Stack.AddLast(MethodName.Create(mr));
-            mc.Stack.AddLast(FunctionArguments.Create(args));
+            mc.AppendArguments(args);
 
             return mc;
         }

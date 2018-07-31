@@ -19,17 +19,13 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return MethodName.MethodReference; }
             set { MethodName.MethodReference = value; }
         }
-
-        public FunctionArguments FunctionArguments
-        {
-            get { return FindDescendant<FunctionArguments>(); }
-        }
-
-        public static UdtMethodCall Create(MethodReference mr, Expression[] args)
+        
+        public static UdtMethodCall Create(MethodReference mr, Expression[] arguments)
         {
             var mc = new UdtMethodCall();
+
             mc.Stack.AddLast(MethodName.Create(mr));
-            mc.Stack.AddLast(FunctionArguments.Create(args));
+            mc.AppendArguments(arguments);
 
             return mc;
         }

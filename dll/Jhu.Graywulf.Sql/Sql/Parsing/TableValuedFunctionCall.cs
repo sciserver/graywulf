@@ -19,20 +19,14 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FunctionIdentifier.FunctionReference; }
             set { FunctionIdentifier.FunctionReference = value; }
         }
-
-        public FunctionArguments FunctionArguments
-        {
-            get { return FindDescendant<FunctionArguments>(); }
-        }
-
+        
         public static TableValuedFunctionCall Create(FunctionReference functionReference, params Expression[] arguments)
         {
             var f = new TableValuedFunctionCall();
             var fun = FunctionIdentifier.Create(functionReference);
-            var args = FunctionArguments.Create(arguments);
 
             f.Stack.AddLast(fun);
-            f.Stack.AddLast(args);
+            f.AppendArguments(arguments);
 
             return f;
         }

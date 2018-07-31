@@ -1170,28 +1170,28 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             VisitNode(node.MemberName);
             VisitNode(node);
-            TraverseFunctionArguments(node, node.FunctionArguments);
+            TraverseFunctionArguments(node);
         }
 
         private void TraverseSystemFunctionCall(SystemFunctionCall node)
         {
             VisitNode(node.FunctionName);
             VisitNode(node);
-            TraverseFunctionArguments(node, node.FunctionArguments);
+            TraverseFunctionArguments(node);
         }
 
         private void TraverseScalarFunctionCall(ScalarFunctionCall node)
         {
             VisitNode(node.FunctionIdentifier);
             VisitNode(node);
-            TraverseFunctionArguments(node, node.FunctionArguments);
+            TraverseFunctionArguments(node);
         }
 
         private void TraverseTableValuedFunctionCall(TableValuedFunctionCall node)
         {
             VisitNode(node.FunctionIdentifier);
             VisitNode(node);
-            TraverseFunctionArguments(node, node.FunctionArguments);
+            TraverseFunctionArguments(node);
         }
 
         private void TraverseWindowedFunctionCall(WindowedFunctionCall node)
@@ -1200,7 +1200,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             VisitNode(node.FunctionIdentifier);
             VisitNode(node);
-            TraverseFunctionArguments(node, node.FunctionArguments);
+            TraverseFunctionArguments(node);
             TraverseOverClause(node.OverClause);
         }
 
@@ -1208,21 +1208,21 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             VisitNode(node.MethodName);
             VisitNode(node);
-            TraverseFunctionArguments(node, node.FunctionArguments);
+            TraverseFunctionArguments(node);
         }
 
         private void TraverseUdtStaticMethodCall(UdtStaticMethodCall node)
         {
             VisitNode(node.MethodName);
             VisitNode(node);
-            TraverseFunctionArguments(node, node.FunctionArguments);
+            TraverseFunctionArguments(node);
         }
 
-        private void TraverseFunctionArguments(FunctionCall node, Node arguments)
+        private void TraverseFunctionArguments(FunctionCall node)
         {
             int argumentCount = 0;
 
-            foreach (var nn in SelectDirection(arguments.Stack))
+            foreach (var nn in SelectDirection(node.Stack))
             {
                 switch (nn)
                 {

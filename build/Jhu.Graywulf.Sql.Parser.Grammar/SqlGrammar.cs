@@ -254,7 +254,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                     ConvertFunctionCall,
                     DateFunctionCall,
                     IifFunctionCall,
-                                        
+
                     StarFunctionCall,               // COUNT(*) OVER ()
                     AggregateFunctionCall,          // AVG(DISTINCT ...) OVER ()
                     WindowedFunctionCall,           // dbo.function() OVER ()
@@ -263,7 +263,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
                     // This and the following member access list will handle
                     // all udfs, method calls, property access etc
-                    ObjectName                     
+                    ObjectName
                 ),
                 May
                 (
@@ -334,7 +334,11 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 (
                     MemberName,
                     May(CommentOrWhitespace),
-                    FunctionArguments
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    May(ArgumentList),
+                    May(CommentOrWhitespace),
+                    BracketClose
                 )
             );
 
@@ -817,7 +821,11 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 (
                     FunctionName,
                     May(CommentOrWhitespace),
-                    FunctionArguments
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    May(ArgumentList),
+                    May(CommentOrWhitespace),
+                    BracketClose
                 )
             );
 
@@ -905,7 +913,11 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 (
                     FunctionIdentifier,
                     May(CommentOrWhitespace),
-                    FunctionArguments
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    May(ArgumentList),
+                    May(CommentOrWhitespace),
+                    BracketClose
                 )
             );
 
@@ -919,7 +931,11 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 (
                     MethodName,
                     May(CommentOrWhitespace),
-                    FunctionArguments
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    May(ArgumentList),
+                    May(CommentOrWhitespace),
+                    BracketClose
                 )
             );
 
@@ -931,18 +947,12 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 (
                     MethodName,
                     May(CommentOrWhitespace),
-                    FunctionArguments
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    May(ArgumentList),
+                    May(CommentOrWhitespace),
+                    BracketClose
                 )
-            );
-
-        public static Expression<Rule> FunctionArguments = () =>
-            Sequence
-            (
-                BracketOpen,
-                May(CommentOrWhitespace),
-                May(ArgumentList),
-                May(CommentOrWhitespace),
-                BracketClose
             );
 
         public static Expression<Rule> ArgumentList = () =>

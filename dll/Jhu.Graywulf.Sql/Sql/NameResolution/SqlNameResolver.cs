@@ -1065,7 +1065,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
             else if (fr != null)
             {
-                var args = ((MemberCall)tokens[matchfunpart]).EnumerateArguments().Select(a => a.Expression).ToArray();
+                var args = ((MemberCall)tokens[matchfunpart]).GetArguments();
                 var fc = ScalarFunctionCall.Create(fr, args);
                 ((ObjectName)tokens[0]).ReplaceWith(fc);
                 CollectFunctionReference(fr);
@@ -1145,9 +1145,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     Visitor.CurrentQuerySpecification as ISourceTableProvider ??
                     Visitor.CurrentStatement as ISourceTableProvider;
 
-                // A behelyettesítéskor nem csak azt kell nézni, hogy az alias
-                // bent van-e a sourceTableCollection listában, hanem azt is
-                // hogy valami superquery-nek része-e.
                 SubstituteSourceTableDefaults(sourceTableCollection, tr, false);
                 tr = ResolveSourceTableReference(sourceTableCollection, tr, false);
 
@@ -1219,7 +1216,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     }
                     else if (token is MemberCall)
                     {
-                        var args = ((MemberCall)token).EnumerateArguments().Select(a => a.Expression).ToArray();
+                        var args = ((MemberCall)token).GetArguments();
                         var mr = new MethodReference()
                         {
                             MethodName = ReferenceBase.RemoveIdentifierQuotes(((MemberCall)token).MemberName.Value)

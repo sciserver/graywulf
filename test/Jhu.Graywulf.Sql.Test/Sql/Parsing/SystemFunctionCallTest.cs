@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var fun = SystemFunctionCall.Create("SIN", Expression.CreateNumber("1.1"));
             Assert.AreEqual("SIN(1.1)", cg.Execute(fun));
 
-            fun = SystemFunctionCall.Create("GETDATE", null);
+            fun = SystemFunctionCall.Create("GETDATE", new Expression[0]);
             Assert.AreEqual("GETDATE()", cg.Execute(fun));
         }
     }

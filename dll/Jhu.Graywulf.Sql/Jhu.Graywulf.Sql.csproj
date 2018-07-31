@@ -376,7 +376,6 @@
     <Compile Include="Sql\Parsing\DatasetName.cs" />
     <Compile Include="Sql\Parsing\Expression.cs" />
     <Compile Include="Sql\Parsing\FromClause.cs" />
-    <Compile Include="Sql\Parsing\FunctionArguments.cs" />
     <Compile Include="Sql\Parsing\FunctionTableSource.cs" />
     <Compile Include="Sql\Parsing\BeginEndStatement.cs" />
     <Compile Include="Sql\Parsing\IntoClause.cs" />

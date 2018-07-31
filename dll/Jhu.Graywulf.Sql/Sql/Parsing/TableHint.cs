@@ -14,9 +14,7 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public Expression[] GetArguments()
         {
-            return FindDescendant<FunctionArguments>()
-                       .FindDescendant<ArgumentList>()
-                       .EnumerateDescendants<Argument>()
+            return EnumerateDescendants<Argument>()
                        .Select(a => (Expression)a.Expression)
                        .ToArray();
         }
