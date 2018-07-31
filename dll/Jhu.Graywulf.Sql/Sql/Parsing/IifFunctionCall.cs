@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Jhu.Graywulf.Parsing;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class SpecialFunctionCall_Iif
+    public partial class IifFunctionCall
     {
-        public Predicate Predicate
+        public LogicalArgument LogicalArgument
         {
-            get { return FindDescendant<Predicate>(); }
+            get { return FindDescendant<LogicalArgument>(); }
         }
     }
 }

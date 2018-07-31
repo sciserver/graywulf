@@ -31,7 +31,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             this.argumentCount = old.argumentCount;
         }
 
-
         // TODO: delete this, only used by unit tests
         public IEnumerable<Argument> EnumerateArguments()
         {

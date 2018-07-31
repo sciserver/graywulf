@@ -9,16 +9,16 @@ namespace Jhu.Graywulf.Sql.Parsing
     [TestClass]
     public class FunctionIdentifierTest
     {
-        private ScalarFunctionCall ExpressionTestHelper(string query)
+        private FunctionIdentifier ExpressionTestHelper(string query)
         {
             var p = new SqlParser();
-            return p.Execute<ScalarFunctionCall>(query);
+            return p.Execute<FunctionIdentifier>(query);
         }
 
         [TestMethod]
         public void SimpleFunctionNameTest()
         {
-            var sql = "function(a)";
+            var sql = "function";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual("function", exp.FunctionReference.FunctionName);
@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void UdfNameTest()
         {
-            var sql = "schema.function(a)";
+            var sql = "schema.function";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual("schema", exp.FunctionReference.SchemaName);
@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void UdfNameWithDatabaseNameTest()
         {
-            var sql = "database.schema.function(a)";
+            var sql = "database.schema.function";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual("database", exp.FunctionReference.DatabaseName);
@@ -48,7 +48,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void UdfNameWithEverythingTest()
         {
-            var sql = "dataset:database.schema.function(a)";
+            var sql = "dataset:database.schema.function";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual("dataset", exp.FunctionReference.DatasetName);
@@ -60,7 +60,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void UdfNameWhitespaceTest()
         {
-            var sql = "database . schema . function(a)";
+            var sql = "database . schema . function";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual("database", exp.FunctionReference.DatabaseName);
@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         [ExpectedException(typeof(Jhu.Graywulf.Parsing.ParserException))]
         public void NameTooLongTest()
         {
-            var sql = "dataset:database.schema.bla.bla.function(a)";
+            var sql = "dataset:database.schema.bla.bla.function";
             var exp = ExpressionTestHelper(sql);
         }
     }

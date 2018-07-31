@@ -9,10 +9,10 @@ namespace Jhu.Graywulf.Sql.Parsing
     [TestClass]
     public class FunctionArgumentsTest
     {
-        private ScalarFunctionCall ExpressionTestHelper(string query)
+        private SystemFunctionCall ExpressionTestHelper(string query)
         {
             var p = new SqlParser();
-            return p.Execute<ScalarFunctionCall>(query);
+            return p.Execute<SystemFunctionCall>(query);
         }
 
         [TestMethod]

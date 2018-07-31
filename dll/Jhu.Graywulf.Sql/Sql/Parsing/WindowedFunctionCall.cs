@@ -9,6 +9,16 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class WindowedFunctionCall : IFunctionReference
     {
+        public bool IsStar
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public bool IsDistinct
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         public OverClause OverClause
         {
             get { return FindDescendant<OverClause>(); }

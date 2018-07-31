@@ -1031,9 +1031,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     TraverseSearchedCaseExpression(n);
                     break;
 
-                case SpecialFunctionCall n:
-                    TraverseSpecialFunctionCall(n);
-                    break;
+                // TODO: add special function call
 
                 case SystemFunctionCall n:
                     TraverseSystemFunctionCall(n);
@@ -1408,45 +1406,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         #endregion
         #region Special functions
-
-        private void TraverseSpecialFunctionCall(SpecialFunctionCall node)
-        {            
-            VisitNode(node.FunctionName);
-            VisitNode(node.Stack.First);
-            VisitNode(node);
-
-            int argumentCount = 0;
-
-            foreach (var nn in SelectDirection(((Node)node.Stack.First).Stack))
-            {
-                switch (nn)
-                {
-                    case BracketOpen n:
-                        VisitNode(n);
-                        break;
-                    case Comma n:
-                        VisitNode(n);
-                        break;
-                    case LogicalArgument n:
-                        TraverseLogicalArgument(n);
-                        argumentCount++;
-                        break;
-                    case DataTypeArgument n:
-                        TraverseDataTypeArgument(n);
-                        argumentCount++;
-                        break;
-                    case ArgumentList n:
-                        TraverseArgumentList(n, ref argumentCount);
-                        break;
-                    case BracketClose n:
-                        VisitNode(n);
-                        break;
-                }
-            }
-
-            node.ArgumentCount = argumentCount;
-        }
-
+        
         private void TraverseLogicalArgument(LogicalArgument node)
         {
             if (QueryContext.HasFlag(QueryContext.Expression))

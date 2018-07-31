@@ -10,10 +10,10 @@ namespace Jhu.Graywulf.Sql.Parsing
     [TestClass]
     public class ScalarFunctionCallTest : ParsingTestBase
     {
-        private ScalarFunctionCall ExpressionTestHelper(string query)
+        private SystemFunctionCall ExpressionTestHelper(string query)
         {
             var p = new SqlParser();
-            return p.Execute<ScalarFunctionCall>(query);
+            return p.Execute<SystemFunctionCall>(query);
         }
 
         [TestMethod]
@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "function()";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("function", exp.FunctionIdentifier.Value);
+            Assert.AreEqual("function", exp.FunctionName.Value);
         }
 
         [TestMethod]
@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "function(a)";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("function", exp.FunctionIdentifier.Value);
+            Assert.AreEqual("function", exp.FunctionName.Value);
             Assert.AreEqual("a", exp.FindDescendantRecursive<Argument>().Value);
         }
 
@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "function(a,b,c)";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("function", exp.FunctionIdentifier.Value);
+            Assert.AreEqual("function", exp.FunctionName.Value);
             Assert.AreEqual("a", exp.FindDescendantRecursive<Argument>().Value);
             Assert.AreEqual(3, exp.EnumerateDescendantsRecursive<Argument>(null).Count());
         }
@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             var sql = "function ( a , b , c )";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("function", exp.FunctionIdentifier.Value);
+            Assert.AreEqual("function", exp.FunctionName.Value);
             Assert.AreEqual("a", exp.FindDescendantRecursive<Argument>().Value);
             Assert.AreEqual(3, exp.EnumerateDescendantsRecursive<Argument>(null).Count());
         }

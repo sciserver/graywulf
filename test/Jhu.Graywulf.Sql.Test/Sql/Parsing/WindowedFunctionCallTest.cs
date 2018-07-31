@@ -7,8 +7,24 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
-    public class RankingFunctionCallTest
+    public class WindowedFunctionCallTest
     {
+        [TestMethod]
+        public void ParseAllAndDistinctTest()
+        {
+            var sql = "AVG(ALL a)";
+            var exp = new SqlParser().Execute<Expression>(sql);
+
+            sql = "AVG(ALL[a])";
+            exp = new SqlParser().Execute<Expression>(sql);
+
+            sql = "AVG ( ALL a )";
+            exp = new SqlParser().Execute<Expression>(sql);
+
+            sql = "AVG(DISTINCT a)";
+            exp = new SqlParser().Execute<Expression>(sql);
+        }
+
         [TestMethod]
         public void RankingFunctionCallNoArgumentTest()
         {
@@ -68,7 +84,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void FullSelectTest()
         {
-            var sql = 
+            var sql =
 @"WITH q AS
 (
     SELECT ID, ROW_NUMBER() OVER (ORDER BY ID ASC)

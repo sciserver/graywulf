@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
@@ -35,6 +36,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             f.Stack.AddLast(args);
 
             return f;
+        }
+
+        public override bool Match(Parser parser)
+        {
+            throw new NotImplementedException();
         }
     }
 }

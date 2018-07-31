@@ -260,6 +260,7 @@
     <Compile Include="Sql\NameResolution\VariableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\Parsing\BetweenPredicate.cs" />
     <Compile Include="Sql\Parsing\BinaryOperator.cs" />
+    <Compile Include="Sql\Parsing\ConversionFunctionCall.cs" />
     <Compile Include="Sql\Parsing\DataTypeArgument.cs" />
     <Compile Include="Sql\Parsing\DataTypeSpecification.cs" />
     <Compile Include="Sql\Parsing\FunctionName.cs" />
@@ -269,6 +270,7 @@
     <Compile Include="Sql\Parsing\ConstraintName.cs" />
     <Compile Include="Sql\Parsing\ExpressionBrackets.cs" />
     <Compile Include="Sql\Parsing\FunctionCall.cs" />
+    <Compile Include="Sql\Parsing\IifFunctionCall.cs" />
     <Compile Include="Sql\Parsing\IndexName.cs" />
     <Compile Include="Sql\Parsing\InExpressionListPredicate.cs" />
     <Compile Include="Sql\Parsing\ComparisonSemiJoinPredicate.cs" />
@@ -282,8 +284,6 @@
     <Compile Include="Sql\Parsing\MemberAccess.cs" />
     <Compile Include="Sql\Parsing\MemberAccessList.cs" />
     <Compile Include="Sql\Parsing\Operand.cs" />
-    <Compile Include="Sql\Parsing\SpecialFunctionCall.cs" />
-    <Compile Include="Sql\Parsing\SpecialFunctionCall_Iif.cs" />
     <Compile Include="Sql\Parsing\StaticMemberAccessOperator.cs" />
     <Compile Include="Sql\Parsing\MemberAccessOperator.cs" />
     <Compile Include="Sql\Parsing\MemberCall.cs" />

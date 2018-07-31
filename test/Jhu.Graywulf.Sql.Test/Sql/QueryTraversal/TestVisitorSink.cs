@@ -177,12 +177,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             Write(node);
         }
-
-        public virtual void Accept(CountStar node)
-        {
-            Write(node);
-        }
-
+        
         public virtual void Accept(ColumnIdentifier node)
         {
             Write(node);
@@ -230,12 +225,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         public virtual void Accept(WindowedFunctionCall node)
         {
             Write(node.FunctionIdentifier);
-            Write(node);
-        }
-
-        public virtual void Accept(SpecialFunctionCall node)
-        {
-            Write(node.FunctionName);
             Write(node);
         }
 

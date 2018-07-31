@@ -45,10 +45,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     Push(n);
                     break;
 
+                // Special functions and operands
+                // TODO: add all special functions
+
                 // Operands and other important tokens that go directly
                 // to the output
                 case Constant c:
-                case CountStar cs:
                 case SystemVariable sv:
                 case UserVariable uv:
                 case ExpressionSubquery sq:
@@ -56,12 +58,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case DataTypeIdentifier di:
                     Output(node);
                     break;
-
-                // Special functions and operands
-                case SpecialFunctionCall n:
-                    Push(n);
-                    break;
-
+                    
                 case DataTypeArgument dt:
                 case StarArgument so:
                     Output(node);

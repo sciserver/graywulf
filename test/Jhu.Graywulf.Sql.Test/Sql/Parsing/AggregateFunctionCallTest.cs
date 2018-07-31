@@ -7,18 +7,22 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Jhu.Graywulf.Sql.Parsing
 {
     [TestClass]
-    public class SpecialFunctionsTest
+    public class AggregateFunctionCallTest
     {
         [TestMethod]
-        public void IifTest()
+        public void ParseAllAndDistinctTest()
         {
-            var sql = "IIF(a < b, a + b)";
+            var sql = "AVG(ALL a)";
             var exp = new SqlParser().Execute<Expression>(sql);
 
-            sql = "IIF(a < b OR c > d, a + b * c, d - e / f)";
+            sql = "AVG(ALL[a])";
+            exp = new SqlParser().Execute<Expression>(sql);
+
+            sql = "AVG ( ALL a )";
+            exp = new SqlParser().Execute<Expression>(sql);
+
+            sql = "AVG(DISTINCT a)";
             exp = new SqlParser().Execute<Expression>(sql);
         }
-
-
     }
 }

@@ -71,6 +71,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Terminal> Identifier = () => @"\G([a-zA-Z_]+[0-9a-zA-Z_]*|\[[^\]]+\])";
         public static Expression<Terminal> Variable = () => @"\G(@[a-zA-Z_][0-9a-zA-Z_]*)";
         public static Expression<Terminal> Variable2 = () => @"\G(@@[a-zA-Z_][0-9a-zA-Z_]*)";
+        public static Expression<Terminal> DatePart = () => @"\G([a-zA-Z]+)";
 
         #endregion
         #region Arithmetic operators used in expressions
@@ -248,11 +249,21 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
                     UdtStaticMemberAccessList,
 
-                    SpecialFunctionCall,            // COUNT(*), CAST, CONVERT etc.
-                    WindowedFunctionCall,           // dbo.function() OVER () syntax
-                    SystemFunctionCall,             // function()
+                    // Special function call syntax
+                    CastAndParseFunctionCall,
+                    ConvertFunctionCall,
+                    DateFunctionCall,
+                    IifFunctionCall,
+                                        
+                    StarFunctionCall,               // COUNT(*) OVER ()
+                    AggregateFunctionCall,          // AVG(DISTINCT ...) OVER ()
+                    WindowedFunctionCall,           // dbo.function() OVER ()
 
-                    ObjectName
+                    SystemFunctionCall,             // function() syntax
+
+                    // This and the following member access list will handle
+                    // all udfs, method calls, property access etc
+                    ObjectName                     
                 ),
                 May
                 (
@@ -353,78 +364,103 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
         public static Expression<Rule> DataTypeArgument = () => DataTypeSpecification;
 
-        public static Expression<Rule> SpecialFunctionCall = () => 
+        public static Expression<Rule> ConversionFunctionCall = () => Abstract(FunctionCall);
+
+        public static Expression<Rule> CastAndParseFunctionCall = () =>
             Inherit
             (
-                FunctionCall,
-                Must
+                ConversionFunctionCall,
+                Sequence
                 (
-                    CountStar,
-                    SpecialFunctionCall_Convert,
-                    SpecialFunctionCall_Cast,
-                    SpecialFunctionCall_Iif
+                    Must(Literal("CAST"), Literal("TRY_CAST"), Literal("PARSE"), Literal("TRY_PARSE")),
+                    May(CommentOrWhitespace),
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    Argument,
+                    May(CommentOrWhitespace),
+                    Keyword("AS"),
+                    May(CommentOrWhitespace),
+                    DataTypeArgument,
+                    May
+                    (
+                        Sequence
+                        (
+                            May(CommentOrWhitespace),
+                            Keyword("USING"),
+                            May(CommentOrWhitespace),
+                            StringConstant
+                        )
+                    ),
+                    May(CommentOrWhitespace),
+                    BracketClose
                 )
             );
 
-        // TODO: COUNT(*) could be merged with a bunch of other functions accepting * as parameter
-        public static Expression<Rule> CountStar = () =>
-            Sequence
+        public static Expression<Rule> ConvertFunctionCall = () =>
+            Inherit
             (
-                Keyword("COUNT"),
-                May(CommentOrWhitespace),
-                BracketOpen,
-                May(CommentOrWhitespace),
-                StarArgument,
-                May(CommentOrWhitespace),
-                BracketClose
+                ConversionFunctionCall,
+                Sequence
+                (
+                    Must(Literal("CONVERT"), Literal("TRY_CONVERT")),
+                    May(CommentOrWhitespace),
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    DataTypeArgument,
+                    May(CommentOrWhitespace),
+                    Comma,
+                    May(CommentOrWhitespace),
+                    Argument,
+                    May(CommentOrWhitespace),
+                    BracketClose
+                )
             );
 
-        public static Expression<Rule> SpecialFunctionCall_Convert = () =>
-            Sequence
+        public static Expression<Rule> IifFunctionCall = () =>
+            Inherit
             (
-                Literal("CONVERT"),
-                May(CommentOrWhitespace),
-                BracketOpen,
-                May(CommentOrWhitespace),
-                DataTypeArgument,
-                May(CommentOrWhitespace),
-                Comma,
-                May(CommentOrWhitespace),
-                ArgumentList,
-                May(CommentOrWhitespace),
-                BracketClose
+                FunctionCall,
+                Sequence
+                (
+                    Literal("IIF"),
+                    May(CommentOrWhitespace),
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    LogicalArgument,
+                    May(CommentOrWhitespace),
+                    Comma,
+                    May(CommentOrWhitespace),
+                    ArgumentList,
+                    May(CommentOrWhitespace),
+                    BracketClose
+                )
             );
 
-        public static Expression<Rule> SpecialFunctionCall_Cast = () =>
-            Sequence
+        public static Expression<Rule> DateFunctionCall = () =>
+            Inherit
             (
-                Literal("CAST"),
-                May(CommentOrWhitespace),
-                BracketOpen,
-                May(CommentOrWhitespace),
-                Argument,
-                May(CommentOrWhitespace),
-                Comma,
-                May(CommentOrWhitespace),
-                DataTypeSpecification,
-                May(CommentOrWhitespace),
-                BracketClose
-            );
-
-        public static Expression<Rule> SpecialFunctionCall_Iif = () =>
-            Sequence
-            (
-                Literal("IIF"),
-                May(CommentOrWhitespace),
-                BracketOpen,
-                May(CommentOrWhitespace),
-                LogicalArgument,
-                May(CommentOrWhitespace),
-                Comma,
-                May(CommentOrWhitespace),
-                ArgumentList,
-                May(CommentOrWhitespace),
-                BracketClose
+                FunctionCall,
+                Sequence
+                (
+                    Must
+                    (
+                        Literal("DATEADD"),
+                        Literal("DATEDIFF"),
+                        Literal("DATEDIFF_BIG"),
+                        Literal("DATENAME"),
+                        Literal("DATEPART")
+                    ),
+                    May(CommentOrWhitespace),
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    DatePart,
+                    May(CommentOrWhitespace),
+                    Comma,
+                    May(CommentOrWhitespace),
+                    ArgumentList,
+                    May(CommentOrWhitespace),
+                    BracketClose
+                )
             );
 
         #endregion
@@ -771,6 +807,8 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
         public static Expression<Rule> FunctionCall = () => Abstract();
 
+        // This cannot be merged with ScalarFunctionCall because ScalarFunctionCall
+        // is instantiated only after name resolution from multi-part identifiers.
         public static Expression<Rule> SystemFunctionCall = () =>
             Inherit
             (
@@ -783,15 +821,55 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 )
             );
 
-        public static Expression<Rule> ScalarFunctionCall = () =>
+        public static Expression<Rule> ScalarFunctionCall = () => Inherit(FunctionCall);
+
+        public static Expression<Rule> StarFunctionCall = () =>
             Inherit
             (
-                FunctionCall,
+                ScalarFunctionCall,
                 Sequence
                 (
                     FunctionIdentifier,
                     May(CommentOrWhitespace),
-                    FunctionArguments
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    StarArgument,
+                    May(CommentOrWhitespace),
+                    BracketClose,
+                    May
+                    (
+                        Sequence
+                        (
+                            May(CommentOrWhitespace),
+                            OverClause
+                        )
+                    )
+                )
+            );
+
+        public static Expression<Rule> AggregateFunctionCall = () =>
+            Inherit
+            (
+                ScalarFunctionCall,
+                Sequence
+                (
+                    FunctionIdentifier,
+                    May(CommentOrWhitespace),
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    Must(Keyword("ALL"), Keyword("DISTINCT")),
+                    May(CommentOrWhitespace),
+                    ArgumentList,
+                    May(CommentOrWhitespace),
+                    BracketClose,
+                    May
+                    (
+                        Sequence
+                        (
+                            May(CommentOrWhitespace),
+                            OverClause
+                        )
+                    )
                 )
             );
 
@@ -803,7 +881,17 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 (
                     FunctionIdentifier,
                     May(CommentOrWhitespace),
-                    FunctionArguments,
+                    BracketOpen,
+                    May
+                    (
+                        Sequence
+                        (
+                            May(CommentOrWhitespace),
+                            ArgumentList
+                        )
+                    ),
+                    May(CommentOrWhitespace),
+                    BracketClose,
                     May(CommentOrWhitespace),
                     OverClause
                 )
@@ -885,9 +973,11 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 Keyword("OVER"),
                 May(CommentOrWhitespace),
                 BracketOpen,
+                May(Sequence(May(CommentOrWhitespace), PartitionByClause)),
+                May(Sequence(May(CommentOrWhitespace), OrderByClause)),
+                May(Sequence(May(CommentOrWhitespace), OrderByClause)),
+                // TODO: ROW or RANGE
                 May(CommentOrWhitespace),
-                May(Sequence(PartitionByClause, May(CommentOrWhitespace))),
-                May(Sequence(OrderByClause, May(CommentOrWhitespace))),
                 BracketClose
             );
 
