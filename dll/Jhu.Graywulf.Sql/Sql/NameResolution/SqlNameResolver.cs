@@ -797,7 +797,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             else
             {
                 var qs = Visitor.CurrentQuerySpecification;
-                var sourceTables = 
+                var sourceTables =
                     qs?.SourceTableReferences ??
                     Visitor.CurrentStatement.SourceTableReferences;
 
@@ -928,7 +928,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     var ncr = new ColumnReference(tr, null, cd.ColumnReference, cd.DataTypeWithSize.DataTypeReference);
                     if (tr != null)
                     {
-                        tr.ColumnReferences.Add(ncr);
+                        tr.ColumnReferences.Add(ncr.ColumnName, ncr);
                     }
                 }
 
@@ -959,7 +959,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     var ncr = new ColumnReference(null, dr, cd.ColumnReference, cd.DataTypeWithSize.DataTypeReference);
                     if (dr != null)
                     {
-                        dr.ColumnReferences.Add(ncr);
+                        dr.ColumnReferences.Add(ncr.ColumnName, ncr);
                     }
                 }
             }
@@ -1144,7 +1144,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 var sourceTableCollection =
                     Visitor.CurrentQuerySpecification as ISourceTableProvider ??
                     Visitor.CurrentStatement as ISourceTableProvider;
-                
+
                 // A behelyettesítéskor nem csak azt kell nézni, hogy az alias
                 // bent van-e a sourceTableCollection listában, hanem azt is
                 // hogy valami superquery-nek része-e.
@@ -1566,7 +1566,17 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 ColumnAlias = null,
                 ColumnName = cr.ColumnAlias ?? cr.ColumnName
             };
-            tr.ColumnReferences.Add(ncr);
+
+            // Generate a default column key if necessary
+            int q = 0;
+            var key = ncr.ColumnName;
+            while (String.IsNullOrWhiteSpace(key) || tr.ColumnReferences.ContainsKey(key))
+            {
+                key = String.Format("__Col_{0}", q);
+                q++;
+            }
+            
+            tr.ColumnReferences.Add(key, ncr);
             return ncr;
         }
 

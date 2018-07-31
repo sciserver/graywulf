@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Parsing;
@@ -18,7 +19,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private bool isComputed;
         private TableSource tableSource;
         private VariableReference variableReference;
-        private List<ColumnReference> columnReferences;
+        private IndexedDictionary<string, ColumnReference> columnReferences;
 
         #endregion
         #region Properties
@@ -143,7 +144,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             set { variableReference = value; }
         }
 
-        public IList<ColumnReference> ColumnReferences
+        public IndexedDictionary<string, ColumnReference> ColumnReferences
         {
             get { return columnReferences; }
         }
@@ -180,7 +181,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 foreach (var c in table.Columns.Values)
                 {
-                    columnReferences.Add(new ColumnReference(c, this, new DataTypeReference(c.DataType)));
+                    columnReferences.Add(c.ColumnName, new ColumnReference(c, this, new DataTypeReference(c.DataType)));
                 }
             }
         }
@@ -199,7 +200,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.isComputed = false;
             this.tableSource = null;
             this.variableReference = null;
-            this.columnReferences = new List<ColumnReference>();
+            this.columnReferences = new IndexedDictionary<string, ColumnReference>(SchemaManager.Comparer);
         }
 
         private void CopyMembers(TableReference old)
@@ -212,11 +213,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             this.variableReference = old.variableReference;
 
             // Deep copy of column references
-            this.columnReferences = new List<ColumnReference>();
-            foreach (var cr in old.columnReferences)
+            this.columnReferences = new IndexedDictionary<string, ColumnReference>(SchemaManager.Comparer);
+            foreach (var key in old.columnReferences.Keys)
             {
-                var ncr = new ColumnReference(this, cr);
-                this.columnReferences.Add(ncr);
+                var ncr = new ColumnReference(this, old.columnReferences[key]);
+                this.columnReferences.Add(key, ncr);
             }
         }
 
@@ -436,7 +437,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     TableReference = this
                 };
-                this.columnReferences.Add(ncr);
+                this.columnReferences.Add(ncr.ColumnName, ncr);
             }
         }
 
@@ -476,7 +477,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             foreach (var cd in ((TableValuedFunction)DatabaseObject).Columns.Values)
             {
                 var cr = new ColumnReference(cd, this, new DataTypeReference(cd.DataType));
-                columnReferences.Add(cr);
+                columnReferences.Add(cr.ColumnName, cr);
                 q++;
             }
         }
@@ -485,7 +486,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             // Copy columns to the table reference in appropriate order
             var table = (TableOrView)DatabaseObject;
-            columnReferences.AddRange(table.Columns.Values.OrderBy(c => c.ID).Select(c => new ColumnReference(c, this, new DataTypeReference(c.DataType))));
+            foreach (var c in table.Columns.Values.OrderBy(c => c.ID))
+            {
+                columnReferences.Add(c.ColumnName, new ColumnReference(c, this, new DataTypeReference(c.DataType)));
+            }
         }
 
         /// <summary>

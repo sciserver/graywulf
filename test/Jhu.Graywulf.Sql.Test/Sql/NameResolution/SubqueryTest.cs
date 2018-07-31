@@ -139,7 +139,6 @@ INNER JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Book]) [b]
         public void SubSubQueriesTest()
         {
             var sql = @"SELECT a.Name FROM (SELECT * FROM (SELECT * FROM Author) b) a";
-
             var gt = @"SELECT [a].[Name] FROM (SELECT * FROM (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]) [a]";
 
             var qs = ParseAndResolveNames<QuerySpecification>(sql);
@@ -176,7 +175,7 @@ INNER JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Book]) [b]
 
         #endregion
 
-        // Add SELECT * tests, function, sunquery in where etc.
+        // Add SELECT * tests, function, subquery in where etc.
 
 
     }

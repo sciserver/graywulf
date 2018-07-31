@@ -25,10 +25,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+            var cs = qs.ResultsTableReference.ColumnReferences;
 
-            Assert.AreEqual(1, cs.Length);
-            Assert.AreEqual("Name", cs[0].ColumnName);
+            Assert.AreEqual(1, cs.Count);
+            Assert.AreEqual("Name", cs[0].Value.ColumnName);
         }
 
         [TestMethod]
@@ -45,9 +45,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+            var cs = qs.ResultsTableReference.ColumnReferences;
 
-            Assert.AreEqual(2, cs.Length);
+            Assert.AreEqual(2, cs.Count);
         }
 
         [TestMethod]
@@ -64,9 +64,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+            var cs = qs.ResultsTableReference.ColumnReferences;
 
-            Assert.AreEqual(2, cs.Length);
+            Assert.AreEqual(2, cs.Count);
         }
 
         [TestMethod]
@@ -83,9 +83,9 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+            var cs = qs.ResultsTableReference.ColumnReferences;
 
-            Assert.AreEqual(1, cs.Length);
+            Assert.AreEqual(1, cs.Count);
         }
 
         [TestMethod]
@@ -102,10 +102,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+            var cs = qs.ResultsTableReference.ColumnReferences;
 
-            Assert.AreEqual(1, cs.Length);
-            Assert.AreEqual(null, cs[0].ColumnName);
+            Assert.AreEqual(1, cs.Count);
+            Assert.AreEqual(null, cs[0].Value.ColumnName);
         }
 
         [TestMethod]
@@ -122,10 +122,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+            var cs = qs.ResultsTableReference.ColumnReferences;
 
-            Assert.AreEqual(1, cs.Length);
-            Assert.AreEqual(null, cs[0].ColumnName);
+            Assert.AreEqual(1, cs.Count);
+            Assert.AreEqual(null, cs[0].Value.ColumnName);
         }
 
         [TestMethod]
@@ -142,10 +142,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+            var cs = qs.ResultsTableReference.ColumnReferences;
 
-            Assert.AreEqual(1, cs.Length);
-            Assert.AreEqual("Name", cs[0].ColumnName);
+            Assert.AreEqual(1, cs.Count);
+            Assert.AreEqual("Name", cs[0].Value.ColumnName);
         }
 
         [TestMethod]
@@ -162,10 +162,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+            var cs = qs.ResultsTableReference.ColumnReferences;
 
-            Assert.AreEqual(1, cs.Length);
-            Assert.AreEqual("Name", cs[0].ColumnName);
+            Assert.AreEqual(1, cs.Count);
+            Assert.AreEqual("Name", cs[0].Value.ColumnName);
         }
 
         [TestMethod]
@@ -182,10 +182,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+            var cs = qs.ResultsTableReference.ColumnReferences;
 
-            Assert.AreEqual(1, cs.Length);
-            Assert.AreEqual("Name", cs[0].ColumnName);
+            Assert.AreEqual(1, cs.Count);
+            Assert.AreEqual("Name", cs[0].Value.ColumnName);
         }
 
         // TODO: we could actually support missing schema name here...
@@ -204,10 +204,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual("a", ts[0].Alias);
 
-            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+            var cs = qs.ResultsTableReference.ColumnReferences;
 
-            Assert.AreEqual(1, cs.Length);
-            Assert.AreEqual("Name", cs[0].ColumnName);
+            Assert.AreEqual(1, cs.Count);
+            Assert.AreEqual("Name", cs[0].Value.ColumnName);
         }
 
         [TestMethod]
@@ -226,10 +226,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual("a", ts[0].Alias);
 
-            var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
+            var cs = qs.ResultsTableReference.ColumnReferences;
 
-            Assert.AreEqual(1, cs.Length);
-            Assert.AreEqual(null, cs[0].ColumnName);
+            Assert.AreEqual(1, cs.Count);
+            Assert.AreEqual(null, cs[0].Value.ColumnName);
         }
 
 

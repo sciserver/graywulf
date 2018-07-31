@@ -160,7 +160,7 @@ SET @var = 'this is a text'";
             Assert.AreEqual(1, qs.SourceTableReferences.Count);
             Assert.AreEqual("Author", qs.SourceTableReferences["a"].DatabaseObjectName);
             Assert.AreEqual(2, qs.SourceTableReferences["a"].ColumnReferences.Count);
-            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList | ColumnContext.PrimaryKey, qs.SourceTableReferences["a"].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList | ColumnContext.PrimaryKey, qs.SourceTableReferences["a"].ColumnReferences[0].Value.ColumnContext);
         }
 
         [TestMethod]
@@ -174,7 +174,7 @@ SET @var = 'this is a text'";
             Assert.AreEqual(1, qs.SourceTableReferences.Count);
             Assert.AreEqual("a", qs.SourceTableReferences["a"].Alias);
             Assert.AreEqual(2, qs.SourceTableReferences["a"].ColumnReferences.Count);
-            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList | ColumnContext.PrimaryKey, qs.SourceTableReferences["a"].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList | ColumnContext.PrimaryKey, qs.SourceTableReferences["a"].ColumnReferences[0].Value.ColumnContext);
         }
 
         [TestMethod]

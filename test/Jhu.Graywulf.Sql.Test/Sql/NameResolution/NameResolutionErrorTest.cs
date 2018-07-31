@@ -8,13 +8,27 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Jhu.Graywulf.Sql.NameResolution
 {
     [TestClass]
-    public class NameResolutionErrorTest
+    public class NameResolutionErrorTest : SqlNameResolverTestBase
     {
         [TestMethod]
-        public void XX()
+        [ExpectedException(typeof(NameResolverException))]
+        public void DuplicateTableAliasTest()
         {
-            Assert.Fail();
-            // TODO: write tests
+            var sql =
+@"SELECT * 
+FROM Author a
+INNER JOIN Book a ON a.ID = a.ID";
+            var exp = ParseAndResolveNames(sql);
+        }
+
+        [TestMethod]
+        public void DuplicateColumnAliasTest()
+        {
+            var sql =
+@"SELECT *
+FROM (SELECT Name AS Name1, Name AS Name1
+      FROM Author a) AS q";
+            var exp = ParseAndResolveNames(sql);
         }
     }
 }

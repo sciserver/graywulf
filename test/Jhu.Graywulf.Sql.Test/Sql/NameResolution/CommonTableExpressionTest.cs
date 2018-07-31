@@ -38,10 +38,10 @@ SELECT [a].[Name] FROM [a]";
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            var cs = ss.QueryExpression.EnumerateQuerySpecifications().FirstOrDefault().ResultsTableReference.ColumnReferences.ToArray();
+            var cs = ss.QueryExpression.EnumerateQuerySpecifications().FirstOrDefault().ResultsTableReference.ColumnReferences;
 
-            Assert.AreEqual(1, cs.Length);
-            Assert.AreEqual("Name", cs[0].ColumnName);
+            Assert.AreEqual(1, cs.Count);
+            Assert.AreEqual("Name", cs[0].Value.ColumnName);
         }
 
         [TestMethod]
@@ -72,10 +72,10 @@ SELECT [a].[Name] FROM [a]";
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            var cs = ss.QueryExpression.EnumerateQuerySpecifications().FirstOrDefault().ResultsTableReference.ColumnReferences.ToArray();
+            var cs = ss.QueryExpression.EnumerateQuerySpecifications().FirstOrDefault().ResultsTableReference.ColumnReferences;
 
-            Assert.AreEqual(1, cs.Length);
-            Assert.AreEqual("Name", cs[0].ColumnName);
+            Assert.AreEqual(1, cs.Count);
+            Assert.AreEqual("Name", cs[0].Value.ColumnName);
         }
 
         [TestMethod]

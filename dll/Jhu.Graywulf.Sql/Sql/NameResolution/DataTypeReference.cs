@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Parsing;
@@ -13,7 +14,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
     {
         #region Property storage variables
 
-        private List<ColumnReference> columnReferences;
+        private IndexedDictionary<string, ColumnReference> columnReferences;
 
         #endregion
         #region Properties
@@ -45,7 +46,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        public IList<ColumnReference> ColumnReferences
+        public IndexedDictionary<string, ColumnReference> ColumnReferences
         {
             get { return columnReferences; }
         }
@@ -71,18 +72,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void InitializeMembers()
         {
-            this.columnReferences = new List<ColumnReference>();
+            this.columnReferences = new IndexedDictionary<string, ColumnReference>(SchemaManager.Comparer);
         }
 
         private void CopyMembers(DataTypeReference old)
         {
             // Deep copy of column references
-            this.columnReferences = new List<ColumnReference>();
+            this.columnReferences = new IndexedDictionary<string, ColumnReference>(SchemaManager.Comparer);
 
-            foreach (var cr in old.columnReferences)
+            foreach (var key in old.columnReferences.Keys)
             {
-                var ncr = new ColumnReference(this, cr);
-                this.columnReferences.Add(ncr);
+                var ncr = new ColumnReference(this, old.columnReferences[key]);
+                this.columnReferences.Add(key, ncr);
             }
         }
 

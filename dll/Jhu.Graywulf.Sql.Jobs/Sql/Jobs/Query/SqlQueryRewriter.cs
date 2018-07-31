@@ -155,89 +155,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
         }
         
-        /// <summary>
-        /// Adds default aliases to columns with no aliases specified in the query
-        /// </summary>
-        /// <param name="qs"></param>
-        private void AssignDefaultColumnAliases(QuerySpecification qs, SelectList selectList, int depth, bool subquery, bool singleColumnSubquery)
-        {
-            var aliases = new HashSet<string>(SchemaManager.Comparer);
-            var cnt = selectList.EnumerateColumnExpressions().Count();
-
-            int q = 0;
-            foreach (var ce in selectList.EnumerateColumnExpressions())
-            {
-                var cr = ce.ColumnReference;
-                string alias;
-
-                if (singleColumnSubquery && q > 0)
-                {
-                    throw NameResolutionError.SingleColumnSubqueryRequired(ce);
-                }
-
-                if (cr.ColumnAlias == null)
-                {
-                    if (cr.ColumnName == null)
-                    {
-                        if (subquery && !singleColumnSubquery && cnt > 1)
-                        {
-                            throw NameResolutionError.MissingColumnAlias(ce);
-                        }
-                        else
-                        {
-                            alias = GetUniqueColumnAlias(aliases, String.Format("Col_{0}", cr.SelectListIndex));
-                        }
-                    }
-                    else if (!subquery)
-                    {
-                        if (cr.TableReference != null && cr.TableReference.Alias != null)
-                        {
-                            alias = GetUniqueColumnAlias(aliases, String.Format("{0}_{1}", cr.TableReference.Alias, cr.ColumnName));
-                        }
-                        else
-                        {
-                            alias = GetUniqueColumnAlias(aliases, cr.ColumnName);
-                        }
-                    }
-                    else
-                    {
-                        alias = null;
-                    }
-                }
-                else
-                {
-                    // Alias is set explicitly, so do not make it unique forcibly
-                    alias = cr.ColumnAlias;
-                }
-
-                if (alias != null)
-                {
-                    if (aliases.Contains(alias))
-                    {
-                        throw NameResolutionError.DuplicateColumnAlias(alias, ce);
-                    }
-
-                    aliases.Add(alias);
-                    cr.ColumnAlias = alias;
-                }
-
-                q++;
-            }
-        }
-
-        private string GetUniqueColumnAlias(HashSet<string> aliases, string alias)
-        {
-            int q = 0;
-            var alias2 = alias;
-            while (aliases.Contains(alias2))
-            {
-                alias2 = String.Format("{0}_{1}", alias, q);
-                q++;
-            }
-
-            return alias2;
-        }
-
         #endregion
 
         protected override void RewriteIntoClause(SelectStatement selectStatement, IntoClause into)
@@ -329,5 +246,94 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         }
 
         #endregion        
+        #region Column alias generation
+
+        /// <summary>
+        /// Adds default aliases to columns with no aliases specified in the query
+        /// </summary>
+        /// <param name="qs"></param>
+        private void AssignDefaultColumnAliases(QuerySpecification qs)
+        {
+            bool subquery = Visitor.QueryContext.HasFlag(QueryContext.Subquery);
+            bool singleColumnSubquery = Visitor.QueryContext.HasFlag(QueryContext.SemiJoin);
+            var selectList = qs.SelectList;
+            var aliases = new HashSet<string>(SchemaManager.Comparer);
+            var cnt = selectList.EnumerateColumnExpressions().Count();
+
+            int q = 0;
+            foreach (var ce in selectList.EnumerateColumnExpressions())
+            {
+                var cr = ce.ColumnReference;
+                string alias;
+
+                if (singleColumnSubquery && q > 0)
+                {
+                    throw NameResolutionError.SingleColumnSubqueryRequired(ce);
+                }
+
+                if (cr.ColumnAlias == null)
+                {
+                    if (cr.ColumnName == null)
+                    {
+                        if (subquery && !singleColumnSubquery && cnt > 1)
+                        {
+                            throw NameResolutionError.MissingColumnAlias(ce);
+                        }
+                        else
+                        {
+                            alias = GetUniqueColumnAlias(aliases, String.Format("Col_{0}", cr.SelectListIndex));
+                        }
+                    }
+                    else if (!subquery)
+                    {
+                        if (cr.TableReference != null && cr.TableReference.Alias != null)
+                        {
+                            alias = GetUniqueColumnAlias(aliases, String.Format("{0}_{1}", cr.TableReference.Alias, cr.ColumnName));
+                        }
+                        else
+                        {
+                            alias = GetUniqueColumnAlias(aliases, cr.ColumnName);
+                        }
+                    }
+                    else
+                    {
+                        alias = null;
+                    }
+                }
+                else
+                {
+                    // Alias is set explicitly, so do not make it unique forcibly
+                    alias = cr.ColumnAlias;
+                }
+
+                if (alias != null)
+                {
+                    if (aliases.Contains(alias))
+                    {
+                        throw NameResolutionError.DuplicateColumnAlias(alias, ce);
+                    }
+
+                    aliases.Add(alias);
+                    cr.ColumnAlias = alias;
+                }
+
+                q++;
+            }
+        }
+
+        private string GetUniqueColumnAlias(HashSet<string> aliases, string alias)
+        {
+            int q = 0;
+            var alias2 = alias;
+            while (aliases.Contains(alias2))
+            {
+                alias2 = String.Format("{0}_{1}", alias, q);
+                q++;
+            }
+
+            return alias2;
+        }
+
+        #endregion
     }
 }

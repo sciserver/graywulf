@@ -60,10 +60,10 @@ SELECT * FROM Book";
 
             Assert.AreEqual(1, details.SourceTableReferences.Count);
             Assert.AreEqual(2, tr.ColumnReferences.Count);
-            Assert.AreEqual("ID", tr.ColumnReferences[0].ColumnName);
-            Assert.AreEqual(ColumnContext.Expression | ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].ColumnContext);
-            Assert.AreEqual("Name", tr.ColumnReferences[1].ColumnName);
-            Assert.AreEqual(ColumnContext.None, tr.ColumnReferences[1].ColumnContext);
+            Assert.AreEqual("ID", tr.ColumnReferences[0].Value.ColumnName);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].Value.ColumnContext);
+            Assert.AreEqual("Name", tr.ColumnReferences[1].Value.ColumnName);
+            Assert.AreEqual(ColumnContext.None, tr.ColumnReferences[1].Value.ColumnContext);
         }
 
         [TestMethod]
@@ -78,12 +78,12 @@ SELECT Name FROM Author";
             var tr = details.SourceTableReferences.Values.First()[0];
             Assert.AreEqual(1, details.SourceTableReferences.Count);
             Assert.AreEqual(2, tr.ColumnReferences.Count);
-            Assert.AreEqual("ID", tr.ColumnReferences[0].ColumnName);
-            Assert.AreEqual(ColumnContext.Expression | ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].ColumnContext);
+            Assert.AreEqual("ID", tr.ColumnReferences[0].Value.ColumnName);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].Value.ColumnContext);
 
             tr = details.SourceTableReferences.Values.First()[1];
-            Assert.AreEqual("Name", tr.ColumnReferences[1].ColumnName);
-            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList, tr.ColumnReferences[1].ColumnContext);
+            Assert.AreEqual("Name", tr.ColumnReferences[1].Value.ColumnName);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList, tr.ColumnReferences[1].Value.ColumnContext);
         }
 
         [TestMethod]
@@ -98,14 +98,14 @@ SELECT Name FROM Author WHERE ID = 2";
             var tr = details.SourceTableReferences.Values.First()[0];
             Assert.AreEqual(1, details.SourceTableReferences.Count);
             Assert.AreEqual(2, tr.ColumnReferences.Count);
-            Assert.AreEqual("ID", tr.ColumnReferences[0].ColumnName);
-            Assert.AreEqual(ColumnContext.Expression | ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].ColumnContext);
+            Assert.AreEqual("ID", tr.ColumnReferences[0].Value.ColumnName);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.PrimaryKey | ColumnContext.SelectList, tr.ColumnReferences[0].Value.ColumnContext);
 
             tr = details.SourceTableReferences.Values.First()[1];
-            Assert.AreEqual("ID", tr.ColumnReferences[0].ColumnName);
-            Assert.AreEqual(ColumnContext.Expression | ColumnContext.Predicate | ColumnContext.PrimaryKey | ColumnContext.Where, tr.ColumnReferences[0].ColumnContext);
-            Assert.AreEqual("Name", tr.ColumnReferences[1].ColumnName);
-            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList, tr.ColumnReferences[1].ColumnContext);
+            Assert.AreEqual("ID", tr.ColumnReferences[0].Value.ColumnName);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.Predicate | ColumnContext.PrimaryKey | ColumnContext.Where, tr.ColumnReferences[0].Value.ColumnContext);
+            Assert.AreEqual("Name", tr.ColumnReferences[1].Value.ColumnName);
+            Assert.AreEqual(ColumnContext.Expression | ColumnContext.SelectList, tr.ColumnReferences[1].Value.ColumnContext);
         }
 
         #endregion
