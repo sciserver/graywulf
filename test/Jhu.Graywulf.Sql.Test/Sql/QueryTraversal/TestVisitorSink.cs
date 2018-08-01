@@ -127,7 +127,22 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             Write(node);
         }
 
+        public virtual void Accept(StringConstant node)
+        {
+            Write(node);
+        }
+
+        public virtual void Accept(DatePart node)
+        {
+            Write(node);
+        }
+
         public virtual void Accept(Symbol node)
+        {
+            Write(node);
+        }
+
+        public virtual void Accept(StarArgument node)
         {
             Write(node);
         }
@@ -225,6 +240,30 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         public virtual void Accept(WindowedFunctionCall node)
         {
             Write(node.FunctionIdentifier);
+            Write(node);
+        }
+
+        public virtual void Accept(ConvertFunctionCall node)
+        {
+            Write(node.FunctionName);
+            Write(node);
+        }
+
+        public virtual void Accept(CastAndParseFunctionCall node)
+        {
+            Write(node.FunctionName);
+            Write(node);
+        }
+
+        public virtual void Accept(DateFunctionCall node)
+        {
+            Write(node.FunctionName);
+            Write(node);
+        }
+
+        public virtual void Accept(IifFunctionCall node)
+        {
+            Write(node.FunctionName);
             Write(node);
         }
 

@@ -351,7 +351,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                     StringConstant
             );
 
-        public static Expression<Rule> ExpressionSubquery = () => Inherit(Subquery);
+        public static Expression<Rule> ExpressionSubquery = () => Subquery;
 
         public static Expression<Rule> Null = () => Keyword("NULL");
 
@@ -368,7 +368,9 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
 
         public static Expression<Rule> DataTypeArgument = () => DataTypeSpecification;
 
-        public static Expression<Rule> ConversionFunctionCall = () => Abstract(FunctionCall);
+        public static Expression<Rule> SpecialFunctionCall = () => Abstract(FunctionCall);
+
+        public static Expression<Rule> ConversionFunctionCall = () => Abstract(SpecialFunctionCall);
 
         public static Expression<Rule> CastAndParseFunctionCall = () =>
             Inherit
@@ -423,7 +425,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> IifFunctionCall = () =>
             Inherit
             (
-                FunctionCall,
+                SpecialFunctionCall,
                 Sequence
                 (
                     Literal("IIF"),
@@ -443,7 +445,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> DateFunctionCall = () =>
             Inherit
             (
-                FunctionCall,
+                SpecialFunctionCall,
                 Sequence
                 (
                     Must
@@ -834,7 +836,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> StarFunctionCall = () =>
             Inherit
             (
-                ScalarFunctionCall,
+                WindowedFunctionCall,
                 Sequence
                 (
                     FunctionIdentifier,
@@ -858,7 +860,7 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
         public static Expression<Rule> AggregateFunctionCall = () =>
             Inherit
             (
-                ScalarFunctionCall,
+                WindowedFunctionCall,
                 Sequence
                 (
                     FunctionIdentifier,

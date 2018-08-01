@@ -393,15 +393,5 @@ namespace Jhu.Graywulf.Parsing
         }
 
         #endregion
-
-        public void ReplaceWith(Node other)
-        {
-            this.Parent.Stack.Replace(this, other);
-        }
-
-        public void Remove()
-        {
-            this.Parent.Stack.Remove(this);
-        }
     }
 }

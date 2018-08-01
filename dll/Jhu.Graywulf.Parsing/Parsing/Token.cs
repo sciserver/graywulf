@@ -100,6 +100,16 @@ namespace Jhu.Graywulf.Parsing
 
         public abstract bool Match(Parser parser);
 
+        public void ReplaceWith(Token other)
+        {
+            this.Parent.Stack.Replace(this, other);
+        }
+
+        public void Remove()
+        {
+            this.Parent.Stack.Remove(this);
+        }
+
         public override string ToString()
         {
             return GetType().FullName + ":" + Value.Replace("\r\n", " ");

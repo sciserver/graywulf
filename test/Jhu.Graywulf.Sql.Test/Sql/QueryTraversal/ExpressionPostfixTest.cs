@@ -100,6 +100,16 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             Assert.AreEqual("a , b g `1 f `2 a b + * ", res);
         }
 
+        [TestMethod]
+        public void StarArgumentTest()
+        {
+            var res = Execute("COUNT(*)");
+            Assert.AreEqual("* COUNT `1 ", res);
+
+            res = Execute("COUNT(*) + 3");
+            Assert.AreEqual("* COUNT `1 3 + ", res);
+        }
+
 
         [TestMethod]
         public void WindowedFunctionCallTest()

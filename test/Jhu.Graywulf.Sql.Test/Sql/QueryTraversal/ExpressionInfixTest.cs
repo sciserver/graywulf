@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             Assert.AreEqual("a + b * - c + d - ( e + f ) * g ", res);
 
             res = Execute("1 + @b * -@@c + COUNT(*) - (e + f) * g");
-            Assert.AreEqual("1 + @b * - @@c + COUNT(*) - ( e + f ) * g ", res);
+            Assert.AreEqual("1 + @b * - @@c + COUNT ( * ) - ( e + f ) * g ", res);
 
             res = Execute("a ^ b % ~c | d & (e + f) * g");
             Assert.AreEqual("a ^ b % ~ c | d & ( e + f ) * g ", res);

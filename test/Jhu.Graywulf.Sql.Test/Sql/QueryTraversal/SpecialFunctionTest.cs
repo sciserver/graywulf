@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         }
 
         [TestMethod]
-        public void SpecialFunctionReshuffleTest()
+        public void ConvertTest()
         {
             var exp = "2 + 3 * CONVERT(nvarchar(50), a + b)";
 
@@ -33,7 +33,52 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         }
 
         [TestMethod]
-        public void InlinedLogicalExpressionTest()
+        public void CastTest()
+        {
+            var exp = "2 + 3 * CAST(a + b AS nvarchar(50))";
+
+            var res = Execute(exp, ExpressionTraversalMethod.Infix, ExpressionTraversalMethod.Infix);
+            Assert.AreEqual("2 + 3 * CAST ( a + b AS nvarchar(50) ) ", res);
+
+            res = Execute(exp, ExpressionTraversalMethod.Postfix, ExpressionTraversalMethod.Infix);
+            Assert.AreEqual("2 3 a b + AS nvarchar(50) CAST `2 * + ", res);
+
+            res = Execute(exp, ExpressionTraversalMethod.Prefix, ExpressionTraversalMethod.Infix);
+            Assert.AreEqual("+ 2 * 3 CAST `2 + a b AS nvarchar(50) ", res);
+        }
+
+        [TestMethod]
+        public void ParseTest()
+        {
+            var exp = "2 + 3 * PARSE(a + b AS nvarchar(50) USING '')";
+
+            var res = Execute(exp, ExpressionTraversalMethod.Infix, ExpressionTraversalMethod.Infix);
+            Assert.AreEqual("2 + 3 * PARSE ( a + b AS nvarchar(50) USING '' ) ", res);
+
+            res = Execute(exp, ExpressionTraversalMethod.Postfix, ExpressionTraversalMethod.Infix);
+            Assert.AreEqual("2 3 a b + AS nvarchar(50) USING '' PARSE `3 * + ", res);
+
+            res = Execute(exp, ExpressionTraversalMethod.Prefix, ExpressionTraversalMethod.Infix);
+            Assert.AreEqual("+ 2 * 3 PARSE `3 + a b AS nvarchar(50) USING '' ", res);
+        }
+
+        [TestMethod]
+        public void DatePartTest()
+        {
+            var exp = "2 + 3 * DATEPART(year, datecol)";
+
+            var res = Execute(exp, ExpressionTraversalMethod.Infix, ExpressionTraversalMethod.Infix);
+            Assert.AreEqual("2 + 3 * DATEPART ( year , datecol ) ", res);
+
+            res = Execute(exp, ExpressionTraversalMethod.Postfix, ExpressionTraversalMethod.Infix);
+            Assert.AreEqual("2 3 year , datecol DATEPART `2 * + ", res);
+
+            res = Execute(exp, ExpressionTraversalMethod.Prefix, ExpressionTraversalMethod.Infix);
+            Assert.AreEqual("+ 2 * 3 DATEPART `2 year , datecol ", res);
+        }
+
+        [TestMethod]
+        public void IifTest()
         {
             var exp = "IIF(a < b OR c > d AND e != f, a + b * c, d - e / f)";
 

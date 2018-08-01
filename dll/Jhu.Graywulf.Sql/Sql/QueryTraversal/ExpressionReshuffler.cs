@@ -101,16 +101,17 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     break;
 
                 // If it is a new argument, pop operator stack to have the bracket on top
-                case Comma n:
+                case Comma nc:
+                case Literal nl:        // AS, USING in special functions
                     switch (method)
                     {
                         case ExpressionTraversalMethod.Postfix:
                             EmptyUntil<BracketOpen>();
-                            Output(n);
+                            Output(node);
                             break;
                         case ExpressionTraversalMethod.Prefix:
                             EmptyUntil<BracketClose>();
-                            Output(n);
+                            Output(node);
                             break;
                         default:
                             throw new NotImplementedException();

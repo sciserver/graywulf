@@ -46,7 +46,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     break;
 
                 // Special functions and operands
-                // TODO: add all special functions
+                case SpecialFunctionCall n:
+                    Push(n);
+                    break;
 
                 // Operands and other important tokens that go directly
                 // to the output
@@ -61,6 +63,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     
                 case DataTypeArgument dt:
                 case StarArgument so:
+                case StringConstant cs:
+                case DatePart dp:
                     Output(node);
                     break;
                 case LogicalArgument lo:

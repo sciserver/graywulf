@@ -999,13 +999,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     VisitNode(n);
                     break;
 
-                    // TODO: move this elsewhere
-                    /*
-                case CountStar n:
-                    VisitNode(n);
-                    break;
-                    */
-
                 case SystemVariable n:
                     VisitNode(n);
                     VisitReference(n);
@@ -1031,13 +1024,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     TraverseSearchedCaseExpression(n);
                     break;
 
-                // TODO: add special function call
-
                 case SystemFunctionCall n:
                     TraverseSystemFunctionCall(n);
                     VisitReference(n);
                     break;
-                case WindowedFunctionCall n:
+                case WindowedFunctionCall n:        // Also: StarFunctionCall and AggregateFunctionCall
                     TraverseWindowedFunctionCall(n);
                     VisitReference(n);
                     break;
@@ -1048,6 +1039,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case TableValuedFunctionCall n:
                     TraverseTableValuedFunctionCall(n);
                     VisitReference(n);
+                    break;
+
+                // Special function calls
+                case SpecialFunctionCall n:
+                    TraverseSpecialFunctionCall(n);
                     break;
 
                 case UdtStaticMemberAccessList n:
@@ -1201,7 +1197,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             VisitNode(node.FunctionIdentifier);
             VisitNode(node);
             TraverseFunctionArguments(node);
-            TraverseOverClause(node.OverClause);
+
+            if (over != null)
+            {
+                TraverseOverClause(node.OverClause);
+            }
         }
 
         private void TraverseUdtMethodCall(UdtMethodCall node)
@@ -1218,6 +1218,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             TraverseFunctionArguments(node);
         }
 
+        private void TraverseSpecialFunctionCall(SpecialFunctionCall node)
+        {
+            VisitNode(node.FunctionName);
+            VisitNode(node);
+            TraverseFunctionArguments(node);
+        }
+
         private void TraverseFunctionArguments(FunctionCall node)
         {
             int argumentCount = 0;
@@ -1229,15 +1236,56 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     case BracketOpen n:
                         VisitNode(n);
                         break;
+
+                    // Argument separators
+                    case Comma n:
+                        VisitNode(n);
+                        break;
+                    case Literal n 
+                    when SqlParser.ComparerInstance.Compare(n.Value, "AS") == 0:
+                        VisitNode(n);
+                        break;
+                    case Literal n
+                    when SqlParser.ComparerInstance.Compare(n.Value, "USING") == 0:
+                        VisitNode(n);
+                        break;
+
+                    // Various types of arguments
+                    case StringConstant n:
+                        VisitNode(n);
+                        argumentCount++;
+                        break;
+                    case Argument n:
+                        TraverseArgument(n);
+                        argumentCount++;
+                        break;
+                    case LogicalArgument n:
+                        TraverseLogicalArgument(n);
+                        argumentCount++;
+                        break;
+                    case StarArgument n:
+                        VisitNode(n);
+                        argumentCount++;
+                        break;
+                    case DataTypeArgument n:
+                        VisitNode(n);
+                        argumentCount++;
+                        break;
+                    case DatePart n:
+                        VisitNode(n);
+                        argumentCount++;
+                        break;
                     case ArgumentList n:
                         TraverseArgumentList(n, ref argumentCount);
-                        node.ArgumentCount = argumentCount;
                         break;
+
                     case BracketClose n:
                         VisitNode(n);
                         break;
                 }
             }
+
+            node.ArgumentCount = argumentCount;
         }
 
         private void TraverseArgumentList(ArgumentList node, ref int argumentCount)
