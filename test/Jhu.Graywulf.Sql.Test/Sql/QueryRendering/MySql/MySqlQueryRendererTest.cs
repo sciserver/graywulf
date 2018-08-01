@@ -10,7 +10,7 @@ using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 
-namespace Jhu.Graywulf.Sql.CodeGeneration.MySql
+namespace Jhu.Graywulf.Sql.QueryRendering.MySql
 {
     [TestClass]
     public class MySqlQueryRendererTest : MySqlTestBase

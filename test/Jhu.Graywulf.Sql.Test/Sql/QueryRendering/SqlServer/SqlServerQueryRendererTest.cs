@@ -8,7 +8,7 @@ using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.QueryRendering;
 using Jhu.Graywulf.Sql.QueryRendering.SqlServer;
 
-namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
+namespace Jhu.Graywulf.Sql.QueryRendering.SqlServer
 {
     [TestClass]
     public class SqlServerQueryRendererTest : SqlServerTestBase

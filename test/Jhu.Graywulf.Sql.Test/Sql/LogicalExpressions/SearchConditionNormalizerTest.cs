@@ -38,12 +38,12 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             var w = GenerateWhereClauseByTableReference(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Author.Name = 'test')", w[0].Value);
+            Assert.AreEqual("(Name = 'test')", w[0].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Author.Name = 'test')", w[0].Value);
+            Assert.AreEqual("(Name = 'test')", w[0].Value);
         }
 
         [TestMethod]
@@ -73,12 +73,12 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             var w = GenerateWhereClauseByTableReference(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Author.Name = 'test')", w[0].Value);
+            Assert.AreEqual("(Name = 'test')", w[0].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Author.Name = 'test')", w[0].Value);
+            Assert.AreEqual("(Name = 'test')", w[0].Value);
         }
 
         [TestMethod]
@@ -92,13 +92,13 @@ CROSS JOIN (SELECT * FROM Author WHERE Name = 'test2') b";
             var w = GenerateWhereClauseByTableReference(sql);
 
             Assert.AreEqual(2, w.Count);
-            Assert.AreEqual("(Author.Name = 'test')", w[0].Value);
-            Assert.AreEqual("(Author.Name = 'test2')", w[1].Value);
+            Assert.AreEqual("(Name = 'test')", w[0].Value);
+            Assert.AreEqual("(Name = 'test2')", w[1].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Author.Name = 'test2') OR (Author.Name = 'test')", w[0].Value);
+            Assert.AreEqual("(Name = 'test2') OR (Name = 'test')", w[0].Value);
         }
 
         [TestMethod]
@@ -111,13 +111,13 @@ SELECT * FROM Author WHERE Name = 'test2' AND Name = 'test4'";
             var w = GenerateWhereClauseByTableReference(sql);
 
             Assert.AreEqual(2, w.Count);
-            Assert.AreEqual("(Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
-            Assert.AreEqual("(Author.Name = 'test2' AND Author.Name = 'test4')", w[1].Value);
+            Assert.AreEqual("(Name = 'test1' OR Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(Name = 'test2' AND Name = 'test4')", w[1].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Author.Name = 'test2' AND Author.Name = 'test4') OR (Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(Name = 'test2' AND Name = 'test4') OR (Name = 'test1' OR Name = 'test3')", w[0].Value);
         }
 
         [TestMethod]
@@ -131,13 +131,13 @@ SELECT * FROM Author WHERE Name = 'test2' AND Name = 'test4'";
             var w = GenerateWhereClauseByTableReference(sql);
 
             Assert.AreEqual(2, w.Count);
-            Assert.AreEqual("(Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
-            Assert.AreEqual("(Author.Name = 'test2' AND Author.Name = 'test4')", w[1].Value);
+            Assert.AreEqual("(Name = 'test1' OR Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(Name = 'test2' AND Name = 'test4')", w[1].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Author.Name = 'test2' AND Author.Name = 'test4') OR (Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(Name = 'test2' AND Name = 'test4') OR (Name = 'test1' OR Name = 'test3')", w[0].Value);
         }
 
         [TestMethod]
@@ -154,13 +154,13 @@ SELECT * FROM a CROSS JOIN b";
             var w = GenerateWhereClauseByTableReference(sql);
 
             Assert.AreEqual(2, w.Count);
-            Assert.AreEqual("(Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
-            Assert.AreEqual("(Author.Name = 'test2' AND Author.Name = 'test4')", w[1].Value);
+            Assert.AreEqual("(Name = 'test1' OR Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(Name = 'test2' AND Name = 'test4')", w[1].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Author.Name = 'test2' AND Author.Name = 'test4') OR (Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(Name = 'test2' AND Name = 'test4') OR (Name = 'test1' OR Name = 'test3')", w[0].Value);
         }
 
         [TestMethod]
@@ -178,14 +178,14 @@ WHERE c.Name = 'test5'";
             var w = GenerateWhereClauseByTableReference(sql);
 
             Assert.AreEqual(3, w.Count);
-            Assert.AreEqual("(Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
-            Assert.AreEqual("(Author.Name = 'test2' AND Author.Name = 'test4')", w[1].Value);
+            Assert.AreEqual("(Name = 'test1' OR Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(Name = 'test2' AND Name = 'test4')", w[1].Value);
             Assert.AreEqual("(c.Name = 'test5')", w[2].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(c.Name = 'test5') OR (Author.Name = 'test2' AND Author.Name = 'test4') OR (Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(c.Name = 'test5') OR (Name = 'test2' AND Name = 'test4') OR (Name = 'test1' OR Name = 'test3')", w[0].Value);
         }
 
         [TestMethod]
@@ -215,7 +215,7 @@ SELECT Title FROM Book WHERE Year > 2000";
 
             Assert.AreEqual(2, w.Count);
             Assert.AreEqual(null, w[0]);
-            Assert.AreEqual("(Book.Year > 2000)", w[1].Value);
+            Assert.AreEqual("(Year > 2000)", w[1].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
