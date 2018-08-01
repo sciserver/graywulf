@@ -1059,7 +1059,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
                 cr.ColumnContext |= visitor.ColumnContext;
 
-                var ci = ColumnIdentifier.Create(cr);
+                var ci = ColumnIdentifier.Create(cr, matchcolpart);
                 ((ObjectName)tokens[0]).ReplaceWith(ci);
                 ResolveMemberAccessList(operand, matchcolpart);
             }

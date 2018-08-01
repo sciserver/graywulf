@@ -329,6 +329,7 @@
     <Compile Include="Sql\Parsing\TableDefinition.cs" />
     <Compile Include="Sql\Parsing\TableDefinitionItem.cs" />
     <Compile Include="Sql\Parsing\TableDefinitionList.cs" />
+    <Compile Include="Sql\Parsing\DatabaseName.cs" />
     <Compile Include="Sql\Parsing\TableSource.cs" />
     <Compile Include="Sql\Parsing\TableOrViewIdentifier.cs" />
     <Compile Include="Sql\Parsing\TableSourceSpecification.cs" />

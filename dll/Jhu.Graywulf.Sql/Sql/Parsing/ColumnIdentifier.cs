@@ -39,21 +39,33 @@ namespace Jhu.Graywulf.Sql.Parsing
             this.columnReference = old.columnReference;
         }
 
-        public static ColumnIdentifier Create(ColumnReference cr)
+        public static ColumnIdentifier Create(ColumnReference cr, int tableNameParts)
         {
             var nci = new ColumnIdentifier();
             nci.ColumnReference = cr;
 
             if (cr.TableReference != null && !cr.TableReference.IsUndefined)
             {
-                if (String.IsNullOrEmpty(cr.TableReference.Alias))
+                if (tableNameParts > 2 && !String.IsNullOrWhiteSpace(cr.TableReference.DatabaseName))
                 {
-                    nci.Stack.AddLast(TableName.Create(cr.TableReference.DatabaseObjectName));
+                    nci.Stack.AddLast(DatabaseName.Create(cr.TableReference.DatabaseName));
                     nci.Stack.AddLast(Dot.Create());
                 }
-                else
+
+                if (tableNameParts > 1 && !String.IsNullOrWhiteSpace(cr.TableReference.SchemaName))
+                {
+                    nci.Stack.AddLast(SchemaName.Create(cr.TableReference.SchemaName));
+                    nci.Stack.AddLast(Dot.Create());
+                }
+
+                if (tableNameParts > 0 && !String.IsNullOrWhiteSpace(cr.TableReference.Alias))
                 {
                     nci.Stack.AddLast(TableName.Create(cr.TableReference.Alias));
+                    nci.Stack.AddLast(Dot.Create());
+                }
+                else if (tableNameParts > 0 && !String.IsNullOrWhiteSpace(cr.TableReference.DatabaseObjectName))
+                {
+                    nci.Stack.AddLast(TableName.Create(cr.TableReference.DatabaseObjectName));
                     nci.Stack.AddLast(Dot.Create());
                 }
             }

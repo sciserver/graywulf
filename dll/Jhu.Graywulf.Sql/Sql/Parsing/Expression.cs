@@ -75,9 +75,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             return nex;
         }
 
-        public static Expression Create(ColumnReference cr)
+        public static Expression Create(ColumnReference cr, int tableNameParts)
         {
-            var ci = ColumnIdentifier.Create(cr);
+            var ci = ColumnIdentifier.Create(cr, tableNameParts);
             return Create(ci);
         }
 
