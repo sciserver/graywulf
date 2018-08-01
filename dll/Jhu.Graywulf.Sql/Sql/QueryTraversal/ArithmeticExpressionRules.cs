@@ -57,6 +57,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 case UserVariable uv:
                 case ExpressionSubquery sq:
                 case ObjectName on:
+                case ColumnIdentifier ci:
                 case DataTypeIdentifier di:
                     Output(node);
                     break;

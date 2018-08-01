@@ -9,111 +9,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Sql.Parsing;
-using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.LogicalExpressions
 {
     [TestClass]
-    public class SearchConditionNormalizerTest : ParsingTestBase
+    public class SearchConditionNormalizerTest : LogicalExpressionsTestBase
     {
-        protected QueryDetails Parse(string query)
-        {
-            var p = new SqlParser();
-            var script = p.Execute<StatementBlock>(query);
-
-            SqlNameResolver nr = new SqlNameResolver();
-            nr.Options = new SqlNameResolverOptions()
-            {
-                DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName,
-                DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName,
-                DefaultDataTypeDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName
-            };
-            nr.SchemaManager = CreateSchemaManager();
-            var details = nr.Execute(script);
-
-            return details;
-        }
-
-        private List<LogicalExpression> GenerateWhereClauseByTable(string sql)
-        {
-            var details = Parse(sql);
-            var res = new List<LogicalExpression>();
-
-            var scn = new SearchConditionNormalizer();
-            scn.CollectConditions(details.ParsingTree);
-
-            foreach (var key in details.SourceTableReferences.Keys)
-            {
-                var trs = details.SourceTableReferences[key];
-                var where = scn.GenerateWherePredicatesSpecificToTable(trs);
-                res.Add(where);
-            }
-
-            return res;
-        }
-
-        private List<LogicalExpression> GenerateWhereClauseByTableReference(string sql)
-        {
-            var details = Parse(sql);
-            var res = new List<LogicalExpression>();
-
-            var scn = new SearchConditionNormalizer();
-            scn.CollectConditions(details.ParsingTree);
-
-            foreach (var key in details.SourceTableReferences.Keys)
-            {
-                foreach (var tr in details.SourceTableReferences[key])
-                {
-                    res.Add(scn.GenerateWherePredicatesSpecificToTable(tr));
-                }
-            }
-
-            return res;
-        }
-
-        private string[] GetWhereClauses(string query)
-        {
-            var cn = new LogicalExpressions.SearchConditionNormalizer();
-
-            var select = CreateSelect(query);
-            var res = new List<string>();
-
-            foreach (var qs in select.QueryExpression.EnumerateQuerySpecifications())
-            {
-                cn.CollectConditions(qs);
-
-                // TODO use qs.SourceTableReferences ???
-                foreach (var tr in qs.SourceTableReferences.Values)
-                {
-                    var where = cn.GenerateWherePredicatesSpecificToTable(tr);
-
-                    if (where != null)
-                    {
-                        var cg = new QueryRendering.SqlServer.SqlServerQueryRenderer();
-
-                        cg.TableNameRendering = QueryRendering.NameRendering.FullyQualified;
-                        cg.ColumnNameRendering = QueryRendering.NameRendering.IdentifierOnly;
-                        cg.UdtMemberNameRendering = QueryRendering.NameRendering.IdentifierOnly;
-                        cg.DataTypeNameRendering = QueryRendering.NameRendering.FullyQualified;
-                        cg.FunctionNameRendering = QueryRendering.NameRendering.FullyQualified;
-                        cg.IndexNameRendering = QueryRendering.NameRendering.IdentifierOnly;
-                        cg.ConstraintNameRendering = QueryRendering.NameRendering.IdentifierOnly;
-
-                        var sw = new StringWriter();
-                        cg.Execute(sw, where);
-
-                        res.Add(sw.ToString());
-                    }
-                    else
-                    {
-                        res.Add("");
-                    }
-                }
-            }
-
-            return res.ToArray();
-        }
-
         private IEnumerable<LogicalExpressions.ExpressionTreeNode> EnumerateCnfTermsTestHelper(string query)
         {
             var select = CreateSelect(query);
@@ -137,12 +38,12 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             var w = GenerateWhereClauseByTableReference(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Name = 'test')", w[0].Value);
+            Assert.AreEqual("(Author.Name = 'test')", w[0].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Name = 'test')", w[0].Value);
+            Assert.AreEqual("(Author.Name = 'test')", w[0].Value);
         }
 
         [TestMethod]
@@ -172,12 +73,12 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             var w = GenerateWhereClauseByTableReference(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Name = 'test')", w[0].Value);
+            Assert.AreEqual("(Author.Name = 'test')", w[0].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Name = 'test')", w[0].Value);
+            Assert.AreEqual("(Author.Name = 'test')", w[0].Value);
         }
 
         [TestMethod]
@@ -191,13 +92,13 @@ CROSS JOIN (SELECT * FROM Author WHERE Name = 'test2') b";
             var w = GenerateWhereClauseByTableReference(sql);
 
             Assert.AreEqual(2, w.Count);
-            Assert.AreEqual("(Name = 'test')", w[0].Value);
-            Assert.AreEqual("(Name = 'test2')", w[1].Value);
+            Assert.AreEqual("(Author.Name = 'test')", w[0].Value);
+            Assert.AreEqual("(Author.Name = 'test2')", w[1].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Name = 'test2') OR (Name = 'test')", w[0].Value);
+            Assert.AreEqual("(Author.Name = 'test2') OR (Author.Name = 'test')", w[0].Value);
         }
 
         [TestMethod]
@@ -210,13 +111,13 @@ SELECT * FROM Author WHERE Name = 'test2' AND Name = 'test4'";
             var w = GenerateWhereClauseByTableReference(sql);
 
             Assert.AreEqual(2, w.Count);
-            Assert.AreEqual("(Name = 'test1' OR Name = 'test3')", w[0].Value);
-            Assert.AreEqual("(Name = 'test2' AND Name = 'test4')", w[1].Value);
+            Assert.AreEqual("(Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(Author.Name = 'test2' AND Author.Name = 'test4')", w[1].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Name = 'test2' AND Name = 'test4') OR (Name = 'test1' OR Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(Author.Name = 'test2' AND Author.Name = 'test4') OR (Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
         }
 
         [TestMethod]
@@ -230,13 +131,13 @@ SELECT * FROM Author WHERE Name = 'test2' AND Name = 'test4'";
             var w = GenerateWhereClauseByTableReference(sql);
 
             Assert.AreEqual(2, w.Count);
-            Assert.AreEqual("(Name = 'test1' OR Name = 'test3')", w[0].Value);
-            Assert.AreEqual("(Name = 'test2' AND Name = 'test4')", w[1].Value);
+            Assert.AreEqual("(Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(Author.Name = 'test2' AND Author.Name = 'test4')", w[1].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Name = 'test2' AND Name = 'test4') OR (Name = 'test1' OR Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(Author.Name = 'test2' AND Author.Name = 'test4') OR (Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
         }
 
         [TestMethod]
@@ -253,13 +154,13 @@ SELECT * FROM a CROSS JOIN b";
             var w = GenerateWhereClauseByTableReference(sql);
 
             Assert.AreEqual(2, w.Count);
-            Assert.AreEqual("(Name = 'test1' OR Name = 'test3')", w[0].Value);
-            Assert.AreEqual("(Name = 'test2' AND Name = 'test4')", w[1].Value);
+            Assert.AreEqual("(Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(Author.Name = 'test2' AND Author.Name = 'test4')", w[1].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(Name = 'test2' AND Name = 'test4') OR (Name = 'test1' OR Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(Author.Name = 'test2' AND Author.Name = 'test4') OR (Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
         }
 
         [TestMethod]
@@ -277,14 +178,14 @@ WHERE c.Name = 'test5'";
             var w = GenerateWhereClauseByTableReference(sql);
 
             Assert.AreEqual(3, w.Count);
-            Assert.AreEqual("(Name = 'test1' OR Name = 'test3')", w[0].Value);
-            Assert.AreEqual("(Name = 'test2' AND Name = 'test4')", w[1].Value);
+            Assert.AreEqual("(Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(Author.Name = 'test2' AND Author.Name = 'test4')", w[1].Value);
             Assert.AreEqual("(c.Name = 'test5')", w[2].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
             Assert.AreEqual(1, w.Count);
-            Assert.AreEqual("(c.Name = 'test5') OR (Name = 'test2' AND Name = 'test4') OR (Name = 'test1' OR Name = 'test3')", w[0].Value);
+            Assert.AreEqual("(c.Name = 'test5') OR (Author.Name = 'test2' AND Author.Name = 'test4') OR (Author.Name = 'test1' OR Author.Name = 'test3')", w[0].Value);
         }
 
         [TestMethod]
@@ -314,7 +215,7 @@ SELECT Title FROM Book WHERE Year > 2000";
 
             Assert.AreEqual(2, w.Count);
             Assert.AreEqual(null, w[0]);
-            Assert.AreEqual("(Year > 2000)", w[1].Value);
+            Assert.AreEqual("(Book.Year > 2000)", w[1].Value);
 
             w = GenerateWhereClauseByTable(sql);
 
@@ -422,7 +323,7 @@ SELECT Title FROM Book WHERE Year > 2000";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 1);
-            Assert.AreEqual("([ID] = 6)", res[0]);
+            Assert.AreEqual("([Graywulf_Schema_Test].[dbo].[Book].[ID] = 6)", res[0]);
         }
 
         [TestMethod]
@@ -432,7 +333,7 @@ SELECT Title FROM Book WHERE Year > 2000";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 1);
-            Assert.AreEqual("([ID] = 6 AND [Title]='x')", res[0]);
+            Assert.AreEqual("([Graywulf_Schema_Test].[dbo].[Book].[ID] = 6 AND [Graywulf_Schema_Test].[dbo].[Book].[Title]='x')", res[0]);
         }
 
         [TestMethod]
@@ -442,7 +343,7 @@ SELECT Title FROM Book WHERE Year > 2000";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 1);
-            Assert.AreEqual("([ID] = 6 AND 2 = 3)", res[0]);
+            Assert.AreEqual("([Graywulf_Schema_Test].[dbo].[Book].[ID] = 6 AND 2 = 3)", res[0]);
         }
 
         [TestMethod]
@@ -471,7 +372,7 @@ WHERE Book.ID = 6";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 3);
-            Assert.AreEqual("([ID] = 6)", res[0]);
+            Assert.AreEqual("([Graywulf_Schema_Test].[dbo].[Book].[ID] = 6)", res[0]);
         }
 
         [TestMethod]
@@ -486,9 +387,9 @@ WHERE Book.ID = 6 AND Author.ID = 3";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 3);
-            Assert.AreEqual("([ID] = 6)", res[0]);
+            Assert.AreEqual("([Graywulf_Schema_Test].[dbo].[Book].[ID] = 6)", res[0]);
             Assert.AreEqual("", res[1]);
-            Assert.AreEqual("([ID] = 3)", res[2]);
+            Assert.AreEqual("([Graywulf_Schema_Test].[dbo].[Author].[ID] = 3)", res[2]);
         }
 
         [TestMethod]
@@ -503,9 +404,9 @@ WHERE Author.ID = 3";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 3);
-            Assert.AreEqual("([ID] = 6)", res[0]);
+            Assert.AreEqual("([Graywulf_Schema_Test].[dbo].[Book].[ID] = 6)", res[0]);
             Assert.AreEqual("", res[1]);
-            Assert.AreEqual("([ID] = 3)", res[2]);
+            Assert.AreEqual("([Graywulf_Schema_Test].[dbo].[Author].[ID] = 3)", res[2]);
         }
 
         [TestMethod]
@@ -520,7 +421,7 @@ WHERE Book.ID IN (3, 6)";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 3);
-            Assert.AreEqual("([ID] IN (3, 6) AND [ID] = 6)", res[0]);
+            Assert.AreEqual("([Graywulf_Schema_Test].[dbo].[Book].[ID] IN (3, 6) AND [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6)", res[0]);
             Assert.AreEqual("", res[1]);
             Assert.AreEqual("", res[2]);
         }
@@ -536,7 +437,7 @@ WHERE a.ID = 3";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 2);
-            Assert.AreEqual("([ID] = 3)", res[0]);
+            Assert.AreEqual("([a].[ID] = 3)", res[0]);
             Assert.AreEqual("", res[1]);
         }
     }

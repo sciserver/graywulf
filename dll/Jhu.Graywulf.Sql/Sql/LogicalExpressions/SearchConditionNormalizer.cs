@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
     public class SearchConditionNormalizer
     {
         private List<LogicalExpressions.ExpressionTreeNode> conditions;
-
+        
         public SearchConditionNormalizer()
         {
             InitializeMembers();
@@ -179,13 +179,14 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
         /// <param name="table"></param>
         /// <returns></returns>
         /// <remarks>The expression must be in CNF</remarks>
-        private static IEnumerable<LogicalExpressions.ExpressionTreeNode> EnumerateCnfTermsSpecificToTable(LogicalExpressions.ExpressionTreeNode node, TableReference tr, DatabaseObject dbobj)
+        private static IEnumerable<ExpressionTreeNode> EnumerateCnfTermsSpecificToTable(LogicalExpressions.ExpressionTreeNode node, TableReference tr, DatabaseObject dbobj)
         {
+            var predicateVisitor = new PredicateVisitor();
             bool specifictotable;
 
             foreach (var term in EnumerateCnfTerms(node))
             {
-                if (term is LogicalExpressions.OperatorOr)
+                if (term is OperatorOr)
                 {
                     // A term is only specific to a table if it contains predicates
                     // only specific to the particular table
@@ -197,11 +198,11 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 
                         if (tr != null)
                         {
-                            specifictotable &= predicate.IsSpecificToTable(tr);
+                            specifictotable &= predicateVisitor.IsSpecificToTable(predicate, tr);
                         }
                         else
                         {
-                            specifictotable &= predicate.IsSpecificToTable(dbobj);
+                            specifictotable &= predicateVisitor.IsSpecificToTable(predicate, dbobj);
                         }
 
                         if (!specifictotable)
@@ -221,11 +222,11 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 
                     if (tr != null)
                     {
-                        specifictotable = predicate.IsSpecificToTable(tr);
+                        specifictotable = predicateVisitor.IsSpecificToTable(predicate,tr);
                     }
                     else
                     {
-                        specifictotable = predicate.IsSpecificToTable(dbobj);
+                        specifictotable = predicateVisitor.IsSpecificToTable(predicate, dbobj);
                     }
 
                     if (specifictotable)

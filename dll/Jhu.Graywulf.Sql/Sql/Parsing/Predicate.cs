@@ -9,45 +9,6 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class Predicate
     {
-        public bool IsSpecificToTable(TableReference table)
-        {
-            throw new NotImplementedException();
-
-            /*
-            foreach (var tr in NodeExtensions.EnumerateTableReferences(this))
-            {
-                if (tr != null && tr != table)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-            */
-        }
-
-        public bool IsSpecificToTable(DatabaseObject table)
-        {
-            throw new NotImplementedException();
-
-            /*
-            foreach (var tr in NodeExtensions.EnumerateTableReferences(this))
-            {
-                if (tr != null && (tr.DatabaseObject == null || tr.DatabaseObject != table))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-            */
-        }
-
-        public LogicalExpressions.ExpressionTreeNode GetExpressionTree()
-        {
-            return new LogicalExpressions.Predicate(this);
-        }
-
         public static Predicate CreateEquals(Expression a, Expression b)
         {
             return Create(a, b, new Equals1());

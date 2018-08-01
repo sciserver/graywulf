@@ -211,6 +211,7 @@
     <Compile Include="Sql\LogicalExpressions\OperatorNot.cs" />
     <Compile Include="Sql\LogicalExpressions\OperatorOr.cs" />
     <Compile Include="Sql\LogicalExpressions\Predicate.cs" />
+    <Compile Include="Sql\LogicalExpressions\PredicateVisitor.cs" />
     <Compile Include="Sql\LogicalExpressions\SearchConditionNormalizer.cs" />
     <Compile Include="Sql\LogicalExpressions\UnaryOperator.cs" />
     <Compile Include="Sql\NameResolution\ColumnReference.cs" />

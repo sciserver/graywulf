@@ -11,7 +11,7 @@ using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {
-    public class SqlNameResolverTestBase : Jhu.Graywulf.Test.TestClassBase
+    public class SqlNameResolverTestBase : ParsingTestBase
     {
     }
 }

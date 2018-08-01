@@ -93,12 +93,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sql\LogicalExpressions\DnfConverterTest.cs" />
     <Compile Include="Sql\LogicalExpressions\ExpressionTreeBuilderTest.cs" />
+    <Compile Include="Sql\LogicalExpressions\LogicalExpressionsTestBase.cs" />
+    <Compile Include="Sql\LogicalExpressions\PredicateVisitorTest.cs" />
     <Compile Include="Sql\LogicalExpressions\SearchConditionNormalizerTest.cs" />
     <Compile Include="Sql\NameResolution\ColumnExpressionTest.cs" />
     <Compile Include="Sql\NameResolution\ColumnReferenceTest.cs" />
     <Compile Include="Sql\NameResolution\MemberAccessListTest.cs" />
     <Compile Include="Sql\NameResolution\NameResolutionErrorTest.cs" />
-    <Compile Include="Sql\NameResolution\PredicateTest.cs" />
     <Compile Include="Sql\NameResolution\QuerySpecificationTest.cs" />
     <Compile Include="Sql\NameResolution\SemiJoinTest.cs" />
     <Compile Include="Sql\NameResolution\TableReferenceTest.cs" />

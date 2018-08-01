@@ -151,6 +151,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             PopAllContext();
         }
 
+        public void Execute(Predicate node)
+        {
+            PushAllContextNone();
+            TraversePredicate(node);
+            PopAllContext();
+        }
+
         private void PushAllContextNone()
         {
             queryContextStack.Push(QueryContext.None);
@@ -1060,6 +1067,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     break;
 
                 case ObjectName n:
+                    VisitNode(n);
+                    break;
+                case ColumnIdentifier n:
                     VisitNode(n);
                     break;
 
