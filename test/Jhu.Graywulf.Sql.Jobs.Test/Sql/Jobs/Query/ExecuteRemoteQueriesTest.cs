@@ -15,7 +15,7 @@ using Jhu.Graywulf.Sql.QueryGeneration;
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
     [TestClass]
-    public class RemoteQueryTest : SqlQueryTestBase
+    public class ExecuteRemoteQueriesTest : SqlQueryTestBase
     {
         [ClassInitialize]
         public static void Initialize(TestContext context)
