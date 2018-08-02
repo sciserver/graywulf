@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         private SqlQueryVisitorSink sink;
 
         private int statementCounter;
+        private int pass;
         private Stack<Statement> statementStack;
         private Stack<QueryContext> queryContextStack;
         private Stack<TableContext> tableContextStack;
@@ -42,6 +43,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         public int StatementCounter
         {
             get { return statementCounter; }
+        }
+
+        public int Pass
+        {
+            get { return pass; }
         }
 
         public Stack<Statement> StatementStack
@@ -199,10 +205,16 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         protected virtual void VisitNode(Token node)
         {
+            VisitNode(node, 0);
+        }
+
+        protected virtual void VisitNode(Token node, int pass)
+        {
+            this.pass = pass;
+
             // Depending on the traversal mode, we either route nodes to the sink
             // directly or we reshuffle to produce postfix notation for expression
             // tree building
-
             var reshuffler = ExpressionReshuffler;
 
             if (reshuffler != null)
@@ -1685,7 +1697,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             var groupby = qs.GroupByClause;
             var having = qs.HavingClause;
 
-            VisitNode(qs);
+            VisitNode(qs, 0);
 
             querySpecificationStack.Push(qs);
 
@@ -1725,7 +1737,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             querySpecificationStack.Pop();
 
-            VisitNode(qs);
+            VisitNode(qs, 1);
         }
 
         private void TraverseFromClause(FromClause node)

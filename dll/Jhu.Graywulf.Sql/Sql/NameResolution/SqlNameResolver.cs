@@ -77,7 +77,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private SqlNameResolverOptions options;
         private SqlQueryVisitor visitor;
 
-        private HashSet<Token> visitedNodes;
         private TokenList memberNameParts;
 
         // The schema manager is used to resolve identifiers that are not local to the details,
@@ -97,11 +96,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
         protected SqlQueryVisitor Visitor
         {
             get { return visitor; }
-        }
-
-        protected HashSet<Token> VisitedNodes
-        {
-            get { return visitedNodes; }
         }
 
         protected TokenList MemberNameParts
@@ -146,7 +140,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     VisitSchemaReferences = false
                 }
             };
-            this.visitedNodes = new HashSet<Token>();
             this.memberNameParts = new TokenList();
             this.schemaManager = null;
             this.details = null;
@@ -308,16 +301,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         protected virtual void Accept(QuerySpecification qs)
         {
-            if (!visitedNodes.Contains(qs))
+            switch (Visitor.Pass)
             {
-                // Pass 1
-                qs.ParentQuerySpecification = Visitor.CurrentQuerySpecification;
-                visitedNodes.Add(qs);
-            }
-            else
-            {
-                // Pass 2
-                ResolveResultsTableReference(qs);
+                case 0:
+                    qs.ParentQuerySpecification = Visitor.CurrentQuerySpecification;
+                    break;
+                case 1:
+                    ResolveResultsTableReference(qs);
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
         }
 
