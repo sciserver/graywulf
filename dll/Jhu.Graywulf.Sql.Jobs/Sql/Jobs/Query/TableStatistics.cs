@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         #region Private member variables
 
         private int binCount;
-        private ITableSource tableSource;
+        private TableSource tableSource;
         private Expression keyColumn;
         private Schema.DataType keyColumnDataType;
         private List<IComparable> keyValue;
@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             set { binCount = value; }
         }
 
-        public ITableSource TableSource
+        public TableSource TableSource
         {
             get { return tableSource; }
             set { tableSource = value; }
@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         #endregion
         #region Constructors and initializers
 
-        public TableStatistics(ITableSource tableSource)
+        public TableStatistics(TableSource tableSource)
         {
             InitializeMembers();
 

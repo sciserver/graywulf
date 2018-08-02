@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             return nsb;
         }
 
-        public static StatementBlock Create(Statement[] statements)
+        public static StatementBlock Create(params Statement[] statements)
         {
             StatementBlock nsb = null;
             StatementBlock sb = null;

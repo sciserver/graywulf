@@ -155,7 +155,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 // Partitioning is always done on the table specified right after the FROM keyword
                 // TODO: what if more than one QS?
                 var qs = QueryDetails.ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateQuerySpecifications().FirstOrDefault();
-                var ts = (SimpleTableSource)qs.EnumerateSourceTables(false).First();
+                var ts = (SimpleTableSource)qs.SourceTableReferences.Values.First().TableSource;
 
                 // TODO: modify this when expression output type functions are implemented
                 // and figure out data type directly from expression
@@ -171,11 +171,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
         }
 
-        private Jhu.Graywulf.Sql.Schema.DatasetBase GetStatisticsDataset(ITableSource tableSource)
+        private Jhu.Graywulf.Sql.Schema.DatasetBase GetStatisticsDataset(TableSource tableSource)
         {
             if (!String.IsNullOrEmpty(Parameters.StatDatabaseVersionName))
             {
-                var nts = (ITableSource)tableSource.Clone();
+                var nts = (TableSource)tableSource.Clone();
                 var sm = GetSchemaManager();
                 var ds = sm.Datasets[tableSource.TableReference.DatasetName];
 
@@ -195,7 +195,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             return null;
         }
 
-        public SqlCommand GetComputeTableStatisticsCommand(ITableSource tableSource)
+        public SqlCommand GetComputeTableStatisticsCommand(TableSource tableSource)
         {
             var ds = GetStatisticsDataset(tableSource);
             var cg = CreateCodeGenerator();
@@ -208,7 +208,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// </summary>
         /// <param name="tr"></param>
         /// <param name="binSize"></param>
-        public async Task ComputeTableStatisticsAsync(ITableSource tableSource, SqlCommand cmd)
+        public async Task ComputeTableStatisticsAsync(TableSource tableSource, SqlCommand cmd)
         {
             var stat = TableStatistics[tableSource.UniqueKey];
 

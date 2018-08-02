@@ -87,5 +87,8 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             }
         }
 
+        protected internal override void AcceptVisitor(SqlQueryVisitor visitor, IDatabaseObjectReference node)
+        {
+        }
     }
 }

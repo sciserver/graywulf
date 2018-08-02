@@ -15,6 +15,7 @@ using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.LogicalExpressions;
 using Jhu.Graywulf.Sql.NameResolution;
+using Jhu.Graywulf.Sql.QueryRendering;
 using Jhu.Graywulf.Sql.QueryGeneration;
 using Jhu.Graywulf.Sql.QueryGeneration.SqlServer;
 using Jhu.Graywulf.Tasks;
@@ -148,7 +149,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         protected virtual SqlQueryCodeGenerator CreateCodeGenerator()
         {
-            return new SqlQueryCodeGenerator(this)
+            var qg = new SqlQueryCodeGenerator(this);
+            qg.Renderer.Options = new QueryRendering.QueryRendererOptions()
             {
                 TableNameRendering = NameRendering.FullyQualified,
                 TableAliasRendering = AliasRendering.Default,
@@ -157,6 +159,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 DataTypeNameRendering = NameRendering.FullyQualified,
                 FunctionNameRendering = NameRendering.FullyQualified
             };
+            return qg;
         }
 
         protected override void OnNamesResolved(bool forceReinitialize)
@@ -367,7 +370,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 var columns = new Dictionary<string, ColumnReference>();
                 DatabaseObject table = null;
                 TableReference ntr = null;
-                QueryGeneratorBase cg = null;
+                QueryGeneratorBase qg = null;
 
                 // Loop through all references to the table
                 foreach (var tr in QueryDetails.SourceTableReferences[key])
@@ -379,22 +382,16 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                         ntr = new TableReference(tr);
                         ntr.Alias = null;
 
-                        cg = QueryGeneratorFactory.CreateCodeGenerator(table.Dataset);
-                        cg.TableNameRendering = NameRendering.FullyQualified;
-                        cg.TableAliasRendering = AliasRendering.Never;
-                        cg.ColumnNameRendering = NameRendering.IdentifierOnly;
-                        cg.ColumnAliasRendering = AliasRendering.Never;
-                        cg.DataTypeNameRendering = NameRendering.FullyQualified;
-                        cg.FunctionNameRendering = NameRendering.FullyQualified;
+                        qg = QueryGeneratorFactory.CreateQueryGenerator(table.Dataset);
                     }
 
                     // Remap all table reference to the first one; this is to prevent different aliases etc.
                     // Certain tables can be referenced multiple times without different alias,
                     // for example UNION etc. queries.
 
-                    if (!cg.TableReferenceMap.ContainsKey(tr))
+                    if (!qg.Renderer.TableReferenceMap.ContainsKey(tr))
                     {
-                        cg.TableReferenceMap.Add(tr, ntr);
+                        qg.Renderer.TableReferenceMap.Add(tr, ntr);
                     }
 
                     // Collect columns that will be returned
@@ -408,7 +405,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 }
 
                 // Generate select list
-                var columnlist = cg.CreateColumnListGenerator();
+                var columnlist = qg.CreateColumnListGenerator();
                 columnlist.ListType = ColumnListType.SelectWithOriginalNameNoAlias;
                 columnlist.TableAlias = String.Empty;
                 columnlist.Columns.AddRange(columns.Values);
@@ -416,11 +413,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 // Generate where clause
                 var where = scn.GenerateWherePredicatesSpecificToTable(QueryDetails.SourceTableReferences[key]);
 
-                var select = cg.GenerateMostRestrictiveTableQuery(
-                    cg.GetResolvedTableName(table),
+                var select = qg.GenerateMostRestrictiveTableQuery(
+                    qg.Renderer.GetResolvedTableName(table),
                     null,
                     columnlist.Execute(),
-                    cg.Execute(where),
+                    qg.Execute(where),
                     top);
 
                 res.Add(key, select);

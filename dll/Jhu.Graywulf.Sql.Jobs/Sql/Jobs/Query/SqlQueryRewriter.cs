@@ -55,6 +55,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         #endregion
 
+        // TODO: redesign this to use the visitor
+
         protected override void RewriteQuerySpecification(QuerySpecification qs, int depth, int index, QueryContext queryContext)
         {
             base.RewriteQuerySpecification(qs, depth, index, queryContext);
@@ -64,7 +66,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             if (options.AppendPartitioning && depth == 0)
             {
                 // Check if it is a partitioned query and append partitioning conditions, if necessary
-                var ts = qs.EnumerateSourceTables(false).FirstOrDefault();
+                var ts = qs.SourceTableReferences.Values.FirstOrDefault().TableSource;
 
                 if (ts != null && ts is SimpleTableSource && ((SimpleTableSource)ts).IsPartitioned)
                 {
@@ -79,7 +81,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             if (options.RemovePartitioning)
             {
-                foreach (var ts in qs.EnumerateSourceTables(false))
+                foreach (var ts in qs.SourceTableReferences.Values.Select(i => i.TableSource))
                 {
                     // Strip off PARTITION BY clause
                     var pc = (ts as Node)?.FindDescendant<TablePartitionClause>();
@@ -112,7 +114,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             if (options.AssignColumnAliases)
             {
-                AssignDefaultColumnAliases(qs, selectList, depth, depth != 0, (queryContext & QueryContext.SemiJoin) != 0);
+                AssignDefaultColumnAliases(qs);
             }
         }
 
@@ -198,14 +200,14 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
         }
 
-        protected BooleanExpression GetPartitioningConditions(Expression partitioningKeyExpression)
+        protected LogicalExpression GetPartitioningConditions(Expression partitioningKeyExpression)
         {
             if (!Partition.IsPartitioningKeyUnbound(Partition.PartitioningKeyMin) &&
                 !Partition.IsPartitioningKeyUnbound(Partition.PartitioningKeyMax))
             {
                 var from = GetPartitioningKeyMinCondition(partitioningKeyExpression);
                 var to = GetPartitioningKeyMaxCondition(partitioningKeyExpression);
-                return BooleanExpression.Create(from, to, LogicalOperator.CreateAnd());
+                return LogicalExpression.Create(from, to, LogicalOperator.CreateAnd());
             }
             else if (!Partition.IsPartitioningKeyUnbound(Partition.PartitioningKeyMin))
             {
@@ -226,11 +228,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// </summary>
         /// <param name="partitioningKey"></param>
         /// <returns></returns>
-        private BooleanExpression GetPartitioningKeyMinCondition(Expression partitioningKeyExpression)
+        private LogicalExpression GetPartitioningKeyMinCondition(Expression partitioningKeyExpression)
         {
             var a = Expression.Create(UserVariable.Create(Constants.PartitionKeyMinParameterName));
             var p = Predicate.CreateLessThanOrEqual(a, partitioningKeyExpression);
-            return BooleanExpression.Create(false, p);
+            return LogicalExpression.Create(false, p);
         }
 
         /// <summary>
@@ -238,11 +240,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// </summary>
         /// <param name="partitioningKey"></param>
         /// <returns></returns>
-        private BooleanExpression GetPartitioningKeyMaxCondition(Expression partitioningKeyExpression)
+        private LogicalExpression GetPartitioningKeyMaxCondition(Expression partitioningKeyExpression)
         {
             var b = Expression.Create(UserVariable.Create(Constants.PartitionKeyMaxParameterName));
             var p = Predicate.CreateLessThan(partitioningKeyExpression, b);
-            return BooleanExpression.Create(false, p);
+            return LogicalExpression.Create(false, p);
         }
 
         #endregion        

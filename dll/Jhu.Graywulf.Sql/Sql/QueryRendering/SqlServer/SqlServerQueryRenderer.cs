@@ -14,15 +14,20 @@ namespace Jhu.Graywulf.Sql.QueryRendering.SqlServer
         public static string GetCode(Node node, bool resolvedNames)
         {
             var sw = new StringWriter();
-            var cg = new SqlServerQueryRenderer();
+            var cg = new SqlServerQueryRenderer()
+            {
+                Options = new QueryRendererOptions()
+                {
+                    TableNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original,
+                    ColumnNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original,
+                    UdtMemberNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original,
+                    DataTypeNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original,
+                    FunctionNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original,
+                    IndexNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original,
+                    ConstraintNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original,
+                }
+            };
 
-            cg.TableNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.ColumnNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.UdtMemberNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.DataTypeNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.FunctionNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.IndexNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.ConstraintNameRendering = resolvedNames ? NameRendering.FullyQualified : NameRendering.Original;
             cg.Execute(sw, node);
 
             return sw.ToString();

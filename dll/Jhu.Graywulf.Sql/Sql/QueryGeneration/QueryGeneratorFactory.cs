@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data.Common;
 using Jhu.Graywulf.Sql.Schema;
+using Jhu.Graywulf.Sql.QueryRendering;
 
 namespace Jhu.Graywulf.Sql.QueryGeneration
 {
@@ -24,7 +25,7 @@ namespace Jhu.Graywulf.Sql.QueryGeneration
             }
         }
 
-        public static QueryGeneratorBase CreateCodeGenerator(Type t)
+        public static QueryGeneratorBase CreateQueryGenerator(Type t)
         {
             if (t == typeof(Schema.SqlServer.SqlServerDataset) || t.IsSubclassOf(typeof(Schema.SqlServer.SqlServerDataset)))
             {
@@ -40,9 +41,9 @@ namespace Jhu.Graywulf.Sql.QueryGeneration
             }
         }
 
-        public static QueryGeneratorBase CreateCodeGenerator(DatasetBase ds)
+        public static QueryGeneratorBase CreateQueryGenerator(DatasetBase ds)
         {
-            return CreateCodeGenerator(ds.GetType());
+            return CreateQueryGenerator(ds.GetType());
         }
     }
 }

@@ -17,16 +17,22 @@ namespace Jhu.Graywulf.Sql
             var ss = ParseAndResolveNames<SelectStatement>(query);
             var w = new StringWriter();
 
-            var cg = new SqlServerQueryRenderer();
-            cg.TableNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.TableAliasRendering = resolveAliases ? AliasRendering.Always : AliasRendering.Never;
-            cg.ColumnNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.UdtMemberNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.ColumnAliasRendering = resolveAliases ? AliasRendering.Always : AliasRendering.Never;
-            cg.DataTypeNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.FunctionNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.IndexNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
-            cg.ConstraintNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original;
+            var cg = new SqlServerQueryRenderer()
+            {
+                Options = new QueryRendererOptions()
+                {
+                    TableNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original,
+                    TableAliasRendering = resolveAliases ? AliasRendering.Always : AliasRendering.Never,
+                    ColumnNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original,
+                    UdtMemberNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original,
+                    ColumnAliasRendering = resolveAliases ? AliasRendering.Always : AliasRendering.Never,
+                    DataTypeNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original,
+                    FunctionNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original,
+                    IndexNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original,
+                    ConstraintNameRendering = resolveNames ? NameRendering.FullyQualified : NameRendering.Original,
+                }
+            };
+
             cg.Execute(w, ss);
 
             return w.ToString();

@@ -94,6 +94,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             Accept((dynamic)node);
         }
 
+        protected override void AcceptVisitor(SqlQueryVisitor visitor, IDatabaseObjectReference node)
+        {
+        }
+
         protected virtual void Accept(Token node)
         {
             // Default dispatch, write out token

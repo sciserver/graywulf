@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         public InArgument<SqlQuery> Query { get; set; }
 
         [RequiredArgument]
-        public InArgument<ITableSource> TableSource { get; set; }
+        public InArgument<TableSource> TableSource { get; set; }
 
         protected override async Task OnExecuteAsync(AsyncCodeActivityContext activityContext, CancellationContext cancellationContext)
         {

@@ -219,30 +219,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             if (options.VisitSchemaReferences)
             {
-                if (node is IDataTypeReference dr)
-                {
-                    sink.Accept(dr);
-                }
-
-                if (node is IVariableReference vr)
-                {
-                    sink.Accept(vr);
-                }
-
-                if (node is IFunctionReference fr)
-                {
-                    sink.Accept(fr);
-                }
-
-                if (node is IColumnReference cr)
-                {
-                    sink.Accept(cr);
-                }
-
-                if (node is ITableReference tr)
-                {
-                    sink.Accept(tr);
-                }
+                sink.AcceptVisitor(this, node);
             }
         }
 
@@ -1251,7 +1228,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     case Comma n:
                         VisitNode(n);
                         break;
-                    case Literal n 
+                    case Literal n
                     when SqlParser.ComparerInstance.Compare(n.Value, "AS") == 0:
                         VisitNode(n);
                         break;
@@ -1464,7 +1441,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         #endregion
         #region Special functions
-        
+
         private void TraverseLogicalArgument(LogicalArgument node)
         {
             if (QueryContext.HasFlag(QueryContext.Expression))
@@ -1690,15 +1667,16 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseQueryExpression(QueryExpression qe)
         {
+            int index = 0;
             foreach (var qs in qe.EnumerateDescendants<QuerySpecification>())
             {
-                TraverseQuerySpecification(qs);
+                TraverseQuerySpecification(qs, index++);
             }
 
             VisitNode(qe);
         }
 
-        private void TraverseQuerySpecification(QuerySpecification qs)
+        private void TraverseQuerySpecification(QuerySpecification qs, int index)
         {
             var into = qs.IntoClause;
             var from = qs.FromClause;
@@ -1707,7 +1685,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             var groupby = qs.GroupByClause;
             var having = qs.HavingClause;
 
-            qs.ParentQuerySpecification = CurrentQuerySpecification;
+            VisitNode(qs);
 
             querySpecificationStack.Push(qs);
 

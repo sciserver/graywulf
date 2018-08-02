@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         private async Task ExecuteQuery(CancellationToken cancellationToken)
         {
             var tableOrView = Item;
-            var codegen = QueryGeneratorFactory.CreateCodeGenerator(tableOrView.Dataset);
+            var codegen = QueryGeneratorFactory.CreateQueryGenerator(tableOrView.Dataset);
             var sql = codegen.GenerateSelectStarQuery(tableOrView, 100);
 
             // To peek into data, pick a server

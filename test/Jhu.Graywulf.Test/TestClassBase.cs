@@ -145,14 +145,17 @@ namespace Jhu.Graywulf.Test
         {
             return new SqlServerQueryRenderer()
             {
-                ColumnNameRendering = NameRendering.FullyQualified,
-                ColumnAliasRendering = AliasRendering.Always,
-                DataTypeNameRendering = NameRendering.FullyQualified,
-                UdtMemberNameRendering = NameRendering.FullyQualified,
-                TableNameRendering = NameRendering.FullyQualified,
-                FunctionNameRendering = NameRendering.FullyQualified,
-                IndexNameRendering = NameRendering.FullyQualified,
-                ConstraintNameRendering = NameRendering.FullyQualified,
+                Options = new QueryRendererOptions()
+                {
+                    ColumnNameRendering = NameRendering.FullyQualified,
+                    ColumnAliasRendering = AliasRendering.Always,
+                    DataTypeNameRendering = NameRendering.FullyQualified,
+                    UdtMemberNameRendering = NameRendering.FullyQualified,
+                    TableNameRendering = NameRendering.FullyQualified,
+                    FunctionNameRendering = NameRendering.FullyQualified,
+                    IndexNameRendering = NameRendering.FullyQualified,
+                    ConstraintNameRendering = NameRendering.FullyQualified,
+                }
             };
         }
 

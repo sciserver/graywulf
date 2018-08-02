@@ -28,6 +28,20 @@ namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
         public override QueryRendererBase CreateQueryRenderer()
         {
             return new SqlServerQueryRenderer();
+
+            /* TODO: where do we use these settings?
+            {
+                Options = new QueryRendererOptions()
+                {
+                    TableNameRendering = NameRendering.FullyQualified,
+                    TableAliasRendering = AliasRendering.Default,
+                    ColumnNameRendering = NameRendering.IdentifierOnly,
+                    ColumnAliasRendering = AliasRendering.Default,
+                    DataTypeNameRendering = NameRendering.FullyQualified,
+                    FunctionNameRendering = NameRendering.FullyQualified,
+                }
+            };
+            */
         }
 
         #region Identifier formatting functions
@@ -208,8 +222,8 @@ namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
             var sql = new StringBuilder();
             var columns = new SqlServerColumnListGenerator(table)
             {
-                 ListType = ColumnListType.CreateTableWithOriginalName,
-                 SeparatorRendering = ColumnListSeparatorRendering.Default
+                ListType = ColumnListType.CreateTableWithOriginalName,
+                SeparatorRendering = ColumnListSeparatorRendering.Default
             };
 
             sql.Append("CREATE TABLE ");
@@ -240,7 +254,7 @@ namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
                     }
                 }
             }
-            
+
             return sql.ToString();
         }
 
@@ -301,10 +315,10 @@ namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
 
             return sql.ToString();
         }
-        
+
         public string GenerateDropPrimaryKeyScript(TableOrView table)
         {
-            var sql = 
+            var sql =
 @"ALTER TABLE {0}
 DROP CONSTRAINT {1}";
 

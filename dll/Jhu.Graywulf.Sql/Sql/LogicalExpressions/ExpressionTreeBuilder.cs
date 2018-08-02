@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Jhu.Graywulf.Parsing;
+using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.QueryTraversal;
 
@@ -53,6 +54,10 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
                     stack.Enqueue(n);
                     break;
             }
+        }
+
+        protected internal override void AcceptVisitor(SqlQueryVisitor visitor, IDatabaseObjectReference node)
+        {
         }
 
         private ExpressionTreeNode BuildTree()

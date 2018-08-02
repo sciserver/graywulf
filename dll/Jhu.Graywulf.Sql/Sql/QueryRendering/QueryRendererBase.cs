@@ -17,18 +17,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
 
         private TextWriter writer;
 
-        private IdentifierQuoting identifierQuoting;
-
-        private NameRendering tableNameRendering;
-        private AliasRendering tableAliasRendering;
-        private NameRendering columnNameRendering;
-        private NameRendering udtMemberNameRendering;
-        private AliasRendering columnAliasRendering;
-        private NameRendering dataTypeNameRendering;
-        private NameRendering functionNameRendering;
-        private VariableRendering variableRendering;
-        private NameRendering indexNameRendering;
-        private NameRendering constraintNameRendering;
+        private QueryRendererOptions options;
 
         private Lazy<Dictionary<DatasetBase, DatasetBase>> datasetMap;
         private Lazy<Dictionary<TableReference, TableReference>> tableReferenceMap;
@@ -45,73 +34,10 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             get { return writer; }
         }
 
-        public IdentifierQuoting IdentifierQuoting
+        public QueryRendererOptions Options
         {
-            get { return identifierQuoting; }
-            set { identifierQuoting = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets whether to use resolved names in the generated code
-        /// </summary>
-        public NameRendering TableNameRendering
-        {
-            get { return tableNameRendering; }
-            set { tableNameRendering = value; }
-        }
-
-        public AliasRendering TableAliasRendering
-        {
-            get { return tableAliasRendering; }
-            set { tableAliasRendering = value; }
-        }
-
-        public NameRendering ColumnNameRendering
-        {
-            get { return columnNameRendering; }
-            set { columnNameRendering = value; }
-        }
-
-        public NameRendering UdtMemberNameRendering
-        {
-            get { return udtMemberNameRendering; }
-            set { udtMemberNameRendering = value; }
-        }
-
-        public AliasRendering ColumnAliasRendering
-        {
-            get { return columnAliasRendering; }
-            set { columnAliasRendering = value; }
-        }
-
-        public NameRendering DataTypeNameRendering
-        {
-            get { return dataTypeNameRendering; }
-            set { dataTypeNameRendering = value; }
-        }
-
-        public NameRendering FunctionNameRendering
-        {
-            get { return functionNameRendering; }
-            set { functionNameRendering = value; }
-        }
-
-        public VariableRendering VariableRendering
-        {
-            get { return variableRendering; }
-            set { variableRendering = value; }
-        }
-
-        public NameRendering IndexNameRendering
-        {
-            get { return indexNameRendering; }
-            set { indexNameRendering = value; }
-        }
-
-        public NameRendering ConstraintNameRendering
-        {
-            get { return constraintNameRendering; }
-            set { constraintNameRendering = value; }
+            get { return options; }
+            set { options = value; }
         }
 
         public Dictionary<DatasetBase, DatasetBase> DatasetMap
@@ -155,18 +81,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
         private void InitializeMembers()
         {
             this.writer = null;
-
-            this.identifierQuoting = IdentifierQuoting.AlwaysQuote;
-
-            this.tableNameRendering = NameRendering.Default;
-            this.tableAliasRendering = AliasRendering.Default;
-            this.columnNameRendering = NameRendering.Default;
-            this.udtMemberNameRendering = NameRendering.Default;
-            this.columnAliasRendering = AliasRendering.Default;
-            this.dataTypeNameRendering = NameRendering.Default;
-            this.functionNameRendering = NameRendering.Default;
-            this.variableRendering = VariableRendering.Default;
-
+            this.options = CreateOptions();
             // TODO: how to compare datasets?
             this.datasetMap = new Lazy<Dictionary<DatasetBase, DatasetBase>>(() => new Dictionary<DatasetBase, DatasetBase>());
             this.tableReferenceMap = new Lazy<Dictionary<TableReference, TableReference>>(() => new Dictionary<TableReference, TableReference>(TableReferenceEqualityComparer.Default));
@@ -174,6 +89,11 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             this.dataTypeReferenceMap = new Lazy<Dictionary<DataTypeReference, DataTypeReference>>(() => new Dictionary<DataTypeReference, DataTypeReference>(DataTypeReferenceEqualityComparer.Default));
             this.functionReferenceMap = new Lazy<Dictionary<FunctionReference, FunctionReference>>(() => new Dictionary<FunctionReference, FunctionReference>(FunctionReferenceEqualityComparer.Default));
             this.variableReferenceMap = new Lazy<Dictionary<VariableReference, VariableReference>>(() => new Dictionary<VariableReference, VariableReference>(VariableReferenceEqualityComparer.Default));
+        }
+
+        protected virtual QueryRendererOptions CreateOptions()
+        {
+            return new QueryRendererOptions();
         }
 
         #endregion
@@ -258,7 +178,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
         /// </remarks>
         protected virtual bool WriteNode(TableOrViewIdentifier node)
         {
-            switch (tableNameRendering)
+            switch (options.TableNameRendering)
             {
                 case NameRendering.FullyQualified:
                     Writer.Write(GetResolvedTableName(node.TableReference));
@@ -273,7 +193,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
 
         protected virtual bool WriteNode(TableAlias node)
         {
-            switch (tableAliasRendering)
+            switch (options.TableAliasRendering)
             {
                 case AliasRendering.Default:
                 case AliasRendering.Always:
@@ -311,7 +231,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
         /// <returns></returns>
         protected virtual bool WriteNode(ColumnIdentifier node)
         {
-            switch (columnNameRendering)
+            switch (options.ColumnNameRendering)
             {
                 case NameRendering.FullyQualified:
                     Writer.Write(GetResolvedColumnName(node.ColumnReference));
@@ -332,7 +252,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             {
                 if (!String.IsNullOrWhiteSpace(tr.Alias))
                 {
-                    switch (tableNameRendering)
+                    switch (options.TableNameRendering)
                     {
                         case NameRendering.FullyQualified:
                         case NameRendering.IdentifierOnly:
@@ -344,7 +264,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
                 }
                 else
                 {
-                    switch (tableNameRendering)
+                    switch (options.TableNameRendering)
                     {
                         case NameRendering.FullyQualified:
                             Writer.Write(GetResolvedTableName(tr));
@@ -382,7 +302,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             var exp = node.Expression;
             var star = node.StarColumnIdentifier;
 
-            if (columnAliasRendering == AliasRendering.Default)
+            if (options.ColumnAliasRendering == AliasRendering.Default)
             {
                 return false;
             }
@@ -405,7 +325,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
                     throw new NotImplementedException();
                 }
 
-                if (columnAliasRendering == AliasRendering.Always)
+                if (options.ColumnAliasRendering == AliasRendering.Always)
                 {
                     if (!node.ColumnReference.IsStar && !String.IsNullOrEmpty(node.ColumnReference.ColumnAlias))
                     {
@@ -414,7 +334,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
 
                     return true;
                 }
-                else if (columnAliasRendering == AliasRendering.Never)
+                else if (options.ColumnAliasRendering == AliasRendering.Never)
                 {
                     return true;
                 }
@@ -430,7 +350,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             // Table and index column definition
             // UPDATE set mutator only
 
-            switch (columnNameRendering)
+            switch (options.ColumnNameRendering)
             {
                 case NameRendering.FullyQualified:
                 case NameRendering.IdentifierOnly:
@@ -443,7 +363,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
 
         protected virtual bool WriteNode(PropertyName node)
         {
-            switch (udtMemberNameRendering)
+            switch (options.UdtMemberNameRendering)
             {
                 case NameRendering.FullyQualified:
                 case NameRendering.IdentifierOnly:
@@ -456,7 +376,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
 
         protected virtual bool WriteNode(MethodName node)
         {
-            switch (udtMemberNameRendering)
+            switch (options.UdtMemberNameRendering)
             {
                 case NameRendering.FullyQualified:
                 case NameRendering.IdentifierOnly:
@@ -510,7 +430,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
 
         private bool WriteVariable(IVariableReference node)
         {
-            switch (variableRendering)
+            switch (options.VariableRendering)
             {
                 case VariableRendering.Substitute:
                     Writer.Write(GetResolvedVariableName(node.VariableReference));
@@ -522,7 +442,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
         
         private bool WriteFunctionName(IFunctionReference node)
         {
-            switch (functionNameRendering)
+            switch (options.FunctionNameRendering)
             {
                 case NameRendering.FullyQualified:
                     Writer.Write(GetResolvedFunctionName(node.FunctionReference));
@@ -537,7 +457,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
 
         private bool WriteDataTypeName(IDataTypeReference node)
         {
-            switch (dataTypeNameRendering)
+            switch (options.DataTypeNameRendering)
             {
                 case NameRendering.FullyQualified:
                     Writer.Write(GetResolvedDataTypeName(node.DataTypeReference));
@@ -552,7 +472,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
 
         private bool WriteIndexName(IIndexReference node)
         {
-            switch (indexNameRendering)
+            switch (options.IndexNameRendering)
             {
                 case NameRendering.FullyQualified:
                 case NameRendering.IdentifierOnly:
@@ -565,7 +485,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
 
         private bool WriteConstraintName(IConstraintReference node)
         {
-            switch (constraintNameRendering)
+            switch (options.ConstraintNameRendering)
             {
                 case NameRendering.FullyQualified:
                 case NameRendering.IdentifierOnly:

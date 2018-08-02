@@ -21,11 +21,11 @@ namespace Jhu.Graywulf.Sql.QueryGeneration
         #endregion
         #region Properties
 
-        protected QueryRendererBase Renderer
+        public QueryRendererBase Renderer
         {
             get { return renderer; }
         }
-
+        
         #endregion
         #region Constructors and initializers
 
@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Sql.QueryGeneration
         {
             this.renderer = CreateQueryRenderer();
         }
-
+        
         #endregion
 
         public abstract QueryRendererBase CreateQueryRenderer();

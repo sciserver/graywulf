@@ -498,11 +498,10 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             var nr = QueryFactory.CreateNameResolver();
             nr.SchemaManager = GetSchemaManager();
-
-            nr.DefaultTableDatasetName = parameters.DefaultSourceDataset.Name;
-            nr.DefaultOutputDatasetName = parameters.DefaultOutputDataset.Name;
-            nr.DefaultFunctionDatasetName = CodeDataset.Name;
-            nr.DefaultDataTypeDatasetName = CodeDataset.Name;
+            nr.Options.DefaultTableDatasetName = parameters.DefaultSourceDataset.Name;
+            nr.Options.DefaultOutputDatasetName = parameters.DefaultOutputDataset.Name;
+            nr.Options.DefaultFunctionDatasetName = CodeDataset.Name;
+            nr.Options.DefaultDataTypeDatasetName = CodeDataset.Name;
 
             return nr;
         }

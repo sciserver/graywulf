@@ -112,86 +112,13 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         }
 
         #endregion
-        #region Identifier formatting functions
-
-        /// <summary>
-        /// Puts quotes around an identifier.
-        /// </summary>
-        /// <param name="identifier"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// The quoting characters used depends on the flavor of SQL
-        /// </remarks>
-        protected abstract string GetQuotedIdentifier(string identifier);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="identifier"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// Unquoting depends on the actual input and not on the
-        /// code generator, so this function is implemented as non-
-        /// virtual
-        /// </remarks>
-        public string UnquoteIdentifier(string identifier)
-        {
-            if (identifier[0] == '[' && identifier[identifier.Length - 1] == ']')
-            {
-                return identifier.Substring(1, identifier.Length - 2);
-            }
-            else
-            {
-                return identifier;
-            }
-        }
-
-        public string EscapeIdentifier(string identifier)
-        {
-            return identifier.Replace(".", "_");
-        }
-
-        public string GenerateEscapedUniqueName(DatabaseObject dbobj, string alias)
-        {
-            string res = String.Empty;
-
-            if (!String.IsNullOrWhiteSpace(dbobj.DatasetName))
-            {
-                res += String.Format("{0}_", EscapeIdentifier(dbobj.DatasetName));
-            }
-
-            if (!String.IsNullOrWhiteSpace(dbobj.DatabaseName))
-            {
-                res += String.Format("{0}_", EscapeIdentifier(dbobj.DatabaseName));
-            }
-
-            if (!String.IsNullOrWhiteSpace(dbobj.SchemaName))
-            {
-                res += String.Format("{0}_", EscapeIdentifier(dbobj.SchemaName));
-            }
-
-            if (!String.IsNullOrWhiteSpace(dbobj.ObjectName))
-            {
-                res += String.Format("{0}", EscapeIdentifier(dbobj.ObjectName));
-            }
-
-            // If a table is referenced more than once we need an alias to distinguish them
-            if (!String.IsNullOrWhiteSpace(alias))
-            {
-                res += String.Format("_{0}", EscapeIdentifier(alias));
-            }
-
-            return res;
-        }
-
-        #endregion
         #region Graywulf table reference mapping
 
         public void AddSystemDatabaseMappings()
         {
         }
 
-        public void AddSystemDatabaseMappings(ITableSource tableSource)
+        public void AddSystemDatabaseMappings(TableSource tableSource)
         {
         }
 
@@ -219,9 +146,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 ntr = GetServerSpecificDatabaseMapping(tr, queryObject.AssignedServerInstance, databaseVersion, surrogateDatabaseVersion);
             }
 
-            if (ntr != null && !TableReferenceMap.ContainsKey(tr))
+            if (ntr != null && !Renderer.TableReferenceMap.ContainsKey(tr))
             {
-                TableReferenceMap.Add(tr, ntr);
+                Renderer.TableReferenceMap.Add(tr, ntr);
             }
         }
 
@@ -312,7 +239,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                     if (ntr != null)
                     {
-                        TableReferenceMap.Add(tr, ntr);
+                        Renderer.TableReferenceMap.Add(tr, ntr);
                     }
                 }
             }
@@ -358,7 +285,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     IsUserDefined = true,
                 };
 
-                VariableReferenceMap.Add(sysvar, subsvar);
+                Renderer.VariableReferenceMap.Add(sysvar, subsvar);
             }
         }
 
@@ -435,11 +362,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             {
                 var cr = ci.ColumnReference;
 
-                if (original.TryMatch(cr.TableReference) && !ColumnReferenceMap.ContainsKey(cr))
+                if (original.TryMatch(cr.TableReference) && !Renderer.ColumnReferenceMap.ContainsKey(cr))
                 {
                     var ncr = new ColumnReference(cr);
                     ncr.TableReference = other;
-                    ColumnReferenceMap.Add(cr, ncr);
+                    Renderer.ColumnReferenceMap.Add(cr, ncr);
                 }
             }
         }
@@ -452,7 +379,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// </summary>
         /// <param name="tableSource"></param>
         /// <returns></returns>
-        public virtual SqlCommand GetTableStatisticsCommand(ITableSource tableSource, DatasetBase statisticsDataset)
+        public virtual SqlCommand GetTableStatisticsCommand(TableSource tableSource, DatasetBase statisticsDataset)
         {
             if (!(tableSource.TableReference.DatabaseObject is TableOrView))
             {
@@ -481,7 +408,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         }
 
 
-        protected virtual WhereClause GetTableSpecificWhereClause(ITableSource tableSource)
+        protected virtual WhereClause GetTableSpecificWhereClause(TableSource tableSource)
         {
             var ts = (SimpleTableSource)tableSource;
             var qs = ts.FindAscendant<QuerySpecification>();
@@ -495,27 +422,27 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             return where;
         }
 
-        protected void SubstituteTableStatisticsQueryTokens(StringBuilder sql, ITableSource tableSource)
+        protected void SubstituteTableStatisticsQueryTokens(StringBuilder sql, TableSource tableSource)
         {
             var stat = queryObject.TableStatistics[tableSource.UniqueKey];
 
             SubstituteSystemDatabaseNames(stat.KeyColumn);
 
-            var table = MapTableReference(tableSource.TableReference);
+            var table = Renderer.MapTableReference(tableSource.TableReference);
             var tablename = GenerateEscapedUniqueName(table);
             var temptable = queryObject.GetTemporaryTable("stat_" + tablename);
             var keycol = Execute(stat.KeyColumn);
             var keytype = stat.KeyColumnDataType.TypeNameWithLength;
             var where = GetTableSpecificWhereClause(tableSource);
 
-            sql.Replace("[$temptable]", GetResolvedTableName(temptable));
+            sql.Replace("[$temptable]", Renderer.GetResolvedTableName(temptable));
             sql.Replace("[$keytype]", keytype);
             sql.Replace("[$keycol]", keycol);
-            sql.Replace("[$tablename]", GetResolvedTableNameWithAlias(tableSource.TableReference));
+            sql.Replace("[$tablename]", Renderer.GetResolvedTableNameWithAlias(tableSource.TableReference));
             sql.Replace("[$where]", Execute(where));
         }
 
-        protected virtual void AppendTableStatisticsCommandParameters(ITableSource tableSource, SqlCommand cmd)
+        protected virtual void AppendTableStatisticsCommandParameters(TableSource tableSource, SqlCommand cmd)
         {
             var stat = queryObject.TableStatistics[tableSource.UniqueKey];
             cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = stat.BinCount;
