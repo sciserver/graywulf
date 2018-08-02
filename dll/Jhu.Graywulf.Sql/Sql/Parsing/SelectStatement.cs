@@ -14,8 +14,6 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         #region Private member variables
 
-        private TableReference outputTableReference;
-
         #endregion
         #region Properties
 
@@ -75,7 +73,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         protected override void OnInitializeMembers()
         {
             base.OnInitializeMembers();
-            this.outputTableReference = null;
         }
 
         protected override void OnCopyMembers(object other)
@@ -83,7 +80,6 @@ namespace Jhu.Graywulf.Sql.Parsing
             base.OnCopyMembers(other);
 
             var old = (SelectStatement)other;
-            this.outputTableReference = new TableReference(old.outputTableReference);
         }
 
         #endregion
