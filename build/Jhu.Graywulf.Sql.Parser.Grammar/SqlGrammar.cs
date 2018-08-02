@@ -987,7 +987,6 @@ namespace Jhu.Graywulf.Sql.Parser.Grammar
                 BracketOpen,
                 May(Sequence(May(CommentOrWhitespace), PartitionByClause)),
                 May(Sequence(May(CommentOrWhitespace), OrderByClause)),
-                May(Sequence(May(CommentOrWhitespace), OrderByClause)),
                 // TODO: ROW or RANGE
                 May(CommentOrWhitespace),
                 BracketClose

@@ -99,7 +99,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         protected virtual SourceQuery OnGetExecuteQuery(QueryDetails details)
         {
             var sql = new StringBuilder();
-            sql.AppendLine(Execute(details.ParsingTree));
+            sql.AppendLine(Renderer.Execute(details.ParsingTree));
 
             var source = new SourceQuery()
             {
@@ -431,7 +431,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var table = Renderer.MapTableReference(tableSource.TableReference);
             var tablename = GenerateEscapedUniqueName(table);
             var temptable = queryObject.GetTemporaryTable("stat_" + tablename);
-            var keycol = Execute(stat.KeyColumn);
+            var keycol = Renderer.Execute(stat.KeyColumn);
             var keytype = stat.KeyColumnDataType.TypeNameWithLength;
             var where = GetTableSpecificWhereClause(tableSource);
 
@@ -439,7 +439,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             sql.Replace("[$keytype]", keytype);
             sql.Replace("[$keycol]", keycol);
             sql.Replace("[$tablename]", Renderer.GetResolvedTableNameWithAlias(tableSource.TableReference));
-            sql.Replace("[$where]", Execute(where));
+            sql.Replace("[$where]", Renderer.Execute(where));
         }
 
         protected virtual void AppendTableStatisticsCommandParameters(TableSource tableSource, SqlCommand cmd)

@@ -117,12 +117,13 @@ SELECT COUNT(*) FROM sys.tables
         [TestMethod]
         public void CreatePrimaryKeyTest()
         {
-
+            Assert.Inconclusive();
         }
 
         [TestMethod]
         public void DropPrimaryKeyTest()
         {
+            Assert.Inconclusive();
         }
     }
 }

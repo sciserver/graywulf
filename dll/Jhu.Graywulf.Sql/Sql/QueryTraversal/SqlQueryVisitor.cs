@@ -20,8 +20,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         private SqlQueryVisitorOptions options;
         private SqlQueryVisitorSink sink;
 
-        private int statementCounter;
         private int pass;
+        private Stack<int> indexStack;
+
+        private int statementCounter;
         private Stack<Statement> statementStack;
         private Stack<QueryContext> queryContextStack;
         private Stack<TableContext> tableContextStack;
@@ -45,9 +47,27 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             get { return statementCounter; }
         }
 
+        /// <summary>
+        /// When the node is visited multiple times, it keeps track of the number of passes.
+        /// </summary>
+        /// <remarks>
+        /// It is currently not generic, only used with a few nodes
+        /// </remarks>
         public int Pass
         {
             get { return pass; }
+        }
+
+        /// <summary>
+        /// When multiple children of the same node type are enumerated, this
+        /// keeps track of the index.
+        /// </summary>
+        /// <remarks>
+        /// It is currently not generic, only used with a few nodes
+        /// </remarks>
+        public int Index
+        {
+            get { return indexStack.Peek(); }
         }
 
         public Stack<Statement> StatementStack
@@ -119,6 +139,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             this.options = new SqlQueryVisitorOptions();
             this.sink = null;
+
+            this.pass = 0;
+            this.indexStack = new Stack<int>();
 
             this.statementCounter = 0;
             this.statementStack = new Stack<Statement>();
@@ -590,9 +613,14 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             if (orderby != null)
             {
                 var qs = qe.FirstQuerySpecification;
+
                 querySpecificationStack.Push(qs);
+                tableContextStack.Push(TableContext | TableContext.OrderBy);
+
                 TraverseOrderByClause(orderby);
+
                 querySpecificationStack.Pop();
+                tableContextStack.Pop();
             }
 
             VisitNode(node);
@@ -1359,13 +1387,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseOrderByClause(OrderByClause node)
         {
-            tableContextStack.Push(TableContext | TableContext.OrderBy);
             columnContextStack.Push(ColumnContext | ColumnContext.OrderBy);
 
             VisitNode(node);
             TraverseOrderByArgumentList(node.ArgumentList);
 
-            tableContextStack.Pop();
             columnContextStack.Pop();
         }
 
@@ -1647,9 +1673,14 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             if (orderby != null)
             {
                 var firstqs = qe.FirstQuerySpecification;
+
                 querySpecificationStack.Push(firstqs);
+                tableContextStack.Push(TableContext | TableContext.OrderBy);
+
                 TraverseOrderByClause(orderby);
+
                 querySpecificationStack.Pop();
+                tableContextStack.Pop();
             }
 
             if (cte != null)
@@ -1682,13 +1713,15 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             int index = 0;
             foreach (var qs in qe.EnumerateDescendants<QuerySpecification>())
             {
-                TraverseQuerySpecification(qs, index++);
+                indexStack.Push(index++);
+                TraverseQuerySpecification(qs);
+                indexStack.Pop();
             }
 
             VisitNode(qe);
         }
 
-        private void TraverseQuerySpecification(QuerySpecification qs, int index)
+        private void TraverseQuerySpecification(QuerySpecification qs)
         {
             var into = qs.IntoClause;
             var from = qs.FromClause;
@@ -1910,6 +1943,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             tableContextStack.Pop();
             columnContextStack.Pop();
+
+            VisitNode(node);
         }
 
         private void TraverseStarColumnIdentifier(StarColumnIdentifier node)
@@ -1929,6 +1964,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             TraverseTargetTableSpecification(node.TargetTable);
 
             tableContextStack.Pop();
+
+            VisitNode(node);
         }
 
         private void TraverseWhereClause(WhereClause node)

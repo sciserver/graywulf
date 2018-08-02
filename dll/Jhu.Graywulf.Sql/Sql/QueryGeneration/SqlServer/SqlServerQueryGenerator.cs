@@ -27,21 +27,19 @@ namespace Jhu.Graywulf.Sql.QueryGeneration.SqlServer
 
         public override QueryRendererBase CreateQueryRenderer()
         {
-            return new SqlServerQueryRenderer();
-
-            /* TODO: where do we use these settings?
+            return new SqlServerQueryRenderer()
             {
                 Options = new QueryRendererOptions()
                 {
                     TableNameRendering = NameRendering.FullyQualified,
                     TableAliasRendering = AliasRendering.Default,
-                    ColumnNameRendering = NameRendering.IdentifierOnly,
+                    ColumnNameRendering = NameRendering.FullyQualified,
                     ColumnAliasRendering = AliasRendering.Default,
                     DataTypeNameRendering = NameRendering.FullyQualified,
                     FunctionNameRendering = NameRendering.FullyQualified,
+                    VariableRendering = VariableRendering.Substitute,
                 }
             };
-            */
         }
 
         #region Identifier formatting functions

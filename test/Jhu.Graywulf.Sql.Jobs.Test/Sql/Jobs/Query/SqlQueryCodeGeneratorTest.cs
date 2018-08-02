@@ -42,26 +42,22 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var q = CreateQuery(sql);
             q.Parameters.ExecutionMode = ExecutionMode.SingleServer;
 
-            var cg = new SqlQueryCodeGenerator(q)
-            {
-                TableNameRendering = QueryGeneration.NameRendering.FullyQualified,
-                ColumnNameRendering = QueryGeneration.NameRendering.FullyQualified,
-                DataTypeNameRendering = QueryGeneration.NameRendering.FullyQualified,
-                FunctionNameRendering = QueryGeneration.NameRendering.FullyQualified,
-            };
-            var ts = q.QueryDetails.ParsingTree.FindDescendantRecursive<SelectStatement>().QueryExpression.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
+            var qg = new SqlQueryCodeGenerator(q);
+            var ss = q.QueryDetails.ParsingTree.FindDescendantRecursive<SelectStatement>();
+            var qs = ss.QueryExpression.EnumerateQuerySpecifications().First();
+            var ts = qs.SourceTableReferences.Values.First().TableSource;
 
             // Column to compute the statistics on, not partitioning!
             var stat = new TableStatistics(ts)
             {
                 BinCount = 200,
-                KeyColumn = Expression.Create(new ColumnReference(null, null, "dec", new DataTypeReference(DataTypes.SqlFloat))),
+                KeyColumn = Expression.Create(new ColumnReference(null, null, "dec", new DataTypeReference(DataTypes.SqlFloat)), 0),
                 KeyColumnDataType = DataTypes.SqlFloat
             };
 
             q.TableStatistics.Add(ts.UniqueKey, stat);
 
-            var cmd = cg.GetTableStatisticsCommand(ts, null);
+            var cmd = qg.GetTableStatisticsCommand(ts, null);
 
             return cmd.CommandText;
         }

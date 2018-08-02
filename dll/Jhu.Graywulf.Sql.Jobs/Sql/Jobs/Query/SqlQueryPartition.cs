@@ -417,7 +417,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     qg.Renderer.GetResolvedTableName(table),
                     null,
                     columnlist.Execute(),
-                    qg.Execute(where),
+                    qg.Renderer.Execute(where),
                     top);
 
                 res.Add(key, select);

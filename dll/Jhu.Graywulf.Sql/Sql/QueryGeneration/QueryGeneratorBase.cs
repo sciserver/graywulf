@@ -12,7 +12,7 @@ using Jhu.Graywulf.Sql.QueryRendering;
 
 namespace Jhu.Graywulf.Sql.QueryGeneration
 {
-    public abstract class QueryGeneratorBase : CodeGenerator
+    public abstract class QueryGeneratorBase
     {
         #region Private members
 

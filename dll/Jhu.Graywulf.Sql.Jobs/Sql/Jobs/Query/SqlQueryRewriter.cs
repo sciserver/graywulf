@@ -9,6 +9,7 @@ using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.QueryRewriting;
 using Jhu.Graywulf.Sql.QueryRewriting.SqlServer;
+using Jhu.Graywulf.Sql.QueryTraversal;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
@@ -54,71 +55,118 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         }
 
         #endregion
+        #region Visitor sink implementation
 
-        // TODO: redesign this to use the visitor
-
-        protected override void RewriteQuerySpecification(QuerySpecification qs, int depth, int index, QueryContext queryContext)
+        protected override void AcceptVisitor(SqlQueryVisitor visitor, IDatabaseObjectReference node)
         {
-            base.RewriteQuerySpecification(qs, depth, index, queryContext);
+            // Nothing to do here during query rewriting
+        }
 
-            // TODO: get rid of this logic, partitioning will be solved differently
+        protected override void AcceptVisitor(SqlQueryVisitor visitor, Token node)
+        {
+            Accept((dynamic)node);
+        }
 
-            if (options.AppendPartitioning && depth == 0)
+        protected virtual void Accept(Token node)
+        {
+            // Fall-back case
+        }
+
+        #endregion
+        #region Visitor entry points
+
+        protected virtual void Accept(QuerySpecification qs)
+        {
+            // TODO: review or get rid of this logic, partitioning will be solved differently
+            if (Visitor.Pass == 1)
             {
-                // Check if it is a partitioned query and append partitioning conditions, if necessary
-                var ts = qs.SourceTableReferences.Values.FirstOrDefault().TableSource;
-
-                if (ts != null && ts is SimpleTableSource && ((SimpleTableSource)ts).IsPartitioned)
+                if (options.AppendPartitioning && Visitor.QuerySpecificationDepth == 0)
                 {
-                    if (index > 0)
-                    {
-                        throw new InvalidOperationException();
-                    }
+                    // Check if it is a partitioned query and append partitioning conditions, if necessary
+                    var ts = qs.FirstTableSource;
 
-                    AppendPartitioningConditions(qs, (SimpleTableSource)ts);
+                    if (ts != null && ts is SimpleTableSource && ((SimpleTableSource)ts).IsPartitioned)
+                    {
+                        if (Visitor.Index > 0)
+                        {
+                            throw new InvalidOperationException();
+                        }
+
+                        AppendPartitioningConditions(qs, (SimpleTableSource)ts);
+                    }
                 }
-            }
 
-            if (options.RemovePartitioning)
-            {
-                foreach (var ts in qs.SourceTableReferences.Values.Select(i => i.TableSource))
+                if (options.RemovePartitioning)
                 {
-                    // Strip off PARTITION BY clause
-                    var pc = (ts as Node)?.FindDescendant<TablePartitionClause>();
+                    var ts = qs.FirstTableSource;
 
-                    if (pc != null)
+                    if (ts != null && ts is SimpleTableSource && ((SimpleTableSource)ts).IsPartitioned)
                     {
-                        pc.Parent.Stack.Remove(pc);
+                        // Strip off PARTITION BY clause
+                        var pc = ts.FindDescendant<TablePartitionClause>();
+
+                        if (pc != null)
+                        {
+                            pc.Parent.Stack.Remove(pc);
+                        }
                     }
+                }
+
+                if (options.AssignColumnAliases)
+                {
+                    AssignDefaultColumnAliases(qs);
                 }
             }
         }
 
-        #region Table source rewrite
+        protected virtual void Accept(SelectList selectList)
+        {
+            if (options.SubstituteStars)
+            {
+                var nsl = SubstituteStars(Visitor.CurrentQuerySpecification, selectList);
+                selectList.ReplaceWith(nsl);
+                selectList = nsl;
+            }
+        }
 
+        protected virtual void Accept(IntoClause into)
+        {
+            // Create a magic statement and insert before the SELECT
 
+            var selectStatement = Visitor.CurrentStatement;
+            var parent = selectStatement.FindAscendant<StatementBlock>();
+            var magic = new ServerMessageMagicToken()
+            {
+                DestinationTable = into.TargetTable.TableOrViewIdentifier.TableReference
+            };
+
+            var sb = StatementBlock.Create(magic, selectStatement);
+            var be = BeginEndStatement.Create(sb);
+            selectStatement.ReplaceWith(be);
+
+            into.Remove();
+        }
+
+        protected virtual void Accept(OrderByClause orderby)
+        {
+            // TODO: Right now keep order by intact, it might be necessary for the TOP expression
+            // to work correctly. Later the order by clause could be rewritten to match primary key
+            // ordering.
+
+            var selectStatement = Visitor.CurrentStatement as SelectStatement;
+
+            if (selectStatement != null &&
+                Visitor.TableContext.HasFlag(TableContext.OrderBy) &&
+                !Visitor.TableContext.HasFlag(TableContext.Subquery))
+            {
+                orderby.Remove();
+            }
+        }
 
         #endregion
         #region Select list rewrite
 
-        protected override void RewriteSelectList(QuerySpecification qs, SelectList selectList, int depth, int index, QueryContext queryContext)
-        {
-            base.RewriteSelectList(qs, selectList, depth, index, queryContext);
-
-            if (options.SubstituteStars)
-            {
-                var nsl = SubstituteStars(qs, selectList, depth);
-                selectList.ReplaceWith(nsl);
-                selectList = nsl;
-            }
-
-            if (options.AssignColumnAliases)
-            {
-                AssignDefaultColumnAliases(qs);
-            }
-        }
-
-        public SelectList SubstituteStars(QuerySpecification qs, SelectList selectList, int depth)
+        public SelectList SubstituteStars(QuerySpecification qs, SelectList selectList)
         {
             var ce = selectList.FindDescendant<ColumnExpression>();
             var subsl = selectList.FindDescendant<SelectList>();
@@ -140,7 +188,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                 if (subsl != null)
                 {
-                    sl.Append(SubstituteStars(qs, subsl, depth));
+                    sl.Append(SubstituteStars(qs, subsl));
                 }
 
                 return sl;
@@ -149,106 +197,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             {
                 if (subsl != null)
                 {
-                    selectList.Stack.Replace<SelectList>(SubstituteStars(qs, subsl, depth));
-                    // TODO: delete selectList.Replace(SubstituteStars(qs, subsl, depth));
+                    selectList.Stack.Replace<SelectList>(SubstituteStars(qs, subsl));
                 }
 
                 return selectList;
             }
         }
-        
-        #endregion
-
-        protected override void RewriteIntoClause(SelectStatement selectStatement, IntoClause into)
-        {
-            base.RewriteIntoClause(selectStatement, into);
-
-            // Create a magic statement and insert before the SELECT
-            var parent = selectStatement.FindAscendant<StatementBlock>();
-            var magic = new ServerMessageMagicToken()
-            {
-                DestinationTable = into.TargetTable.TableOrViewIdentifier.TableReference
-            };
-
-            var sb = StatementBlock.Create(magic, selectStatement);
-            var be = BeginEndStatement.Create(sb);
-            selectStatement.ReplaceWith(be);
-
-            into.Remove();
-        }
-
-
-        protected override void RewriteOrderByClause(SelectStatement selectStatement, OrderByClause orderby)
-        {
-            base.RewriteOrderByClause(selectStatement, orderby);
-
-            // TODO: Right now keep order by intact, it might be necessary for the TOP expression
-            // to work correctly. Later the order by clause could be rewritten to match primary key
-            // ordering.
-
-            selectStatement.Stack.Remove(orderby);
-        }
-
-        #region Query partitioning
-
-        protected virtual void AppendPartitioningConditions(QuerySpecification qs, SimpleTableSource ts)
-        {
-            var sc = GetPartitioningConditions(ts.PartitioningKeyExpression);
-            if (sc != null)
-            {
-                qs.AppendSearchCondition(sc, "AND");
-            }
-        }
-
-        protected LogicalExpression GetPartitioningConditions(Expression partitioningKeyExpression)
-        {
-            if (!Partition.IsPartitioningKeyUnbound(Partition.PartitioningKeyMin) &&
-                !Partition.IsPartitioningKeyUnbound(Partition.PartitioningKeyMax))
-            {
-                var from = GetPartitioningKeyMinCondition(partitioningKeyExpression);
-                var to = GetPartitioningKeyMaxCondition(partitioningKeyExpression);
-                return LogicalExpression.Create(from, to, LogicalOperator.CreateAnd());
-            }
-            else if (!Partition.IsPartitioningKeyUnbound(Partition.PartitioningKeyMin))
-            {
-                return GetPartitioningKeyMinCondition(partitioningKeyExpression);
-            }
-            else if (!Partition.IsPartitioningKeyUnbound(Partition.PartitioningKeyMax))
-            {
-                return GetPartitioningKeyMaxCondition(partitioningKeyExpression);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Generates a parsing tree segment for the the partitioning key lower limit
-        /// </summary>
-        /// <param name="partitioningKey"></param>
-        /// <returns></returns>
-        private LogicalExpression GetPartitioningKeyMinCondition(Expression partitioningKeyExpression)
-        {
-            var a = Expression.Create(UserVariable.Create(Constants.PartitionKeyMinParameterName));
-            var p = Predicate.CreateLessThanOrEqual(a, partitioningKeyExpression);
-            return LogicalExpression.Create(false, p);
-        }
-
-        /// <summary>
-        /// Generates a parsing tree segment for the the partitioning key upper limit
-        /// </summary>
-        /// <param name="partitioningKey"></param>
-        /// <returns></returns>
-        private LogicalExpression GetPartitioningKeyMaxCondition(Expression partitioningKeyExpression)
-        {
-            var b = Expression.Create(UserVariable.Create(Constants.PartitionKeyMaxParameterName));
-            var p = Predicate.CreateLessThan(partitioningKeyExpression, b);
-            return LogicalExpression.Create(false, p);
-        }
-
-        #endregion        
-        #region Column alias generation
 
         /// <summary>
         /// Adds default aliases to columns with no aliases specified in the query
@@ -334,6 +288,65 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
 
             return alias2;
+        }
+
+        #endregion
+        #region Query partitioning
+
+        protected virtual void AppendPartitioningConditions(QuerySpecification qs, SimpleTableSource ts)
+        {
+            var sc = GetPartitioningConditions(ts.PartitioningKeyExpression);
+            if (sc != null)
+            {
+                qs.AppendSearchCondition(sc, "AND");
+            }
+        }
+
+        protected LogicalExpression GetPartitioningConditions(Expression partitioningKeyExpression)
+        {
+            if (!Partition.IsPartitioningKeyUnbound(Partition.PartitioningKeyMin) &&
+                !Partition.IsPartitioningKeyUnbound(Partition.PartitioningKeyMax))
+            {
+                var from = GetPartitioningKeyMinCondition(partitioningKeyExpression);
+                var to = GetPartitioningKeyMaxCondition(partitioningKeyExpression);
+                return LogicalExpression.Create(from, to, LogicalOperator.CreateAnd());
+            }
+            else if (!Partition.IsPartitioningKeyUnbound(Partition.PartitioningKeyMin))
+            {
+                return GetPartitioningKeyMinCondition(partitioningKeyExpression);
+            }
+            else if (!Partition.IsPartitioningKeyUnbound(Partition.PartitioningKeyMax))
+            {
+                return GetPartitioningKeyMaxCondition(partitioningKeyExpression);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Generates a parsing tree segment for the the partitioning key lower limit
+        /// </summary>
+        /// <param name="partitioningKey"></param>
+        /// <returns></returns>
+        private LogicalExpression GetPartitioningKeyMinCondition(Expression partitioningKeyExpression)
+        {
+            var a = Expression.Create(UserVariable.Create(Constants.PartitionKeyMinParameterName));
+            var p = Predicate.CreateLessThanOrEqual(a, partitioningKeyExpression);
+            return LogicalExpression.Create(false, p);
+        }
+
+        /// <summary>
+        /// Generates a parsing tree segment for the the partitioning key upper limit
+        /// </summary>
+        /// <param name="partitioningKey"></param>
+        /// <returns></returns>
+        private LogicalExpression GetPartitioningKeyMaxCondition(Expression partitioningKeyExpression)
+        {
+            var b = Expression.Create(UserVariable.Create(Constants.PartitionKeyMaxParameterName));
+            var p = Predicate.CreateLessThan(partitioningKeyExpression, b);
+            return LogicalExpression.Create(false, p);
         }
 
         #endregion

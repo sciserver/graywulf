@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Sql.Schema;
+using Jhu.Graywulf.Sql.QueryRendering;
 using Jhu.Graywulf.Sql.Jobs.Query;
 using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Scheduler;
@@ -57,20 +58,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             return new SqlQueryRewriter(CreatePartition(partitioningKeyMin, partitioningKeyMax));
         }
 
-        protected virtual SqlQueryCodeGenerator CreateCodeGenerator(bool partitioningKeyMin, bool partitioningKeyMax)
+        protected virtual SqlQueryCodeGenerator CreateQueryGenerator(bool partitioningKeyMin, bool partitioningKeyMax)
         {
-            var cg = new SqlQueryCodeGenerator(CreatePartition(partitioningKeyMin, partitioningKeyMax))
-            {
-                TableNameRendering = QueryGeneration.NameRendering.FullyQualified,
-                ColumnNameRendering = QueryGeneration.NameRendering.FullyQualified,
-                DataTypeNameRendering = QueryGeneration.NameRendering.FullyQualified,
-                FunctionNameRendering = QueryGeneration.NameRendering.FullyQualified,
-                VariableRendering = QueryGeneration.VariableRendering.Substitute,
-            };
-
-            cg.AddSystemVariableMappings();
-
-            return cg;
+            var qg = new SqlQueryCodeGenerator(CreatePartition(partitioningKeyMin, partitioningKeyMax));
+            qg.AddSystemVariableMappings();
+            return qg;
         }
 
         protected void RewriteQueryHelper(string sql, string gt)
@@ -78,13 +70,13 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var qrw = CreateQueryRewriter(false, false);
             qrw.Options.SubstituteStars = false;
 
-            var cg = CreateCodeGenerator(false, false);
-            cg.ColumnNameRendering = QueryGeneration.NameRendering.Original;
-            cg.TableNameRendering = QueryGeneration.NameRendering.Original;
+            var cg = CreateQueryGenerator(false, false);
+            cg.Renderer.Options.ColumnNameRendering = NameRendering.Original;
+            cg.Renderer.Options.TableNameRendering = NameRendering.Original;
 
             var parsingTree = Parse(sql);
             qrw.Execute(parsingTree);
-            var res = cg.Execute(parsingTree);
+            var res = cg.Renderer.Execute(parsingTree);
 
             Assert.AreEqual(gt, res);
         }
@@ -95,13 +87,13 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             qrw.Options.SubstituteStars = false;
             qrw.Options.AssignColumnAliases = false;
 
-            var cg = CreateCodeGenerator(partitioningKeyMin, partitioningKeyMax);
-            cg.TableNameRendering = QueryGeneration.NameRendering.Original;
-            cg.ColumnNameRendering = QueryGeneration.NameRendering.Original;
+            var cg = CreateQueryGenerator(partitioningKeyMin, partitioningKeyMax);
+            cg.Renderer.Options.TableNameRendering = NameRendering.Original;
+            cg.Renderer.Options.ColumnNameRendering = NameRendering.Original;
 
             var parsingTree = Parse(sql);
             qrw.Execute(parsingTree);
-            var res = cg.Execute(parsingTree);
+            var res = cg.Renderer.Execute(parsingTree);
 
             Assert.AreEqual(gt, res);
         }
@@ -110,10 +102,10 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             var qd = ParseAndResolveNames(sql);
             var qrw = CreateQueryRewriter(false, false);
-            var cg = CreateCodeGenerator(false, false);
+            var cg = CreateQueryGenerator(false, false);
 
             qrw.Execute(qd.ParsingTree);
-            var res = cg.Execute(qd.ParsingTree);
+            var res = cg.Renderer.Execute(qd.ParsingTree);
 
             Assert.AreEqual(gt, res);
         }
@@ -123,12 +115,12 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             var qd = ParseAndResolveNames(sql);
             var qrw = CreateQueryRewriter(false, false);
 
-            var cg = CreateCodeGenerator(false, false);
-            cg.ColumnAliasRendering = QueryGeneration.AliasRendering.Always;
-            cg.TableAliasRendering = QueryGeneration.AliasRendering.Always;
+            var cg = CreateQueryGenerator(false, false);
+            cg.Renderer.Options.ColumnAliasRendering = AliasRendering.Always;
+            cg.Renderer.Options.TableAliasRendering = AliasRendering.Always;
 
             qrw.Execute(qd.ParsingTree);
-            var res = cg.Execute(qd.ParsingTree);
+            var res = cg.Renderer.Execute(qd.ParsingTree);
 
             Assert.AreEqual(gt, res);
         }
