@@ -184,6 +184,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public void Execute(QueryDetails details)
         {
+            // Flush schema cache of already loaded mutable data sets
+            foreach (var ds in schemaManager.Datasets.Values)
+            {
+                if (ds.IsMutable)
+                {
+                    ds.FlushCache();
+                }
+            }
+
             this.details = details;
             Visitor.Execute(details.ParsingTree);
             details.IsResolved = true;
@@ -1495,6 +1504,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             var table = (Table)tr.DatabaseObject;
             var uniqueKey = table.UniqueKey;
+
+            // Add to schema
+            if (!table.Dataset.Tables.TryAdd(uniqueKey, table))
+            {
+                throw NameResolutionError.TableAlreadyExists(tr);
+            }
 
             // Add to query details
             if (!details.OutputTableReferences.ContainsKey(uniqueKey))

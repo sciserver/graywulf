@@ -10,20 +10,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
 {
     [TestClass]
     public class SystemVariableTest : SqlNameResolverTestBase
-    {
-        private StatementBlock Parse(string sql)
-        {
-            var p = new SqlParser().Execute<StatementBlock>(sql);
-            var nr = new SqlNameResolver();
-            nr.Execute(p);
-            return p;
-        }
-        
+    {        
         [TestMethod]
         public void SetFromQueryTest()
         {
             var sql = "SELECT @@VERSION";
-            var ss = Parse(sql);
+            var ss = ParseAndResolveNames<SelectStatement>(sql);
         }
     }
 }
