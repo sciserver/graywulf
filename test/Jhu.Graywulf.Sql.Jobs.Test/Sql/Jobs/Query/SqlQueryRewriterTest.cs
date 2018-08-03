@@ -202,6 +202,15 @@ WHERE @__partKeyMin <= id AND id < @__partKeyMax";
             SubstituteStarsTestHelper(sql, gt);
         }
 
+        [TestMethod]
+        public void SubstituteStarWithAliasTest()
+        {
+            var sql = "SELECT a.* FROM Author a";
+            var gt = "SELECT [a].[ID], [a].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a]";
+
+            SubstituteStarsTestHelper(sql, gt);
+        }
+
         #endregion
         #region Assign column aliases
 

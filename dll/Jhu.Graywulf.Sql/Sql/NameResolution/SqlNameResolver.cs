@@ -257,6 +257,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             node.ColumnReference = ColumnReference.Interpret(node);
         }
 
+        protected virtual void Accept(StarColumnIdentifier node)
+        {
+            node.ColumnReference.TableReference = ResolveTableReference(node.ColumnReference.TableReference, null);
+        }
+
         protected virtual void Accept(FunctionIdentifier node)
         {
             SubstituteFunctionDefaults(node.FunctionReference);

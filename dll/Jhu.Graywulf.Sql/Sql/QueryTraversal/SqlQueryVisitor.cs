@@ -1955,6 +1955,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             {
                 VisitNode(ti);
             }
+
+            VisitNode(node);
         }
 
         private void TraverseIntoClause(IntoClause node)

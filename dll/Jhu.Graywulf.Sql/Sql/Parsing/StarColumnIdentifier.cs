@@ -32,9 +32,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         protected override void OnCopyMembers(object other)
         {
             base.OnCopyMembers(other);
-
             var old = (StarColumnIdentifier)other;
-
             this.columnReference = old.columnReference;
         }
 
