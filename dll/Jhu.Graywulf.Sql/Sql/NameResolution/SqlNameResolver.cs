@@ -259,7 +259,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         protected virtual void Accept(StarColumnIdentifier node)
         {
-            node.ColumnReference.TableReference = ResolveTableReference(node.ColumnReference.TableReference, null);
+            // Only attempt to resolve table reference if it is defined in the query
+            if (!node.ColumnReference.TableReference.IsUndefined)
+            {
+                node.ColumnReference.TableReference = ResolveTableReference(node.ColumnReference.TableReference, null);
+            }
         }
 
         protected virtual void Accept(FunctionIdentifier node)
@@ -1127,29 +1131,31 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 lastcolpart = 3;
             }
 
-            ColumnReference cr = null;
-            int matches = 0;
+            //ColumnReference cr = null;
+            //int matches = 0;
             matchcolpart = 0;
 
-            for (int i = 0; i <= lastcolpart; i++)
+            // Try to match longest first
+            for (int i = lastcolpart; 0 <= i; i--)
             {
                 var ncr = ResolveMemberAccessListAsColumn(i);
 
                 if (ncr != null)
                 {
                     matchcolpart = i;
-                    matches++;
+
+                    /*matches++;
 
                     if (matches > 1)
                     {
                         throw NameResolutionError.AmbigousColumnReference(ncr);
-                    }
+                    }*/
 
-                    cr = ncr;
+                    return ncr;
                 }
             }
 
-            return cr;
+            return null;
         }
 
         private ColumnReference ResolveMemberAccessListAsColumn(int colpart)

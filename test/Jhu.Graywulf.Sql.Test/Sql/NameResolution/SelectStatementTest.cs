@@ -357,6 +357,30 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         [TestMethod]
+        public void AliasedJoinQueryTest()
+        {
+            var sql =
+@"SELECT a.ID, b.ID
+INTO test
+FROM TEST:Author a
+INNER JOIN TEST:Book b ON a.ID = b.ID";
+
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
+        }
+
+        [TestMethod]
+        public void ColumnAndAliasCollisionTest()
+        {
+            var sql =
+@"SELECT ID.ID, b.ID
+INTO test
+FROM TEST:Author ID
+INNER JOIN TEST:Book b ON ID.ID = b.ID";
+
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
+        }
+
+        [TestMethod]
         public void SimpleStarQueryTest()
         {
             var sql = "SELECT * FROM Author";

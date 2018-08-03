@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         private static NameResolverException CreateException(string message, Exception innerException, string objectName, Node node)
         {
             string msg;
-            var id = node.FindDescendantRecursive<Identifier>();
+            var id = node?.FindDescendantRecursive<Identifier>();
 
             if (id != null)
             {
