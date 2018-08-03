@@ -486,7 +486,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             // Copy columns to the table reference in appropriate order
             var table = (TableOrView)DatabaseObject;
-            foreach (var c in table.Columns.Values.OrderBy(c => c.ID))
+            foreach (var c in table.Columns.Values.OrderBy(i => i.ID))
             {
                 columnReferences.Add(c.ColumnName, new ColumnReference(c, this, new DataTypeReference(c.DataType)));
             }
