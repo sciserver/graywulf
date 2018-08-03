@@ -1433,6 +1433,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         case Expression n:
                             TraverseExpression(n);
                             break;
+                        case Literal n 
+                        when SqlParser.ComparerInstance.Compare(n.Value, "CASE") == 0 ||
+                             SqlParser.ComparerInstance.Compare(n.Value, "ELSE") == 0 ||
+                             SqlParser.ComparerInstance.Compare(n.Value, "END") == 0:
+                            VisitNode(n);
+                            break;
                         case SimpleCaseWhenList n:
                             TraverseSimpleCaseWhenList(n);
                             break;
@@ -1468,13 +1474,84 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     case Expression n:
                         TraverseExpression(n);
                         break;
+                    case Literal n
+                    when SqlParser.ComparerInstance.Compare(n.Value, "WHEN") == 0 ||
+                         SqlParser.ComparerInstance.Compare(n.Value, "THEN") == 0:
+                        VisitNode(n);
+                        break;
                 }
             }
         }
 
         private void TraverseSearchedCaseExpression(SearchedCaseExpression node)
         {
-            throw new NotImplementedException();
+            // If inside an expression context, just pass the node to the reshuffler
+            // if it is an inline callback from the reshuffler already, just traverse
+            
+            if (QueryContext.HasFlag(QueryContext.Expression))
+            {
+                VisitInlineNode(node);
+            }
+            else
+            {
+                foreach (var nn in SelectDirection(node.Stack))
+                {
+                    switch (nn)
+                    {
+                        case Expression n:
+                            TraverseExpression(n);
+                            break;
+                        case Literal n
+                        when SqlParser.ComparerInstance.Compare(n.Value, "CASE") == 0 ||
+                             SqlParser.ComparerInstance.Compare(n.Value, "ELSE") == 0 ||
+                             SqlParser.ComparerInstance.Compare(n.Value, "END") == 0:
+                            VisitNode(n);
+                            break;
+                        case SearchedCaseWhenList n:
+                            TraverseSearchedCaseWhenList(n);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+        private void TraverseSearchedCaseWhenList(SearchedCaseWhenList node)
+        {
+            foreach (var nn in SelectDirection(node.Stack))
+            {
+                switch (nn)
+                {
+                    case SearchedCaseWhen n:
+                        TraverseSearchedCaseWhen(n);
+                        break;
+                    case SearchedCaseWhenList n:
+                        TraverseSearchedCaseWhenList(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraverseSearchedCaseWhen(SearchedCaseWhen node)
+        {
+            foreach (var nn in SelectDirection(node.Stack))
+            {
+                switch (nn)
+                {
+                    case LogicalExpression n:
+                        TraverseLogicalExpression(n);
+                        break;
+                    case Expression n:
+                        TraverseExpression(n);
+                        break;
+                    case Literal n
+                    when SqlParser.ComparerInstance.Compare(n.Value, "WHEN") == 0 ||
+                         SqlParser.ComparerInstance.Compare(n.Value, "THEN") == 0:
+                        VisitNode(n);
+                        break;
+                }
+            }
         }
 
         #endregion

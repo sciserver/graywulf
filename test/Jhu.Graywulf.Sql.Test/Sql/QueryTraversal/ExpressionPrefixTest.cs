@@ -213,13 +213,32 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         public void SimpleCaseTest()
         {
             var res = Execute("CASE x WHEN y THEN z END");
-            Assert.AreEqual("case x y z ", res);
+            Assert.AreEqual("CASE x WHEN y THEN z END ", res);
 
             res = Execute("CASE x + 1 WHEN y + 2 THEN z + 3 END");
-            Assert.AreEqual("case + x 1 + y 2 + z 3 ", res);
+            Assert.AreEqual("CASE + x 1 WHEN + y 2 THEN + z 3 END ", res);
 
             res = Execute("a + CASE x WHEN y THEN z END * b");
-            Assert.AreEqual("+ a * case x y z b ", res);
+            Assert.AreEqual("+ a * CASE x WHEN y THEN z END b ", res);
+
+            res = Execute("a + CASE x WHEN y THEN z ELSE 0 END * b");
+            Assert.AreEqual("+ a * CASE x WHEN y THEN z ELSE 0 END b ", res);
+        }
+
+        [TestMethod]
+        public void SearchedCaseTest()
+        {
+            var res = Execute("CASE WHEN 1 > y THEN z WHEN y > 2 THEN x END");
+            Assert.AreEqual("CASE WHEN 1 > y THEN z WHEN y > 2 THEN x END ", res);
+
+            res = Execute("CASE WHEN x + 1 < y + 2 AND z > 3 THEN z + 3 END");
+            Assert.AreEqual("CASE WHEN + x 1 < + y 2 AND z > 3 THEN + z 3 END ", res);
+
+            res = Execute("a + CASE WHEN x = y THEN z END * b");
+            Assert.AreEqual("+ a * CASE WHEN x = y THEN z END b ", res);
+
+            res = Execute("a + CASE WHEN y = y THEN z ELSE 0 END * b");
+            Assert.AreEqual("+ a * CASE WHEN y = y THEN z ELSE 0 END b ", res);
         }
     }
 }
