@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Parser.Test
             }
 
             RefreshNodeTree(null, rootNode);
-            parsed.Text = Jhu.Graywulf.Sql.QueryGeneration.SqlServer.SqlServerQueryGenerator.GetCode(rootNode, false);
+            parsed.Text = Jhu.Graywulf.Sql.QueryRendering.SqlServer.SqlServerQueryRenderer.GetCode(rootNode, false);
         }
 
         private void toolbuttonResolve_Click(object sender, EventArgs e)
@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Parser.Test
                     var nr = qf.CreateNameResolver();
                     nr.SchemaManager = sm;
 
-                    nr.DefaultTableDatasetName = "MYDB";
+                    nr.Options.DefaultTableDatasetName = "MYDB";
                     nr.Execute((StatementBlock)rootNode);
 
                     //List<SqlParser.TableReference> rt = new List<SqlParser.TableReference>(qs.e);
@@ -89,7 +89,7 @@ namespace Jhu.Graywulf.Parser.Test
                     SelectList sl = qs.FindDescendant<SelectList>();
                     List<ColumnExpression> ce = new List<ColumnExpression>(sl.EnumerateDescendants<ColumnExpression>());
 
-                    parsed.Text = Jhu.Graywulf.Sql.QueryGeneration.SqlServer.SqlServerQueryGenerator.GetCode(rootNode, true);
+                    parsed.Text = Jhu.Graywulf.Sql.QueryRendering.SqlServer.SqlServerQueryRenderer.GetCode(rootNode, true);
                     //}
                     //catch (Exception ex)
                     //{
@@ -110,7 +110,7 @@ namespace Jhu.Graywulf.Parser.Test
             }
             else
             {
-                BooleanExpression sc = wh.FindDescendant<BooleanExpression>();
+                LogicalExpression sc = wh.FindDescendant<LogicalExpression>();
                 if (sc == null)
                 {
                     yield break;
@@ -125,9 +125,9 @@ namespace Jhu.Graywulf.Parser.Test
                             wc = new SearchConditionReference((Predicate)n);
                             yield return wc;
                         }
-                        else if (n is LgocalExpressionBrackets)
+                        else if (n is LogicalExpressionBrackets)
                         {
-                            wc = new SearchConditionReference((LgocalExpressionBrackets)n);
+                            wc = new SearchConditionReference((LogicalExpressionBrackets)n);
                             yield return wc;
                         }
                     }

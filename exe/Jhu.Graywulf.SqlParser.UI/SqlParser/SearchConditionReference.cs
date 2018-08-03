@@ -52,13 +52,13 @@ namespace Jhu.Graywulf.Parser.Test
             UpdateFromNode((Node)node);
         }
 
-        public SearchConditionReference(Sql.Parsing.BooleanExpression node)
+        public SearchConditionReference(Sql.Parsing.LogicalExpression node)
         {
             InitializeMembers();
             UpdateFromNode((Node)node);
         }
 
-        public SearchConditionReference(Sql.Parsing.LgocalExpressionBrackets node)
+        public SearchConditionReference(Sql.Parsing.LogicalExpressionBrackets node)
         {
             InitializeMembers();
             UpdateFromNode((Node)node);
@@ -76,7 +76,7 @@ namespace Jhu.Graywulf.Parser.Test
             this.node = node;
 
             this.tableReferences.Clear();
-            this.tableReferences.AddRange(node.EnumerateTableReferences());
+            this.tableReferences.AddRange(node.EnumerateDescendantsRecursive<ITableReference>(typeof(Subquery)).Select(i => i.TableReference));
         }
     }
 }
