@@ -130,6 +130,10 @@
       <Project>{94ab6a2e-6877-4fed-87e2-1f9f17622f43}</Project>
       <Name>Jhu.Graywulf.Scheduler</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Sql.Extensions\Jhu.Graywulf.Sql.Extensions.csproj">
+      <Project>{c6f0228b-cfc5-44d2-b474-0613ec496ce7}</Project>
+      <Name>Jhu.Graywulf.Sql.Extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Sql.Jobs\Jhu.Graywulf.Sql.Jobs.csproj">
       <Project>{08789ba4-645a-4980-9fdb-15aae7be7754}</Project>
       <Name>Jhu.Graywulf.Sql.Jobs</Name>

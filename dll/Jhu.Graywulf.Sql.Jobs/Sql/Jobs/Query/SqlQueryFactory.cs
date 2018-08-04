@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <returns></returns>
         public override Jhu.Graywulf.Parsing.Parser CreateParser()
         {
-            return new Sql.Parsing.SqlParser();
+            return new Sql.Extensions.Parsing.GraywulfSqlParser();
         }
 
         /// <summary>
