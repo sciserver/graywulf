@@ -173,7 +173,8 @@ namespace Jhu.Graywulf.Test
 
         protected virtual StatementBlock Parse(string sql)
         {
-            return Parser.Execute<StatementBlock>(sql);
+            var parser = CreateParser();
+            return (StatementBlock)parser.Execute(sql);
         }
 
         protected virtual T Parse<T>(string sql)

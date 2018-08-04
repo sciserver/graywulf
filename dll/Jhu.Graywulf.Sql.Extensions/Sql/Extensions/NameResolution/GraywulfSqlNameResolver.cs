@@ -92,6 +92,16 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
         #endregion
         #region Reference resolution
 
+        protected override bool IsSystemFunctionName(string name)
+        {
+            return base.IsSystemFunctionName(name) || Constants.GraywulfSystemFunctionNames.Contains(name);
+        }
+
+        protected override bool IsSystemVariableName(string name)
+        {
+            return base.IsSystemVariableName(name) || Constants.GraywulfSystemVariableNames.Contains(name);
+        }
+
         protected override DatasetBase LoadDataset(DatabaseObjectReference dr)
         {
             try

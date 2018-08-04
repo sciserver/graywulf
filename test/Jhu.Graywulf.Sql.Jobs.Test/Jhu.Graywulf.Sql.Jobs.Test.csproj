@@ -75,7 +75,6 @@
     <Compile Include="Sql\Jobs\Query\ExecuteRemoteQueriesTest.cs" />
     <Compile Include="Sql\Jobs\Query\ExecuteScriptsTest.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryCodeGeneratorTest.cs" />
-    <Compile Include="Sql\Jobs\Query\SqlQueryRewriterTest.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryTestBase.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryTestException.cs" />
     <Compile Include="Sql\Jobs\Query\TableReferenceTest.cs" />

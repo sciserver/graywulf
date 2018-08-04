@@ -18,6 +18,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.QueryRendering;
 using Jhu.Graywulf.Sql.QueryGeneration;
 using Jhu.Graywulf.Sql.QueryGeneration.SqlServer;
+using Jhu.Graywulf.Sql.Extensions.QueryRewriting;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.IO.Tasks;
 
@@ -139,9 +140,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         #endregion
 
-        protected virtual PartitionedSqlQueryRewriter CreateQueryRewriter()
+        protected virtual GraywulfSqlQueryRewriter CreateQueryRewriter()
         {
-            return new PartitionedSqlQueryRewriter(this)
+            return new GraywulfSqlQueryRewriter()
             {
                 // TODO: add settings if necessary
             };

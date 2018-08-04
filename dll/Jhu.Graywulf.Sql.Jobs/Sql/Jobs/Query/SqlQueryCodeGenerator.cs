@@ -272,7 +272,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         public void AddSystemVariableMappings()
         {
-            foreach (var pair in Constants.SystemVariableMappings)
+            // TODO: this is alredy covered in query rewriter
+
+            throw new NotImplementedException();
+
+            foreach (var pair in Jhu.Graywulf.Sql.Extensions.QueryRewriting.Constants.SystemVariableMappings)
             {
                 var sysvar = new VariableReference()
                 {
@@ -461,7 +465,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             if (!Partition.IsPartitioningKeyUnbound(partitioningKeyMin))
             {
                 var par = cmd.CreateParameter();
-                par.ParameterName = Constants.PartitionKeyMinParameterName;
+                par.ParameterName = Jhu.Graywulf.Sql.Extensions.QueryRewriting.Constants.PartitionKeyMinParameterName;
                 par.Value = partitioningKeyMin;
                 cmd.Parameters.Add(par);
             }
@@ -469,7 +473,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             if (!Partition.IsPartitioningKeyUnbound(partitioningKeyMax))
             {
                 var par = cmd.CreateParameter();
-                par.ParameterName = Constants.PartitionKeyMaxParameterName;
+                par.ParameterName = Jhu.Graywulf.Sql.Extensions.QueryRewriting.Constants.PartitionKeyMaxParameterName;
                 par.Value = partitioningKeyMax;
                 cmd.Parameters.Add(par);
             }
@@ -479,18 +483,18 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             if (!Partition.IsPartitioningKeyUnbound(Partition.PartitioningKeyMin))
             {
-                q.Parameters.Add(Constants.PartitionKeyMinParameterName, Partition.PartitioningKeyMin);
+                q.Parameters.Add(Jhu.Graywulf.Sql.Extensions.QueryRewriting.Constants.PartitionKeyMinParameterName, Partition.PartitioningKeyMin);
             }
 
             if (!Partition.IsPartitioningKeyUnbound(Partition.PartitioningKeyMax))
             {
-                q.Parameters.Add(Constants.PartitionKeyMaxParameterName, Partition.PartitioningKeyMax);
+                q.Parameters.Add(Jhu.Graywulf.Sql.Extensions.QueryRewriting.Constants.PartitionKeyMaxParameterName, Partition.PartitioningKeyMax);
             }
 
             if (Partition.Query != null)
             {
-                q.Parameters.Add(Constants.PartitionCountParameterName, Partition.Query.Partitions.Count);
-                q.Parameters.Add(Constants.PartitionIdParameterName, Partition.ID + 1);
+                q.Parameters.Add(Jhu.Graywulf.Sql.Extensions.QueryRewriting.Constants.PartitionCountParameterName, Partition.Query.Partitions.Count);
+                q.Parameters.Add(Jhu.Graywulf.Sql.Extensions.QueryRewriting.Constants.PartitionIdParameterName, Partition.ID + 1);
             }
         }
 

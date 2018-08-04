@@ -54,6 +54,7 @@
     <Compile Include="Sql\Extensions\NameResolution\PartitionedSelectStatementTest.cs" />
     <Compile Include="Sql\Extensions\Parsing\ParsingTestBase.cs" />
     <Compile Include="Sql\Extensions\Parsing\PartitionedSelectStatementTest.cs" />
+    <Compile Include="Sql\Extensions\QueryRewriting\GraywulfSqlQueryRewriterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

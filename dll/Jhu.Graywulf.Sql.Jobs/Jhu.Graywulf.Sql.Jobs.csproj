@@ -98,8 +98,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>LogMessages.resx</DependentUpon>
     </Compile>
-    <Compile Include="Sql\Jobs\Query\PartitionedSqlQueryRewriter.cs" />
-    <Compile Include="Sql\Jobs\Query\PartitionedSqlQueryRewriterOptions.cs" />
     <Compile Include="Sql\Jobs\Query\QueryFactory.cs" />
     <Compile Include="Sql\Jobs\Query\QueryObject.cs" />
     <Compile Include="Sql\Jobs\Query\RemoteOutputTable.cs" />

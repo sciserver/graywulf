@@ -13,6 +13,7 @@ using Jhu.Graywulf.Sql.Jobs.Query;
 using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.RemoteService;
+using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
@@ -53,78 +54,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             };
         }
 
-        protected virtual PartitionedSqlQueryRewriter CreateQueryRewriter(bool partitioningKeyMin, bool partitioningKeyMax)
+        protected override SqlParser CreateParser()
         {
-            return new PartitionedSqlQueryRewriter(CreatePartition(partitioningKeyMin, partitioningKeyMax));
-        }
-
-        protected virtual SqlQueryCodeGenerator CreateQueryGenerator(bool partitioningKeyMin, bool partitioningKeyMax)
-        {
-            var qg = new SqlQueryCodeGenerator(CreatePartition(partitioningKeyMin, partitioningKeyMax));
-            qg.AddSystemVariableMappings();
-            return qg;
-        }
-
-        protected void RewriteQueryHelper(string sql, string gt)
-        {
-            var qrw = CreateQueryRewriter(false, false);
-            qrw.Options.SubstituteStars = false;
-
-            var cg = CreateQueryGenerator(false, false);
-            cg.Renderer.Options.ColumnNameRendering = NameRendering.Original;
-            cg.Renderer.Options.TableNameRendering = NameRendering.Original;
-
-            var parsingTree = Parse(sql);
-            qrw.Execute(parsingTree);
-            var res = cg.Renderer.Execute(parsingTree);
-
-            Assert.AreEqual(gt, res);
+            return new Jhu.Graywulf.Sql.Extensions.Parsing.GraywulfSqlParser();
         }
         
-        protected void RewritePartitioningTestHelper(string sql, string gt, bool partitioningKeyMin, bool partitioningKeyMax)
-        {
-            var qrw = CreateQueryRewriter(partitioningKeyMin, partitioningKeyMax);
-            qrw.Options.SubstituteStars = false;
-            qrw.Options.AssignColumnAliases = false;
-
-            var cg = CreateQueryGenerator(partitioningKeyMin, partitioningKeyMax);
-            cg.Renderer.Options.TableNameRendering = NameRendering.Original;
-            cg.Renderer.Options.ColumnNameRendering = NameRendering.Original;
-
-            var parsingTree = Parse(sql);
-            qrw.Execute(parsingTree);
-            var res = cg.Renderer.Execute(parsingTree);
-
-            Assert.AreEqual(gt, res);
-        }
-
-        protected void SubstituteStarsTestHelper(string sql, string gt)
-        {
-            var qd = ParseAndResolveNames(sql);
-            var qrw = CreateQueryRewriter(false, false);
-            var cg = CreateQueryGenerator(false, false);
-
-            qrw.Execute(qd.ParsingTree);
-            var res = cg.Renderer.Execute(qd.ParsingTree);
-
-            Assert.AreEqual(gt, res);
-        }
-
-        protected void AssignColumnAliasesTestHelper(string sql, string gt)
-        {
-            var qd = ParseAndResolveNames(sql);
-            var qrw = CreateQueryRewriter(false, false);
-
-            var cg = CreateQueryGenerator(false, false);
-            cg.Renderer.Options.ColumnAliasRendering = AliasRendering.Always;
-            cg.Renderer.Options.TableAliasRendering = AliasRendering.Always;
-
-            qrw.Execute(qd.ParsingTree);
-            var res = cg.Renderer.Execute(qd.ParsingTree);
-
-            Assert.AreEqual(gt, res);
-        }
-
         protected virtual SqlQuery CreateQuery(string query)
         {
             using (var context = ContextManager.Instance.CreateReadOnlyContext())

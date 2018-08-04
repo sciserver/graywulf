@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryTraversal
         }
 
         #endregion
-
+        
         protected override void DispatchTableSource(TableSource node)
         {
             switch (node)

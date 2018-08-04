@@ -35,7 +35,12 @@ namespace Jhu.Graywulf.Sql.QueryRewriting
 
         private void InitializeMembers()
         {
-            this.visitor = new SqlQueryVisitor(this)
+            this.visitor = CreateQueryVisitor();
+        }
+
+        protected virtual SqlQueryVisitor CreateQueryVisitor()
+        {
+            return new SqlQueryVisitor(this)
             {
                 Options = new SqlQueryVisitorOptions()
                 {

@@ -11,67 +11,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
 {
     public class SqlNameResolver : SqlQueryVisitorSink
     {
-        #region Constants 
-        private static readonly HashSet<string> SystemFunctionNames = new HashSet<string>(Schema.SchemaManager.Comparer)
-        {
-            "COALESCE", "NULLIF",
-
-            "OPENDATASOURCE", "OPENQUERY", "OPENROWSET", "OPENXML",
-
-            "AVG", "MIN", "CHECKSUM_AGG", "SUM", "COUNT", "STDEV", "COUNT_BIG", "STDEVP", "GROUPING", "VAR", "GROUPING_ID", "VARP", "MAX",
-
-            "RANK", "NTILE", "DENSE_RANK", "ROW_NUMBER",
-
-            "CAST", "CONVERT", "PARSE", "TRY_CAST", "TRY_CONVERT", "TRY_PARSE",
-
-            "SYSDATETIME", "SYSDATETIMEOFFSET", "SYSUTCDATETIME", "CURRENT_TIMESTAMP", "GETDATE", "GETUTCDATE", "DATENAME", "DATEPART", "DAY", "MONTH", "YEAR",
-            "DATEFROMPARTS", "DATETIME2FROMPARTS", "DATETIMEFROMPARTS", "DATETIMEOFFSETFROMPARTS", "SMALLDATETIMEFROMPARTS", "TIMEFROMPARTS",
-            "DATEDIFF", "DATEADD", "EOMONTH", "SWITCHOFFSET", "TODATETIMEOFFSET",
-
-            "CHOOSE", "IIF",
-
-            "ABS", "DEGREES", "RAND", "ACOS", "EXP", "ROUND", "ASIN", "FLOOR", "SIGN", "ATAN", "LOG", "SIN", "ATN2", "LOG10", "SQRT", "CEILING",
-            "PI", "SQUARE", "COS", "POWER", "TAN", "COT", "RADIANS",
-
-            "INDEX_COL", "APP_NAME", "INDEXKEY_PROPERTY", "APPLOCK_MODE", "INDEXPROPERTY", "APPLOCK_TEST", "ASSEMBLYPROPERTY", "OBJECT_DEFINITION",
-            "COL_LENGTH", "OBJECT_ID", "COL_NAME", "OBJECT_NAME", "COLUMNPROPERTY", "OBJECT_SCHEMA_NAME", "DATABASE_PRINCIPAL_ID", "OBJECTPROPERTY",
-            "DATABASEPROPERTYEX", "OBJECTPROPERTYEX", "DB_ID", "ORIGINAL_DB_NAME", "DB_NAME", "PARSENAME", "FILE_ID", "SCHEMA_ID", "FILE_IDEX",
-            "SCHEMA_NAME", "FILE_NAME", "SCOPE_IDENTITY", "FILEGROUP_ID", "SERVERPROPERTY", "FILEGROUP_NAME", "STATS_DATE", "FILEGROUPPROPERTY",
-            "TYPE_ID", "FILEPROPERTY", "TYPE_NAME", "FULLTEXTCATALOGPROPERTY", "TYPEPROPERTY", "FULLTEXTSERVICEPROPERTY",
-
-            "CERTENCODED", "PWDCOMPARE", "CERTPRIVATEKEY", "PWDENCRYPT", "CURRENT_USER", "SCHEMA_ID", "DATABASE_PRINCIPAL_ID", "SCHEMA_NAME",
-            "SESSION_USER", "SUSER_ID", "SUSER_SID", "HAS_PERMS_BY_NAME", "SUSER_SNAME", "IS_MEMBER", "SYSTEM_USER", "IS_ROLEMEMBER", "SUSER_NAME",
-            "IS_SRVROLEMEMBER", "USER_ID", "ORIGINAL_LOGIN", "USER_NAME", "PERMISSIONS",
-
-            "ASCII", "LTRIM", "SOUNDEX", "CHAR", "NCHAR", "SPACE", "CHARINDEX", "PATINDEX", "STR", "CONCAT", "QUOTENAME", "STUFF", "DIFFERENCE",
-            "REPLACE", "SUBSTRING", "FORMAT", "REPLICATE", "UNICODE", "LEFT", "REVERSE", "UPPER", "LEN", "RIGHT", "LOWER", "RTRIM",
-
-            "ERROR_SEVERITY", "ERROR_STATE", "FORMATMESSAGE", "GETANSINULL", "GET_FILESTREAM_TRANSACTION_CONTEXT", "HOST_ID", "BINARY_CHECKSUM",
-            "HOST_NAME", "CHECKSUM", "ISNULL", "CONNECTIONPROPERTY", "ISNUMERIC", "CONTEXT_INFO", "MIN_ACTIVE_ROWVERSION", "CURRENT_REQUEST_ID",
-            "NEWID", "ERROR_LINE", "NEWSEQUENTIALID", "ERROR_MESSAGE", "ROWCOUNT_BIG", "ERROR_NUMBER", "XACT_STATE", "ERROR_PROCEDURE",
-
-            "PATINDEX", "TEXTVALID", "TEXTPTR",
-        };
-
-        private static readonly HashSet<string> SystemVariableNames = new HashSet<string>(Schema.SchemaManager.Comparer)
-        {
-            "ERROR", "IDENTITY", "ROWCOUNT", "FETCH_STATUS",
-
-            "CONNECTION", "CPU_BUSY", "IDLE", "IO_BUSY", "PACK_SENT", "PACK_RECEIVED", "PACKET_ERRORS",
-            "TIMETICKS", "TOTAL_ERRORS", "TOTAL_READ", "TOTAL_WRITER",
-            "TRANCOUNT",
-            "CURSOR_ROWS", "DATEFIRST", "DBTS", "DEF_SORTORDER_ID", "DEFAULT_LANGID",
-            "FETCH_STATUS", "LANGID", "LANGUAGE", "LOCK_TIMEOUT", "MAX_CONNECTION",
-            "MAX_PRECISION", "MICROSOFTVERSION", "NESTLEVEL", "OPTIONS",
-            "PROCID", "REMSERVER", "SERVERNAME", "SERVICENAME", "SPID",
-            "TEXTSIZE", "VERSION",
-
-            // Custom system variables
-            Constants.SystemVariableNamePartCount,
-            Constants.SystemVariableNamePartId,
-        };
-
-        #endregion
         #region Private member variables
 
         private SqlNameResolverOptions options;
@@ -503,9 +442,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
             dr.LoadDatabaseObject(ds);
         }
 
-        protected bool IsSystemFunctionName(string name)
+        protected virtual bool IsSystemFunctionName(string name)
         {
-            return SystemFunctionNames.Contains(name);
+            return Constants.SystemFunctionNames.Contains(name);
+        }
+
+        protected virtual bool IsSystemVariableName(string name)
+        {
+            return Constants.SystemVariableNames.Contains(name);
         }
 
         private FunctionReference ResolveFunctionReference(FunctionReference fr)
@@ -537,7 +481,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 var name = vr.VariableName.TrimStart('@');
 
-                if (!SystemVariableNames.Contains(name))
+                if (!IsSystemVariableName(name))
                 {
                     throw NameResolutionError.UnresolvableVariableReference(vr);
                 }

@@ -1802,7 +1802,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             VisitNode(qe);
         }
-
+        
         private void TraverseQuerySpecification(QuerySpecification qs)
         {
             var into = qs.IntoClause;

@@ -8,6 +8,7 @@ using Jhu.Graywulf.Sql.Extensions.Parsing;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.QueryTraversal;
+using Jhu.Graywulf.Sql.Extensions.QueryTraversal;
 
 namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
 {
@@ -17,6 +18,9 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
 
         private GraywulfSqlQueryRewriterOptions options;
 
+        private object partitioningKeyMin;
+        private object partitioningKeyMax;
+
         #endregion
         #region Properties
 
@@ -24,6 +28,18 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
         {
             get { return options; }
             set { options = value; }
+        }
+
+        public object PartitioningKeyMin
+        {
+            get { return partitioningKeyMin; }
+            set { partitioningKeyMin = value; }
+        }
+
+        public object PartitioningKeyMax
+        {
+            get { return partitioningKeyMax; }
+            set { partitioningKeyMax = value; }
         }
 
         #endregion
@@ -42,6 +58,21 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
         protected virtual GraywulfSqlQueryRewriterOptions CreateOptions()
         {
             return new GraywulfSqlQueryRewriterOptions();
+        }
+
+        protected override SqlQueryVisitor CreateQueryVisitor()
+        {
+            return new QueryTraversal.GraywulfSqlQueryVisitor(this)
+            {
+                Options = new QueryTraversal.GraywulfSqlQueryVisitorOptions()
+                {
+                    LogicalExpressionTraversal = ExpressionTraversalMethod.Infix,
+                    ExpressionTraversal = ExpressionTraversalMethod.Infix,
+                    VisitExpressionSubqueries = true,
+                    VisitPredicateSubqueries = true,
+                    VisitSchemaReferences = false,
+                }
+            };
         }
 
         #endregion
@@ -69,6 +100,49 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
         {
             if (Visitor.Pass == 1)
             {
+                if (Options.AssignColumnAliases)
+                {
+                    AssignDefaultColumnAliases(qs);
+                }
+            }
+        }
+
+        protected virtual void Accept(PartitionedQuerySpecification qs)
+        {
+            if (Visitor.Pass == 1)
+            {
+                if (Options.AppendPartitioningCondition && Visitor.QuerySpecificationDepth == 0)
+                {
+                    // Check if it is a partitioned query and append partitioning conditions, if necessary
+                    var ts = qs.FirstTableSource as PartitionedTableSource;
+
+                    if (ts != null)
+                    {
+                        if (Visitor.Index > 0)
+                        {
+                            throw new InvalidOperationException();
+                        }
+
+                        AppendPartitioningConditions(qs, ts);
+                    }
+                }
+
+                if (Options.RemovePartitioningClause)
+                {
+                    var ts = qs.FirstTableSource as PartitionedTableSource;
+
+                    if (ts != null)
+                    {
+                        // Strip off PARTITION BY clause
+                        var pc = ts.FindDescendant<TablePartitionClause>();
+
+                        if (pc != null)
+                        {
+                            pc.Parent.Stack.Remove(pc);
+                        }
+                    }
+                }
+
                 if (Options.AssignColumnAliases)
                 {
                     AssignDefaultColumnAliases(qs);
@@ -106,17 +180,33 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
 
         protected virtual void Accept(OrderByClause orderby)
         {
-            // TODO: Right now keep order by intact, it might be necessary for the TOP expression
-            // to work correctly. Later the order by clause could be rewritten to match primary key
-            // ordering.
-
-            var selectStatement = Visitor.CurrentStatement as SelectStatement;
-
-            if (selectStatement != null &&
-                Visitor.TableContext.HasFlag(TableContext.OrderBy) &&
-                !Visitor.TableContext.HasFlag(TableContext.Subquery))
+            if (options.RemoveOrderBy)
             {
-                orderby.Remove();
+                // TODO: Right now keep order by intact, it might be necessary for the TOP expression
+                // to work correctly. Later the order by clause could be rewritten to match primary key
+                // ordering.
+
+                var selectStatement = Visitor.CurrentStatement as SelectStatement;
+
+                if (selectStatement != null &&
+                    Visitor.TableContext.HasFlag(TableContext.OrderBy) &&
+                    !Visitor.TableContext.HasFlag(TableContext.Subquery))
+                {
+                    orderby.Remove();
+                }
+            }
+        }
+
+        protected virtual void Accept(SystemVariable node)
+        {
+            if (options.MapSystemVariables)
+            {
+                var value = node.Value.Substring(2);
+
+                if (Constants.SystemVariableMappings.ContainsKey(value))
+                {
+                    node.ReplaceWith(UserVariable.Create(Constants.SystemVariableMappings[value]));
+                }
             }
         }
 
@@ -167,6 +257,7 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
         /// <param name="qs"></param>
         private void AssignDefaultColumnAliases(QuerySpecification qs)
         {
+            bool cte = Visitor.QueryContext.HasFlag(QueryContext.CommonTableExpression);
             bool subquery = Visitor.QueryContext.HasFlag(QueryContext.Subquery);
             bool singleColumnSubquery = Visitor.QueryContext.HasFlag(QueryContext.SemiJoin);
             var selectList = qs.SelectList;
@@ -197,7 +288,7 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
                             alias = GetUniqueColumnAlias(aliases, String.Format("Col_{0}", cr.SelectListIndex));
                         }
                     }
-                    else if (!subquery)
+                    else if (!subquery && !cte)
                     {
                         if (cr.TableReference != null && cr.TableReference.Alias != null)
                         {
@@ -245,6 +336,64 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
             }
 
             return alias2;
+        }
+
+        #endregion
+        #region Query partitioning
+
+        protected virtual void AppendPartitioningConditions(QuerySpecification qs, PartitionedTableSource ts)
+        {
+            var sc = GetPartitioningConditions(ts.PartitioningKeyExpression);
+            if (sc != null)
+            {
+                qs.AppendSearchCondition(sc, "AND");
+            }
+        }
+
+        protected LogicalExpression GetPartitioningConditions(Expression partitioningKeyExpression)
+        {
+            if (partitioningKeyMin != null && partitioningKeyMax != null)
+            {
+                var from = GetPartitioningKeyMinCondition(partitioningKeyExpression);
+                var to = GetPartitioningKeyMaxCondition(partitioningKeyExpression);
+                return LogicalExpression.Create(from, to, LogicalOperator.CreateAnd());
+            }
+            else if (partitioningKeyMin != null)
+            {
+                return GetPartitioningKeyMinCondition(partitioningKeyExpression);
+            }
+            else if (partitioningKeyMax != null)
+            {
+                return GetPartitioningKeyMaxCondition(partitioningKeyExpression);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Generates a parsing tree segment for the the partitioning key lower limit
+        /// </summary>
+        /// <param name="partitioningKey"></param>
+        /// <returns></returns>
+        private LogicalExpression GetPartitioningKeyMinCondition(Expression partitioningKeyExpression)
+        {
+            var a = Expression.Create(UserVariable.Create(Constants.PartitionKeyMinParameterName));
+            var p = Predicate.CreateLessThanOrEqual(a, partitioningKeyExpression);
+            return LogicalExpression.Create(false, p);
+        }
+
+        /// <summary>
+        /// Generates a parsing tree segment for the the partitioning key upper limit
+        /// </summary>
+        /// <param name="partitioningKey"></param>
+        /// <returns></returns>
+        private LogicalExpression GetPartitioningKeyMaxCondition(Expression partitioningKeyExpression)
+        {
+            var b = Expression.Create(UserVariable.Create(Constants.PartitionKeyMaxParameterName));
+            var p = Predicate.CreateLessThan(partitioningKeyExpression, b);
+            return LogicalExpression.Create(false, p);
         }
 
         #endregion

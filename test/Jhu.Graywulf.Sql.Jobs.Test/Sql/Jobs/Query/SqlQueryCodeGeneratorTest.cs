@@ -101,57 +101,7 @@ WHERE ([p].[ra] > 2);";
 
         #endregion
         
-        #region Column name escaping
-
-        [TestMethod]
-        public void EscapeColumnNameTest1()
-        {
-            var tr = new TableReference()
-            {
-                DatasetName = "TEST",
-                SchemaName = "sch",
-                DatabaseObjectName = "table",
-                Alias = "a",
-            };
-
-            var gt = "a_col";
-
-            var columns = new SqlServerColumnListGenerator();
-            var res = (string)CallMethod(columns, "EscapeColumnName", tr, "col");
-
-            Assert.AreEqual(gt, res);
-        }
-
-        [TestMethod]
-        public void EscapeColumnNameTest2()
-        {
-            var tr = new TableReference()
-            {
-                DatasetName = "TEST",
-                SchemaName = "sch",
-                DatabaseObjectName = "table",
-            };
-
-            var gt = "TEST_sch_table_col";
-
-            var columns = new SqlServerColumnListGenerator();
-            var res = (string)CallMethod(columns, "EscapeColumnName", tr, "col");
-
-            Assert.AreEqual(gt, res);
-        }
-
-        #endregion
-        #region System variables
-
-        [TestMethod]
-        public void PartitionVariablesTest()
-        {
-            var sql = @"SELECT @@PARTCOUNT, @@PARTID";
-            var gt = @"SELECT @__partCount, @__partId";
-
-            RewriteQueryHelper(sql, gt);
-        }
-
-        #endregion
+       
+        
     }
 }

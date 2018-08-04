@@ -12,16 +12,5 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         public const string DefaultQuickResultsTableNamePattern = "QuickResults";
         public const string DefaultLongResultsTableNamePattern = "Results";
         public const string DefaultOutputTableNamePattern = "Output_" + IO.Constants.ResultsetNameToken;
-
-        public const string PartitionCountParameterName = "@__partCount";
-        public const string PartitionIdParameterName = "@__partId";
-        public const string PartitionKeyMinParameterName = "@__partKeyMin";
-        public const string PartitionKeyMaxParameterName = "@__partKeyMax";
-
-        public static readonly Dictionary<string, string> SystemVariableMappings = new Dictionary<string, string>(Jhu.Graywulf.Sql.Extensions.Parsing.GraywulfSqlParser.ComparerInstance)
-        {
-            { NameResolution.Constants.SystemVariableNamePartCount, PartitionCountParameterName },
-            { NameResolution.Constants.SystemVariableNamePartId, PartitionIdParameterName},
-        };
     }
 }
