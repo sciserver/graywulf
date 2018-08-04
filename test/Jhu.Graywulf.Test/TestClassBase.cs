@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.Test
             {
                 if (schemaManager == null)
                 {
-                    CreateSchemaManager();
+                    schemaManager = CreateSchemaManager();
                 }
 
                 return schemaManager;
@@ -87,7 +87,7 @@ namespace Jhu.Graywulf.Test
             {
                 if (parser == null)
                 {
-                    CreateParser();
+                    parser = CreateParser();
                 }
 
                 return parser;
@@ -100,7 +100,7 @@ namespace Jhu.Graywulf.Test
             {
                 if (nameResolver == null)
                 {
-                    CreateNameResolver();
+                    nameResolver = CreateNameResolver();
                 }
 
                 return nameResolver;
@@ -122,29 +122,29 @@ namespace Jhu.Graywulf.Test
 
         protected virtual SchemaManager CreateSchemaManager()
         {
-            schemaManager = new SqlServerSchemaManager();
+            var sm = new SqlServerSchemaManager();
 
             var ds = CreateTestDataset();
-            schemaManager.Datasets[ds.Name] = ds;
+            sm.Datasets[ds.Name] = ds;
 
             var mydb = CreateMyDbDataset();
-            schemaManager.Datasets[mydb.Name] = mydb;
+            sm.Datasets[mydb.Name] = mydb;
 
-            return schemaManager;
+            return sm;
         }
 
         protected virtual SqlParser CreateParser()
         {
-            parser = new SqlParser();
-            return parser;
+            return new SqlParser();
         }
 
         protected virtual SqlNameResolver CreateNameResolver()
         {
-            nameResolver = new SqlNameResolver();
-            nameResolver.Dataset = CreateTestDataset();
-            nameResolver.Options = new SqlNameResolverOptions();
-            return nameResolver;
+            return new SqlNameResolver()
+            {
+                Dataset = CreateTestDataset(),
+                Options = new SqlNameResolverOptions()
+            };
         }
 
         protected QueryRendererBase CreateCodeGenerator()
@@ -167,8 +167,8 @@ namespace Jhu.Graywulf.Test
 
         protected QueryDetails ResolveNames(StatementBlock script)
         {
-            CreateNameResolver();
-            return nameResolver.Execute(script);
+            var nr = CreateNameResolver();
+            return nr.Execute(script);
         }
 
         protected virtual StatementBlock Parse(string sql)
@@ -184,14 +184,14 @@ namespace Jhu.Graywulf.Test
 
         protected QueryDetails ParseAndResolveNames(string query)
         {
-            var script = Parser.Execute<StatementBlock>(query);
+            var script = (StatementBlock)Parser.Execute(query);
             return ResolveNames(script);
         }
 
         protected T ParseAndResolveNames<T>(string query)
             where T : Jhu.Graywulf.Parsing.Node
         {
-            var script = Parser.Execute<StatementBlock>(query);
+            var script = (StatementBlock)Parser.Execute(query);
             ResolveNames(script);
 
             if (script is T)

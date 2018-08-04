@@ -121,7 +121,11 @@ namespace Jhu.Graywulf.Sql.Extensions.Grammar
             );
 
         public static Expression<Rule> PartitionedTableSourceSpecification = () =>
-            PartitionedTableSource;
+            Inherit
+            (
+                TableSourceSpecification,
+                PartitionedTableSource
+            );
 
         public static Expression<Rule> PartitionedTableSource = () =>
             Inherit

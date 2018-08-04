@@ -621,6 +621,17 @@ CROSS JOIN (SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author]) [b]", res);
         [TestMethod]
         public void SelectStarColumnAliasTest3()
         {
+            var sql = "SELECT [a].*, [b].[ID] AS [q] FROM [Author] [a] CROSS JOIN [Author] [b]";
+
+            var qs = ParseAndResolveNames<QuerySpecification>(sql);
+
+            var res = GenerateCode(qs);
+            Assert.AreEqual("SELECT [a].*, [b].[ID] AS [q] FROM [Graywulf_Schema_Test].[dbo].[Author] [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Author] [b]", res);
+        }
+
+        [TestMethod]
+        public void SelectStarColumnAliasTest4()
+        {
             var sql = "SELECT a.*, a.* FROM Author a";
 
             var qs = ParseAndResolveNames<QuerySpecification>(sql);
