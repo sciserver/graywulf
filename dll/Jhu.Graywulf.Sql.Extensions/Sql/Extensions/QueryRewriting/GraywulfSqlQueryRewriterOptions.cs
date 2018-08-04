@@ -4,27 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Jhu.Graywulf.Sql.Jobs.Query
+namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
 {
-    public class SqlQueryRewriterOptions
+    public class GraywulfSqlQueryRewriterOptions
     {
-        private bool appendPartitioning;
-        private bool removePartitioning;
         private bool substituteStars;
         private bool assignColumnAliases;
         private bool removeOrderyBy;
-        
-        public bool AppendPartitioning
-        {
-            get { return appendPartitioning; }
-            set { appendPartitioning = value; }
-        }
-
-        public bool RemovePartitioning
-        {
-            get { return removePartitioning; }
-            set { removePartitioning = value; }
-        }
 
         public bool SubstituteStars
         {
@@ -44,29 +30,25 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             set { removeOrderyBy = value; }
         }
 
-        public SqlQueryRewriterOptions()
+        public GraywulfSqlQueryRewriterOptions()
         {
             InitializeMembers();
         }
 
-        public SqlQueryRewriterOptions(SqlQueryRewriterOptions old)
+        public GraywulfSqlQueryRewriterOptions(GraywulfSqlQueryRewriterOptions old)
         {
             CopyMembers(old);
         }
 
         private void InitializeMembers()
         {
-            this.appendPartitioning = true;
-            this.removePartitioning = true;
             this.substituteStars = true;
             this.assignColumnAliases = true;
             this.removeOrderyBy = false;
-    }
+        }
 
-        private void CopyMembers(SqlQueryRewriterOptions old)
+        private void CopyMembers(GraywulfSqlQueryRewriterOptions old)
         {
-            this.appendPartitioning = old.appendPartitioning;
-            this.removePartitioning = old.removePartitioning;
             this.substituteStars = old.substituteStars;
             this.assignColumnAliases = old.assignColumnAliases;
             this.removeOrderyBy = old.removeOrderyBy;

@@ -139,9 +139,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         #endregion
 
-        protected virtual SqlQueryRewriter CreateQueryRewriter()
+        protected virtual PartitionedSqlQueryRewriter CreateQueryRewriter()
         {
-            return new SqlQueryRewriter(this)
+            return new PartitionedSqlQueryRewriter(this)
             {
                 // TODO: add settings if necessary
             };

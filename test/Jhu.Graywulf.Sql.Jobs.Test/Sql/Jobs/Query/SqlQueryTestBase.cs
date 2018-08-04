@@ -53,9 +53,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             };
         }
 
-        protected virtual SqlQueryRewriter CreateQueryRewriter(bool partitioningKeyMin, bool partitioningKeyMax)
+        protected virtual PartitionedSqlQueryRewriter CreateQueryRewriter(bool partitioningKeyMin, bool partitioningKeyMax)
         {
-            return new SqlQueryRewriter(CreatePartition(partitioningKeyMin, partitioningKeyMax));
+            return new PartitionedSqlQueryRewriter(CreatePartition(partitioningKeyMin, partitioningKeyMax));
         }
 
         protected virtual SqlQueryCodeGenerator CreateQueryGenerator(bool partitioningKeyMin, bool partitioningKeyMax)

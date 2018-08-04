@@ -222,7 +222,30 @@ WHERE @__partKeyMin <= id AND id < @__partKeyMax";
 
             AssignColumnAliasesTestHelper(sql, gt);
         }
-        
+
+        [TestMethod]
+        public void AssignColumnAliasesSubqueryTest()
+        {
+            var sql = "SELECT * FROM (SELECT * FROM Author a) q";
+            var gt = "SELECT [q].[ID] AS [q_ID], [q].[Name] AS [q_Name] FROM (SELECT [a].[ID], [a].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a]) [q]";
+
+            AssignColumnAliasesTestHelper(sql, gt);
+        }
+
+        [TestMethod]
+        public void AssignColumnAliaseCteTest()
+        {
+            var sql =
+@"WITH q AS (SELECT * FROM Author a)
+SELECT * FROM q";
+
+            var gt =
+@"WITH [q] AS (SELECT [a].[ID], [a].[Name] FROM [Graywulf_Schema_Test].[dbo].[Author] [a])
+SELECT [q].[ID] AS [q_ID], [q].[Name] AS [q_Name] FROM [q]>. ";
+
+            AssignColumnAliasesTestHelper(sql, gt);
+        }
+
         #endregion
     }
 }

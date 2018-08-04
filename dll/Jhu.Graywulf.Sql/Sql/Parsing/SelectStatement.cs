@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Sql.NameResolution;
 
-
 namespace Jhu.Graywulf.Sql.Parsing
 {
     /// <summary>
@@ -35,24 +34,6 @@ namespace Jhu.Graywulf.Sql.Parsing
         public OrderByClause OrderByClause
         {
             get { return FindDescendant<OrderByClause>(); }
-        }
-
-        // TODO: remove this and use SET PARTITION or something else for the whole script
-        public virtual bool IsPartitioned
-        {
-            get
-            {
-                var qs = QueryExpression.EnumerateQuerySpecifications().FirstOrDefault<QuerySpecification>();
-                var ts = qs.FirstTableSource;
-
-                if (ts == null || !(ts is SimpleTableSource))
-                {
-                    // It might be a constant query (SELECT 1), that's definitely not partitioned
-                    return false;
-                }
-
-                return ((SimpleTableSource)ts).IsPartitioned;
-            }
         }
 
         /// <summary>

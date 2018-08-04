@@ -9,8 +9,8 @@
     <ProjectGuid>{77BE21A2-3AF7-478A-8279-3C741BF3BD59}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jhu.Graywulf.Sql.Parser.Grammar</RootNamespace>
-    <AssemblyName>Jhu.Graywulf.Sql.Parser.Grammar</AssemblyName>
+    <RootNamespace>Jhu.Graywulf.Sql.Grammar</RootNamespace>
+    <AssemblyName>Jhu.Graywulf.Sql.Grammar</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -113,10 +113,6 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Parsing.Generator\Jhu.Graywulf.Parsing.Generator.csproj">
       <Project>{f4bb3377-5edc-4989-899d-ef7c89ba1632}</Project>
       <Name>Jhu.Graywulf.Parsing.Generator</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Parsing\Jhu.Graywulf.Parsing.csproj">
-      <Project>{6215a919-1626-4f32-8c16-5764243b2748}</Project>
-      <Name>Jhu.Graywulf.Parsing</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

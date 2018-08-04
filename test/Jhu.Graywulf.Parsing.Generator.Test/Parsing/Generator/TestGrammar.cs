@@ -78,6 +78,13 @@ namespace Jhu.Graywulf.Parsing.Generator
                 Word, Comma, Word
             );
 
+        public static Expression<Rule> BaseRule10 = () => BaseRule11;
+        public static Expression<Rule> BaseRule11 = () => BaseRule1;
+
+        public static Expression<Rule> BaseRule20 = () => BaseRule21;
+        public static Expression<Rule> BaseRule21 = () => BaseRule22;
+        public static Expression<Rule> BaseRule22 = () => BaseRule1;
+
         public static Expression<Rule> GlobalKeyword = () =>
             Keyword("GLOBALKEYWORD");
 

@@ -98,12 +98,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>LogMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="Sql\Jobs\Query\PartitionedSqlQueryRewriter.cs" />
+    <Compile Include="Sql\Jobs\Query\PartitionedSqlQueryRewriterOptions.cs" />
     <Compile Include="Sql\Jobs\Query\QueryFactory.cs" />
     <Compile Include="Sql\Jobs\Query\QueryObject.cs" />
     <Compile Include="Sql\Jobs\Query\RemoteOutputTable.cs" />
     <Compile Include="Sql\Jobs\Query\RemoteSourceTable.cs" />
     <Compile Include="Sql\Jobs\Query\RemoteTable.cs" />
-    <Compile Include="Sql\Jobs\Query\ServerMessageMagicToken.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQuery.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryCodeGenerator.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryFactory.cs" />
@@ -112,8 +113,6 @@
     <Compile Include="Sql\Jobs\Query\SqlQueryJobSettings.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryParameters.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryPartition.cs" />
-    <Compile Include="Sql\Jobs\Query\SqlQueryRewriter.cs" />
-    <Compile Include="Sql\Jobs\Query\SqlQueryRewriterOptions.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryScripts.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -177,6 +176,10 @@
     <ProjectReference Include="..\Jhu.Graywulf.ServiceModel\Jhu.Graywulf.ServiceModel.csproj">
       <Project>{aa744162-dfa0-46bc-be03-20d50dd77806}</Project>
       <Name>Jhu.Graywulf.ServiceModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Sql.Extensions\Jhu.Graywulf.Sql.Extensions.csproj">
+      <Project>{c6f0228b-cfc5-44d2-b474-0613ec496ce7}</Project>
+      <Name>Jhu.Graywulf.Sql.Extensions</Name>
     </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Sql\Jhu.Graywulf.Sql.csproj">
       <Project>{aada04ee-f578-4628-8ae0-d423bb94c738}</Project>

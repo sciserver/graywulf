@@ -11,6 +11,7 @@ using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Schema.SqlServer;
 using Jhu.Graywulf.Parsing;
+using Jhu.Graywulf.Sql.Extensions.Parsing;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.QueryGeneration;
@@ -155,7 +156,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 // Partitioning is always done on the table specified right after the FROM keyword
                 // TODO: what if more than one QS?
                 var qs = QueryDetails.ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateQuerySpecifications().FirstOrDefault();
-                var ts = (SimpleTableSource)qs.SourceTableReferences.Values.First().TableSource;
+                var ts = (PartitionedTableSource)qs.FirstTableSource;
 
                 // TODO: modify this when expression output type functions are implemented
                 // and figure out data type directly from expression

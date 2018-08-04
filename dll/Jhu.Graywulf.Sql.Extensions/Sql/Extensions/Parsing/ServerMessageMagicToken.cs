@@ -9,7 +9,7 @@ using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.QueryGeneration;
 using Jhu.Graywulf.Sql.NameResolution;
 
-namespace Jhu.Graywulf.Sql.Jobs.Query
+namespace Jhu.Graywulf.Sql.Extensions.Parsing
 {
     public class ServerMessageMagicToken : MagicTokenBase
     {

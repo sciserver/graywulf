@@ -22,8 +22,8 @@ namespace Jhu.Graywulf.Parsing.Generator
         {
             var g = new GrammarInfo(typeof(TestGrammar));
 
-            Assert.AreEqual(12, g.Rules.Count);
-            Assert.AreEqual(10, g.RuleDependencies.Count);
+            Assert.AreEqual(17, g.Rules.Count);
+            Assert.AreEqual(14, g.RuleDependencies.Count);
             Assert.AreEqual("List", g.RuleDependencies["CommentOrWhitespace"].First());
             Assert.AreEqual("BaseRule2", g.RuleDependencies["BaseRule3"].First());
         }
@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Parsing.Generator
         {
             var g1 = new GrammarInfo(typeof(TestGrammar));
 
-            Assert.AreEqual(10, g1.RuleDependencies.Count);
+            Assert.AreEqual(14, g1.RuleDependencies.Count);
 
             Assert.AreEqual(2, g1.RuleDependencies["List"].Count);
             Assert.IsTrue(g1.RuleDependencies["List"].Contains("BaseRule1"));
@@ -75,9 +75,14 @@ namespace Jhu.Graywulf.Parsing.Generator
 
             var g2 = new GrammarInfo(typeof(InheritedGrammar));
 
-            Assert.AreEqual(2, g2.OverriddenRules.Count);
+            Assert.AreEqual(7, g2.OverriddenRules.Count);
             Assert.IsTrue(g2.OverriddenRules.Contains("BaseRule2"));
             Assert.IsTrue(g2.OverriddenRules.Contains("BaseRule5"));
+            Assert.IsTrue(g2.OverriddenRules.Contains("BaseRule10"));
+            Assert.IsTrue(g2.OverriddenRules.Contains("BaseRule11"));
+            Assert.IsTrue(g2.OverriddenRules.Contains("BaseRule20"));
+            Assert.IsTrue(g2.OverriddenRules.Contains("BaseRule21"));
+            Assert.IsTrue(g2.OverriddenRules.Contains("BaseRule22"));
         }
 
         [TestMethod]

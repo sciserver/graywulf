@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
-using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Parsing.Generator;
 
-namespace Jhu.Graywulf.Sql.Parser.Grammar
+namespace Jhu.Graywulf.Sql.Grammar
 {
     [Grammar(
         Namespace = "Jhu.Graywulf.Sql.Parsing",
@@ -1688,8 +1687,7 @@ FOR select_statement
                     TableOrViewIdentifier,
                     May(Sequence(May(CommentOrWhitespace), May(Sequence(Keyword("AS"), May(CommentOrWhitespace))), TableAlias)),   // Optional
                     May(Sequence(May(CommentOrWhitespace), TableSampleClause)),
-                    May(Sequence(May(CommentOrWhitespace), TableHintClause)),
-                    May(Sequence(May(CommentOrWhitespace), TablePartitionClause))
+                    May(Sequence(May(CommentOrWhitespace), TableHintClause))
                 )
             );
 
@@ -1760,14 +1758,6 @@ FOR select_statement
                     RepeatSeed,
                     May(CommentOrWhitespace), BracketClose)
                 )
-            );
-
-        public static Expression<Rule> TablePartitionClause = () =>
-            Sequence
-            (
-                Keyword("PARTITION"), CommentOrWhitespace, Keyword("BY"),
-                CommentOrWhitespace,
-                ColumnIdentifier
             );
 
         #endregion
