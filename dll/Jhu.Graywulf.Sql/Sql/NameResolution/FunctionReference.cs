@@ -132,12 +132,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        public void LoadDatabaseObject(SchemaManager schemaManager)
+        public override void LoadDatabaseObject(DatasetBase dataset)
         {
-            var ds = LoadDataset(schemaManager);
-            DatabaseObject = ds.GetObject(DatabaseName, SchemaName, DatabaseObjectName);
-            
+            DatabaseObject = dataset.GetObject(DatabaseName, SchemaName, DatabaseObjectName);
+
             // TODO: we could figure out here if it's a scalar function or else
         }
+
     }
 }

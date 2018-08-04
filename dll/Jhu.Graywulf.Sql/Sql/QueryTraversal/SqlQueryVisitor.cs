@@ -137,7 +137,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void InitializeMembers()
         {
-            this.options = new SqlQueryVisitorOptions();
+            this.options = CreateOptions();
             this.sink = null;
 
             this.pass = 0;
@@ -152,6 +152,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             this.querySpecificationStack = new Stack<QuerySpecification>();
             this.expressionReshufflerStack = new Stack<ExpressionReshuffler>();
             this.memberAccessListStack = new Stack<TokenList>();
+        }
+
+        protected virtual SqlQueryVisitorOptions CreateOptions()
+        {
+            return new SqlQueryVisitorOptions();
         }
 
         #endregion

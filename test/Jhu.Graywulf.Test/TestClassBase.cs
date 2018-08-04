@@ -107,37 +107,43 @@ namespace Jhu.Graywulf.Test
             }
         }
 
-        protected SchemaManager CreateSchemaManager()
+        protected SqlServerDataset CreateTestDataset()
+        {
+            var ds = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString);
+            return ds;
+        }
+
+        protected SqlServerDataset CreateMyDbDataset()
+        {
+            var mydb = new SqlServerDataset(Jhu.Graywulf.Test.Constants.MyDBDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString);
+            mydb.IsMutable = true;
+            return mydb;
+        }
+
+        protected virtual SchemaManager CreateSchemaManager()
         {
             schemaManager = new SqlServerSchemaManager();
 
-            var ds = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString);
+            var ds = CreateTestDataset();
             schemaManager.Datasets[ds.Name] = ds;
 
-            var mydb = new SqlServerDataset(Jhu.Graywulf.Test.Constants.MyDBDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString);
-            mydb.IsMutable = true;
+            var mydb = CreateMyDbDataset();
             schemaManager.Datasets[mydb.Name] = mydb;
 
             return schemaManager;
         }
 
-        protected SqlParser CreateParser()
+        protected virtual SqlParser CreateParser()
         {
             parser = new SqlParser();
             return parser;
         }
 
-        protected SqlNameResolver CreateNameResolver()
+        protected virtual SqlNameResolver CreateNameResolver()
         {
             nameResolver = new SqlNameResolver();
-            nameResolver.SchemaManager = CreateSchemaManager();
-            nameResolver.Options = new SqlNameResolverOptions()
-            {
-                DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName,
-                DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName,
-                DefaultDataTypeDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName,
-                DefaultOutputDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName,
-            };
+            nameResolver.Dataset = CreateTestDataset();
+            nameResolver.Options = new SqlNameResolverOptions();
             return nameResolver;
         }
 

@@ -159,45 +159,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         #endregion
 
-        /// <summary>
-        /// Substitute default dataset and schema names, if necessary
-        /// </summary>
-        /// <param name="defaultDataSetName"></param>
-        /// <param name="defaultSchemaName"></param>
-        public void SubstituteDefaults(SchemaManager schemaManager, string defaultDataSetName)
+        public virtual void LoadDatabaseObject(DatasetBase dataset)
         {
-            // This cannot be called for subqueries
-
-            if (this.datasetName == null)
-            {
-                this.datasetName = defaultDataSetName;
-            }
-
-            if (this.databaseName == null)
-            {
-                this.databaseName = schemaManager.Datasets[this.datasetName].DatabaseName;
-            }
-
-            if (this.schemaName == null)
-            {
-                this.schemaName = schemaManager.Datasets[this.datasetName].DefaultSchemaName;
-            }
-        }
-
-        protected DatasetBase LoadDataset(SchemaManager schemaManager)
-        {
-            try
-            {
-                return schemaManager.Datasets[DatasetName];
-            }
-            catch (KeyNotFoundException ex)
-            {
-                throw NameResolutionError.UnresolvableDatasetReference(ex, this);
-            }
-            catch (SchemaException ex)
-            {
-                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableDatasetReference, DatasetName, Node.Line, Node.Col), ex);
-            }
         }
 
         /// <summary>

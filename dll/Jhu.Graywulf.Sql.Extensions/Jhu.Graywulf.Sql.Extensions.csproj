@@ -42,16 +42,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sql\Extensions\NameResolution\GraywulfSqlNameResolver.cs" />
+    <Compile Include="Sql\Extensions\NameResolution\GraywulfSqlNameResolverOptions.cs" />
     <Compile Include="Sql\Extensions\Parsing\GraywulfSqlParser.g.cs" />
     <Compile Include="Sql\Extensions\Parsing\ServerMessageMagicToken.cs" />
     <Compile Include="Sql\Extensions\Parsing\PartitionedTableSource.cs" />
     <Compile Include="Sql\Extensions\QueryRewriting\GraywulfSqlQueryRewriter.cs" />
     <Compile Include="Sql\Extensions\QueryRewriting\GraywulfSqlQueryRewriterOptions.cs" />
+    <Compile Include="Sql\Extensions\QueryTraversal\GraywulfSqlQueryVisitor.cs" />
+    <Compile Include="Sql\Extensions\QueryTraversal\GraywulfSqlQueryVisitorOptions.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Sql\Extensions\NameResolution\" />
-    <Folder Include="Sql\Extensions\QueryTraversal\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{abb4c403-720a-47e1-9485-cfaadd696656}</Project>

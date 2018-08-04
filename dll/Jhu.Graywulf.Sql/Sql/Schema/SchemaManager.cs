@@ -54,6 +54,7 @@ namespace Jhu.Graywulf.Sql.Schema
         }
 
         #endregion
+        #region Private member variables
 
         /// <summary>
         /// Provides access to the datasets managable by the schema manager.
@@ -62,6 +63,9 @@ namespace Jhu.Graywulf.Sql.Schema
         /// Caches are managed through this specialized collection class.
         /// </remarks>
         protected LazyDictionary<string, DatasetBase> datasets;
+
+        #endregion
+        #region Properties
 
         /// <summary>
         /// Gets the collection of datasets
@@ -74,6 +78,8 @@ namespace Jhu.Graywulf.Sql.Schema
         {
             get { return datasets; }
         }
+
+        #endregion
 
         /// <summary>
         /// Default constructor

@@ -131,5 +131,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             return dr;
         }
+
+        public override void LoadDatabaseObject(DatasetBase dataset)
+        {
+            // Because this is the base type only, create a copy here since
+            // properties like IsNullable will be overwritten later
+            var dt = (DataType)dataset.GetObject(DatabaseName, SchemaName, DatabaseObjectName);
+            DatabaseObject = new DataType(dt);
+
+            // TODO: we could figure out here if it's a scalar function or else
+        }
     }
 }

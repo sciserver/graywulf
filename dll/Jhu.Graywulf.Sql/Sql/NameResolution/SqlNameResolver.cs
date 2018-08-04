@@ -75,13 +75,14 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #region Private member variables
 
         private SqlNameResolverOptions options;
+        
         private SqlQueryVisitor visitor;
-
         private TokenList memberNameParts;
 
+        private DatasetBase dataset;
+        
         // The schema manager is used to resolve identifiers that are not local to the details,
         // i.e. database, table, columns etc. names
-        private SchemaManager schemaManager;
         private QueryDetails details;
 
         #endregion
@@ -103,13 +104,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             get { return memberNameParts; }
         }
 
-        /// <summary>
-        /// Gets or sets the schema manager to be used by the name resolver
-        /// </summary>
-        public SchemaManager SchemaManager
+        public DatasetBase Dataset
         {
-            get { return schemaManager; }
-            set { schemaManager = value; }
+            get { return dataset; }
+            set { dataset = value; }
         }
 
         #endregion
@@ -128,8 +126,20 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         private void InitializeMembers()
         {
-            this.options = new SqlNameResolverOptions();
-            this.visitor = new SqlQueryVisitor(this)
+            this.options = CreateOptions();
+            this.visitor = CreateVisitor();
+            this.memberNameParts = new TokenList();
+            this.details = null;
+        }
+
+        protected virtual SqlNameResolverOptions CreateOptions()
+        {
+            return new SqlNameResolverOptions();
+        }
+
+        protected virtual SqlQueryVisitor CreateVisitor()
+        {
+            return new SqlQueryVisitor(this)
             {
                 Options = new SqlQueryVisitorOptions()
                 {
@@ -140,11 +150,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     VisitSchemaReferences = false
                 }
             };
-            this.memberNameParts = new TokenList();
-            this.schemaManager = null;
-            this.details = null;
         }
-
 
         #endregion
         #region Main entry points
@@ -182,17 +188,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             return details;
         }
 
-        public void Execute(QueryDetails details)
+        public virtual void Execute(QueryDetails details)
         {
-            // Flush schema cache of already loaded mutable data sets
-            foreach (var ds in schemaManager.Datasets.Values)
-            {
-                if (ds.IsMutable)
-                {
-                    ds.FlushCache();
-                }
-            }
-
             this.details = details;
             Visitor.Execute(details.ParsingTree);
             details.IsResolved = true;
@@ -343,7 +340,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // - SELECT ... FROM
 
             node.TableReference.DatabaseObject = node.FunctionReference.DatabaseObject;
-            node.TableReference.LoadColumnReferences(schemaManager);
+            node.TableReference.LoadColumnReferences();
 
             /*
              * TODO: only OPENROWSET etc. and VALUES constructs can have alias lists!
@@ -456,7 +453,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private Table CreateTable(TableReference tr)
         {
-            var ds = SchemaManager.Datasets[tr.DatasetName];
+            var ds = LoadDataset(tr);
 
             var table = new Schema.Table(ds)
             {
@@ -495,7 +492,18 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #endregion
         #region Reference resolution
 
-        protected virtual bool IsSystemFunctionName(string name)
+        protected virtual DatasetBase LoadDataset(DatabaseObjectReference dr)
+        {
+            return dataset;
+        }
+            
+        protected virtual void LoadDatabaseObject(DatabaseObjectReference dr)
+        {
+            var ds = LoadDataset(dr);
+            dr.LoadDatabaseObject(ds);
+        }
+
+        protected bool IsSystemFunctionName(string name)
         {
             return SystemFunctionNames.Contains(name);
         }
@@ -512,7 +520,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             else
             {
                 fr.IsUserDefined = true;
-                fr.LoadDatabaseObject(schemaManager);
+                LoadDatabaseObject(fr);
 
                 if (fr.DatabaseObject == null)
                 {
@@ -555,28 +563,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             if (!dr.IsResolved && dr.IsUserDefined)
             {
-                // Load table description from underlying schema
-                // Attempt to load dataset and throw exception of name cannot be resolved
-                DatasetBase ds;
+                LoadDatabaseObject(dr);
 
-                try
+                if (dr.DatabaseObject == null)
                 {
-                    ds = schemaManager.Datasets[dr.DatasetName];
+                    return null;
                 }
-                catch (KeyNotFoundException ex)
-                {
-                    throw NameResolutionError.UnresolvableDatasetReference(ex, dr);
-                }
-                catch (SchemaException ex)
-                {
-                    throw NameResolutionError.UnresolvableDatasetReference(ex, dr);
-                }
-
-                // Because this is the base type only, create a copy here since
-                // properties like IsNullable will be overwritten later
-                var dt = (DataType)ds.GetObject(dr.DatabaseName, dr.SchemaName, dr.DatabaseObjectName);
-                dr.DatabaseObject = new DataType(dt);
-
+                
                 // TODO: load data type columns if necessary
             }
 
@@ -740,15 +733,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 else
                 {
-                    // Check if dataset specified and make sure it's valid
-                    if (tr.DatasetName != null)
-                    {
-                        if (!schemaManager.Datasets.ContainsKey(tr.DatasetName))
-                        {
-                            throw NameResolutionError.UnresolvableDatasetReference(tr);
-                        }
-                    }
-
                     // if only a table name found and that's not an alias -> must be a table
                     int q = 0;
                     foreach (var ttr in resolvedSourceTables.SourceTableReferences.Values)
@@ -1009,7 +993,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             if (tr.TableContext.HasFlag(TableContext.Variable))
             {
                 tr.VariableReference = details.VariableReferences[tr.VariableName];
-                tr.LoadColumnReferences(null);
+                tr.LoadColumnReferences();
                 ntr = tr;
             }
             else if (tr.TableContext.HasFlag(TableContext.Subquery))
@@ -1035,13 +1019,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 // Load object from the schema
                 ntr = tr;
 
-                ntr.LoadDatabaseObject(schemaManager);
+                LoadDatabaseObject(ntr);
                 if (ntr.DatabaseObject == null)
                 {
                     return null;
                 }
 
-                ntr.LoadColumnReferences(schemaManager);
+                ntr.LoadColumnReferences();
             }
             else
             {
@@ -1294,11 +1278,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #region Default substitution logic
 
         /// <summary>
-        /// Substitutes table defaults for all tables that are supposed to exist during query execution
+        /// When overriden, substitutes table defaults for all tables that are supposed to exist during query execution
         /// </summary>
         /// <param name="resolvedSourceTables"></param>
         /// <param name="tr"></param>
-        protected void SubstituteSourceTableDefaults(ISourceTableProvider resolvedSourceTables, TableReference tr, bool excludeOuterQueries)
+        private void SubstituteSourceTableDefaults(ISourceTableProvider resolvedSourceTables, TableReference tr, bool excludeOuterQueries)
         {
             try
             {
@@ -1308,7 +1292,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 else if (tr.TableContext.HasFlag(TableContext.UserDefinedFunction))
                 {
-                    tr.SubstituteDefaults(SchemaManager, options.DefaultFunctionDatasetName);
+                    OnSubstituteTableDefaults(tr);
                 }
                 else if (tr.TableContext.HasFlag(TableContext.Variable))
                 {
@@ -1316,7 +1300,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 }
                 else
                 {
-                    tr.SubstituteDefaults(SchemaManager, options.DefaultTableDatasetName);
+                    OnSubstituteTableDefaults(tr);
                 }
             }
             catch (KeyNotFoundException ex)
@@ -1325,26 +1309,32 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
+        protected virtual void OnSubstituteTableDefaults(TableReference tr)
+        {
+        }
+
+        protected virtual void OnSubstituteFunctionDefaults(TableReference tr)
+        {
+        }
+
         /// <summary>
-        /// Substitutes table default for tables that are created during query execution 
+        /// When overriden, substitutes table default for tables that are created during query execution 
         /// </summary>
         /// <param name="tr"></param>
         private void SubstituteOutputTableDefaults(TableReference tr)
         {
-            try
-            {
-                tr.SubstituteDefaults(SchemaManager, options.DefaultOutputDatasetName);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                throw NameResolutionError.UnresolvableDatasetReference(ex, tr);
-            }
+            OnSubstituteOutputTableDefaults(tr);
+        }
+
+        protected virtual void OnSubstituteOutputTableDefaults(TableReference tr)
+        {
+            SubstituteDefaults(tr);
         }
 
         /// <summary>
-        /// Substitutes dataset and schema defaults into function references.
+        /// When overriden, substitutes dataset and schema defaults into function references.
         /// </summary>
-        /// <remarks>
+        /// /// <remarks>
         /// This is non-standard SQL as SQL requires the schema name to be specified and the database is
         /// always taken from the current context. In applications, like SkyQuery, functions are always
         /// taken from the CODE database.
@@ -1358,30 +1348,45 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
             else
             {
-                try
-                {
-
-                    fr.SubstituteDefaults(SchemaManager, options.DefaultFunctionDatasetName);
-                }
-                catch (KeyNotFoundException ex)
-                {
-                    throw NameResolutionError.UnresolvableDatasetReference(ex, fr);
-                }
+                OnSubstituteFunctionDefaults(fr);
             }
+        }
+
+        protected virtual void OnSubstituteFunctionDefaults(FunctionReference fr)
+        {
         }
 
         private void SubstituteDataTypeDefaults(DataTypeReference dr)
         {
             if (!dr.IsSystem)
             {
-                try
-                {
-                    dr.SubstituteDefaults(SchemaManager, options.DefaultDataTypeDatasetName);
-                }
-                catch (KeyNotFoundException ex)
-                {
-                    throw NameResolutionError.UnresolvableDatasetReference(ex, dr);
-                }
+                OnSubstituteDataTypeDefaults(dr);
+            }
+        }
+
+        protected virtual void OnSubstituteDataTypeDefaults(DataTypeReference dr)
+        {
+        }
+
+        /// <summary>
+        /// Substitute default dataset and schema names, if necessary
+        /// </summary>
+        /// <param name="defaultDataSetName"></param>
+        /// <param name="defaultSchemaName"></param>
+        private void SubstituteDefaults(DatabaseObjectReference dr)
+        {
+            // This cannot be called for subqueries
+
+            if (dr.DatasetName == null)
+            
+            if (dr.DatabaseName == null)
+            {
+                dr.DatabaseName = dataset.DatabaseName;
+            }
+
+            if (dr.SchemaName == null)
+            {
+                dr.SchemaName = dataset.DefaultSchemaName;
             }
         }
 
