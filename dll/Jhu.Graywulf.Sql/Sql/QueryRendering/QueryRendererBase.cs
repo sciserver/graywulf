@@ -197,7 +197,7 @@ namespace Jhu.Graywulf.Sql.QueryRendering
             {
                 case AliasRendering.Default:
                 case AliasRendering.Always:
-                    Writer.Write(GetQuotedIdentifier(node.Value));
+                    Writer.Write(GetQuotedIdentifier(node.TableSource.TableReference.Alias));
                     break;
                 case AliasRendering.Never:
                     break;
