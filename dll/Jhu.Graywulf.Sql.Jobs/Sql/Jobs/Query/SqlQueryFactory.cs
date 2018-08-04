@@ -91,7 +91,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <returns></returns>
         public override Sql.NameResolution.SqlNameResolver CreateNameResolver()
         {
-            return new Sql.NameResolution.SqlNameResolver();
+            return new Sql.Extensions.NameResolution.GraywulfSqlNameResolver();
         }
 
         /// <summary>

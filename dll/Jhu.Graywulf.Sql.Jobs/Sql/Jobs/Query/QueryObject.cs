@@ -496,7 +496,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             LoadDatasets(forceReinitialize);
 
-            var nr = QueryFactory.CreateNameResolver();
+            var nr = (Sql.Extensions.NameResolution.GraywulfSqlNameResolver)QueryFactory.CreateNameResolver();
             nr.SchemaManager = GetSchemaManager();
             nr.Options.DefaultTableDatasetName = parameters.DefaultSourceDataset.Name;
             nr.Options.DefaultOutputDatasetName = parameters.DefaultOutputDataset.Name;
