@@ -173,7 +173,7 @@ CROSS JOIN Galex:PhotoObjAll g";
         {
             var sql = @"
 SELECT TOP 100 a.objID, b.ObjID
-INTO SqlQueryTest_SelfJoinQueryTest
+INTO [$into]
 FROM SDSSDR7:PhotoObjAll a
 CROSS JOIN SDSSDR7:PhotoObjAll b";
 
