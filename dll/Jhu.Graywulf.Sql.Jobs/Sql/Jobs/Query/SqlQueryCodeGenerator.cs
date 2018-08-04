@@ -90,7 +90,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 AddSystemDatabaseMappings();
                 AddSourceTableMappings(Partition.Parameters.SourceDatabaseVersionName, null);
                 AddOutputTableMappings();
-                AddSystemVariableMappings();
             }
 
             return OnGetExecuteQuery(details);
@@ -269,30 +268,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 return null;
             }
         }
-
-        public void AddSystemVariableMappings()
-        {
-            // TODO: this is alredy covered in query rewriter
-
-            throw new NotImplementedException();
-
-            foreach (var pair in Jhu.Graywulf.Sql.Extensions.QueryRewriting.Constants.SystemVariableMappings)
-            {
-                var sysvar = new VariableReference()
-                {
-                    VariableName = "@@" + pair.Key,
-                };
-
-                var subsvar = new VariableReference()
-                {
-                    VariableName = pair.Value,
-                    IsUserDefined = true,
-                };
-
-                Renderer.VariableReferenceMap.Add(sysvar, subsvar);
-            }
-        }
-
+        
         #endregion
         #region Name substitution
 
