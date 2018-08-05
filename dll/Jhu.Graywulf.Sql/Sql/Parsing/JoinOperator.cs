@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Jhu.Graywulf.Parsing;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class JoinType
+    public partial class JoinOperator
     {
-        public static JoinType CreateInner()
+        public static InnerOuterJoinOperator CreateInner()
         {
-            var jt = new JoinType();
+            var jt = new InnerOuterJoinOperator();
             jt.Stack.AddLast(Keyword.Create("INNER"));
             jt.Stack.AddLast(Whitespace.Create());
             jt.Stack.AddLast(Keyword.Create("JOIN"));
@@ -18,9 +19,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             return jt;
         }
 
-        public static JoinType CreateInnerLoop()
+        public static InnerOuterJoinOperator CreateInnerLoop()
         {
-            var jt = new JoinType();
+            var jt = new InnerOuterJoinOperator();
             jt.Stack.AddLast(Keyword.Create("INNER"));
             jt.Stack.AddLast(Whitespace.Create());
             jt.Stack.AddLast(Keyword.Create("LOOP"));

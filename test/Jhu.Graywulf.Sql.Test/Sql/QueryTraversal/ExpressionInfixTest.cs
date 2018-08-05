@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             Assert.AreEqual("( a + b ) . prop1 . prop2 . prop3 ", res);
 
             res = Execute("(SELECT TOP 1 udtcol FROM tab1).prop1.prop2");
-            Assert.AreEqual("subquery . prop1 . prop2 ", res);
+            Assert.AreEqual("<subquery> . prop1 . prop2 ", res);
         }
 
         [TestMethod]
@@ -135,10 +135,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         public void SubqueryTest()
         {
             var res = Execute("(SELECT 1)");
-            Assert.AreEqual("subquery ", res);
+            Assert.AreEqual("<subquery> ", res);
 
             res = Execute("(SELECT TOP 1 udtcol FROM tab1).method1().method2(b, c)");
-            Assert.AreEqual("subquery . method1 ( ) . method2 ( b , c ) ", res);
+            Assert.AreEqual("<subquery> . method1 ( ) . method2 ( b , c ) ", res);
         }
 
         [TestMethod]

@@ -203,6 +203,7 @@
     <Compile Include="Sql\QueryTraversal\ExpressionInfixTest.cs" />
     <Compile Include="Sql\QueryTraversal\ExpressionPrefixTest.cs" />
     <Compile Include="Sql\QueryTraversal\ExpressionPostfixTest.cs" />
+    <Compile Include="Sql\QueryTraversal\StatementsTest.cs" />
     <Compile Include="Sql\QueryTraversal\TestVisitorSink.cs" />
     <Compile Include="Sql\Schema\AppSettings.cs" />
     <Compile Include="Sql\Schema\MySql\MySqlDatasetTest.cs" />

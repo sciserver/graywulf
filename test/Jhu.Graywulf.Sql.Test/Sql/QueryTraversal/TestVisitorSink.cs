@@ -15,6 +15,27 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         private SqlQueryVisitor visitor;
         private StringWriter w;
 
+        public string Execute(StatementBlock node)
+        {
+            visitor = new SqlQueryVisitor(this)
+            {
+                Options = new SqlQueryVisitorOptions()
+                {
+                    ExpressionTraversal = ExpressionTraversalMethod.Infix,
+                    LogicalExpressionTraversal = ExpressionTraversalMethod.Infix,
+                    VisitExpressionSubqueries = false,
+                    VisitPredicateSubqueries = false,
+                    VisitLiterals = true,
+                    VisitSymbols = true,
+                }
+            };
+            using (w = new StringWriter())
+            {
+                visitor.Execute(node);
+                return w.ToString();
+            }
+        }
+
         public string Execute(Expression node, ExpressionTraversalMethod direction)
         {
             visitor = new SqlQueryVisitor(this)
@@ -24,6 +45,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     ExpressionTraversal = direction,
                     VisitExpressionSubqueries = false,
                     VisitExpressionPredicates = false,
+                    VisitLiterals = true,
+                    VisitSymbols = true,
                 }
             };
             using (w = new StringWriter())
@@ -42,6 +65,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     LogicalExpressionTraversal = direction,
                     VisitPredicateSubqueries = false,
                     VisitPredicateExpressions = false,
+                    VisitLiterals = true,
+                    VisitSymbols = true,
                 }
             };
             using (w = new StringWriter())
@@ -61,6 +86,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     LogicalExpressionTraversal = logicalExpressionTraversal,
                     VisitPredicateSubqueries = false,
                     VisitExpressionSubqueries = false,
+                    VisitLiterals = true,
+                    VisitSymbols = true,
                 }
             };
             using (w = new StringWriter())
@@ -80,6 +107,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     LogicalExpressionTraversal = logicalExpressionTraversal,
                     VisitPredicateSubqueries = false,
                     VisitExpressionSubqueries = false,
+                    VisitLiterals = true,
+                    VisitSymbols = true,
                 }
             };
             using (w = new StringWriter())
@@ -120,6 +149,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 w.Write("`" + node.ArgumentCount + " ");
             }
         }
+
+        public virtual void Accept(Label node)
+        {
+            Write(node);
+        }
         
         public virtual void Accept(Operator node)
         {
@@ -157,6 +191,26 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         }
 
         public virtual void Accept(BracketClose node)
+        {
+            Write(node);
+        }
+
+        public virtual void Accept(ValueAssignmentOperator node)
+        {
+            Write(node);
+        }
+
+        public virtual void Accept(TableSource node)
+        {
+            Write("<table> ");
+        }
+
+        public virtual void Accept(QueryOperator node)
+        {
+            Write(node);
+        }
+
+        public virtual void Accept(DataTypeSpecification node)
         {
             Write(node);
         }
@@ -202,9 +256,19 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             Write(node);
         }
 
+        public virtual void Accept(ColumnAlias node)
+        {
+            Write(node);
+        }
+
         public virtual void Accept(ExpressionSubquery node)
         {
-            Write("subquery ");
+            Write("<subquery> ");
+        }
+
+        public virtual void Accept(SemiJoinSubquery node)
+        {
+            Write("<subquery> ");
         }
 
         public virtual void Accept(UdtStaticPropertyAccess node)

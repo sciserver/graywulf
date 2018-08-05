@@ -37,13 +37,13 @@ namespace Jhu.Graywulf.Sql.Parsing
             ts.Stack.AddLast(joinedTable);
         }
 
-        public void PrependJoinedTable(TableSourceSpecification tableSource, JoinType joinType, LogicalExpression joinCondition)
+        public void PrependJoinedTable(TableSourceSpecification tableSource, JoinOperator joinOperator, LogicalExpression joinCondition)
         {
             // Find the first table source
             var tse = FindDescendant<TableSourceExpression>();
             var ts = tse.FindDescendant<TableSourceSpecification>();
 
-            var jt = JoinedTable.Create(joinType, ts, joinCondition);
+            var jt = JoinedTable.Create(joinOperator, ts, joinCondition);
 
             tableSource.Stack.AddLast(CommentOrWhitespace.Create(Whitespace.CreateNewLine()));
             tableSource.Stack.AddLast(jt);

@@ -15,12 +15,12 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public Statement MainStatement
         {
-            get { return FindDescendant<AnyStatement>(0).SpecificStatement; }
+            get { return FindDescendant<AnyStatement>(0)?.SpecificStatement; }
         }
 
         public Statement ElseStatement
         {
-            get { return FindDescendant<AnyStatement>(1).SpecificStatement; }
+            get { return FindDescendant<AnyStatement>(1)?.SpecificStatement; }
         }
 
         public override IEnumerable<Statement> EnumerateSubStatements()

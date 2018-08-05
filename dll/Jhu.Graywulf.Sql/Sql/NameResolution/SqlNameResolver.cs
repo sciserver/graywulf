@@ -252,7 +252,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         protected virtual void Accept(CommonTableSpecification cts)
         {
-            Visitor.CommonTableExpression.CommonTableReferences.Add(cts.TableReference.Alias, cts.TableReference);
+            if (visitor.Pass == 0)
+            {
+                Visitor.CommonTableExpression.CommonTableReferences.Add(cts.TableReference.Alias, cts.TableReference);
+            }
         }
 
         protected virtual void Accept(QuerySpecification qs)

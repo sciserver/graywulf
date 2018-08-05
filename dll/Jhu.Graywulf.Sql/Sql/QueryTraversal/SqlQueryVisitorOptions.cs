@@ -17,6 +17,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         private bool visitPredicateSubqueries;
         private bool visitPredicateExpressions;
         private bool visitSchemaReferences;
+        private bool visitLiterals;
+        private bool visitSymbols;
 
         #endregion
         #region Properties
@@ -63,6 +65,18 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             set { visitSchemaReferences = value; }
         }
 
+        public bool VisitLiterals
+        {
+            get { return visitLiterals; }
+            set { visitLiterals = value; }
+        }
+
+        public bool VisitSymbols
+        {
+            get { return visitSymbols; }
+            set { visitSymbols = value; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -85,6 +99,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             this.visitPredicateSubqueries = true;
             this.visitPredicateExpressions = true;
             this.visitSchemaReferences = false;
+            this.visitLiterals = false;
+            this.visitSymbols = true;
         }
 
         private void CopyMembers(SqlQueryVisitorOptions old)
@@ -96,6 +112,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             this.visitPredicateSubqueries = old.visitPredicateSubqueries;
             this.visitPredicateExpressions = old.visitPredicateExpressions;
             this.visitSchemaReferences = old.visitSchemaReferences;
+            this.visitLiterals = old.visitLiterals;
+            this.visitSymbols = old.visitSymbols;
         }
 
         #endregion

@@ -64,6 +64,7 @@ namespace Jhu.Graywulf.Sql.Grammar
         public static Expression<Whitespace> Whitespace = () => @"\G\s+";
         public static Expression<Comment> SingleLineComment = () => @"\G--.*";
         public static Expression<Comment> MultiLineComment = () => @"\G(?sm)/\*.*?\*/";
+        public static Expression<Terminal> Label = () => @"\G([a-zA-Z_]+[0-9a-zA-Z_]*|\[[^\]]+\])";
         public static Expression<Terminal> NumericConstant = () => @"\G([0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)";
         public static Expression<Terminal> HexLiteral = () => @"\G0[xX][0-9a-fA-F]+";
         public static Expression<Terminal> StringConstant = () => @"\G('([^']|'')*')";
@@ -1055,17 +1056,19 @@ namespace Jhu.Graywulf.Sql.Grammar
         public static Expression<Rule> AnyStatement = () =>
             Must
             (
-                Label,
+                LabelDefinition,
                 GotoStatement,
                 BeginEndStatement,
                 WhileStatement,
                 BreakStatement,
                 ContinueStatement,
-                PrintStatement,
                 ReturnStatement,
                 IfStatement,
+
                 TryCatchStatement,
                 ThrowStatement,
+
+                PrintStatement,
 
                 DeclareCursorStatement,
                 SetCursorStatement,
@@ -1075,14 +1078,17 @@ namespace Jhu.Graywulf.Sql.Grammar
                 DeclareVariableStatement,
                 SetVariableStatement,
 
-                DeclareTableStatement,
+                // TODO: review traverse below
 
+                DeclareTableStatement,
                 CreateTableStatement,
                 DropTableStatement,
                 TruncateTableStatement,
 
                 CreateIndexStatement,
                 DropIndexStatement,
+
+                // TODO: review traverse above
 
                 SelectStatement,
                 InsertStatement,
@@ -1097,13 +1103,13 @@ namespace Jhu.Graywulf.Sql.Grammar
 
         #region Control flow statements
 
-        public static Expression<Rule> Label = () =>
+        public static Expression<Rule> LabelDefinition = () =>
             Inherit
             (
                 Statement,
                 Sequence
                 (
-                    Identifier,
+                    Label,
                     Colon
                 )
             );
@@ -1116,7 +1122,7 @@ namespace Jhu.Graywulf.Sql.Grammar
                 (
                     Keyword("GOTO"),
                     CommentOrWhitespace,
-                    Identifier
+                    Label
                 )
             );
 
@@ -1220,8 +1226,7 @@ namespace Jhu.Graywulf.Sql.Grammar
                             May(CommentOrWhitespace),
                             Comma,
                             May(CommentOrWhitespace),
-                            Must(NumericConstant, UserVariable),
-                            May(CommentOrWhitespace)
+                            Must(NumericConstant, UserVariable)
                         )
                     )
                 )
@@ -1284,7 +1289,7 @@ namespace Jhu.Graywulf.Sql.Grammar
                     Sequence
                     (
                         May(CommentOrWhitespace),
-                        Equals1,
+                        ValueAssignmentOperator,
                         May(CommentOrWhitespace),
                         Expression
                     )
@@ -1511,7 +1516,7 @@ FOR select_statement
                     May(Sequence(CommonTableExpression, May(CommentOrWhitespace))),
                     QueryExpression,
                     May(Sequence(May(CommentOrWhitespace), OrderByClause)),
-                    May(Sequence(May(CommentOrWhitespace), QueryHintClause))
+                    May(Sequence(May(CommentOrWhitespace), OptionClause))
                 )
             );
 
@@ -1538,7 +1543,14 @@ FOR select_statement
             );
 
         public static Expression<Rule> QueryExpressionBrackets = () =>
-            Sequence(BracketOpen, May(CommentOrWhitespace), QueryExpression, May(CommentOrWhitespace), BracketClose);
+            Sequence
+            (
+                BracketOpen,
+                May(CommentOrWhitespace),
+                QueryExpression,
+                May(CommentOrWhitespace),
+                BracketClose
+            );
 
         public static Expression<Rule> QueryOperator = () =>
             Must
@@ -1571,7 +1583,7 @@ FOR select_statement
             (
                 Keyword("TOP"),
                 May(CommentOrWhitespace),
-                Must(NumericConstant, ExpressionBrackets),
+                Must(Expression),
                 May(Sequence(CommentOrWhitespace, Keyword("PERCENT"))),
                 May(Sequence(CommentOrWhitespace, Keyword("WITH"), CommentOrWhitespace, Keyword("TIES")))
             );
@@ -1589,8 +1601,8 @@ FOR select_statement
         public static Expression<Rule> ColumnExpression = () =>
             Must
             (
-                Sequence(UserVariable, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Expression),
-                Sequence(ColumnAlias, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Expression),
+                Sequence(UserVariable, May(CommentOrWhitespace), ValueAssignmentOperator, May(CommentOrWhitespace), Expression),
+                Sequence(ColumnAlias, May(CommentOrWhitespace), ValueAssignmentOperator, May(CommentOrWhitespace), Expression),
                 StarColumnIdentifier,
                 Sequence(Expression, May(CommentOrWhitespace), May(Sequence(Keyword("AS"), May(CommentOrWhitespace))), ColumnAlias),
                 Expression
@@ -1628,38 +1640,102 @@ FOR select_statement
             (
                 Must
                 (
-                    Sequence(JoinType, May(CommentOrWhitespace), TableSourceSpecification, May(CommentOrWhitespace), Keyword("ON"), May(CommentOrWhitespace), LogicalExpression),
-                    Sequence(Keyword("CROSS"), CommentOrWhitespace, Keyword("JOIN"), May(CommentOrWhitespace), TableSourceSpecification),
-                    Sequence(Comma, May(CommentOrWhitespace), TableSourceSpecification),
-                    Sequence(Must(Keyword("CROSS"), Keyword("OUTER")), CommentOrWhitespace, Keyword("APPLY"), May(CommentOrWhitespace), TableSourceSpecification)
+                    Sequence
+                    (
+                        InnerOuterJoinOperator,
+                        May(CommentOrWhitespace),
+                        TableSourceSpecification,
+                        May(CommentOrWhitespace),
+                        JoinCondition
+                    ),
+                    Sequence
+                    (
+                        CrossJoinOperator,
+                        May(CommentOrWhitespace),
+                        TableSourceSpecification
+                    ),
+                    Sequence
+                    (
+                        CrossApplyOperator,
+                        May(CommentOrWhitespace),
+                        TableSourceSpecification
+                    )
                 ),
                 May(Sequence(May(CommentOrWhitespace), JoinedTable))
             );
 
-        public static Expression<Rule> JoinType = () =>
-            Sequence
+        public static Expression<Rule> JoinOperator = () => Abstract();
+
+        public static Expression<Rule> CrossJoinOperator = () =>
+            Inherit
             (
-                May
+                JoinOperator,
+                Must
                 (
+                    Comma,
                     Sequence
                     (
-                        Must
-                        (
-                            Keyword("INNER"),
-                            Sequence(Must(Keyword("LEFT"), Keyword("RIGHT"), Keyword("FULL")), May(Sequence(CommentOrWhitespace, Keyword("OUTER"))))
-                        ),
-                        May(CommentOrWhitespace),
-                        May(JoinHint)
+                        Keyword("CROSS"), CommentOrWhitespace, Keyword("JOIN")
                     )
-                ),
-                May(CommentOrWhitespace),
-                Keyword("JOIN")
+                )
             );
 
-        public static Expression<Rule> JoinHint = () =>
-            Must
+        public static Expression<Rule> CrossApplyOperator = () =>
+            Inherit
             (
-                Keyword("LOOP"), Keyword("HASH"), Keyword("MERGE"), Keyword("REMOTE")
+                JoinOperator,
+                Sequence
+                (
+                    Must(Keyword("CROSS"), Keyword("OUTER")),
+                    CommentOrWhitespace,
+                    Keyword("APPLY")
+                )
+            );
+
+        public static Expression<Rule> InnerOuterJoinOperator = () =>
+            Inherit
+            (
+                JoinOperator,
+                Sequence
+                (
+                    May
+                    (
+                        Sequence
+                        (
+                            Must
+                            (
+                                Keyword("INNER"),
+                                Sequence
+                                (
+                                    Must
+                                    (
+                                        Keyword("LEFT"), Keyword("RIGHT"), Keyword("FULL")
+                                    ),
+                                    May
+                                    (
+                                        Sequence(CommentOrWhitespace, Keyword("OUTER"))
+                                    )
+                                )
+                            ),
+                            May(CommentOrWhitespace),
+                            May
+                            (
+                                Must
+                                (
+                                    Keyword("LOOP"), Keyword("HASH"), Keyword("MERGE"), Keyword("REMOTE")
+                                )
+                            )
+                        )
+                    ),
+                    May(CommentOrWhitespace),
+                    Keyword("JOIN")
+                )
+            );
+
+        public static Expression<Rule> JoinCondition = () =>
+            Sequence
+            (
+                Keyword("ON"), May(CommentOrWhitespace), LogicalExpression
             );
 
         public static Expression<Rule> TableSourceSpecification = () =>
@@ -1880,7 +1956,7 @@ FOR select_statement
                 Identifier
             );
 
-        public static Expression<Rule> QueryHintClause = () =>
+        public static Expression<Rule> OptionClause = () =>
             Sequence
             (
                 Keyword("OPTION"),
@@ -1937,33 +2013,20 @@ FOR select_statement
                     // Column list
                     // NOTE: SQL Server allows four-part column identifiers here but uses the very last part
                     // (i.e. the column name), thus invalid and gibberish table, schema etc. is allowed
-                    May(
-                        Sequence
-                        (
-                            May(CommentOrWhitespace),
-                            Sequence
-                            (
-                                BracketOpen,
-                                May(CommentOrWhitespace),
-                                InsertColumnList,
-                                May(CommentOrWhitespace),
-                                BracketClose
-                            )
-                        )
-                    ),
+                    May(Sequence(May(CommentOrWhitespace), InsertColumnList)),
                     // TODO: add OUTPUT clause
                     May(CommentOrWhitespace),
                     Must
                     (
+                        DefaultValues,
                         ValuesClause,
-                        Sequence(Keyword("DEFAULT"), CommentOrWhitespace, Keyword("VALUES")),
                         // TODO: ExecuteStatement
                         // Select
                         Sequence
                         (
                             QueryExpression,
                             May(Sequence(May(CommentOrWhitespace), OrderByClause)),
-                            May(Sequence(May(CommentOrWhitespace), QueryHintClause))
+                            May(Sequence(May(CommentOrWhitespace), OptionClause))
                         )
                     )
                 )
@@ -1972,9 +2035,22 @@ FOR select_statement
         public static Expression<Rule> InsertColumnList = () =>
             Sequence
             (
-                ColumnIdentifier,
-                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), InsertColumnList))
+                BracketOpen,
+                May(CommentOrWhitespace),
+                ColumnIdentifierList,
+                May(CommentOrWhitespace),
+                BracketClose
             );
+
+        public static Expression<Rule> ColumnIdentifierList = () =>
+            Sequence
+            (
+                ColumnIdentifier,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ColumnIdentifierList))
+            );
+
+        public static Expression<Rule> DefaultValues = () =>
+            Sequence(Keyword("DEFAULT"), CommentOrWhitespace, Keyword("VALUES"));
 
         public static Expression<Rule> ValuesClause = () =>
             Sequence
@@ -2007,11 +2083,14 @@ FOR select_statement
             (
                 Must
                 (
-                    Keyword("DEFAULT"),
+                    DefaultValue,
                     Expression
                 ),
                 May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ValueList))
             );
+
+        public static Expression<Rule> DefaultValue = () =>
+            Keyword("DEFAULT");
 
         #endregion
 
@@ -2035,7 +2114,7 @@ FOR select_statement
                     May(Sequence(May(CommentOrWhitespace), FromClause)),
                     May(Sequence(May(CommentOrWhitespace), WhereClause)),
                     // TODO: add support for cursor updates
-                    May(Sequence(May(CommentOrWhitespace), QueryHintClause))
+                    May(Sequence(May(CommentOrWhitespace), OptionClause))
                 )
             );
 
@@ -2069,16 +2148,16 @@ FOR select_statement
                     May(CommentOrWhitespace),
                     Equals1,
                     May(CommentOrWhitespace),
-                    ColumnIdentifier
+                    ColumnIdentifier    // TODO: UDT properties!
                 ),
                 UserVariable,
-                ColumnIdentifier        // This covers UDT fields and properties
+                ColumnIdentifier        // TODO: UDT properties!
             );
 
         public static Expression<Rule> UpdateSetColumnRightHandSide = () =>
             Must
             (
-                Keyword("DEFAULT"),
+                DefaultValue,
                 Expression
             );
 
@@ -2087,7 +2166,7 @@ FOR select_statement
             (
                 ColumnName,
                 May(CommentOrWhitespace),
-                Dot,
+                MemberAccessOperator,
                 May(CommentOrWhitespace),
                 UdtMethodCall
             );
@@ -2110,7 +2189,7 @@ FOR select_statement
                     // TODO: OUTPUT clause
                     May(Sequence(May(CommentOrWhitespace), FromClause)),
                     May(Sequence(May(CommentOrWhitespace), WhereClause)),
-                    May(Sequence(May(CommentOrWhitespace), QueryHintClause))
+                    May(Sequence(May(CommentOrWhitespace), OptionClause))
                 )
             );
 

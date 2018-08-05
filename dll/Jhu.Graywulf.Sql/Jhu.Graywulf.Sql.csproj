@@ -262,6 +262,8 @@
     <Compile Include="Sql\Parsing\BetweenPredicate.cs" />
     <Compile Include="Sql\Parsing\BinaryOperator.cs" />
     <Compile Include="Sql\Parsing\ConversionFunctionCall.cs" />
+    <Compile Include="Sql\Parsing\JoinCondition.cs" />
+    <Compile Include="Sql\Parsing\JoinOperator.cs" />
     <Compile Include="Sql\Parsing\SpecialFunctionCall.cs" />
     <Compile Include="Sql\Parsing\DataTypeArgument.cs" />
     <Compile Include="Sql\Parsing\DataTypeSpecification.cs" />
@@ -383,7 +385,6 @@
     <Compile Include="Sql\Parsing\BeginEndStatement.cs" />
     <Compile Include="Sql\Parsing\IntoClause.cs" />
     <Compile Include="Sql\Parsing\JoinedTable.cs" />
-    <Compile Include="Sql\Parsing\JoinType.cs" />
     <Compile Include="Sql\Parsing\GotoStatement.cs" />
     <Compile Include="Sql\Parsing\Label.cs" />
     <Compile Include="Sql\Parsing\LogicalOperator.cs" />

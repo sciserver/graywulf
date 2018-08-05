@@ -203,10 +203,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         public void SubqueryTest()
         {
             var res = Execute("(SELECT 1)");
-            Assert.AreEqual("subquery ", res);
+            Assert.AreEqual("<subquery> ", res);
 
             res = Execute("(SELECT TOP 1 udtcol FROM tab1).method1().method2(b, c)");
-            Assert.AreEqual(". subquery . method1 `0 method2 `2 b , c ", res);
+            Assert.AreEqual(". <subquery> . method1 `0 method2 `2 b , c ", res);
         }
 
         [TestMethod]

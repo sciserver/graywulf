@@ -24,11 +24,11 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return TargetTable.TableReference; }
         }
 
-        public InsertColumnList ColumnList
+        public ColumnIdentifierList ColumnList
         {
             get
             {
-                return FindDescendant<InsertColumnList>();
+                return FindDescendant<InsertColumnList>()?.FindDescendant<ColumnIdentifierList>();
             }
         }
 
@@ -56,8 +56,8 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<OrderByClause>(); }
         }
 
-        public QueryHintClause QueryHintClause
+        public OptionClause OptionClause
         {
-            get { return FindDescendant<QueryHintClause>(); }
+            get { return FindDescendant<OptionClause>(); }
         }    }
 }
