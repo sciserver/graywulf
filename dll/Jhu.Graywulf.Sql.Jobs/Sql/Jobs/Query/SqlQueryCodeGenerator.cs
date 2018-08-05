@@ -105,7 +105,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 Query = sql.ToString(),
             };
 
-            AppendPartitionParameters(source);
+            AppendPartitioningConditionParameters(source);
 
             return source;
         }
@@ -272,6 +272,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         #endregion
         #region Name substitution
 
+        /* TODO: delete
         /// <summary>
         /// Descends recursively the parsing tree and replaces the occurances of one table
         /// reference with another.
@@ -295,6 +296,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 trnode.TableReference = other;
             }
         }
+        */
 
         public void SubstituteSystemDatabaseNames(Expression ex)
         {
@@ -455,7 +457,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
         }
 
-        public void AppendPartitionParameters(SourceQuery q)
+        public void AppendPartitioningConditionParameters(SourceQuery q)
         {
             if (!Partition.IsPartitioningKeyUnbound(Partition.PartitioningKeyMin))
             {

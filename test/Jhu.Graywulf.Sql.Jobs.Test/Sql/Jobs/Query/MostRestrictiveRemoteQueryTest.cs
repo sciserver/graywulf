@@ -15,7 +15,7 @@ using Jhu.Graywulf.Sql.QueryGeneration;
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
     [TestClass]
-    public class ExecuteRemoteQueriesTest : SqlQueryTestBase
+    public class MostRestrictiveRemoteQueryTest : SqlQueryTestBase
     {
         [ClassInitialize]
         public static void Initialize(TestContext context)
@@ -43,7 +43,64 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         }
 
         [TestMethod]
-        public void GenerateMostRestrictiveTableQuery_SimpleTest()
+        public void SelectStarTest()
+        {
+            var sql =
+@"SELECT *
+FROM MYDB:MyCatalog c
+WHERE c.objID = 1";
+
+            var gt =
+@"SELECT 
+[ObjID], [Ra], [Dec], [mag_g], [mag_r], [mag_i]
+FROM [MYDB_1768162722].[mydb].[MyCatalog] 
+WHERE ([ObjID] = 1)
+";
+
+            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, ColumnContext.Default, 0);
+
+            Assert.AreEqual(1, res.Length);
+            Assert.AreEqual(gt, res[0]);
+        }
+
+        [TestMethod]
+        public void SelectStarNoConditionsTest()
+        {
+            var sql =
+@"SELECT *
+FROM MYDB:MyCatalog c";
+
+            var gt =
+@"SELECT 
+[ObjID], [Ra], [Dec], [mag_g], [mag_r], [mag_i]
+FROM [MYDB_1768162722].[mydb].[MyCatalog] ";
+
+            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, ColumnContext.Default, 0);
+
+            Assert.AreEqual(1, res.Length);
+            Assert.AreEqual(gt, res[0]);
+        }
+
+        [TestMethod]
+        public void NoConditionsTest()
+        {
+            var sql =
+@"SELECT c.RA
+FROM MYDB:MyCatalog c";
+
+            var gt =
+@"SELECT 
+[Ra]
+FROM [MYDB_1768162722].[mydb].[MyCatalog] ";
+
+            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, ColumnContext.Default, 0);
+
+            Assert.AreEqual(1, res.Length);
+            Assert.AreEqual(gt, res[0]);
+        }
+
+        [TestMethod]
+        public void SimpleSelectWithWhereTest()
         {
             var sql =
 @"SELECT c.RA
@@ -64,7 +121,7 @@ WHERE ([ObjID] = 1)
         }
 
         [TestMethod]
-        public void GenerateMostRestrictiveTableQuery_PrimaryKeyTest()
+        public void IncludePrimaryKeyTest()
         {
             var sql =
 @"SELECT c.RA
@@ -85,7 +142,7 @@ WHERE ([Dec] = 1)
         }
 
         [TestMethod]
-        public void GenerateMostRestrictiveTableQuery_MultipleAliasesTest()
+        public void MultipleAliasesTest()
         {
             var sql =
 @"SELECT a.RA, b.Dec
@@ -106,7 +163,7 @@ WHERE ([ObjID] = 1) OR ([ObjID] IN (3, 4))
         }
 
         [TestMethod]
-        public void GenerateMostRestrictiveTableQuery_MultipleSelectsTest()
+        public void MultipleSelectsTest()
         {
             var sql =
 @"SELECT a.RA FROM MYDB:MyCatalog a
@@ -129,7 +186,7 @@ WHERE ([Dec] = 10) OR ([ObjID] IN (3, 4))
         }
 
         [TestMethod]
-        public void GenerateMostRestrictiveTableQuery_MultipleSelectsNoAliasTest()
+        public void MultipleSelectsNoAliasTest()
         {
             var sql =
 @"SELECT RA FROM MYDB:MyCatalog
@@ -152,7 +209,7 @@ WHERE ([Dec] = 10) OR ([ObjID] IN (3, 4))
         }
 
         [TestMethod]
-        public void GenerateMostRestrictiveTableQuery_UnionTest()
+        public void UnionTest()
         {
             var sql =
 @"SELECT RA, Dec

@@ -384,6 +384,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                         ntr.Alias = null;
 
                         qg = QueryGeneratorFactory.CreateQueryGenerator(table.Dataset);
+                        qg.Renderer.Options.ColumnNameRendering = NameRendering.IdentifierOnly;
                     }
 
                     // Remap all table reference to the first one; this is to prevent different aliases etc.

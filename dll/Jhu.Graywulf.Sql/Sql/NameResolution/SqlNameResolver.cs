@@ -134,6 +134,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
             details.IsResolved = true;
         }
 
+
+
         #endregion
         #region Visitor dispatch functions
 

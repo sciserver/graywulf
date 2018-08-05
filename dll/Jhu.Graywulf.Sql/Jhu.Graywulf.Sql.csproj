@@ -425,6 +425,7 @@
     <Compile Include="Sql\QueryRendering\Enum.cs" />
     <Compile Include="Sql\QueryRendering\MySql\MySqlQueryRenderer.cs" />
     <Compile Include="Sql\QueryRendering\PostgreSql\PostgreSqlQueryRenderer.cs" />
+    <Compile Include="Sql\QueryRendering\QueryRendererFactory.cs" />
     <Compile Include="Sql\QueryRendering\QueryRendererBase.cs" />
     <Compile Include="Sql\QueryRendering\QueryRendererOptions.cs" />
     <Compile Include="Sql\QueryRendering\SqlServer\SqlServerQueryRenderer.cs" />
