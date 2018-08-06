@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 toplimit = Math.Min(toplimit, 5000);        // TODO: make this a setting
             }
 
-            var table = ParserTableName(dataset, tableName);
+            var table = ParseTableName(dataset, tableName);
             table = dataset.Tables[dataset.DatabaseName, table.SchemaName, table.ObjectName];
 
             // Create source
@@ -169,7 +169,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             // Create destination
 
             // Use a SQL parser to extract table name parts from the string
-            var table = ParserTableName(dataset, tableName);
+            var table = ParseTableName(dataset, tableName);
 
             // Create a destination object targeted to the specific table
             var destination = new IO.Tasks.DestinationTable(table, Jhu.Graywulf.Sql.Schema.TableInitializationOptions.Create);
@@ -200,19 +200,24 @@ namespace Jhu.Graywulf.Web.Api.V1
                 throw new System.Security.SecurityException("Access denied.");  // TODO
             }
 
-            var table = ParserTableName(dataset, tableName);
+            var table = ParseTableName(dataset, tableName);
             table = dataset.Tables[dataset.DatabaseName, table.SchemaName, table.ObjectName];
 
             table.Drop();
         }
 
-        private Jhu.Graywulf.Sql.Schema.Table ParserTableName(Jhu.Graywulf.Sql.Schema.DatasetBase dataset, string tableName)
+        private Jhu.Graywulf.Sql.Schema.Table ParseTableName(Jhu.Graywulf.Sql.Schema.DatasetBase dataset, string tableName)
         {
+            // TODO: review this because it hasn't been tested.
+            // Just rewritten to compile the whole stack
+
             // Use a SQL parser to extract table name parts from the string
-            var parser = new Sql.Parsing.SqlParser();
-            var tn = (Sql.Parsing.TableOrViewIdentifier)parser.Execute(new Sql.Parsing.TableOrViewIdentifier(), tableName);
+            var qf = Jhu.Graywulf.Sql.Jobs.Query.QueryFactory.Create(FederationContext.Federation);
+            var parser = qf.CreateParser();
+            var nr = qf.CreateNameResolver();
+            var tn = parser.Execute< Sql.Parsing.TableOrViewIdentifier>(tableName);
             var tr = tn.TableReference;
-            tr.SubstituteDefaults(FederationContext.SchemaManager, dataset.Name);
+            nr.SubstituteSourceTableDefaults(null, tr, false);
 
             return new Jhu.Graywulf.Sql.Schema.Table()
             {

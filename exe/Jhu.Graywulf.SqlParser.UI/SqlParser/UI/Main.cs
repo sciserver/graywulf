@@ -77,7 +77,7 @@ namespace Jhu.Graywulf.Parser.Test
 
 
                     var qf = QueryFactory.Create(typeof(Jhu.Graywulf.Sql.Jobs.Query.SqlQueryFactory).AssemblyQualifiedName, null);
-                    var nr = qf.CreateNameResolver();
+                    var nr = (Jhu.Graywulf.Sql.Extensions.NameResolution.GraywulfSqlNameResolver)qf.CreateNameResolver();
                     nr.SchemaManager = sm;
 
                     nr.Options.DefaultTableDatasetName = "MYDB";

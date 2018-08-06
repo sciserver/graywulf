@@ -158,6 +158,10 @@
       <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
       <Name>Jhu.Graywulf.Registry</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Sql.Extensions\Jhu.Graywulf.Sql.Extensions.csproj">
+      <Project>{c6f0228b-cfc5-44d2-b474-0613ec496ce7}</Project>
+      <Name>Jhu.Graywulf.Sql.Extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Sql.Jobs\Jhu.Graywulf.Sql.Jobs.csproj">
       <Project>{08789ba4-645a-4980-9fdb-15aae7be7754}</Project>
       <Name>Jhu.Graywulf.Sql.Jobs</Name>

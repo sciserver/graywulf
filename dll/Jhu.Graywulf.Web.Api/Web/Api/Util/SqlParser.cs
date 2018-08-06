@@ -12,15 +12,19 @@ namespace Jhu.Graywulf.Web.Api.Util
     {
         public static bool TryParseTableName(FederationContext context, string dataset, string token, out TableReference tr)
         {
+            // TODO: review this because it hasn't been tested, just rewritten to compile the whole stack
+
             if (token != null)
             {
                 try
                 {
-                    var parser = new Jhu.Graywulf.Sql.Parsing.SqlParser();
-                    var tn = (Jhu.Graywulf.Sql.Parsing.TableOrViewIdentifier)parser.Execute(new Jhu.Graywulf.Sql.Parsing.TableOrViewIdentifier(), token);
+                    var qf = Jhu.Graywulf.Sql.Jobs.Query.QueryFactory.Create(context.Federation);
+                    var parser = qf.CreateParser();
+                    var nr = qf.CreateNameResolver();
 
+                    var tn = parser.Execute<Jhu.Graywulf.Sql.Parsing.TableOrViewIdentifier>(token);
+                    nr.SubstituteSourceTableDefaults(null, tn.TableReference, true);
                     tr = tn.TableReference;
-                    tr.SubstituteDefaults(context.SchemaManager, dataset);
 
                     return true;
                 }

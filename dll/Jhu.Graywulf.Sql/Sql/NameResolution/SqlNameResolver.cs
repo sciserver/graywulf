@@ -1247,7 +1247,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         /// <param name="resolvedSourceTables"></param>
         /// <param name="tr"></param>
-        private void SubstituteSourceTableDefaults(ISourceTableProvider resolvedSourceTables, TableReference tr, bool excludeOuterQueries)
+        public void SubstituteSourceTableDefaults(ISourceTableProvider resolvedSourceTables, TableReference tr, bool excludeOuterQueries)
         {
             try
             {
@@ -1286,7 +1286,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// When overriden, substitutes table default for tables that are created during query execution 
         /// </summary>
         /// <param name="tr"></param>
-        private void SubstituteOutputTableDefaults(TableReference tr)
+        public void SubstituteOutputTableDefaults(TableReference tr)
         {
             OnSubstituteOutputTableDefaults(tr);
         }
@@ -1305,7 +1305,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// taken from the CODE database.
         /// </remarks>
         /// <param name="node"></param>
-        private void SubstituteFunctionDefaults(FunctionReference fr)
+        public void SubstituteFunctionDefaults(FunctionReference fr)
         {
             if (String.IsNullOrWhiteSpace(fr.SchemaName) && IsSystemFunctionName(fr.FunctionName))
             {
@@ -1321,7 +1321,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
         }
 
-        private void SubstituteDataTypeDefaults(DataTypeReference dr)
+        public void SubstituteDataTypeDefaults(DataTypeReference dr)
         {
             if (!dr.IsSystem)
             {
