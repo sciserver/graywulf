@@ -99,7 +99,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
     Data float
 )
 
-SELECT * FROM @test";
+SELECT ID, Data FROM @test";
 
             var gt =
 @"DECLARE @test TABLE
@@ -108,7 +108,7 @@ SELECT * FROM @test";
     [Data] [float]
 )
 
-SELECT * FROM @test";
+SELECT [@test].[ID], [@test].[Data] FROM @test";
 
             var ss = ParseAndResolveNames<StatementBlock>(sql);
 
@@ -126,7 +126,7 @@ SELECT * FROM @test";
     Data float
 )
 
-SELECT * FROM @test a";
+SELECT ID, Data FROM @test a";
 
             var gt =
 @"DECLARE @test TABLE
@@ -135,7 +135,7 @@ SELECT * FROM @test a";
     [Data] [float]
 )
 
-SELECT * FROM @test [a]";
+SELECT [a].[ID], [a].[Data] FROM @test [a]";
 
             var ss = ParseAndResolveNames<StatementBlock>(sql);
 
@@ -153,7 +153,7 @@ SELECT * FROM @test [a]";
     Data float
 )
 
-SELECT * FROM (SELECT * FROM @test) AS q";
+SELECT ID, Data FROM (SELECT * FROM @test) AS q";
 
             var gt =
 @"DECLARE @test TABLE
@@ -162,7 +162,7 @@ SELECT * FROM (SELECT * FROM @test) AS q";
     [Data] [float]
 )
 
-SELECT * FROM (SELECT * FROM @test) AS [q]";
+SELECT [q].[ID], [q].[Data] FROM (SELECT * FROM @test) AS [q]";
 
             var ss = ParseAndResolveNames<StatementBlock>(sql);
 

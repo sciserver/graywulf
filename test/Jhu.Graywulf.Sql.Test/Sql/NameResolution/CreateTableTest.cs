@@ -163,7 +163,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
     Data float
 )
 
-SELECT * FROM test
+SELECT ID, Data FROM test
 ";
 
             var gt =
@@ -173,7 +173,7 @@ SELECT * FROM test
     [Data] [float]
 )
 
-SELECT * FROM [Graywulf_Schema_Test].[dbo].[test]
+SELECT [Graywulf_Schema_Test].[dbo].[test].[ID], [Graywulf_Schema_Test].[dbo].[test].[Data] FROM [Graywulf_Schema_Test].[dbo].[test]
 ";
 
             var ss = ParseAndResolveNames<StatementBlock>(sql);

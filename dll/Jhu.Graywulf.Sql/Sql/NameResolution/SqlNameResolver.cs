@@ -292,6 +292,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         protected virtual void Accept(VariableTableSource node)
         {
             node.VariableReference = ResolveTableVariableReference(node.VariableReference);
+            node.TableReference = ResolveTableReference(node.TableReference, null);
         }
 
         protected virtual void Accept(FunctionTableSource node)
