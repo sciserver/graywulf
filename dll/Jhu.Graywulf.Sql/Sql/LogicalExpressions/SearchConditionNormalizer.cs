@@ -45,19 +45,23 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
             //       subqueries may reference tables outside the subquery!
 
             // Process join conditions
-            var from = qs.FindDescendant<Parsing.FromClause>();
+            var from = qs.FromClause;
 
             if (from != null)
             {
-                var tablesource = from.FindDescendant<Parsing.TableSourceExpression>();
-                foreach (Parsing.JoinedTable jt in tablesource.EnumerateDescendantsRecursive<Parsing.JoinedTable>(typeof(Parsing.Subquery)))
+                var tse = from.FindDescendant<Parsing.TableSourceExpression>();
+                var jt = tse.FindDescendant<Parsing.JoinedTable>();
+
+                while (jt != null)
                 {
-                    // CROSS JOIN queries have no search condition
-                    var sc = jt.FindDescendant<Parsing.LogicalExpression>();
+                    var jc = jt.FindDescendant<Parsing.JoinCondition>();
+                    var sc = jc?.FindDescendant<Parsing.LogicalExpression>();
                     if (sc != null)
                     {
                         conditions.Add(GetConjunctiveNormalForm(sc));
                     }
+
+                    jt = jt.FindDescendant<Parsing.JoinedTable>();
                 }
             }
 
@@ -181,29 +185,17 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
         /// <remarks>The expression must be in CNF</remarks>
         private static IEnumerable<ExpressionTreeNode> EnumerateCnfTermsSpecificToTable(LogicalExpressions.ExpressionTreeNode node, TableReference tr, DatabaseObject dbobj)
         {
-            var predicateVisitor = new PredicateVisitor();
-            bool specifictotable;
-
             foreach (var term in EnumerateCnfTerms(node))
             {
                 if (term is OperatorOr)
                 {
                     // A term is only specific to a table if it contains predicates
                     // only specific to the particular table
-                    specifictotable = true;
+                    var specifictotable = true;
 
                     foreach (var exp in EnumerateCnfTermPredicates(term))
                     {
-                        var predicate = GetCnfLiteralPredicate(exp);
-
-                        if (tr != null)
-                        {
-                            specifictotable &= predicateVisitor.IsSpecificToTable(predicate, tr);
-                        }
-                        else
-                        {
-                            specifictotable &= predicateVisitor.IsSpecificToTable(predicate, dbobj);
-                        }
+                        specifictotable &= IsCnfTermSpecificToTable(exp, tr, dbobj);
 
                         if (!specifictotable)
                         {
@@ -218,23 +210,32 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
                 }
                 else
                 {
-                    var predicate = GetCnfLiteralPredicate(term);
-
-                    if (tr != null)
-                    {
-                        specifictotable = predicateVisitor.IsSpecificToTable(predicate,tr);
-                    }
-                    else
-                    {
-                        specifictotable = predicateVisitor.IsSpecificToTable(predicate, dbobj);
-                    }
-
+                    var specifictotable = IsCnfTermSpecificToTable(term, tr, dbobj);
+                    
                     if (specifictotable)
                     {
                         yield return term;
                     }
                 }
             }
+        }
+
+        private static bool IsCnfTermSpecificToTable(ExpressionTreeNode term, TableReference tr, DatabaseObject dbobj)
+        {
+            var predicateVisitor = new PredicateVisitor();
+            var predicate = GetCnfLiteralPredicate(term);
+            bool specifictotable = true;
+
+            if (tr != null)
+            {
+                specifictotable = predicateVisitor.IsSpecificToTable(predicate, tr);
+            }
+            else
+            {
+                specifictotable = predicateVisitor.IsSpecificToTable(predicate, dbobj);
+            }
+
+            return specifictotable;
         }
 
         /// <summary>

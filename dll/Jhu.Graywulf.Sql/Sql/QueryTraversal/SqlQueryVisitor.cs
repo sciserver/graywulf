@@ -792,6 +792,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     case Literal n:
                         VisitNode(n);
                         break;
+                    case IndexTypeSpecification n:
+                        TraverseIndexTypeSpecification(n);
+                        break;
                     case BracketOpen n:
                         VisitNode(n);
                         break;
@@ -1331,7 +1334,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         VisitNode(n);
                         break;
                     case DataTypeSpecification n:
-                        VisitNode(n);
+                        TraverseDataTypeSpecification(n);
                         break;
                     case Expression n:
                         TraverseExpression(n);
@@ -1414,8 +1417,14 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     case Comma n:
                         VisitNode(n);
                         break;
-                    case TableDefinitionItem n:
-                        DispatchTableDefinitionItem(n);
+                    case ColumnDefinition n:
+                        TraverseColumnDefinition(n);
+                        break;
+                    case TableConstraint n:
+                        TraverseTableConstraint(n);
+                        break;
+                    case TableIndex n:
+                        TraverseTableIndex(n);
                         break;
                     case TableDefinitionList n:
                         TraverseTableDefinitionList(n);
@@ -1424,24 +1433,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        protected void DispatchTableDefinitionItem(TableDefinitionItem node)
-        {
-            switch (node.Stack.First)
-            {
-                case ColumnDefinition n:
-                    TraverseColumnDefinition(n);
-                    break;
-                case TableConstraint n:
-                    TraverseTableConstraint(n);
-                    break;
-                case TableIndex n:
-                    TraverseTableIndex(n);
-                    break;
-            }
-        }
 
         private void TraverseColumnDefinition(ColumnDefinition node)
         {
+            VisitNode(node, 0);
+
             foreach (var nn in node.Stack)
             {
                 switch (nn)
@@ -1451,28 +1447,47 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         VisitReference(n);
                         break;
                     case DataTypeSpecification n:
-                        VisitNode(n);
+                        TraverseDataTypeSpecification(n);
                         VisitReference(n);
                         break;
-                    case ColumnNullDefinition n:
-                        TraverseColumnNullDefinition(n);
+                    case ColumnSpecificationList n:
+                        TraverseColumnSpecificationList(n);
                         break;
-                    case ColumnDefaultDefinition n:
-                        TraverseColumnDefaultDefinition(n);
+                }
+            }
+
+            VisitNode(node, 1);
+        }
+
+        private void TraverseColumnSpecificationList(ColumnSpecificationList node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case ColumnNullSpecification n:
+                        TraverseColumnNullSpecification(n);
                         break;
-                    case ColumnIdentityDefinition n:
+                    case ColumnDefaultSpecification n:
+                        TraverseColumnDefaultSpecification(n);
+                        break;
+                    case ColumnIdentitySpecification n:
                         TraverseColumnIdentityDefinition(n);
                         break;
                     case ColumnConstraint n:
                         TraverseColumnConstraint(n);
                         break;
+                    case ColumnIndex n:
+                        TraverseColumnIndex(n);
+                        break;
+                    case ColumnSpecificationList n:
+                        TraverseColumnSpecificationList(n);
+                        break;
                 }
             }
-
-            VisitNode(node);
         }
 
-        private void TraverseColumnNullDefinition(ColumnNullDefinition node)
+        private void TraverseColumnNullSpecification(ColumnNullSpecification node)
         {
             foreach (var nn in node.Stack)
             {
@@ -1487,7 +1502,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             VisitNode(node);
         }
 
-        private void TraverseColumnDefaultDefinition(ColumnDefaultDefinition node)
+        private void TraverseColumnDefaultSpecification(ColumnDefaultSpecification node)
         {
             foreach (var nn in node.Stack)
             {
@@ -1508,7 +1523,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             VisitNode(node);
         }
 
-        private void TraverseColumnIdentityDefinition(ColumnIdentityDefinition node)
+        private void TraverseColumnIdentityDefinition(ColumnIdentitySpecification node)
         {
             foreach (var nn in node.Stack)
             {
@@ -1521,6 +1536,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         VisitNode(n);
                         break;
                     case BracketClose n:
+                        VisitNode(n);
+                        break;
+                    case Comma n:
                         VisitNode(n);
                         break;
                     case NumericConstant n:
@@ -1545,11 +1563,33 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         VisitNode(n);
                         VisitReference(n);
                         break;
-                    case ColumnDefaultDefinition n:
-                        TraverseColumnDefaultDefinition(n);
+                    case ColumnDefaultSpecification n:
+                        TraverseColumnDefaultSpecification(n);
                         break;
-                    case IndexDefinition n:
-                        TraverseIndexDefinition(n);
+                    case IndexTypeSpecification n:
+                        TraverseIndexTypeSpecification(n);
+                        break;
+                }
+            }
+
+            VisitNode(node);
+        }
+
+        private void TraverseColumnIndex(ColumnIndex node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case IndexName n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                    case IndexTypeSpecification n:
+                        TraverseIndexTypeSpecification(n);
                         break;
                 }
             }
@@ -1570,8 +1610,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         VisitNode(n);
                         VisitReference(n);
                         break;
-                    case IndexDefinition n:
-                        TraverseIndexDefinition(n);
+                    case IndexTypeSpecification n:
+                        TraverseIndexTypeSpecification(n);
                         break;
                     case BracketOpen n:
                         VisitNode(n);
@@ -1588,7 +1628,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             VisitNode(node);
         }
 
-        private void TraverseIndexDefinition(IndexDefinition node)
+        private void TraverseIndexTypeSpecification(IndexTypeSpecification node)
         {
             foreach (var nn in node.Stack)
             {
@@ -1616,8 +1656,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         VisitNode(n);
                         VisitReference(n);
                         break;
-                    case IndexDefinition n:
-                        TraverseIndexDefinition(n);
+                    case IndexTypeSpecification n:
+                        TraverseIndexTypeSpecification(n);
                         break;
                     case BracketOpen n:
                         VisitNode(n);
@@ -1707,8 +1747,67 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseDataTypeSpecification(DataTypeSpecification node)
         {
-            VisitNode(node.DataTypeIdentifier);
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case DataTypeIdentifier n:
+                        VisitNode(n);
+                        break;
+                    case DataTypeScaleAndPrecision n:
+                        TraverseDataTypeScaleAndPrecision(n);
+                        break;
+                    case DataTypeSize n:
+                        TraverseDataTypeSize(n);
+                        break;
+                }
+            }
+
             VisitNode(node);
+        }
+
+        private void TraverseDataTypeScaleAndPrecision(DataTypeScaleAndPrecision node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case BracketOpen n:
+                        VisitNode(n);
+                        break;
+                    case NumericConstant n:
+                        VisitNode(n);
+                        break;
+                    case Comma n:
+                        VisitNode(n);
+                        break;
+                    case BracketClose n:
+                        VisitNode(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraverseDataTypeSize(DataTypeSize node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case BracketOpen n:
+                        VisitNode(n);
+                        break;
+                    case NumericConstant n:
+                        VisitNode(n);
+                        break;
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case BracketClose n:
+                        VisitNode(n);
+                        break;
+                }
+            }
         }
 
         #endregion
@@ -2895,6 +2994,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         case JoinCondition n:
                             TraverseJoinCondition(n);
                             break;
+                        case JoinedTable n:
+                            TraverseJoinedTable(n, pass);
+                            break;
                     }
                 }
             }
@@ -3050,36 +3152,25 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 }
             }
 
-            /*
-            var var = node.AssignedVariable;
-            var exp = node.Expression;
-            var star = node.StarColumnIdentifier;
-
-            if (var != null)
-            {
-                VisitNode(var);
-            }
-
-            if (exp != null)
-            {
-                TraverseExpression(exp);
-            }
-
-            if (star != null)
-            {
-                TraverseStarColumnIdentifier(star);
-            }*/
-
             VisitNode(node);
         }
 
         private void TraverseStarColumnIdentifier(StarColumnIdentifier node)
         {
-            var ti = node.TableOrViewIdentifier;
-
-            if (ti != null)
+            foreach (var nn in node.Stack)
             {
-                VisitNode(ti);
+                switch (nn)
+                {
+                    case TableOrViewIdentifier n:
+                        VisitNode(n);
+                        break;
+                    case Dot n:
+                        VisitNode(n);
+                        break;
+                    case Mul n:
+                        VisitNode(n);
+                        break;
+                }
             }
 
             VisitNode(node);

@@ -1078,8 +1078,6 @@ namespace Jhu.Graywulf.Sql.Grammar
                 DeclareVariableStatement,
                 SetVariableStatement,
 
-                // TODO: review traverse below
-
                 DeclareTableStatement,
                 CreateTableStatement,
                 DropTableStatement,
@@ -1088,13 +1086,11 @@ namespace Jhu.Graywulf.Sql.Grammar
                 CreateIndexStatement,
                 DropIndexStatement,
 
-                // TODO: review traverse above
-
                 SelectStatement,
                 InsertStatement,
                 UpdateStatement,
                 DeleteStatement
-            // TODO: MergeStatement
+                // TODO: MergeStatement
             );
 
         public static Expression<Rule> Statement = () => Abstract();
@@ -2224,7 +2220,6 @@ FOR select_statement
         public static Expression<Rule> TableDefinition = () =>
             Sequence
             (
-
                 BracketOpen,
                 May(CommentOrWhitespace),
                 TableDefinitionList,
@@ -2235,16 +2230,13 @@ FOR select_statement
         public static Expression<Rule> TableDefinitionList = () =>
             Sequence
             (
-                TableDefinitionItem,
+                Must
+                (
+                    ColumnDefinition,
+                    TableConstraint,
+                    TableIndex
+                ),
                 May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), TableDefinitionList))
-            );
-
-        public static Expression<Rule> TableDefinitionItem = () =>
-            Must
-            (
-                ColumnDefinition,
-                TableConstraint,
-                TableIndex
             );
 
         public static Expression<Rule> ColumnDefinition = () =>
@@ -2253,37 +2245,24 @@ FOR select_statement
                 ColumnName,
                 May(CommentOrWhitespace),
                 DataTypeSpecification,
-                May
-                (
-                    Sequence
-                    (
-                        May(CommentOrWhitespace),
-                        ColumnNullDefinition
-                    )
-                ),
-                May
-                (
-                    Sequence
-                    (
-                        May(CommentOrWhitespace),
-                        Must
-                        (
-                            ColumnDefaultDefinition,
-                            ColumnIdentityDefinition
-                        )
-                    )
-                ),
-                May
-                (
-                    Sequence
-                    (
-                        May(CommentOrWhitespace),
-                        ColumnConstraint
-                    )
-                )
+                May(Sequence(May(CommentOrWhitespace), ColumnSpecificationList))
             );
 
-        public static Expression<Rule> ColumnNullDefinition = () =>
+        public static Expression<Rule> ColumnSpecificationList = () =>
+            Sequence
+            (
+                Must
+                (
+                    ColumnNullSpecification,
+                    ColumnDefaultSpecification,
+                    ColumnIdentitySpecification,
+                    ColumnConstraint,
+                    ColumnIndex
+                ),
+                May(Sequence(May(CommentOrWhitespace), ColumnSpecificationList))
+            );
+
+        public static Expression<Rule> ColumnNullSpecification = () =>
             Sequence
             (
                 May(Sequence(Keyword("NOT"), CommentOrWhitespace)),
@@ -2292,7 +2271,7 @@ FOR select_statement
 
         // TODO: add computed columns
 
-        public static Expression<Rule> ColumnDefaultDefinition = () =>
+        public static Expression<Rule> ColumnDefaultSpecification = () =>
             Sequence
             (
                 Keyword("DEFAULT"),
@@ -2300,7 +2279,7 @@ FOR select_statement
                 Expression
             );
 
-        public static Expression<Rule> ColumnIdentityDefinition = () =>
+        public static Expression<Rule> ColumnIdentitySpecification = () =>
             Sequence
             (
                 Keyword("IDENTITY"),
@@ -2337,10 +2316,26 @@ FOR select_statement
                 ),
                 Must
                 (
-                    IndexDefinition,
-                    ColumnDefaultDefinition
+                    IndexTypeSpecification,
+                    ColumnDefaultSpecification
                     // TODO: foreign key
                 )
+            );
+
+        public static Expression<Rule> ColumnIndex = () =>
+            Sequence
+            (
+                May
+                (
+                    Sequence
+                    (
+                        Keyword("INDEX"),
+                        May(CommentOrWhitespace),
+                        IndexName,
+                        May(CommentOrWhitespace)
+                    )
+                ),
+                IndexTypeSpecification
             );
 
         public static Expression<Rule> TableConstraint = () =>
@@ -2356,8 +2351,7 @@ FOR select_statement
                         May(CommentOrWhitespace)
                     )
                 ),
-                IndexDefinition,
-                May(CommentOrWhitespace),
+                May(Sequence(IndexTypeSpecification, May(CommentOrWhitespace))),
                 BracketOpen,
                 May(CommentOrWhitespace),
                 IndexColumnDefinitionList,
@@ -2372,7 +2366,7 @@ FOR select_statement
                 Keyword("INDEX"),
                 May(CommentOrWhitespace),
                 IndexName,
-                May(Sequence(May(CommentOrWhitespace), IndexDefinition)),
+                May(Sequence(May(CommentOrWhitespace), IndexTypeSpecification)),
                 May(CommentOrWhitespace),
                 BracketOpen,
                 May(CommentOrWhitespace),
@@ -2423,7 +2417,7 @@ FOR select_statement
                 Sequence
                 (
                     Keyword("CREATE"),
-                    May(Sequence(CommentOrWhitespace, IndexDefinition)),
+                    May(Sequence(CommentOrWhitespace, IndexTypeSpecification)),
                     CommentOrWhitespace,
                     Keyword("INDEX"),
                     May(CommentOrWhitespace),
@@ -2457,37 +2451,33 @@ FOR select_statement
                 )
             );
 
-        // This is a bit simplified because index definition within table definitions
-        // have a slightly different rule than create index statements but the order of
-        // allowed keywords is the same
-        public static Expression<Rule> IndexDefinition = () => 
-            Sequence
+        public static Expression<Rule> IndexTypeSpecification = () =>
+            Must
             (
-                May
+                Keyword("CLUSTERED"),
+                Keyword("NONCLUSTERED"),
+                Sequence
                 (
                     Must
                     (
                         Sequence(Keyword("PRIMARY"), CommentOrWhitespace, Keyword("KEY")),
+                        Keyword("UNIQUE")
+                    ),
+                    May
+                    (
                         Sequence
                         (
-                            Keyword("UNIQUE"),
-                            May
+                            CommentOrWhitespace,
+                            Must
                             (
-                                Sequence
-                                (
-                                    CommentOrWhitespace,
-                                    Must
-                                    (
-                                        Keyword("CLUSTERED"),
-                                        Keyword("NONCLUSTERED")
-                                    )
-                                )
+                                Keyword("CLUSTERED"),
+                                Keyword("NONCLUSTERED")
                             )
                         )
                     )
-                )
+                )  
             );
-
+        
         public static Expression<Rule> IndexColumnDefinitionList = () =>
             Sequence
             (

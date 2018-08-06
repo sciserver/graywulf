@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void CreateTvfCallTest()
         {
-            var cg = CreateCodeGenerator();
+            var cg = CreateCodeRenderer();
             var fr = new FunctionReference()
             {
                 SchemaName = "dbo",

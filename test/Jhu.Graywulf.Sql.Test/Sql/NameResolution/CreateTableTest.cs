@@ -78,12 +78,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual("test", t.TableName);
             Assert.AreEqual(5, t.Columns.Count);
 
+            Assert.AreEqual("bigint", t.Columns["ID"].DataType.TypeName);
             Assert.IsFalse(t.Columns["ID"].DataType.IsNullable);
+            Assert.AreEqual("SimpleUDT", t.Columns["Data1"].DataType.TypeName);
             Assert.IsFalse(t.Columns["Data1"].DataType.IsNullable);
+            Assert.AreEqual("SimpleUDT", t.Columns["Data2"].DataType.TypeName);
             Assert.IsFalse(t.Columns["Data2"].DataType.IsNullable);
+            Assert.AreEqual("ClrUDT", t.Columns["Data3"].DataType.TypeName);
             Assert.IsTrue(t.Columns["Data3"].DataType.IsNullable);
+            Assert.AreEqual("ClrUDT", t.Columns["Data4"].DataType.TypeName);
             Assert.IsFalse(t.Columns["Data4"].DataType.IsNullable);
-
         }
 
         [TestMethod]

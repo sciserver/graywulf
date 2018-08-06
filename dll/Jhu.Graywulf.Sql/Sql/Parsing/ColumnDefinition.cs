@@ -46,33 +46,11 @@ namespace Jhu.Graywulf.Sql.Parsing
         {
             get
             {
-                // TODO: update this becaues there can be other literals in the future
-                var k = FindDescendant<ColumnNullDefinition>()?.FindDescendantRecursive<Jhu.Graywulf.Parsing.Literal>();
-
-                if (k != null && SqlParser.ComparerInstance.Compare("not", k.Value) != 0)
-                {
-                    return true;
-                }
-
-                return false;
+                var k = FindDescendantRecursive<ColumnNullSpecification>();
+                return k?.IsNullable ?? false;
             }
         }
-
-        public ColumnDefaultDefinition DefaultDefinition
-        {
-            get { return FindDescendant<ColumnDefaultDefinition>(); }
-        }
-
-        public ColumnIdentityDefinition IdentityDefinition
-        {
-            get { return FindDescendant<ColumnIdentityDefinition>(); }
-        }
-
-        public ColumnConstraint Constraint
-        {
-            get { return FindDescendant<ColumnConstraint>(); }
-        }
-
+        
         public override void Interpret()
         {
             base.Interpret();

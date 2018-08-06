@@ -261,6 +261,7 @@
     <Compile Include="Sql\NameResolution\VariableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\Parsing\BetweenPredicate.cs" />
     <Compile Include="Sql\Parsing\BinaryOperator.cs" />
+    <Compile Include="Sql\Parsing\ColumnNullSpecification.cs" />
     <Compile Include="Sql\Parsing\ConversionFunctionCall.cs" />
     <Compile Include="Sql\Parsing\JoinCondition.cs" />
     <Compile Include="Sql\Parsing\JoinOperator.cs" />
@@ -304,7 +305,6 @@
     <Compile Include="Sql\Parsing\ColumnAlias.cs" />
     <Compile Include="Sql\Parsing\ColumnAliasBrackets.cs" />
     <Compile Include="Sql\Parsing\ColumnConstraint.cs" />
-    <Compile Include="Sql\Parsing\ColumnDefaultDefinition.cs" />
     <Compile Include="Sql\Parsing\ColumnDefinition.cs" />
     <Compile Include="Sql\Parsing\CursorDefinition.cs" />
     <Compile Include="Sql\Parsing\CursorName.cs" />
@@ -329,8 +329,6 @@
     <Compile Include="Sql\Parsing\TableConstraint.cs" />
     <Compile Include="Sql\Parsing\TableDeclaration.cs" />
     <Compile Include="Sql\Parsing\TableDefinition.cs" />
-    <Compile Include="Sql\Parsing\TableDefinitionItem.cs" />
-    <Compile Include="Sql\Parsing\TableDefinitionList.cs" />
     <Compile Include="Sql\Parsing\DatabaseName.cs" />
     <Compile Include="Sql\Parsing\TableSource.cs" />
     <Compile Include="Sql\Parsing\TableOrViewIdentifier.cs" />

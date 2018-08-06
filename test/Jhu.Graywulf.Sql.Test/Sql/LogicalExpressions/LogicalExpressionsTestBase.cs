@@ -68,8 +68,9 @@ namespace Jhu.Graywulf.Sql.LogicalExpressions
 
                     if (where != null)
                     {
-                        var cg = CreateCodeGenerator();
+                        var cg = CreateCodeRenderer();
                         var sw = new StringWriter();
+                        cg.Options.ColumnNameRendering = QueryRendering.NameRendering.FullyQualified;
                         cg.Execute(sw, where);
 
                         res.Add(sw.ToString());

@@ -205,21 +205,26 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             Write(node);
         }
 
-        public virtual void Accept(TableSource node)
+        public virtual void Accept(TableOrViewIdentifier node)
         {
-            Write("<table> ");
+            Write(node);
         }
 
+        public virtual void Accept(IndexName node)
+        {
+            Write(node);
+        }
+
+        public virtual void Accept(ConstraintName node)
+        {
+            Write(node);
+        }
+        
         public virtual void Accept(QueryOperator node)
         {
             Write(node);
         }
-
-        public virtual void Accept(DataTypeSpecification node)
-        {
-            Write(node);
-        }
-
+        
         public virtual void Accept(DataTypeIdentifier node)
         {
             Write(node);
@@ -255,7 +260,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             Write(node);
         }
-        
+
+        public virtual void Accept(ColumnName node)
+        {
+            Write(node);
+        }
+
         public virtual void Accept(ColumnIdentifier node)
         {
             Write(node);

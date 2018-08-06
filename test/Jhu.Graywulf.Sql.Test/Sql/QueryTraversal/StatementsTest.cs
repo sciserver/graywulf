@@ -32,7 +32,7 @@ UNION ALL
 SELECT DISTINCT ID, Data FROM Tab2
 ";
 
-            var gt = "FROM <table> INNER LOOP JOIN <table> ON t . ID = t2 . ID WHERE ID IN ( 1 , 2 , 4 ) GROUP BY ID , Data HAVING AVG ( Data2 ) > 10 SELECT TOP 10 PERCENT ID AS Col1 , Col2 = Data , AVG ( Data2 ) INTO <table> UNION ALL FROM <table> SELECT DISTINCT ID , Data ";
+            var gt = "FROM Tab1 INNER LOOP JOIN Tab2 ON t . ID = t2 . ID WHERE ID IN ( 1 , 2 , 4 ) GROUP BY ID , Data HAVING AVG ( Data2 ) > 10 SELECT TOP 10 PERCENT ID AS Col1 , Col2 = Data , AVG ( Data2 ) INTO outtable UNION ALL FROM Tab2 SELECT DISTINCT ID , Data ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
@@ -42,7 +42,7 @@ SELECT DISTINCT ID, Data FROM Tab2
         public void SelectAssignVariableTest()
         {
             var sql = @"SELECT @v = ID FROM tab";
-            var gt = "FROM <table> SELECT @v = ID ";
+            var gt = "FROM tab SELECT @v = ID ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
@@ -57,7 +57,7 @@ SELECT DISTINCT ID, Data FROM Tab2
 SELECT 1, 2
 ";
 
-            var gt = "INSERT <table> ( col1 , col2 ) SELECT 1 , 2 ";
+            var gt = "INSERT newtable ( col1 , col2 ) SELECT 1 , 2 ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
@@ -73,7 +73,7 @@ VALUES
 (1, 2), (3, 4)
 ";
 
-            var gt = "INSERT <table> ( col1 , col2 ) VALUES ( 1 , 2 ) , ( 3 , 4 ) ";
+            var gt = "INSERT newtable ( col1 , col2 ) VALUES ( 1 , 2 ) , ( 3 , 4 ) ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
@@ -94,7 +94,7 @@ UNION ALL
 SELECT DISTINCT ID, Data FROM Tab2
 ";
 
-            var gt = "INSERT <table> FROM <table> INNER LOOP JOIN <table> ON t . ID = t2 . ID WHERE ID IN ( 1 , 2 , 4 ) GROUP BY ID , Data HAVING AVG ( Data2 ) > 10 SELECT TOP 10 PERCENT ID AS Col1 , Col2 = Data , AVG ( Data2 ) UNION ALL FROM <table> SELECT DISTINCT ID , Data ";
+            var gt = "INSERT newtable FROM Tab1 INNER LOOP JOIN Tab2 ON t . ID = t2 . ID WHERE ID IN ( 1 , 2 , 4 ) GROUP BY ID , Data HAVING AVG ( Data2 ) > 10 SELECT TOP 10 PERCENT ID AS Col1 , Col2 = Data , AVG ( Data2 ) UNION ALL FROM Tab2 SELECT DISTINCT ID , Data ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
@@ -104,7 +104,7 @@ SELECT DISTINCT ID, Data FROM Tab2
         public void DeleteStatementTest()
         {
             var sql = "DELETE mytable";
-            var gt = "DELETE <table> ";
+            var gt = "DELETE mytable ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
@@ -119,7 +119,7 @@ FROM Tab1 AS t WITH(TABLOCKX)
 INNER LOOP JOIN Tab2 t2 WITH(TABLOCK) ON t.ID = t2.ID
 WHERE ID IN (1, 2, 4)";
 
-            var gt = "FROM <table> INNER LOOP JOIN <table> ON t . ID = t2 . ID DELETE <table> WHERE ID IN ( 1 , 2 , 4 ) ";
+            var gt = "FROM Tab1 INNER LOOP JOIN Tab2 ON t . ID = t2 . ID DELETE newtable WHERE ID IN ( 1 , 2 , 4 ) ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
@@ -133,7 +133,7 @@ WHERE ID IN (1, 2, 4)";
 SET col1 = 1,
     col2 = 2";
 
-            var gt = "UPDATE <table> SET col1 = 1 , col2 = 2 ";
+            var gt = "UPDATE mytable SET col1 = 1 , col2 = 2 ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
@@ -149,7 +149,7 @@ SET col1 = 1,
 FROM mytable a INNER JOIN othertable b ON a.ID = b.ID
 WHERE a.Data > 5";
 
-            var gt = "FROM <table> INNER JOIN <table> ON a . ID = b . ID WHERE a . Data > 5 UPDATE <table> SET col1 = 1 , col2 = 2 ";
+            var gt = "FROM mytable INNER JOIN othertable ON a . ID = b . ID WHERE a . Data > 5 UPDATE mytable SET col1 = 1 , col2 = 2 ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
@@ -238,7 +238,7 @@ END ELSE BEGIN
     SELECT @var = ID FROM tab1
 END
 ";
-            var gt = "IF x < ANY <subquery> BEGIN SET @var = 5 END ELSE BEGIN FROM <table> SELECT @var = ID END ";
+            var gt = "IF x < ANY <subquery> BEGIN SET @var = 5 END ELSE BEGIN FROM tab1 SELECT @var = ID END ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
@@ -336,13 +336,75 @@ END CATCH
     ID int NOT NULL IDENTITY(1, 1) PRIMARY KEY,
     Data float NULL DEFAULT 0,
     Data2 real,
-    INDEX IX_t ( Data, Data2 )
+    INDEX IX_t ( Data, Data2 DESC )
 )";
 
-            var gt = "";
+            var gt = "DECLARE @t AS TABLE ( ID int NOT NULL IDENTITY ( 1 , 1 ) PRIMARY KEY , Data float NULL DEFAULT 0 , Data2 real , INDEX IX_t ( Data , Data2 DESC ) ) ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
+        }
+
+        [TestMethod]
+        public void CreateTableStatementTest()
+        {
+            var sql =
+@"CREATE TABLE test
+(
+    ID int NOT NULL IDENTITY(1, 1) PRIMARY KEY,
+    Data float NULL DEFAULT 0,
+    Data2 real CONSTRAINT UQ_test_Data2 UNIQUE,
+    INDEX IX_t ( Data, Data2 ASC )
+)";
+
+            var gt = "CREATE TABLE test ( ID int NOT NULL IDENTITY ( 1 , 1 ) PRIMARY KEY , Data float NULL DEFAULT 0 , Data2 real CONSTRAINT UQ_test_Data2 UNIQUE , INDEX IX_t ( Data , Data2 ASC ) ) ";
+
+            var res = Execute(sql);
+            Assert.AreEqual(gt, res);
+        }
+
+        [TestMethod]
+        public void DropTableStatementTest()
+        {
+            var sql = "DROP TABLE tab";
+            var gt = "DROP TABLE tab ";
+            var res = Execute(sql);
+            Assert.AreEqual(gt, res);
+        }
+
+        [TestMethod]
+        public void TruncateTableStatementTest()
+        {
+            var sql = "TRUNCATE TABLE tab";
+            var gt = "TRUNCATE TABLE tab ";
+            var res = Execute(sql);
+            Assert.AreEqual(gt, res);
+        }
+
+        [TestMethod]
+        public void CreateIndexStatementTest()
+        {
+            var sql =
+@"CREATE UNIQUE NONCLUSTERED INDEX IX_tab ON tab
+(
+    ID ASC, Data
+)
+INCLUDE
+(
+    Data1, Data2
+)
+";
+
+            var gt = "CREATE UNIQUE NONCLUSTERED INDEX IX_tab ON tab ( ID ASC , Data ) INCLUDE ( Data1 , Data2 ) ";
+
+            var res = Execute(sql);
+            Assert.AreEqual(gt, res);
+        }
+
+        [TestMethod]
+        public void DropIndexStatementTest()
+        {
+            Assert.Inconclusive();
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void CreateTableStarTest()
         {
-            var cg = CreateCodeGenerator();
+            var cg = CreateCodeRenderer();
             var tr = new NameResolution.TableReference()
             {
                 TableName = "test"

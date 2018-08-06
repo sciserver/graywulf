@@ -14,12 +14,13 @@ namespace Jhu.Graywulf.Sql.NameResolution
         #region Private member variables
 
         private SqlNameResolverOptions options;
-        
-        private SqlQueryVisitor visitor;
-        private TokenList memberNameParts;
-
         private DatasetBase dataset;
-        
+        private SqlQueryVisitor visitor;
+
+        // These are used to collect tokens during name resolution
+        private TokenList memberNameParts;
+        private List<ColumnReference> columnDefinitionReferences;
+
         // The schema manager is used to resolve identifiers that are not local to the details,
         // i.e. database, table, columns etc. names
         private QueryDetails details;
@@ -67,7 +68,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             this.options = CreateOptions();
             this.visitor = CreateVisitor();
-            this.memberNameParts = new TokenList();
+
+            this.memberNameParts = null;
+            this.columnDefinitionReferences = null;
+
             this.details = null;
         }
 
@@ -130,11 +134,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
         public virtual void Execute(QueryDetails details)
         {
             this.details = details;
+            this.memberNameParts = new TokenList();
+            this.columnDefinitionReferences = new List<ColumnReference>();
+
             Visitor.Execute(details.ParsingTree);
+
             details.IsResolved = true;
+            this.memberNameParts = null;
+            this.columnDefinitionReferences = null;
         }
-
-
 
         #endregion
         #region Visitor dispatch functions
@@ -186,8 +194,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         protected virtual void Accept(ColumnDefinition node)
         {
-            // This must happen here because it requires a resolved data type
-            node.DataTypeWithSize.DataTypeReference.DataType.IsNullable = node.IsNullable;
+            if (visitor.Pass == 0)
+            {
+                columnDefinitionReferences.Add(node.ColumnReference);
+            }
+        }
+
+        protected virtual void Accept(ColumnNullSpecification node)
+        {
+            var cr = columnDefinitionReferences[columnDefinitionReferences.Count - 1];
+            cr.DataTypeReference.DataType.IsNullable = node.IsNullable;
         }
 
         protected virtual void Accept(ColumnExpression node)
@@ -440,7 +456,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             return dataset;
         }
-            
+
         protected virtual void LoadDatabaseObject(DatabaseObjectReference dr)
         {
             var ds = LoadDataset(dr);
@@ -518,7 +534,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     return null;
                 }
-                
+
+                // Reset nullable because we will use this for actual column nullability
+                // instead of the data type itself supporting null values
+                dr.DataType.IsNullable = false;
+
                 // TODO: load data type columns if necessary
             }
 
@@ -803,29 +823,36 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // Set it on the original reference, later will be set on the resolved one too
             tr.TableContext |= Visitor.TableContext;
 
-            if ((Visitor.TableContext & TableContext.Output) != 0)
+            if (Visitor.TableContext.HasFlag(TableContext.Create))
             {
                 // Case 1: output table not already in schema
-                // SELECT INTO or CREATE TABLE
-                // Table is resolved in dedicated callback
-                SubstituteOutputTableDefaults(tr);
+                // DECLARE .. AS TABLE and CREATE TABLE
 
-                if (td != null)
+                if (td == null)
                 {
-                    // TODO: do we know the columns of the SELECT INTO here?
-                    // names are known, but types are not
-                    ntr = ResolveTableDefinition(td, tr);
+                    // First pass
+                    SubstituteOutputTableDefaults(tr);
+                    ntr = tr;
                 }
                 else
                 {
-                    ntr = ResolveOutputTableReference(Visitor.CurrentQuerySpecification, tr);
+                    // Second pass
+                    ntr = ResolveTableDefinition(td, tr);
+                    CollectOutputTableReference(targetTableProvider, tr);
                 }
+            }
+            else if (Visitor.TableContext.HasFlag(TableContext.Into))
+            {
+                // Case 2: output table not already in schema
+                // SELECT INTO
 
+                SubstituteOutputTableDefaults(tr);
+                ntr = ResolveOutputTableReference(Visitor.CurrentQuerySpecification, tr);
                 CollectOutputTableReference(targetTableProvider, tr);
             }
             else if ((Visitor.TableContext & TableContext.Target) != 0)
             {
-                // Case 2: target table already in schema
+                // Case 3: target table already in schema
                 // INSERT, UPDATE, DELETE, etc.
                 SubstituteSourceTableDefaults(sourceTableCollection, tr, true);
                 ntr = ResolveSourceTableReference(sourceTableCollection, tr, true);
@@ -837,7 +864,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
             else if ((Visitor.TableContext & TableContext.Subquery) != 0)
             {
-                // Case 3: aliased subquery
+                // Case 4: aliased subquery
                 // SELECT ... FROM (SELECT ...) sq
                 // Everything is resolved, just copy to source tables
                 ntr = tr;
@@ -845,7 +872,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
             else if ((Visitor.TableContext & TableContext.From) != 0)
             {
-                // Case 4: simple source table
+                // Case 5: simple source table
                 // SELECT ... FROM
                 SubstituteSourceTableDefaults(sourceTableCollection, tr, true);
                 ntr = ResolveSourceTableReference(sourceTableCollection, tr, true);
@@ -859,7 +886,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
             else
             {
-                // Case 4: Table reference in from of SELECT ....*
+                // Case 6: Table reference in from of SELECT ....*
                 // Source table (table.* and table.columnname syntax only)
                 SubstituteSourceTableDefaults(sourceTableCollection, tr, false);
                 ntr = ResolveColumnTableReference(sourceTableCollection, tr);
@@ -879,54 +906,42 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private TableReference ResolveTableDefinition(TableDefinition td, TableReference tr)
         {
-            foreach (var item in td.TableDefinitionList.EnumerateTableDefinitionItems())
+            foreach (var cr in columnDefinitionReferences)
             {
-                var cd = item.ColumnDefinition;
-                var tc = item.TableConstraint;
-                var ti = item.TableIndex;
+                var ncr = new ColumnReference(tr, null, cr, cr.DataTypeReference);
+                tr.ColumnReferences.Add(ncr.ColumnName, ncr);
+            }
 
-                if (cd != null)
-                {
-                    var ncr = new ColumnReference(tr, null, cd.ColumnReference, cd.DataTypeWithSize.DataTypeReference);
-                    if (tr != null)
-                    {
-                        tr.ColumnReferences.Add(ncr.ColumnName, ncr);
-                    }
-                }
+            foreach (var tc in td.EnumerateDescendantsRecursive<TableConstraint>())
+            {
+                // TODO
+            }
 
-                if (tc != null)
-                {
-                    // TODO
-                }
-
-                if (ti != null)
-                {
-                    // TODO
-                }
+            foreach (var tc in td.EnumerateDescendantsRecursive<TableIndex>())
+            {
+                // TODO
             }
 
             tr.DatabaseObject = CreateTable(tr);
 
+            columnDefinitionReferences.Clear();
+
             return tr;
         }
 
-        private void ResolveTableDefinition(TableDefinition td, DataTypeReference dr)
+        private DataTypeReference ResolveTableDefinition(TableDefinition td, DataTypeReference dr)
         {
-            foreach (var item in td.TableDefinitionList.EnumerateTableDefinitionItems())
+            foreach (var cr in columnDefinitionReferences)
             {
-                var cd = item.ColumnDefinition;
-
-                if (cd != null)
-                {
-                    var ncr = new ColumnReference(null, dr, cd.ColumnReference, cd.DataTypeWithSize.DataTypeReference);
-                    if (dr != null)
-                    {
-                        dr.ColumnReferences.Add(ncr.ColumnName, ncr);
-                    }
-                }
+                var ncr = new ColumnReference(null, dr, cr, cr.DataTypeReference);
+                dr.ColumnReferences.Add(ncr.ColumnName, ncr);
             }
 
             dr.DataType = CreateDataType(dr);
+
+            columnDefinitionReferences.Clear();
+
+            return dr;
         }
 
         /// <summary>
@@ -1327,11 +1342,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
             // This cannot be called for subqueries
 
             if (dr.DatasetName == null)
-            
-            if (dr.DatabaseName == null)
-            {
-                dr.DatabaseName = dataset.DatabaseName;
-            }
+
+                if (dr.DatabaseName == null)
+                {
+                    dr.DatabaseName = dataset.DatabaseName;
+                }
 
             if (dr.SchemaName == null)
             {
@@ -1557,7 +1572,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 key = String.Format("__Col_{0}", q);
                 q++;
             }
-            
+
             tr.ColumnReferences.Add(key, ncr);
             return ncr;
         }

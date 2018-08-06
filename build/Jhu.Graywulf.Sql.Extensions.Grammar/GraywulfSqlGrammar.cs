@@ -66,7 +66,7 @@ namespace Jhu.Graywulf.Sql.Extensions.Grammar
                     May(Sequence(CommonTableExpression, May(CommentOrWhitespace))),
                     PartitionedQueryExpression,
                     May(Sequence(May(CommentOrWhitespace), OrderByClause)),
-                    May(Sequence(May(CommentOrWhitespace), QueryHintClause))
+                    May(Sequence(May(CommentOrWhitespace), OptionClause))
                 )
             );
 

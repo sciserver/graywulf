@@ -147,7 +147,7 @@ namespace Jhu.Graywulf.Test
             };
         }
 
-        protected QueryRendererBase CreateCodeGenerator()
+        protected QueryRendererBase CreateCodeRenderer()
         {
             return new SqlServerQueryRenderer()
             {
@@ -207,7 +207,7 @@ namespace Jhu.Graywulf.Test
 
         protected string GenerateCode(Jhu.Graywulf.Parsing.Node node)
         {
-            var cg = CreateCodeGenerator();
+            var cg = CreateCodeRenderer();
             var sw = new StringWriter();
             cg.Execute(sw, node);
 
