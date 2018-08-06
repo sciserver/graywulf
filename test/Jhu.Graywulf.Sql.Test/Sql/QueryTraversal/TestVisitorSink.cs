@@ -165,6 +165,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             Write(node);
         }
 
+        public virtual void Accept(NumericConstant node)
+        {
+            Write(node);
+        }
+
         public virtual void Accept(StringConstant node)
         {
             Write(node);

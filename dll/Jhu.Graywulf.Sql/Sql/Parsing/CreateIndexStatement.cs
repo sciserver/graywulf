@@ -41,9 +41,9 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendant<IndexColumnDefinitionList>(); }
         }
 
-        public IncludedColumnList IncludedColumns
+        public IncludedColumnDefinitionList IncludedColumns
         {
-            get { return FindDescendant<IncludedColumnList>(); }
+            get { return FindDescendant<IncludedColumnDefinitionList>(); }
         }
     }
 }

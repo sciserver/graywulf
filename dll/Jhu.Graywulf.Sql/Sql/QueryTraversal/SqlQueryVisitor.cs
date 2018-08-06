@@ -636,6 +636,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     case NumericConstant n:
                         VisitNode(n);
                         break;
+                    case StringConstant n:
+                        VisitNode(n);
+                        break;
                     case UserVariable n:
                         VisitNode(n);
                         break;
@@ -710,9 +713,23 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             tableContextStack.Push(TableContext | TableContext.Create);
 
-            // Do not visit table indentifier here because table is
-            // non-existing and would cause problems with name resolution
-            TraverseTableDefinition(node.TableDefinition);
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case TableOrViewIdentifier n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                    case TableDefinition n:
+                        TraverseTableDefinition(n);
+                        break;
+                }
+            }
+
             VisitNode(node);
 
             tableContextStack.Pop();
@@ -722,7 +739,20 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             tableContextStack.Push(TableContext | TableContext.Drop);
 
-            VisitNode(node.TargetTable);
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case TableOrViewIdentifier n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                }
+            }
+
             VisitNode(node);
 
             tableContextStack.Pop();
@@ -732,7 +762,20 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             tableContextStack.Push(TableContext | TableContext.Truncate);
 
-            VisitNode(node.TargetTable);
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case TableOrViewIdentifier n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                }
+            }
+
             VisitNode(node);
 
             tableContextStack.Pop();
@@ -740,18 +783,36 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseCreateIndexStatement(CreateIndexStatement node)
         {
-            var cds = node.IndexDefinition;
-            var ics = node.IncludedColumns;
-
             tableContextStack.Push(TableContext | TableContext.Alter);
 
-            VisitNode(node.TargetTable);
-            VisitNode(node.IndexName);
-            TraverseIndexDefinition(cds);
-
-            if (ics != null)
+            foreach (var nn in node.Stack)
             {
-                TraverseIncludedColumns(ics);
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case BracketOpen n:
+                        VisitNode(n);
+                        break;
+                    case BracketClose n:
+                        VisitNode(n);
+                        break;
+                    case IndexName n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                    case TableOrViewIdentifier n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                    case IndexColumnDefinitionList n:
+                        TraverseIndexColumnDefinitionList(n);
+                        break;
+                    case IncludedColumnDefinitionList n:
+                        TraverseIncludedColumnDefinitionList(n);
+                        break;
+                }
             }
 
             VisitNode(node);
@@ -759,28 +820,28 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             tableContextStack.Pop();
         }
 
-        private void TraverseIndexDefinition(IndexColumnDefinitionList node)
-        {
-            foreach (var cd in node.EnumerateDescendants<IndexColumnDefinition>())
-            {
-                VisitNode(cd);
-            }
-        }
-
-        private void TraverseIncludedColumns(IncludedColumnList node)
-        {
-            foreach (var ic in node.EnumerateDescendants<IncludedColumnDefinition>())
-            {
-                VisitNode(ic);
-            }
-        }
-
         private void TraverseDropIndexStatement(DropIndexStatement node)
         {
             tableContextStack.Push(TableContext | TableContext.Alter);
 
-            VisitNode(node.TargetTable);
-            VisitNode(node.IndexName);
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case IndexName n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                    case TableOrViewIdentifier n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                }
+            }
+
             VisitNode(node);
 
             tableContextStack.Pop();
@@ -1283,16 +1344,40 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseDeclareTableStatement(DeclareTableStatement node)
         {
-            var td = node.TableDeclaration;
-            TraverseTableDeclaration(td);
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case TableDeclaration n:
+                        TraverseTableDeclaration(n);
+                        break;
+                }
+            }
+
             VisitNode(node);
         }
 
         private void TraverseTableDeclaration(TableDeclaration node)
         {
-            var td = node.TableDefinition;
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case UserVariable n:
+                        VisitNode(n);
+                        break;
+                    case TableDefinition n:
+                        TraverseTableDefinition(n);
+                        break;
+                }
+            }
 
-            TraverseTableDefinition(td);
             VisitNode(node);
         }
 
@@ -1301,60 +1386,328 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseTableDefinition(TableDefinition node)
         {
-            foreach (var tdi in node.TableDefinitionList.EnumerateTableDefinitionItems())
+            foreach (var nn in node.Stack)
             {
-                TraverseTableDefinitionItem(tdi);
+                switch (nn)
+                {
+                    case BracketOpen n:
+                        VisitNode(n);
+                        break;
+                    case BracketClose n:
+                        VisitNode(n);
+                        break;
+                    case TableDefinitionList n:
+                        TraverseTableDefinitionList(n);
+                        break;
+                }
+            }
+
+            VisitNode(node);
+        }
+
+        private void TraverseTableDefinitionList(TableDefinitionList node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Comma n:
+                        VisitNode(n);
+                        break;
+                    case TableDefinitionItem n:
+                        DispatchTableDefinitionItem(n);
+                        break;
+                    case TableDefinitionList n:
+                        TraverseTableDefinitionList(n);
+                        break;
+                }
             }
         }
 
-        private void TraverseTableDefinitionItem(TableDefinitionItem node)
+        protected void DispatchTableDefinitionItem(TableDefinitionItem node)
         {
-            var cd = node.ColumnDefinition;
-            var tc = node.TableConstraint;
-            var ti = node.TableIndex;
-
-            if (cd != null)
+            switch (node.Stack.First)
             {
-                TraverseColumnDefinition(cd);
-            }
-
-            if (tc != null)
-            {
-                // TODO
-            }
-
-            if (ti != null)
-            {
-                // TODO
+                case ColumnDefinition n:
+                    TraverseColumnDefinition(n);
+                    break;
+                case TableConstraint n:
+                    TraverseTableConstraint(n);
+                    break;
+                case TableIndex n:
+                    TraverseTableIndex(n);
+                    break;
             }
         }
 
         private void TraverseColumnDefinition(ColumnDefinition node)
         {
-            var exp = node.DefaultDefinition?.Expression;
-
-            if (exp != null)
+            foreach (var nn in node.Stack)
             {
-                TraverseExpression(exp);
+                switch (nn)
+                {
+                    case ColumnName n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                    case DataTypeSpecification n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                    case ColumnNullDefinition n:
+                        TraverseColumnNullDefinition(n);
+                        break;
+                    case ColumnDefaultDefinition n:
+                        TraverseColumnDefaultDefinition(n);
+                        break;
+                    case ColumnIdentityDefinition n:
+                        TraverseColumnIdentityDefinition(n);
+                        break;
+                    case ColumnConstraint n:
+                        TraverseColumnConstraint(n);
+                        break;
+                }
             }
 
-            TraverseDataTypeWithSize(node.DataTypeWithSize);
             VisitNode(node);
         }
 
-        private void TraverseDataTypeWithSize(DataTypeSpecification node)
+        private void TraverseColumnNullDefinition(ColumnNullDefinition node)
         {
-            VisitNode(node.DataTypeIdentifier);
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                }
+            }
+
+            VisitNode(node);
+        }
+
+        private void TraverseColumnDefaultDefinition(ColumnDefaultDefinition node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case ConstraintName n:
+                        VisitNode(n);
+                        break;
+                    case Expression n:
+                        TraverseExpression(n);
+                        break;
+                }
+            }
+
+            VisitNode(node);
+        }
+
+        private void TraverseColumnIdentityDefinition(ColumnIdentityDefinition node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case BracketOpen n:
+                        VisitNode(n);
+                        break;
+                    case BracketClose n:
+                        VisitNode(n);
+                        break;
+                    case NumericConstant n:
+                        VisitNode(n);
+                        break;
+                }
+            }
+
+            VisitNode(node);
+        }
+
+        private void TraverseColumnConstraint(ColumnConstraint node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case ConstraintName n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                    case ColumnDefaultDefinition n:
+                        TraverseColumnDefaultDefinition(n);
+                        break;
+                    case IndexDefinition n:
+                        TraverseIndexDefinition(n);
+                        break;
+                }
+            }
+
             VisitNode(node);
         }
 
         private void TraverseTableConstraint(TableConstraint node)
         {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case ConstraintName n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                    case IndexDefinition n:
+                        TraverseIndexDefinition(n);
+                        break;
+                    case BracketOpen n:
+                        VisitNode(n);
+                        break;
+                    case BracketClose n:
+                        VisitNode(n);
+                        break;
+                    case IndexColumnDefinitionList n:
+                        TraverseIndexColumnDefinitionList(n);
+                        break;
+                }
+            }
+
+            VisitNode(node);
+        }
+
+        private void TraverseIndexDefinition(IndexDefinition node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                }
+            }
+
             VisitNode(node);
         }
 
         private void TraverseTableIndex(TableIndex node)
         {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case IndexName n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                    case IndexDefinition n:
+                        TraverseIndexDefinition(n);
+                        break;
+                    case BracketOpen n:
+                        VisitNode(n);
+                        break;
+                    case BracketClose n:
+                        VisitNode(n);
+                        break;
+                    case IndexColumnDefinitionList n:
+                        TraverseIndexColumnDefinitionList(n);
+                        break;
+                }
+            }
+
+            VisitNode(node);
+        }
+
+        private void TraverseIndexColumnDefinitionList(IndexColumnDefinitionList node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case IndexColumnDefinition n:
+                        TraverseIndexColumnDefinition(n);
+                        break;
+                    case Comma n:
+                        VisitNode(n);
+                        break;
+                    case IndexColumnDefinitionList n:
+                        TraverseIndexColumnDefinitionList(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraverseIndexColumnDefinition(IndexColumnDefinition node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case ColumnName n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                }
+            }
+
+            VisitNode(node);
+        }
+
+        private void TraverseIncludedColumnDefinitionList(IncludedColumnDefinitionList node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case IncludedColumnDefinition n:
+                        TraverseIncludedColumnDefinition(n);
+                        break;
+                    case Comma n:
+                        VisitNode(n);
+                        break;
+                    case IncludedColumnDefinitionList n:
+                        TraverseIncludedColumnDefinitionList(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraverseIncludedColumnDefinition(IncludedColumnDefinition node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case ColumnName n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraverseDataTypeSpecification(DataTypeSpecification node)
+        {
+            VisitNode(node.DataTypeIdentifier);
             VisitNode(node);
         }
 

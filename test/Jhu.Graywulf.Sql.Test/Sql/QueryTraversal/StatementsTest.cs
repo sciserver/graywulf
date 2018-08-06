@@ -228,15 +228,49 @@ END
         }
 
         [TestMethod]
+        public void IfStatementWithEverythingTest()
+        {
+            var sql =
+@"IF x < ANY (SELECT TOP 10 ID FROM tab1)
+BEGIN
+    SET @var = 5
+END ELSE BEGIN
+    SELECT @var = ID FROM tab1
+END
+";
+            var gt = "IF x < ANY <subquery> BEGIN SET @var = 5 END ELSE BEGIN FROM <table> SELECT @var = ID END ";
+
+            var res = Execute(sql);
+            Assert.AreEqual(gt, res);
+        }
+
+        [TestMethod]
         public void TryCatchStatementTest()
         {
-            Assert.Inconclusive();
+            var sql =
+@"BEGIN TRY
+    THROW 51000, 'error', 1;
+END TRY
+BEGIN CATCH
+    PRINT 'error'
+END CATCH
+";
+
+            var gt = "BEGIN TRY THROW 51000 , 'error' , 1 END TRY BEGIN CATCH PRINT 'error' END CATCH ";
+
+            var res = Execute(sql);
+            Assert.AreEqual(gt, res);
         }
 
         [TestMethod]
         public void ThrowStatementTest()
         {
-            Assert.Inconclusive();
+            var sql = "THROW 51000, 'error', 1;";
+
+            var gt = "THROW 51000 , 'error' , 1 ";
+
+            var res = Execute(sql);
+            Assert.AreEqual(gt, res);
         }
 
         [TestMethod]
@@ -262,7 +296,7 @@ END
         }
 
         [TestMethod]
-        public void CursoOperationrStatementTest()
+        public void CursorOperationrStatementTest()
         {
             Assert.Inconclusive();
         }
@@ -294,17 +328,18 @@ END
         }
 
         [TestMethod]
-        public void IfStatementWithEverythingTest()
+        public void DeclareTableStatementTest()
         {
             var sql =
-@"IF x < ANY (SELECT TOP 10 ID FROM tab1)
-BEGIN
-    SET @var = 5
-END ELSE BEGIN
-    SELECT @var = ID FROM tab1
-END
-";
-            var gt = "IF x < ANY <subquery> BEGIN SET @var = 5 END ELSE BEGIN FROM <table> SELECT @var = ID END ";
+@"DECLARE @t AS TABLE
+(
+    ID int NOT NULL IDENTITY(1, 1) PRIMARY KEY,
+    Data float NULL DEFAULT 0,
+    Data2 real,
+    INDEX IX_t ( Data, Data2 )
+)";
+
+            var gt = "";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
