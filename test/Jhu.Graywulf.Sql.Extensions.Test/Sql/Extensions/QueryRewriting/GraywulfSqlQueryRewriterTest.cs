@@ -199,6 +199,54 @@ END";
             SubstituteStarsTestHelper(sql, gt);
         }
 
+        [TestMethod]
+        public void SubstituteStarWithCreateTableTest()
+        {
+            var sql = 
+@"CREATE TABLE test
+(
+    ID int PRIMARY KEY,
+    Data nvarchar(50)
+)
+
+SELECT a.* FROM test a";
+
+            var gt =
+@"CREATE TABLE [Graywulf_Schema_Test].[dbo].[test]
+(
+    [ID]  PRIMARY KEY,
+    [Data] 
+)
+
+SELECT [a].[Data], [a].[ID] FROM [Graywulf_Schema_Test].[dbo].[test] [a]";
+
+            SubstituteStarsTestHelper(sql, gt);
+        }
+
+        [TestMethod]
+        public void SubstituteStarWithDeclareTableTest()
+        {
+            var sql =
+@"DECLARE @test AS TABLE
+(
+    ID int PRIMARY KEY,
+    Data nvarchar(50)
+)
+
+SELECT a.* FROM @test a";
+
+            var gt =
+@"DECLARE @test AS TABLE
+(
+    [ID]  PRIMARY KEY,
+    [Data] 
+)
+
+SELECT [a].[ID], [a].[Data] FROM @test [a]";
+
+            SubstituteStarsTestHelper(sql, gt);
+        }
+
         #endregion
         #region Assign column aliases
 
