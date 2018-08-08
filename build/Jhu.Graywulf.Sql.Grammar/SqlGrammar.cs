@@ -2053,8 +2053,7 @@ FOR select_statement
             (
                 Keyword("VALUES"),
                 May(CommentOrWhitespace),
-                ValueGroupList,
-                May(CommentOrWhitespace)
+                ValueGroupList
             );
 
         public static Expression<Rule> ValueGroupList = () =>

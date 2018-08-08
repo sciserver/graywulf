@@ -60,7 +60,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             sql = @"INSERT[test](a,b)VALUES(1,DEFAULT,(SELECT 1))";
             new SqlParser().Execute<InsertStatement>(sql);
         }
-        
+
         [TestMethod]
         public void DefaultValuesTest()
         {
@@ -71,7 +71,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void InsertFromSelectTest()
         {
-            var sql = 
+            var sql =
 @"INSERT test
 SELECT ID FROM test2";
             new SqlParser().Execute<InsertStatement>(sql);
@@ -90,7 +90,7 @@ CROSS JOIN test3
 UNION SELECT * FROM test4";
             new SqlParser().Execute<InsertStatement>(sql);
         }
-        
+
         [TestMethod]
         public void InsertWithTopExpression2Test()
         {
@@ -128,7 +128,7 @@ OPTION (TEST)";
         [TestMethod]
         public void CteTest()
         {
-            var sql = 
+            var sql =
 @"WITH q AS
 (
     SELECT * FROM Table1
@@ -137,6 +137,20 @@ INSERT test
 SELECT * FROM q";
 
             new SqlParser().Execute<InsertStatement>(sql);
+        }
+
+        [TestMethod]
+        public void UpdateAfterInsertTest()
+        {
+            var sql =
+@"INSERT test
+VALUES
+(10, 20), (30, 40)
+
+UPDATE test
+SET a = a + 2";
+
+            new SqlParser().Execute(sql);
         }
     }
 }
