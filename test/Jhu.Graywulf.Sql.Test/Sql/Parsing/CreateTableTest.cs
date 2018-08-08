@@ -122,6 +122,21 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         [TestMethod]
+        public void StatementAfterCreateTableTest()
+        {
+            var sql =
+@"CREATE TABLE test
+(
+    ID int DEFAULT 1,
+    CONSTRAINT PK_test PRIMARY KEY (ID DESC)
+)
+
+PRINT 'hello'";
+
+            new SqlParser().Execute<StatementBlock>(sql);
+        }
+
+        [TestMethod]
         public void DropTableTest()
         {
             var sql = "DROP TABLE test";
@@ -132,6 +147,17 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         [TestMethod]
+        public void StatementAfterDropTableTest()
+        {
+            var sql =
+@"DROP TABLE test
+
+PRINT 'hello'";
+
+            new SqlParser().Execute<StatementBlock>(sql);
+        }
+
+        [TestMethod]
         public void TruncateTableTest()
         {
             var sql = "TRUNCATE TABLE test";
@@ -139,6 +165,17 @@ namespace Jhu.Graywulf.Sql.Parsing
 
             sql = "TRUNCATE TABLE[test]";
             new SqlParser().Execute<TruncateTableStatement>(sql);
+        }
+
+        [TestMethod]
+        public void StatementAfterTruncateTableTest()
+        {
+            var sql =
+@"TRUNCATE TABLE test
+
+PRINT 'hello'";
+
+            new SqlParser().Execute<StatementBlock>(sql);
         }
     }
 }

@@ -135,5 +135,30 @@ ORDER BY 1";
             Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual("AVG(ID) > 1", exp.FindDescendantRecursive<HavingClause>().FindDescendant<LogicalExpression>().Value);
         }
+
+        [TestMethod]
+        public void StatementAfterSelectTest()
+        {
+            var sql = "SELECT 1 PRINT ''";
+            new SqlParser().Execute<StatementBlock>(sql);
+
+            sql = "SELECT 1, 2 INTO newtab PRINT ''";
+            new SqlParser().Execute<StatementBlock>(sql);
+
+            sql = "SELECT 1, 2 FROM tab PRINT ''";
+            new SqlParser().Execute<StatementBlock>(sql);
+
+            sql = "SELECT 1, 2 FROM tab WHERE a = b PRINT ''";
+            new SqlParser().Execute<StatementBlock>(sql);
+
+            sql = "SELECT a, b GROUP BY 1, 2 PRINT ''";
+            new SqlParser().Execute<StatementBlock>(sql);
+
+            sql = "SELECT a, b GROUP BY ALL PRINT ''";
+            new SqlParser().Execute<StatementBlock>(sql);
+
+            sql = "SELECT a, b HAVING COUNT(*) > 1 PRINT ''";
+            new SqlParser().Execute<StatementBlock>(sql);
+        }
     }
 }

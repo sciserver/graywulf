@@ -62,5 +62,15 @@ namespace Jhu.Graywulf.Sql.Parsing
             sql = "DECLARE @var int = 2 , @var float = 2.2";
             exp = Parse(sql);
         }
+
+        [TestMethod]
+        public void StatementAfterDeclareVariableTest()
+        {
+            var sql =
+@"DECLARE @var int = 2 , @var float = 2.2
+PRINT ''
+";
+            new SqlParser().Execute<StatementBlock>(sql);
+        }
     }
 }

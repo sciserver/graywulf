@@ -111,5 +111,21 @@ INNER JOIN q ON z.ID = q.ID";
 
             new SqlParser().Execute<UpdateStatement>(sql);
         }
+
+        [TestMethod]
+        public void StatementAfterUpdateTest()
+        {
+            var sql = @"UPDATE z SET Data += 1 PRINT ''";
+            new SqlParser().Execute<StatementBlock>(sql);
+
+            sql = @"UPDATE z SET Data.Mutator(1) PRINT ''";
+            new SqlParser().Execute<StatementBlock>(sql);
+
+            sql = @"UPDATE z SET Data.Mutator(1) FROM z PRINT ''";
+            new SqlParser().Execute<StatementBlock>(sql);
+
+            sql = @"UPDATE z SET Data.Mutator(1) FROM z WHERE x = 1 PRINT ''";
+            new SqlParser().Execute<StatementBlock>(sql);
+        }
     }
 }

@@ -83,5 +83,11 @@ END";
             var sb = Parse(sql);
         }
 
+        [TestMethod]
+        public void StatementAfterWhileTest()
+        {
+            var sql = @"WHILE 1 = 2 PRINT ''";
+            new SqlParser().Execute<StatementBlock>(sql);
+        }
     }
 }

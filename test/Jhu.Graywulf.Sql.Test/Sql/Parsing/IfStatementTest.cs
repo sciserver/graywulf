@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         }
 
         [TestMethod]
-        public void SimpleifTest()
+        public void SimpleIfTest()
         {
             var sql = "IF 1 = 2 SELECT 1";
             var sb = Parse(sql);
@@ -105,7 +105,24 @@ BEGIN
 END";
             var sb = Parse(sql);
         }
-        
 
+        [TestMethod]
+        public void StatementAfterIfTest()
+        {
+            var sql =
+@"IF 1 = 2 
+BEGIN
+    DECLARE @a int
+    IF 1 = 2
+    BEGIN
+        SELECT 1
+        -- this is a comment
+    END
+END
+
+PRINT ''
+";
+            new SqlParser().Execute<StatementBlock>(sql);
+        }
     }
 }

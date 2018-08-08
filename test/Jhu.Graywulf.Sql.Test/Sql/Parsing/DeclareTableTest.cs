@@ -38,5 +38,15 @@ namespace Jhu.Graywulf.Sql.Parsing
             sql = @"DECLARE@test AS TABLE(ID int)";
             exp = new SqlParser().Execute<DeclareTableStatement>(sql);
         }
+
+        [TestMethod]
+        public void StatementAfterDeclareTableTest()
+        {
+            var sql =
+@"TRUNCATE TABLE test
+PRINT ''
+";
+            new SqlParser().Execute<StatementBlock>(sql);
+        }
     }
 }

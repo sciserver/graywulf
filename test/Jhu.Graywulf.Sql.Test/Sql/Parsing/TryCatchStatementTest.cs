@@ -57,5 +57,19 @@ BEGIN CATCH
 END CATCH";
             var sb = Parse(sql);
         }
+
+        [TestMethod]
+        public void StatementAfterTryCatchTest()
+        {
+            var sql =
+@"BEGIN TRY
+    SELECT 1
+END TRY
+BEGIN CATCH
+    SELECT 2
+END CATCH
+PRINT ''";
+            new SqlParser().Execute<StatementBlock>(sql);
+        }
     }
 }

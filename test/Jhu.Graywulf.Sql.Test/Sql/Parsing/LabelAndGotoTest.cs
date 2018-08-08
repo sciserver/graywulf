@@ -27,6 +27,7 @@ GOTO label2
 label2:
 
 GOTO label1
+Label3:
 ";
             var sb = Parse(sql);
         }

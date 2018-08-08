@@ -82,6 +82,17 @@ INCLUDE
         }
 
         [TestMethod]
+        public void StatementAfterCreateIndexTest()
+        {
+            var sql =
+@"CREATE INDEX ix_test ON test(ID) INCLUDE (Data)
+
+PRINT 'hello'";
+
+            new SqlParser().Execute<StatementBlock>(sql);
+        }
+
+        [TestMethod]
         public void DropIndexTest()
         {
             var sql = "DROP INDEX ix_test ON test";
@@ -89,6 +100,17 @@ INCLUDE
 
             sql = "DROP INDEX[ix_test]ON[test]";
             new SqlParser().Execute<DropIndexStatement>(sql);
+        }
+
+        [TestMethod]
+        public void StatementAfterDropIndexTest()
+        {
+            var sql =
+@"DROP INDEX ix_test ON test
+
+PRINT 'hello'";
+
+            new SqlParser().Execute<StatementBlock>(sql);
         }
     }
 }

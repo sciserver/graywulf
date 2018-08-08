@@ -49,6 +49,19 @@ END
         }
 
         [TestMethod]
+        public void StatementAfterBeginEndTest()
+        {
+            var sql =
+@"BEGIN
+SELECT * FROM tab
+END
+
+PRINT 'hello'";
+
+            var sb = Parse(sql);
+        }
+
+        [TestMethod]
         public void CreateBeginEndTest()
         {
             var sql = "SELECT * FROM tab";
@@ -61,6 +74,5 @@ END";
 
             Assert.AreEqual(gt, bb.Value);
         }
-
     }
 }

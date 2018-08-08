@@ -35,5 +35,12 @@ namespace Jhu.Graywulf.Sql.Parsing
             sql = "THROW 123,'message',123";
             sb = Parse(sql);
         }
+
+        [TestMethod]
+        public void StatementAfterThrowTest()
+        {
+            var sql = @"THROW 123, 'message', 123 PRINT ''";
+            new SqlParser().Execute<StatementBlock>(sql);
+        }
     }
 }

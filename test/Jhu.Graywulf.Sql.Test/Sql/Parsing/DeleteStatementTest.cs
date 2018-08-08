@@ -67,5 +67,22 @@ INNER JOIN q ON q.ID = table1.ID";
 
             new SqlParser().Execute<DeleteStatement>(sql);
         }
+
+        [TestMethod]
+        public void StatementAfterDeleteTest()
+        {
+            var sql =
+@"WITH q AS
+(
+    SELECT * FROM test
+)
+DELETE table1
+FROM table1
+INNER JOIN q ON q.ID = table1.ID
+
+PRINT ''
+";
+            new SqlParser().Execute<StatementBlock>(sql);
+        }
     }
 }
