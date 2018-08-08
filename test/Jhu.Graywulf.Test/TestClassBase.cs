@@ -470,6 +470,50 @@ WHERE DateFinished IS NULL";
             }
         }
 
+        protected bool IsUserDatabaseTableExisting(string tableName)
+        {
+            using (var context = ContextManager.Instance.CreateReadOnlyContext())
+            {
+                var user = SignInTestUser(context);
+                var udf = UserDatabaseFactory.Create(new FederationContext(context, user));
+                var userdb = udf.GetUserDatabases(user)[Registry.Constants.UserDbName];
+
+                var sql = String.Format("IF OBJECT_ID('{0}.{1}','U') IS NOT NULL SELECT 1 ELSE SELECT 0", userdb.DefaultSchemaName, tableName);
+
+                using (var cn = new SqlConnection(userdb.ConnectionString))
+                {
+                    cn.Open();
+
+                    using (var cmd = new SqlCommand(sql, cn))
+                    {
+                        return (int)cmd.ExecuteScalar() == 1;
+                    }
+                }
+            }
+        }
+
+        protected int GetUserDatabaseTableCount(string tableName)
+        {
+            using (var context = ContextManager.Instance.CreateReadOnlyContext())
+            {
+                var user = SignInTestUser(context);
+                var udf = UserDatabaseFactory.Create(new FederationContext(context, user));
+                var userdb = udf.GetUserDatabases(user)[Registry.Constants.UserDbName];
+
+                var sql = String.Format("SELECT COUNT(*) FROM [{0}].[{1}]", userdb.DefaultSchemaName, tableName);
+
+                using (var cn = new SqlConnection(userdb.ConnectionString))
+                {
+                    cn.Open();
+
+                    using (var cmd = new SqlCommand(sql, cn))
+                    {
+                        return (int)cmd.ExecuteScalar();
+                    }
+                }
+            }
+        }
+
         protected void DropUserDatabaseTable(string tableName)
         {
             using (var context = ContextManager.Instance.CreateReadOnlyContext())

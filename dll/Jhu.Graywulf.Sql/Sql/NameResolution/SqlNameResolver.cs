@@ -1486,20 +1486,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var table = (Table)tr.DatabaseObject;
             var uniqueKey = table.UniqueKey;
 
-            // Add to schema
-            if (!table.Dataset.Tables.TryAdd(uniqueKey, table))
-            {
-                throw NameResolutionError.TableAlreadyExists(tr);
-            }
+            // Add to schema, but do not enforce uniqueness because conditional
+            // execution might produces tables with the same name through
+            // different branches
+            table.Dataset.Tables.TryAdd(uniqueKey, table);
 
             // Add to query details
             if (!details.OutputTableReferences.ContainsKey(uniqueKey))
             {
                 details.OutputTableReferences.Add(uniqueKey, new List<TableReference>());
-            }
-            else
-            {
-                throw NameResolutionError.DuplicateOutputTable(tr);
             }
 
             details.OutputTableReferences[uniqueKey].Add(tr);

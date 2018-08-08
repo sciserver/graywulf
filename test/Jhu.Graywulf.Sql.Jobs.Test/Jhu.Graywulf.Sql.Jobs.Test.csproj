@@ -71,8 +71,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sql\Jobs\Query\ExecuteQueriesTest.cs" />
-    <Compile Include="Sql\Jobs\Query\ExecuteScriptsTest.cs" />
+    <Compile Include="Sql\Jobs\Query\ExecuteComplexQueriesTest.cs" />
+    <Compile Include="Sql\Jobs\Query\ExecuteSimpleQueriesTest.cs" />
     <Compile Include="Sql\Jobs\Query\MostRestrictiveRemoteQueryTest.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryCodeGeneratorTest.cs" />
     <Compile Include="Sql\Jobs\Query\SqlQueryTestBase.cs" />

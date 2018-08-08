@@ -121,7 +121,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <summary>
         /// Save list of source tables to show in job output
         /// </summary>
-        public virtual void UpdateSourceTableList()
+        public virtual void UpdateParametersSourceTableList()
         {
             foreach (var key in QueryDetails.SourceTableReferences.Keys)
             {
@@ -129,7 +129,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
         }
 
-        public virtual void UpdateOutputTableList()
+        public virtual void UpdateParametersOutputTableList()
         {
             throw new NotImplementedException();
         }

@@ -88,7 +88,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             if (queryObject.Parameters.ExecutionMode == ExecutionMode.Graywulf)
             {
                 AddSystemDatabaseMappings();
-                AddSourceTableMappings(Partition.Parameters.SourceDatabaseVersionName, null);
+                AddRemoteSourceTableMappings(Partition.Parameters.SourceDatabaseVersionName, null);
                 AddOutputTableMappings();
             }
 
@@ -121,18 +121,18 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
         }
 
-        public void AddSourceTableMappings(string databaseVersion, string surrogateDatabaseVersion)
+        public void AddRemoteSourceTableMappings(string databaseVersion, string surrogateDatabaseVersion)
         {
             foreach (var key in queryObject.QueryDetails.SourceTableReferences.Keys)
             {
                 foreach (var tr in queryObject.QueryDetails.SourceTableReferences[key])
                 {
-                    AddSourceTableMapping(tr, databaseVersion, surrogateDatabaseVersion);
+                    AddRemoteSourceTableMapping(tr, databaseVersion, surrogateDatabaseVersion);
                 }
             }
         }
 
-        private void AddSourceTableMapping(TableReference tr, string databaseVersion, string surrogateDatabaseVersion)
+        private void AddRemoteSourceTableMapping(TableReference tr, string databaseVersion, string surrogateDatabaseVersion)
         {
             TableReference ntr = null;
 
@@ -218,7 +218,11 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                 // TODO: verify if this call here breaks any logic elsewhere, because
                 // the temp table might not yes exist
-                ntr.DatabaseObject = temporaryDataset.Tables[ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName];
+                /*
+                if (tr.DatabaseObject.IsExisting)
+                {
+                    ntr.DatabaseObject = temporaryDataset.Tables[ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName];
+                }*/
 
                 return ntr;
             }
@@ -236,7 +240,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 {
                     var ntr = GetRemoteOutputTableMapping(tr);
 
-                    if (ntr != null)
+                    // Because we support creating new tables that are referenced within the script 
+                    // somewhere, a table map can already exists
+                    if (ntr != null && !Renderer.TableReferenceMap.ContainsKey(tr))
                     {
                         Renderer.TableReferenceMap.Add(tr, ntr);
                     }
@@ -378,7 +384,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             if (queryObject.Parameters.ExecutionMode == ExecutionMode.Graywulf)
             {
                 AddSystemDatabaseMappings(tableSource);
-                AddSourceTableMappings(queryObject.Parameters.StatDatabaseVersionName, queryObject.Parameters.SourceDatabaseVersionName);
+                AddRemoteSourceTableMappings(queryObject.Parameters.StatDatabaseVersionName, queryObject.Parameters.SourceDatabaseVersionName);
                 AddOutputTableMappings();
             }
 

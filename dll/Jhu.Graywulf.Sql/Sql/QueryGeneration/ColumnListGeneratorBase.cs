@@ -329,6 +329,11 @@ namespace Jhu.Graywulf.Sql.QueryGeneration
         /// <returns>A SQL snippet with the list of columns.</returns>
         public string Execute()
         {
+            if (columns.Count == 0)
+            {
+                throw new InvalidOperationException();
+            }
+
             var columnlist = new StringBuilder();
             Execute(columnlist);
             return columnlist.ToString();

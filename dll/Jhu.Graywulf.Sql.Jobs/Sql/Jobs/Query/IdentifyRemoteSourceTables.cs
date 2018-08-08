@@ -6,6 +6,7 @@ using System.Activities;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Tasks;
+using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
@@ -22,6 +23,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             {
                 querypartition.InitializeQueryObject(registryContext);
                 querypartition.IdentifyRemoteSourceTables();
+                querypartition.GenerateRemoteSourceTableQueries(ColumnContext.AllReferenced, 0);
             }
         }
     }

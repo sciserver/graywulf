@@ -13,7 +13,7 @@ using Jhu.Graywulf.Sql.Jobs.Query;
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
     [TestClass]
-    public class ExecuteQueriesTest : SqlQueryTestBase
+    public class ExecuteSimpleQueriesTest : SqlQueryTestBase
     {
         // TODO: rewrite all these to use a TEST database instead of SkyQuery stuff
 

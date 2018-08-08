@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     {
                         query.InitializeQueryObject(registryContext);
                         query.Validate();
-                        query.UpdateSourceTableList();
+                        query.UpdateParametersSourceTableList();
                         query.IdentifyTablesForStatistics();
                     }
                     break;

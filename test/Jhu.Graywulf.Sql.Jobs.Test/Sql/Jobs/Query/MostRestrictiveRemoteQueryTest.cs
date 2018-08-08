@@ -37,9 +37,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             var query = CreateQuery(sql);
             query.GeneratePartitions();
-            var res = query.Partitions[0].GenerateRemoteSourceTableQueries(columnContext, top);
+            query.Partitions[0].GenerateRemoteSourceTableQueries(columnContext, top);
 
-            return res.Values.ToArray();
+            return query.Partitions[0].RemoteSourceTables.Values.Select(i => i.RemoteQuery).ToArray();
         }
 
         [TestMethod]

@@ -194,7 +194,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     {
                         // TODO: Add support for insert and create table
 
-                        if (tr.TableContext.HasFlag(TableContext.Into) &&
+                        if ((tr.TableContext & TableContext.Output) != 0 &&
                             IsRemoteDataset(tr.DatabaseObject.Dataset))
                         {
                             if (rot == null)
@@ -254,7 +254,9 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                     foreach (var tr in QueryDetails.SourceTableReferences[key])
                     {
                         if (tr.TableContext.HasFlag(TableContext.TableOrView) && 
-                            tr.IsCachable && IsRemoteDataset(tr.DatabaseObject.Dataset))
+                            tr.IsCachable && 
+                            tr.DatabaseObject.IsExisting &&
+                            IsRemoteDataset(tr.DatabaseObject.Dataset))
                         {
                             if (rst == null)
                             {
@@ -283,17 +285,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                             rst.TableReferences.Add(tr);
                         }
-                    }
-                }
-
-                // Generate most restrictive queries
-                var queries = GenerateRemoteSourceTableQueries(ColumnContext.AllReferenced, 0);
-
-                foreach (var key in queries.Keys)
-                {
-                    if (remoteSourceTables.ContainsKey(key))
-                    {
-                        remoteSourceTables[key].RemoteQuery = queries[key];
                     }
                 }
             }
@@ -357,75 +348,74 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             }
         }
 
-        public Dictionary<string, string> GenerateRemoteSourceTableQueries(ColumnContext columnContext, int top)
+        public void GenerateRemoteSourceTableQueries(ColumnContext columnContext, int top)
         {
-            var res = new Dictionary<string, string>();
-
-            // Normalize all search conditions
-            var scn = new SearchConditionNormalizer();
-            scn.CollectConditions(QueryDetails.ParsingTree);
-
-            // Loop through all tables
-            foreach (var key in QueryDetails.SourceTableReferences.Keys)
+            if (Parameters.ExecutionMode == ExecutionMode.Graywulf)
             {
-                var columns = new Dictionary<string, ColumnReference>();
-                DatabaseObject table = null;
-                TableReference ntr = null;
-                QueryGeneratorBase qg = null;
+                // Normalize all search conditions
+                var scn = new SearchConditionNormalizer();
+                scn.CollectConditions(QueryDetails.ParsingTree);
 
-                // Loop through all references to the table
-                foreach (var tr in QueryDetails.SourceTableReferences[key])
+                // Loop through all tables that need caching
+                foreach (var key in remoteSourceTables.Keys)
                 {
-                    if (ntr == null)
+                    var columns = new Dictionary<string, ColumnReference>();
+                    DatabaseObject table = null;
+                    TableReference ntr = null;
+                    QueryGeneratorBase qg = null;
+
+                    // Loop through all references to the table
+                    foreach (var tr in QueryDetails.SourceTableReferences[key])
                     {
-                        table = tr.DatabaseObject;
-
-                        ntr = new TableReference(tr);
-                        ntr.Alias = null;
-
-                        qg = QueryGeneratorFactory.CreateQueryGenerator(table.Dataset);
-                        qg.Renderer.Options.ColumnNameRendering = NameRendering.IdentifierOnly;
-                    }
-
-                    // Remap all table reference to the first one; this is to prevent different aliases etc.
-                    // Certain tables can be referenced multiple times without different alias,
-                    // for example UNION etc. queries.
-
-                    if (!qg.Renderer.TableReferenceMap.ContainsKey(tr))
-                    {
-                        qg.Renderer.TableReferenceMap.Add(tr, ntr);
-                    }
-
-                    // Collect columns that will be returned
-                    foreach (var c in tr.FilterColumnReferences(columnContext))
-                    {
-                        if (!columns.ContainsKey(c.ColumnName))
+                        if (ntr == null)
                         {
-                            columns.Add(c.ColumnName, new ColumnReference(c));
+                            table = tr.DatabaseObject;
+
+                            ntr = new TableReference(tr);
+                            ntr.Alias = null;
+
+                            qg = QueryGeneratorFactory.CreateQueryGenerator(table.Dataset);
+                            qg.Renderer.Options.ColumnNameRendering = NameRendering.IdentifierOnly;
+                        }
+
+                        // Remap all table reference to the first one; this is to prevent different aliases etc.
+                        // Certain tables can be referenced multiple times without different alias,
+                        // for example UNION etc. queries.
+
+                        if (!qg.Renderer.TableReferenceMap.ContainsKey(tr))
+                        {
+                            qg.Renderer.TableReferenceMap.Add(tr, ntr);
+                        }
+
+                        // Collect columns that will be returned
+                        foreach (var c in tr.FilterColumnReferences(columnContext))
+                        {
+                            if (!columns.ContainsKey(c.ColumnName))
+                            {
+                                columns.Add(c.ColumnName, new ColumnReference(c));
+                            }
                         }
                     }
+
+                    // Generate select list
+                    var columnlist = qg.CreateColumnListGenerator();
+                    columnlist.ListType = ColumnListType.SelectWithOriginalNameNoAlias;
+                    columnlist.TableAlias = String.Empty;
+                    columnlist.Columns.AddRange(columns.Values);
+
+                    // Generate where clause
+                    var where = scn.GenerateWherePredicatesSpecificToTable(QueryDetails.SourceTableReferences[key]);
+
+                    var select = qg.GenerateMostRestrictiveTableQuery(
+                        qg.Renderer.GetResolvedTableName(table),
+                        null,
+                        columnlist.Execute(),
+                        qg.Renderer.Execute(where),
+                        top);
+
+                    remoteSourceTables[key].RemoteQuery = select;
                 }
-
-                // Generate select list
-                var columnlist = qg.CreateColumnListGenerator();
-                columnlist.ListType = ColumnListType.SelectWithOriginalNameNoAlias;
-                columnlist.TableAlias = String.Empty;
-                columnlist.Columns.AddRange(columns.Values);
-
-                // Generate where clause
-                var where = scn.GenerateWherePredicatesSpecificToTable(QueryDetails.SourceTableReferences[key]);
-
-                var select = qg.GenerateMostRestrictiveTableQuery(
-                    qg.Renderer.GetResolvedTableName(table),
-                    null,
-                    columnlist.Execute(),
-                    qg.Renderer.Execute(where),
-                    top);
-
-                res.Add(key, select);
             }
-
-            return res;
         }
 
         #endregion
