@@ -414,7 +414,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 {
                     UpdateContext(registryContext);
                 }
-                
+
                 if (scheduler != null)
                 {
                     this.scheduler = scheduler;

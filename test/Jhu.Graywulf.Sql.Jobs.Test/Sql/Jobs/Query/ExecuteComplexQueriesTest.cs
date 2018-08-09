@@ -192,7 +192,7 @@ END
 
         [TestMethod]
         [TestCategory("Query")]
-        public void InsertIntoNewTableTest()
+        public void InsertIntoNewTableTest1()
         {
             var testName = GetTestUniqueName();
 
@@ -209,6 +209,35 @@ VALUES
 INSERT [$into]
 VALUES
 (5, 10), (11, 12)
+";
+
+            RunQuery(sql);
+
+            Assert.IsTrue(IsUserDatabaseTableExisting(testName));
+            Assert.AreEqual(4, GetUserDatabaseTableCount(testName));
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void InsertIntoNewTableTest2()
+        {
+            var testName = GetTestUniqueName();
+
+            var sql = @"
+DECLARE @t AS TABLE
+(
+    ra float, dec float
+)
+
+INSERT @t
+VALUES
+(10, 20), (30, 40)
+
+INSERT @t
+VALUES
+(5, 10), (11, 12)
+
+SELECT * INTO [$into] FROM @t
 ";
 
             RunQuery(sql);
@@ -295,8 +324,28 @@ SET ra = ra - 5
         [TestCategory("Query")]
         public void UpdateNewTableTest2()
         {
-            // TODO: create and update table with remote data source
-            Assert.Fail();
+            var testName = GetTestUniqueName();
+
+            var sql = @"
+DECLARE @t AS TABLE
+(
+    ra float, dec float
+)
+
+INSERT @t
+VALUES
+(10, 20), (30, 40)
+
+UPDATE @t
+SET ra = ra - 5
+
+SELECT * INTO [$into] FROM @t
+";
+
+            RunQuery(sql);
+
+            Assert.IsTrue(IsUserDatabaseTableExisting(testName));
+            Assert.AreEqual(2, GetUserDatabaseTableCount(testName));
         }
 
         [TestMethod]

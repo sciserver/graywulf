@@ -275,7 +275,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                                 };
 
                                 TemporaryTables.Add(table, temptable);
-                                RemoteSourceTables.Add(rst.UniqueKey, rst);
+                                remoteSourceTables.Add(rst.UniqueKey, rst);
 
                                 if (this.id == 0)
                                 {

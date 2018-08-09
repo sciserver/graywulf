@@ -37,8 +37,28 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             var query = CreateQuery(sql);
             query.GeneratePartitions();
-            query.Partitions[0].GenerateRemoteSourceTableQueries(columnContext, top);
 
+            foreach (var key in query.Partitions[0].QueryDetails.SourceTableReferences.Keys)
+            {
+                RemoteSourceTable rst = null;
+                foreach (var tr in query.Partitions[0].QueryDetails.SourceTableReferences[key])
+                {
+                    if (rst == null)
+                    {
+                        var table = (Jhu.Graywulf.Sql.Schema.TableOrView)tr.DatabaseObject;
+                        rst = new RemoteSourceTable()
+                        {
+                            Table = table,
+                            UniqueKey = tr.DatabaseObject.UniqueKey,
+                            TableReferences = new List<TableReference>(),
+                        };
+                        query.Partitions[0].RemoteSourceTables.Add(rst.UniqueKey, rst);
+                    }
+                    rst.TableReferences.Add(tr);
+                }
+            }
+
+            query.Partitions[0].GenerateRemoteSourceTableQueries(columnContext, top);
             return query.Partitions[0].RemoteSourceTables.Values.Select(i => i.RemoteQuery).ToArray();
         }
 
