@@ -29,6 +29,12 @@ namespace Jhu.Graywulf.Web.Admin.Common
             get { return (Operation)Enum.Parse(typeof(Operation), Request.QueryString["op"]); }
         }
 
+        protected override RegistryContext OnCreateRegistryContext()
+        {
+            var application = (Jhu.Graywulf.Web.UI.UIApplicationBase)HttpContext.Current.ApplicationInstance;
+            return application.CreateRegistryContext(Registry.TransactionMode.ReadWrite);
+        }
+
         protected override void UpdateForm()
         {
             var op = Operation;

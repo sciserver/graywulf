@@ -96,8 +96,7 @@ namespace Jhu.Graywulf.Web.UI
             {
                 if (registryContext == null)
                 {
-                    var application = (UIApplicationBase)HttpContext.Current.ApplicationInstance;
-                    registryContext = application.CreateRegistryContext((!readOnly && IsPostBack)? Registry.TransactionMode.ReadWrite : Registry.TransactionMode.ReadOnly);
+                    registryContext = OnCreateRegistryContext();
                 }
 
                 return registryContext;
@@ -161,6 +160,12 @@ namespace Jhu.Graywulf.Web.UI
             LogDebug();
 
             base.OnPreInit(e);
+        }
+
+        protected virtual RegistryContext OnCreateRegistryContext()
+        {
+            var application = (UIApplicationBase)HttpContext.Current.ApplicationInstance;
+            return application.CreateRegistryContext((!readOnly && IsPostBack) ? Registry.TransactionMode.ReadWrite : Registry.TransactionMode.ReadOnly);
         }
         
         protected override void OnLoad(EventArgs e)
