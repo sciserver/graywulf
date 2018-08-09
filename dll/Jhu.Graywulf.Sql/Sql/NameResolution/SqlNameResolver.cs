@@ -176,6 +176,10 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 node.VariableReference = ResolveScalarVariableReference(node.VariableReference);
             }
+            else if (Visitor.TableContext.HasFlag(TableContext.Target))
+            {
+                node.VariableReference = ResolveTableVariableReference(node.VariableReference);
+            }
         }
 
         protected virtual void Accept(ColumnIdentifier node)
@@ -330,6 +334,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
         protected virtual void Accept(SubqueryTableSource node)
         {
             // This is fishy here
+            node.TableReference = ResolveTableReference(node.TableReference, null);
+        }
+
+        protected virtual void Accept(TargetTableSpecification node)
+        {
             node.TableReference = ResolveTableReference(node.TableReference, null);
         }
 
@@ -812,88 +821,95 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         protected TableReference ResolveTableReference(TableReference tr, TableDefinition td)
         {
-            TableReference ntr = null;
-
-            var sourceTableCollection =
-                Visitor.CurrentQuerySpecification as ISourceTableProvider ??
-                Visitor.CurrentStatement as ISourceTableProvider;
-
-            var targetTableProvider =
-                Visitor.CurrentStatement as ITargetTableProvider;
-
             // Set it on the original reference, later will be set on the resolved one too
             tr.TableContext |= Visitor.TableContext;
 
-            if (Visitor.TableContext.HasFlag(TableContext.Create))
+            if (tr.IsResolved)
             {
-                // Case 1: output table not already in schema
-                // DECLARE .. AS TABLE and CREATE TABLE
-
-                if (td == null)
-                {
-                    // First pass
-                    SubstituteOutputTableDefaults(tr);
-                    ntr = tr;
-                }
-                else
-                {
-                    // Second pass
-                    ntr = ResolveTableDefinition(td, tr);
-                    CollectOutputTableReference(targetTableProvider, tr);
-                }
-            }
-            else if (Visitor.TableContext.HasFlag(TableContext.Into))
-            {
-                // Case 2: output table not already in schema
-                // SELECT INTO
-
-                SubstituteOutputTableDefaults(tr);
-                ntr = ResolveOutputTableReference(Visitor.CurrentQuerySpecification, tr);
-                CollectOutputTableReference(targetTableProvider, tr);
-            }
-            else if ((Visitor.TableContext & TableContext.Target) != 0)
-            {
-                // Case 3: target table already in schema
-                // INSERT, UPDATE, DELETE, etc.
-                SubstituteSourceTableDefaults(sourceTableCollection, tr, true);
-                ntr = ResolveSourceTableReference(sourceTableCollection, tr, true);
-                CollectTargetTableReference(targetTableProvider, ntr);
-
-                // For statement with query parts target table can also
-                // appear as a source table for column resolution
-                CollectSourceTableReference(ntr);
-            }
-            else if ((Visitor.TableContext & TableContext.Subquery) != 0)
-            {
-                // Case 4: aliased subquery
-                // SELECT ... FROM (SELECT ...) sq
-                // Everything is resolved, just copy to source tables
-                ntr = tr;
-                CollectSourceTableReference(tr);
-            }
-            else if ((Visitor.TableContext & TableContext.From) != 0)
-            {
-                // Case 5: simple source table
-                // SELECT ... FROM
-                SubstituteSourceTableDefaults(sourceTableCollection, tr, true);
-                ntr = ResolveSourceTableReference(sourceTableCollection, tr, true);
-
-                if (ntr == null)
-                {
-                    throw NameResolutionError.UnresolvableTableReference(tr);
-                }
-
-                CollectSourceTableReference(ntr);
+                return tr;
             }
             else
             {
-                // Case 6: Table reference in from of SELECT ....*
-                // Source table (table.* and table.columnname syntax only)
-                SubstituteSourceTableDefaults(sourceTableCollection, tr, false);
-                ntr = ResolveColumnTableReference(sourceTableCollection, tr);
-            }
+                TableReference ntr = null;
 
-            return ntr;
+                var sourceTableCollection =
+                    Visitor.CurrentQuerySpecification as ISourceTableProvider ??
+                    Visitor.CurrentStatement as ISourceTableProvider;
+
+                var targetTableProvider =
+                    Visitor.CurrentStatement as ITargetTableProvider;
+
+                if (Visitor.TableContext.HasFlag(TableContext.Create))
+                {
+                    // Case 1: output table not already in schema
+                    // DECLARE .. AS TABLE and CREATE TABLE
+
+                    if (td == null)
+                    {
+                        // First pass
+                        SubstituteOutputTableDefaults(tr);
+                        ntr = tr;
+                    }
+                    else
+                    {
+                        // Second pass
+                        ntr = ResolveTableDefinition(td, tr);
+                        CollectOutputTableReference(targetTableProvider, tr);
+                    }
+                }
+                else if (Visitor.TableContext.HasFlag(TableContext.Into))
+                {
+                    // Case 2: output table not already in schema
+                    // SELECT INTO
+
+                    SubstituteOutputTableDefaults(tr);
+                    ntr = ResolveOutputTableReference(Visitor.CurrentQuerySpecification, tr);
+                    CollectOutputTableReference(targetTableProvider, tr);
+                }
+                else if ((Visitor.TableContext & TableContext.Target) != 0)
+                {
+                    // Case 3: target table already in schema
+                    // INSERT, UPDATE, DELETE, etc.
+                    SubstituteSourceTableDefaults(sourceTableCollection, tr, true);
+                    ntr = ResolveSourceTableReference(sourceTableCollection, tr, true);
+                    CollectTargetTableReference(targetTableProvider, ntr);
+
+                    // For statement with query parts target table can also
+                    // appear as a source table for column resolution
+                    CollectSourceTableReference(ntr);
+                }
+                else if ((Visitor.TableContext & TableContext.Subquery) != 0)
+                {
+                    // Case 4: aliased subquery
+                    // SELECT ... FROM (SELECT ...) sq
+                    // Everything is resolved, just copy to source tables
+                    ntr = tr;
+                    CollectSourceTableReference(tr);
+                }
+                else if ((Visitor.TableContext & TableContext.From) != 0)
+                {
+                    // Case 5: simple source table
+                    // SELECT ... FROM
+                    SubstituteSourceTableDefaults(sourceTableCollection, tr, true);
+                    ntr = ResolveSourceTableReference(sourceTableCollection, tr, true);
+
+                    if (ntr == null)
+                    {
+                        throw NameResolutionError.UnresolvableTableReference(tr);
+                    }
+
+                    CollectSourceTableReference(ntr);
+                }
+                else
+                {
+                    // Case 6: Table reference in from of SELECT ....*
+                    // Source table (table.* and table.columnname syntax only)
+                    SubstituteSourceTableDefaults(sourceTableCollection, tr, false);
+                    ntr = ResolveColumnTableReference(sourceTableCollection, tr);
+                }
+
+                return ntr;
+            }
         }
 
         private TableReference ResolveOutputTableReference(QuerySpecification qs, TableReference tr)
@@ -1471,14 +1487,17 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         private void CollectTargetTableReference(ITargetTableProvider targetTable, TableReference tr)
         {
-            var uniqueKey = tr.DatabaseObject.UniqueKey;
-
-            if (!details.TargetTableReferences.ContainsKey(uniqueKey))
+            if (tr.TableContext.HasFlag(TableContext.TableOrView))
             {
-                details.TargetTableReferences.Add(uniqueKey, new List<TableReference>());
-            }
+                var uniqueKey = tr.DatabaseObject.UniqueKey;
 
-            details.TargetTableReferences[uniqueKey].Add(tr);
+                if (!details.TargetTableReferences.ContainsKey(uniqueKey))
+                {
+                    details.TargetTableReferences.Add(uniqueKey, new List<TableReference>());
+                }
+
+                details.TargetTableReferences[uniqueKey].Add(tr);
+            }
         }
 
         private void CollectOutputTableReference(ITargetTableProvider targetTable, TableReference tr)

@@ -276,6 +276,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             Write(node);
         }
 
+        public virtual void Accept(HintName node)
+        {
+            Write(node);
+        }
+
         public virtual void Accept(ExpressionSubquery node)
         {
             Write("<subquery> ");

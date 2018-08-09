@@ -32,6 +32,22 @@ namespace Jhu.Graywulf.Sql.NameResolution
         }
 
         [TestMethod]
+        public void UpdateWithWhereTest()
+        {
+            var sql = "UPDATE Author SET Name = 'new_name' WHERE ID = 1";
+
+            var ds = ParseAndResolveNames<UpdateStatement>(sql);
+
+            var res = GenerateCode(ds);
+            Assert.AreEqual("UPDATE [Graywulf_Schema_Test].[dbo].[Author] SET [Graywulf_Schema_Test].[dbo].[Author].[Name] = 'new_name' WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 1", res);
+
+            var ts = ds.SourceTableReferences.Values.ToArray();
+            Assert.AreEqual(1, ts.Length);
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
+        }
+
+        [TestMethod]
         public void UpdateWithFromTest()
         {
             var sql = 
@@ -133,55 +149,86 @@ FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a]";
             Assert.AreEqual("Author", ds.TargetTable.TableReference.DatabaseObjectName);
         }
 
-        /*
         [TestMethod]
-        public void DeleteWithJoinTest()
+        public void UpdateWithJoinTest()
         {
             var sql =
-@"DELETE Author
+@"UPDATE Author
+SET Author.Name = 'new_name'
 FROM Author
 INNER JOIN Book ON Book.ID = Book.ID";
 
             var gt =
-@"DELETE [Graywulf_Schema_Test].[dbo].[Author]
+@"UPDATE [Graywulf_Schema_Test].[dbo].[Author]
+SET [Graywulf_Schema_Test].[dbo].[Author].[Name] = 'new_name'
 FROM [Graywulf_Schema_Test].[dbo].[Author]
 INNER JOIN [Graywulf_Schema_Test].[dbo].[Book] ON [Graywulf_Schema_Test].[dbo].[Book].[ID] = [Graywulf_Schema_Test].[dbo].[Book].[ID]";
 
-            var ds = Parse<DeleteStatement>(sql);
+            var ds = ParseAndResolveNames<UpdateStatement>(sql);
 
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTables(false).ToArray();
-            Assert.AreEqual(3, ts.Length);
-            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].TableReference.Alias);
+            var ts = ds.SourceTableReferences.Values.ToArray();
+            Assert.AreEqual(2, ts.Length);
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
         }
 
         [TestMethod]
-        public void DeleteWithSubqueryTest()
+        public void UpdateWithSubqueryTest()
         {
             var sql =
-@"DELETE Author
+@"UPDATE Author
+SET Author.Name = 'new_name'
 WHERE ID IN (SELECT ID FROM Book)";
 
             var gt =
-@"DELETE [Graywulf_Schema_Test].[dbo].[Author]
-WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] IN (SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID] FROM [Graywulf_Schema_Test].[dbo].[Book])";
+@"UPDATE [Graywulf_Schema_Test].[dbo].[Author]
+SET [Graywulf_Schema_Test].[dbo].[Author].[Name] = 'new_name'
+WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] IN (SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID] FROM [Graywulf_Schema_Test].[dbo].[Book])";
 
-            var ds = Parse<DeleteStatement>(sql);
+            var ds = ParseAndResolveNames<UpdateStatement>(sql);
 
             var res = GenerateCode(ds);
             Assert.AreEqual(gt, res);
 
-            var ts = ds.EnumerateSourceTables(false).ToArray();
+            var ts = ds.SourceTableReferences.Values.ToArray();
 
-            Assert.AreEqual(2, ts.Length);
-            Assert.AreEqual("Author", ts[0].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[0].TableReference.Alias);
-            Assert.AreEqual("Book", ts[1].TableReference.DatabaseObjectName);
-            Assert.AreEqual(null, ts[1].TableReference.Alias);
+            Assert.AreEqual(1, ts.Length);
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
         }
-        */
+
+        [TestMethod]
+        public void UpdateTableVariableTest()
+        {
+            var sql =
+@"DECLARE @t AS TABLE
+(
+    ID int,
+    Data float
+)
+
+UPDATE @t
+SET Data = 1
+WHERE ID = 2";
+
+            var gt =
+@"UPDATE @t
+SET [@t].[Data] = 1
+WHERE [@t].[ID] = 2";
+
+            var ds = ParseAndResolveNames<UpdateStatement>(sql);
+
+            var res = GenerateCode(ds);
+            Assert.AreEqual(gt, res);
+
+            var ts = ds.SourceTableReferences.Values.ToArray();
+
+            Assert.AreEqual(1, ts.Length);
+            Assert.AreEqual("@t", ts[0].VariableName);
+            Assert.AreEqual(null, ts[0].Alias);
+        }
     }
 }

@@ -7,8 +7,9 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Parsing
 {
-    public partial class TargetTableSpecification : ITableReference, IVariableReference
+    public partial class TargetTableSpecification : ITableReference
     {
+        private TableReference tableReference;
         private string uniqueKey;
 
         public TableOrViewIdentifier TableOrViewIdentifier
@@ -16,7 +17,7 @@ namespace Jhu.Graywulf.Sql.Parsing
             get { return FindDescendantRecursive<TableOrViewIdentifier>(); }
         }
 
-        public UserVariable Variable
+        public UserVariable UserVariable
         {
             get { return FindDescendantRecursive<UserVariable>(); }
         }
@@ -39,43 +40,31 @@ namespace Jhu.Graywulf.Sql.Parsing
 
         public override TableReference TableReference
         {
-            get { return TableOrViewIdentifier?.TableReference; }
-            set
-            {
-                var table = TableOrViewIdentifier;
-                if (table != null)
-                {
-                    table.TableReference = value;
-                }
-            }
+            get { return tableReference; }
+            set { tableReference = value; }
         }
 
-        public VariableReference VariableReference
+        protected override void OnInitializeMembers()
         {
-            get { return Variable?.VariableReference; }
-            set
-            {
-                var variable = Variable;
-                if (variable != null)
-                {
-                    variable.VariableReference = value;
-                }
-            }
+            base.OnInitializeMembers();
+
+            this.tableReference = null;
+        }
+
+        protected override void OnCopyMembers(object other)
+        {
+            base.OnCopyMembers(other);
+
+            var old = (TargetTableSpecification)other;
+
+            this.tableReference = old.tableReference;
         }
 
         public override void Interpret()
         {
             base.Interpret();
 
-            if (TableReference != null)
-            {
-                TableReference = TableReference.Interpret(this);
-            }
-
-            if (VariableReference != null)
-            {
-                VariableReference = VariableReference.Interpret(this);
-            }
+            this.tableReference = TableReference.Interpret(this);
         }
     }
 }

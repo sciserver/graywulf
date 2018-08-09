@@ -333,8 +333,30 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
         public static TableReference Interpret(TargetTableSpecification tt)
         {
-            var tr = tt.TableReference;
-            tr.tableSource = tt;
+            TableReference tr;
+            var table = tt.TableOrViewIdentifier;
+            var variable = tt.UserVariable;
+
+            if (table != null)
+            {
+                tr = table.TableReference;
+                tr.tableSource = tt;
+            }
+            else if (variable != null)
+            {
+                tr = new TableReference()
+                {
+                    tableSource = tt,
+                    variableName = variable.VariableName,
+                    variableReference = variable.VariableReference,
+                    tableContext = TableContext.Target | TableContext.Variable
+                };
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
             return tr;
         }
 
@@ -451,15 +473,15 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 LoadUdfColumnReferences();
             }
+            else if (tableContext.HasFlag(TableContext.Variable))
+            {
+                CopyColumnReferences(variableReference.DataTypeReference.ColumnReferences);
+            }
             else if (DatabaseObject is TableOrView ||
                 tableContext.HasFlag(TableContext.TableOrView) ||
                 tableContext.HasFlag(TableContext.Target))
             {
                 LoadTableOrViewColumnReferences();
-            }
-            else if (tableContext.HasFlag(TableContext.Variable))
-            {
-                CopyColumnReferences(variableReference.DataTypeReference.ColumnReferences);
             }
             else
             {

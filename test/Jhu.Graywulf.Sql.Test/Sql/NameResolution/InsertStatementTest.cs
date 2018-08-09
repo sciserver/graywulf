@@ -283,6 +283,37 @@ VALUES
             Assert.AreEqual(gt, res);
         }
 
+        [TestMethod]
+        public void InsertIntoVariableTest()
+        {
+            var sql =
+@"DECLARE @t AS TABLE
+(
+    ID int,
+    Data float
+)
+
+INSERT @t
+(ID, Data)
+VALUES
+(0, 1.0)";
+
+            var gt =
+@"INSERT @t
+([@t].[ID], [@t].[Data])
+VALUES
+(0, 1.0)";
+
+            var ds = ParseAndResolveNames<InsertStatement>(sql);
+            var res = GenerateCode(ds);
+            Assert.AreEqual(gt, res);
+
+            var ts = ds.SourceTableReferences.Values.ToArray();
+            Assert.AreEqual(1, ts.Length);
+            Assert.AreEqual("@t", ts[0].VariableName);
+            Assert.AreEqual(null, ts[0].Alias);
+        }
+
         // TODO: values part with subquery in expression
         // TODO: values part with sum of queries in expression
         // TODO: select with join

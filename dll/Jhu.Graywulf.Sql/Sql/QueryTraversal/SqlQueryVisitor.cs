@@ -1126,7 +1126,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseUpdateStatement(UpdateStatement node)
         {
-            queryContextStack.Push(QueryContext.DeleteStatement);
+            queryContextStack.Push(QueryContext.UpdateStatement);
             statementStack.Push(node);
 
             // Common table expression
@@ -1141,12 +1141,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             if (from != null)
             {
                 TraverseFromClause(from);
-            }
-
-            var where = node.WhereClause;
-            if (where != null)
-            {
-                TraverseWhereClause(where);
             }
 
             // Target table
@@ -1172,7 +1166,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             tableContextStack.Pop();
             columnContextStack.Pop();
 
-
+            var where = node.WhereClause;
+            if (where != null)
+            {
+                TraverseWhereClause(where);
+            }
 
             VisitNode(node);
 
@@ -3060,7 +3058,28 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseSimpleTableSource(SimpleTableSource node)
         {
-            VisitNode(node.TableOrViewIdentifier);
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case TableOrViewIdentifier n:
+                        VisitNode(n);
+                        break;
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case TableAlias n:
+                        VisitNode(n);
+                        break;
+                    case TableSampleClause n:
+                        TraverseTableSampleClause(n);
+                        break;
+                    case TableHintClause n:
+                        TraverseTableHintClause(n);
+                        break;
+                }
+            }
+
             VisitNode(node);
         }
 
@@ -3078,6 +3097,114 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             VisitNode(node);
 
             tableContextStack.Pop();
+        }
+
+        private void TraverseTableSampleClause(TableSampleClause node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case BracketOpen n:
+                        VisitNode(n);
+                        break;
+                    case BracketClose n:
+                        VisitNode(n);
+                        break;
+                    case NumericConstant n:
+                        VisitNode(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraverseTableHintClause(TableHintClause node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case BracketOpen n:
+                        VisitNode(n);
+                        break;
+                    case BracketClose n:
+                        VisitNode(n);
+                        break;
+                    case TableHintList n:
+                        TraverseTableHintList(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraverseTableHintList(TableHintList node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case TableHint n:
+                        TraverseTableHint(n);
+                        break;
+                    case TableHintList n:
+                        TraverseTableHintList(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraverseTableHint(TableHint node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case HintName n:
+                        VisitNode(n);
+                        break;
+                    case HintArgumentList n:
+                        TraverseHintArgumentList(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraverseHintArgumentList(HintArgumentList node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case HintArgument n:
+                        TraverseHintArgument(n);
+                        break;
+                    case Comma n:
+                        VisitNode(n);
+                        break;
+                    case HintArgumentList n:
+                        TraverseHintArgumentList(n);
+                        break;
+                }
+            }
+        }
+
+        private void TraverseHintArgument(HintArgument node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Expression n:
+                        TraverseExpression(n);
+                        break;
+                }
+            }
         }
 
         private void TraverseSubquery(Subquery sq)
@@ -3304,21 +3431,28 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseTargetTableSpecification(TargetTableSpecification node)
         {
-            var uv = node.Variable;
-            var ti = node.TableOrViewIdentifier;
+            tableContextStack.Push(TableContext | TableContext.Target);
 
-            if (uv != null)
+            foreach (var nn in node.Stack)
             {
-                VisitNode(uv);
+                switch (nn)
+                {
+                    case UserVariable n:
+                        VisitNode(n);
+                        break;
+                    case TableOrViewIdentifier n:
+                        VisitNode(n);
+                        break;
+                    case TableAlias n:
+                        VisitNode(n);
+                        break;
+                    case TableHintClause n:
+                        TraverseTableHintClause(n);
+                        break;
+                }
             }
-            else if (ti != null)
-            {
-                VisitNode(ti);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
+            
+            tableContextStack.Pop();
 
             VisitNode(node);
         }

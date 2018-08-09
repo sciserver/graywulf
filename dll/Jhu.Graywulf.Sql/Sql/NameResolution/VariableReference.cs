@@ -126,12 +126,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             };
             return vr;
         }
-
-        public static VariableReference Interpret(Parsing.TargetTableSpecification tts)
-        {
-            return tts.VariableReference;
-        }
-
+        
         public void Interpret(Parsing.VariableDeclaration vd)
         {
             if (vd.IsCursor)

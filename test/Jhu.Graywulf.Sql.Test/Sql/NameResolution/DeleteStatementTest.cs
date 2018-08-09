@@ -192,7 +192,8 @@ INNER JOIN [Graywulf_Schema_Test].[dbo].[Book] ON [Graywulf_Schema_Test].[dbo].[
             Assert.AreEqual(null, ds.TargetTable.TableReference.Alias);
         }
 
-        [TestMethod]        public void DeleteWithSubqueryTest()
+        [TestMethod]
+        public void DeleteWithSubqueryTest()
         {
             var sql =
 @"DELETE Author
@@ -212,6 +213,36 @@ WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] IN (SELECT [Graywulf_Schema_Tes
             Assert.AreEqual(null, ds.SourceTableReferences["Author"].Alias);
 
             Assert.AreEqual("Author", ds.TargetTable.TableReference.DatabaseObjectName);
+            Assert.AreEqual(null, ds.TargetTable.TableReference.Alias);
+        }
+
+        [TestMethod]
+        public void DeleteTableVariableTest()
+        {
+            var sql =
+@"DECLARE @t AS TABLE
+(
+    ID int,
+    Data float
+)
+
+DELETE @t
+WHERE ID = 2";
+
+            var gt =
+@"DELETE @t
+WHERE [@t].[ID] = 2";
+
+            var ds = ParseAndResolveNames<DeleteStatement>(sql);
+
+            var res = GenerateCode(ds);
+            Assert.AreEqual(gt, res);
+
+            Assert.AreEqual(1, ds.SourceTableReferences.Count);
+            Assert.AreEqual("@t", ds.SourceTableReferences["@t"].VariableName);
+            Assert.AreEqual(null, ds.SourceTableReferences["@t"].Alias);
+
+            Assert.AreEqual("@t", ds.TargetTable.TableReference.VariableName);
             Assert.AreEqual(null, ds.TargetTable.TableReference.Alias);
         }
     }

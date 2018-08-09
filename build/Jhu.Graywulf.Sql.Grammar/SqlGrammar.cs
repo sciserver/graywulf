@@ -179,8 +179,6 @@ namespace Jhu.Graywulf.Sql.Grammar
         public static Expression<Rule> ColumnAlias = () => Identifier;
         public static Expression<Rule> CursorName = () => Identifier;
         public static Expression<Rule> PropertyName = () => Identifier;
-        public static Expression<Rule> SampleNumber = () => NumericConstant;
-        public static Expression<Rule> RepeatSeed = () => NumericConstant;
 
         // There are used for the generic multi-part names before name resolution,
         // then replaced with context-specific nodes
@@ -1819,7 +1817,7 @@ FOR select_statement
                 Keyword("TABLESAMPLE"),
                 May(Sequence(CommentOrWhitespace, Keyword("SYSTEM"))),
                 May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace),
-                SampleNumber,
+                NumericConstant,
                 May(Sequence(CommentOrWhitespace, May(Must(Keyword("PERCENT"), Keyword("ROWS"))))),
                 May(CommentOrWhitespace), BracketClose,
                 May(Sequence
@@ -1827,7 +1825,7 @@ FOR select_statement
                     CommentOrWhitespace,
                     Keyword("REPEATABLE"),
                     May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace),
-                    RepeatSeed,
+                    NumericConstant,
                     May(CommentOrWhitespace), BracketClose)
                 )
             );
@@ -1948,9 +1946,11 @@ FOR select_statement
 
         public static Expression<Rule> TableHint = () =>
             Must(
-                Sequence(Identifier, May(CommentOrWhitespace), HintArgumentList),
-                Identifier
+                Sequence(HintName, May(CommentOrWhitespace), HintArgumentList),
+                HintName
             );
+
+        public static Expression<Rule> HintName = () => Identifier;
 
         public static Expression<Rule> OptionClause = () =>
             Sequence
