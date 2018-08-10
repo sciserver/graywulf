@@ -26,7 +26,11 @@ namespace Jhu.Graywulf.IO
         public const string UriSchemeHttps = "https";
         public const string UriSchemeFtp = "ftp";
 
+        public const string BatchNameToken = "[$BatchName]";
+        public const string QueryNameToken = "[$QueryName]";
         public const string ResultsetNameToken = "[$ResultsetName]";
+        public const string ResultsetCounterToken = "[$ResultsetCounter]";
+        public const string CombinedResultsetNameToken = "[$CombinedResultsetName]";
 
         public const string UrlPattern = @"(https?|ftp)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?";
         public const string UrlPathPattern = @"([^\s/?\.#-]+\.?)+(/[^\s]*)?";

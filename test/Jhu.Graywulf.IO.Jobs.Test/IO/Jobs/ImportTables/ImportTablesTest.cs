@@ -119,7 +119,7 @@ namespace Jhu.Graywulf.IO.Jobs.ExportTables
                     var path = String.Format(@"\\{0}\{1}\files\csv_numbers.csv",
                         Jhu.Graywulf.Test.Constants.Localhost, Jhu.Graywulf.Test.Constants.TestDirectory);
 
-                    var guid = ScheduleImportTableJob(path, "SimpleImportJobTest_" + IO.Constants.ResultsetNameToken, QueueType.Long);
+                    var guid = ScheduleImportTableJob(path, "SimpleImportJobTest_" + IO.Constants.CombinedResultsetNameToken, QueueType.Long);
 
                     WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 
@@ -146,7 +146,7 @@ namespace Jhu.Graywulf.IO.Jobs.ExportTables
 
                     var path = String.Format(@"\\{0}\{1}\files\archive.zip", Jhu.Graywulf.Test.Constants.Localhost, Jhu.Graywulf.Test.Constants.TestDirectory);
 
-                    var guid = ScheduleImportTableJob(path, "ImportArchiveJobTest_" + IO.Constants.ResultsetNameToken, QueueType.Long);
+                    var guid = ScheduleImportTableJob(path, "ImportArchiveJobTest_" + IO.Constants.CombinedResultsetNameToken, QueueType.Long);
 
                     WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 

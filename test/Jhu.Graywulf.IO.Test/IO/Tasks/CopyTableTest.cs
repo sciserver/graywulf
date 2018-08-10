@@ -102,7 +102,7 @@ SELECT * FROM SampleData_PrimaryKey";
 
             using (var cancellationContext = new CancellationContext())
             {
-                var table = GetTestUniqueName() + "_" + Constants.ResultsetNameToken;
+                var table = GetTestUniqueName() + "_" + Constants.CombinedResultsetNameToken;
 
                 using (var q = GetTableCopy(
                     cancellationContext, sql, table, false,
@@ -131,7 +131,7 @@ SELECT * FROM SampleData_PrimaryKey";
 
             using (var cancellationContext = new CancellationContext())
             {
-                var table = GetTestUniqueName() + "_" + Constants.ResultsetNameToken;
+                var table = GetTestUniqueName() + "_" + Constants.CombinedResultsetNameToken;
 
                 using (var q = GetTableCopy(
                     cancellationContext, sql, table, false,
@@ -194,7 +194,7 @@ SELECT * FROM SampleData_PrimaryKey";
 
                 using (var cancellationContext = new CancellationContext())
                 {
-                    var table = GetTestUniqueName() + "_" + Constants.ResultsetNameToken;
+                    var table = GetTestUniqueName() + "_" + Constants.CombinedResultsetNameToken;
 
                     using (var q = GetTableCopy(
                         cancellationContext, sql, table, true,

@@ -11,6 +11,6 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
     {
         public const string DefaultQuickResultsTableNamePattern = "QuickResults";
         public const string DefaultLongResultsTableNamePattern = "Results";
-        public const string DefaultOutputTableNamePattern = "Output_" + IO.Constants.ResultsetNameToken;
+        public const string DefaultOutputTableNamePattern = "Results_" + IO.Constants.CombinedResultsetNameToken;
     }
 }

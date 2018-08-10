@@ -54,7 +54,6 @@ namespace Jhu.Graywulf.RemoteService
             where T : IRemoteService
         {
             // TODO: make this async
-
             var fdqn = DnsHelper.GetFullyQualifiedDnsName(host);
             ServiceProxy<T> res;
 

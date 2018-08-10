@@ -180,26 +180,31 @@ namespace Jhu.Graywulf.IO.Tasks
             // -- Resultset name is the table within the file
 
             var name = "";
-            var pattern = tableNamePattern ?? Constants.ResultsetNameToken;
+            var pattern = tableNamePattern ?? Constants.CombinedResultsetNameToken;
 
             if (!String.IsNullOrWhiteSpace(batchName))
             {
                 name += "_" + batchName;
+                pattern = pattern.Replace(Constants.BatchNameToken, name);
             }
 
             if (!String.IsNullOrWhiteSpace(queryName))
             {
                 name += "_" + queryName;
+                pattern = pattern.Replace(Constants.QueryNameToken, name);
             }
 
             if (!String.IsNullOrWhiteSpace(resultsetName))
             {
                 name += "_" + resultsetName;
+                pattern = pattern.Replace(Constants.ResultsetNameToken, name);
             }
             else if (resultsetCounter != 0)
             {
                 name += "_" + resultsetCounter.ToString();
             }
+
+            pattern = pattern.Replace(Constants.ResultsetCounterToken, resultsetCounter.ToString());
 
             if (name.Length > 0)
             {
@@ -208,7 +213,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
             // Substitute into name pattern
             // Strip leading _
-            name = pattern.Replace(Constants.ResultsetNameToken, name);
+            name = pattern.Replace(Constants.CombinedResultsetNameToken, name);
 
             if ((options & TableInitializationOptions.GenerateUniqueName) != 0)
             {

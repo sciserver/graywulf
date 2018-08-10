@@ -128,6 +128,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\AssemblyReflector.cs" />
     <Compile Include="Util\CancellationHelper.cs" />
+    <Compile Include="Util\SqlConnectionStringComparer.cs" />
     <Compile Include="Util\TaskHelper.cs" />
     <Compile Include="Util\Cloner.cs" />
     <Compile Include="Util\DeepCloner.cs" />

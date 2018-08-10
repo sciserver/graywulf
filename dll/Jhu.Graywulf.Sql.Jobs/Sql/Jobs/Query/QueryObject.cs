@@ -279,7 +279,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         {
             get { return temporaryViews; }
         }
-
+        
         #endregion
         #region Constructors and initializers
 
@@ -513,6 +513,88 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         #endregion
         #region Server assignment logic
 
+        protected bool IsCodeDbRequired()
+        {
+            foreach (var frs in QueryDetails.FunctionReferences.Values)
+            {
+                foreach (var fr in frs)
+                {
+                    if (fr.IsUserDefined)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            foreach (var dr in QueryDetails.DataTypeReferences.Values)
+            {
+                if (dr.IsUserDefined)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        protected Dictionary<string, SqlServerDataset> FindRequiredSourceSqlServerDatasets()
+        {
+            var dss = new Dictionary<string, SqlServerDataset>(SchemaManager.Comparer);
+            FindRequiredSqlServerDatasets(dss, QueryDetails.SourceTableReferences);
+            return dss;
+        }
+
+        protected Dictionary<string, SqlServerDataset> FindRequiredOutputSqlServerDatasets()
+        {
+            var dss = new Dictionary<string, SqlServerDataset>(SchemaManager.Comparer);
+            FindRequiredSqlServerDatasets(dss, QueryDetails.OutputTableReferences);
+            return dss;
+        }
+
+        private void FindRequiredSqlServerDatasets(Dictionary<string, SqlServerDataset> dss, Dictionary<string, List<TableReference>> tableReferences)
+        {
+            var sc = GetSchemaManager();
+
+            foreach (var trs in tableReferences.Values)
+            {
+                foreach (var tr in trs)
+                {
+                    if (!dss.ContainsKey(tr.DatasetName))
+                    {
+                        var ds = sc.Datasets[tr.DatasetName];
+                        if (ds is SqlServerDataset)
+                        {
+                            dss.Add(tr.DatasetName, (SqlServerDataset)ds);
+                        }
+                    }
+                }
+            }
+        }
+
+        protected ServerInstance FindMatchingServerInstance(string connectionString)
+        {
+            var csb = new SqlConnectionStringBuilder(connectionString);
+
+            var dd = ((GraywulfDataset)TemporaryDataset).DatabaseVersionReference.Value.DatabaseDefinition;
+            var ssi = GetAvailableServerInstances(new[] { dd }, Registry.Constants.TempDbName, null, null);
+
+            // Find the first (and in general, only) server instance that maps to the
+            // connection string. It is still possible that there are more than one match
+            // in dev configurations of the system.
+            for (int i = 0; i < ssi.Length; i++)
+            {
+                var scsb = ssi[i].GetConnectionString();
+
+                if (Util.SqlConnectionStringComparer.IsSameDataSource(csb, scsb))
+                {
+                    LogDebug(LogMessages.UseSpecificServer);
+                    return ssi[i];
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Returns local datasets that are required to execute the query.
         /// </summary>
@@ -572,35 +654,69 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         public void AssignServerInstance()
         {
+            // TODO: in general, this logic could be extended with the following
+            // - prescribe which machine role can be used to execute the query
+            // - define machine roles with a precedence order
+            // - enable/disable using Graywulf TEMP db over mssql tempdb
+            // - require CODE db for query executions
+
             // Assign a server that will run the queries
             // Try to find a server that contains all required datasets. This is true right now for
             // SkyQuery where all databases are mirrored but will have to be updated later
 
+            var isCodeDbRequired = IsCodeDbRequired();
             var mirroredDatasets = FindMirroredGraywulfDatasets().Values.Select(i => i.DatabaseDefinitionReference.Value).ToArray();
             var specificDatasets = FindServerSpecificGraywulfDatasets().Values.Select(i => i.DatabaseInstanceReference.Value).ToArray();
+            var sourceSqlServerDatasets = FindRequiredSourceSqlServerDatasets().Values.ToArray();
+            var outputSqlServerDatasets = FindRequiredOutputSqlServerDatasets().Values.ToArray();
 
-            ServerInstance serverInstance;
+            ServerInstance serverInstance = null;
 
-            if (mirroredDatasets.Length == 0)
+            if (mirroredDatasets.Length != 0)
             {
+                // Use the worker nodes in this case
+                // Assign new server instance based on database availability
+                LogDebug(LogMessages.UseMultipleServers);
+                serverInstance = GetNextServerInstance(mirroredDatasets, parameters.SourceDatabaseVersionName, null, specificDatasets);
+            }
+            else if (specificDatasets.Length > 0)
+            {
+                // TODO: In this case we could figure out which server to use
+                // but MyDBs are now handled as remote servers
+            }
+            else if (sourceSqlServerDatasets.Length == 1)
+            {
+                // If it is a query that touches a single SQL Server and the
+                // server can be mapped, so that we have info on TEMP and CODE db
+                serverInstance = FindMatchingServerInstance(sourceSqlServerDatasets[0].ConnectionString);
+            }
+            else if (outputSqlServerDatasets.Length == 1)
+            {
+                serverInstance = FindMatchingServerInstance(outputSqlServerDatasets[0].ConnectionString);
+            }
+            else if (sourceSqlServerDatasets.Length == 0 && outputSqlServerDatasets.Length == 0)
+            {
+                serverInstance = FindMatchingServerInstance(parameters.Destination.Dataset.ConnectionString);
+            }
+
+            // Fallback logic, if no co-located execution is possible
+            if (serverInstance == null)
+            {
+                LogDebug(LogMessages.UseSingleServer);
+
                 // If no graywulf datasets are used, get a server from the scheduler
                 // that has an instance of the temp database and assume that it is
                 // configured correctly
-
                 var dd = ((GraywulfDataset)TemporaryDataset).DatabaseVersionReference.Value.DatabaseDefinition;
                 serverInstance = GetNextServerInstance(dd, Registry.Constants.TempDbName);
             }
-            else
-            {
-                // Assign new server instance based on database availability
-                serverInstance = GetNextServerInstance(mirroredDatasets, parameters.SourceDatabaseVersionName, null, specificDatasets);
-            }
-
+            
             assignedServerInstanceReference.Value = serverInstance;
 
             LoadSystemDatabaseInstance(temporaryDatabaseInstanceReference, (GraywulfDataset)temporaryDataset, true);
             LoadSystemDatabaseInstance(codeDatabaseInstanceReference, (GraywulfDataset)codeDataset, true);
 
+            // Log operation
             if (this is SqlQueryPartition)
             {
                 LogOperation(LogMessages.ServerInstanceAssignedPartition, serverInstance.GetCompositeName(), ((SqlQueryPartition)this).ID);
@@ -849,6 +965,8 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
             return si;
         }
+
+
 
         protected ServerInstance GetNextServerInstance(IEnumerable<DatabaseDefinition> databaseDefinitions, string databaseVersion, string surrogateDatabaseVersion, IEnumerable<DatabaseInstance> specificDatabaseInstances)
         {

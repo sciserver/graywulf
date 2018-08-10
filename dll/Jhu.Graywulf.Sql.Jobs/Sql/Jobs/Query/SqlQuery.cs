@@ -121,19 +121,16 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
         /// <summary>
         /// Save list of source tables to show in job output
         /// </summary>
-        public virtual void UpdateParametersSourceTableList()
+        public virtual void UpdateParameters()
         {
+            Parameters.BatchName = Parameters.BatchName ?? RegistryContext.Job.Name;
+
             foreach (var key in QueryDetails.SourceTableReferences.Keys)
             {
                 Parameters.SourceTables.Add((TableOrView)QueryDetails.SourceTableReferences[key][0].DatabaseObject);
             }
         }
-
-        public virtual void UpdateParametersOutputTableList()
-        {
-            throw new NotImplementedException();
-        }
-
+        
         /// <summary>
         /// Collects tables for which statistics should be computed before
         /// executing the query

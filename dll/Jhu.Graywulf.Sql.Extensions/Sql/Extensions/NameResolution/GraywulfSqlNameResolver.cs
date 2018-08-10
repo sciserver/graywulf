@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
         }
 
         #endregion
-        #region
+        #region Main entry point
 
         public override void Execute(QueryDetails details)
         {

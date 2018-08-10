@@ -150,4 +150,13 @@
   <data name="StatisticsTableIdentified" xml:space="preserve">
     <value>Identified table {0} to gather statistics on.</value>
   </data>
+  <data name="UseMultipleServers" xml:space="preserve">
+    <value>Distributed databases are required, running on multiple servers.</value>
+  </data>
+  <data name="UseSingleServer" xml:space="preserve">
+    <value>No distributed databases are required, running on single server instance.</value>
+  </data>
+  <data name="UseSpecificServer" xml:space="preserve">
+    <value>Only a single database is required, running on a specific server.</value>
+  </data>
 </root>

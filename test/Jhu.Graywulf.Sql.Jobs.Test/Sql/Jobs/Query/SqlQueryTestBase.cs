@@ -72,6 +72,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
         private SqlQuery CreateQuery(QueryFactory qf, string query)
         {
+            var testName = GetTestUniqueName();
             var user = SignInTestUser(qf.RegistryContext);
 
             var udf = CreateUserDatabaseFactory(new FederationContext(qf.RegistryContext, user));
@@ -86,7 +87,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 Dataset = mydb,
                 DatabaseName = mydb.DatabaseName,
                 SchemaName = mydb.DefaultSchemaName,
-                TableNamePattern = "testtable",     // will be overwritten by INTO queries
+                TableNamePattern = testName + "_" + Jhu.Graywulf.IO.Constants.ResultsetCounterToken,
                 Options = TableInitializationOptions.Create | TableInitializationOptions.Drop
             };
 
@@ -156,7 +157,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
 
                     var guid = ScheduleQueryJob(sql, queue, maxPartitions, dumpsql);
 
-                    WaitJobComplete(guid, TimeSpan.FromSeconds(10), timeout);
+                    WaitJobComplete(guid, TimeSpan.FromSeconds(2), timeout);
 
                     var ji = LoadJob(guid);
 

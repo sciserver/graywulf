@@ -56,6 +56,7 @@ namespace Jhu.Graywulf.Sql.Extensions.Parsing
             var tr = renderer.MapTableReference(destinationTable);
             var msg = new IO.Tasks.ServerMessage()
             {
+                DestinationDatabase = tr.DatabaseName,
                 DestinationSchema = tr.SchemaName,
                 DestinationName = tr.DatabaseObjectName,
             };

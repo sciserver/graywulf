@@ -158,5 +158,32 @@ namespace Jhu.Graywulf.Sql.Jobs.Query {
                 return ResourceManager.GetString("StatisticsTableIdentified", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Distributed databases are required, running on multiple servers..
+        /// </summary>
+        public static string UseMultipleServers {
+            get {
+                return ResourceManager.GetString("UseMultipleServers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No distributed databases are required, running on single server instance..
+        /// </summary>
+        public static string UseSingleServer {
+            get {
+                return ResourceManager.GetString("UseSingleServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only a single database is required, running on a specific server..
+        /// </summary>
+        public static string UseSpecificServer {
+            get {
+                return ResourceManager.GetString("UseSpecificServer", resourceCulture);
+            }
+        }
     }
 }

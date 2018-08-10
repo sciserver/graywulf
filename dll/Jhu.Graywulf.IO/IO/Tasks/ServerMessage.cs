@@ -10,6 +10,9 @@ namespace Jhu.Graywulf.IO.Tasks
     [XmlRoot("graywulf")]
     public class ServerMessage
     {
+        [XmlElement("destinationDatabase")]
+        public string DestinationDatabase { get; set; }
+
         [XmlElement("destinationSchema")]
         public string DestinationSchema { get; set; }
 

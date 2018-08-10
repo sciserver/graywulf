@@ -172,81 +172,86 @@ namespace Jhu.Graywulf.IO.Tasks
                 {
                     var result = CreateResult();
 
-                    if (!sdr.HasRows)
+                    if (!sdr.HasRows || sdr.FieldCount == 0)
                     {
                         result.Status = TableCopyStatus.NoOutput;
                     }
 
-                    try
+                    if (sdr.FieldCount > 0)
                     {
-                        var table = GetDestinationTable(destination, sdr, resultsetCounter);
-                        result.DestinationTable = table.UniqueKey;
-
-                        // TODO: figure out how to save primary key here and
-                        // pass back to caller. It's too expensive to create the PK at this point
-
-                        // Certain data readers cannot determine the columns from the data file,
-                        // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
-                        // from the destination table instead
-                        if ((destination.Options & TableInitializationOptions.Create) == 0 &&
-                            (sdr.Columns == null || sdr.Columns.Count == 0))
+                        try
                         {
-                            sdr.MatchColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
-                        }
+                            var table = GetDestinationTable(destination, sdr, resultsetCounter);
+                            result.DestinationTable = table.UniqueKey;
 
-                        // Here we need to decide if an auto-generated primary key is required or not.
-                        TableInitializationOptions opts;
-                        var columns = new List<Column>();
-                        bool haskey = false;
+                            // TODO: figure out how to save primary key here and
+                            // pass back to caller. It's too expensive to create the PK at this point
 
-                        foreach (var c in sdr.Columns.OrderBy(c => c.ID))
-                        {
-                            columns.Add(c);
-                            haskey |= c.IsKey;
-                        }
-
-                        if (!haskey && destination.Options.HasFlag(TableInitializationOptions.CreatePrimaryKey))
-                        {
-                            // Add an identity column to the table
-                            var c = new Column("__ID", DataTypes.SqlBigInt)
+                            // Certain data readers cannot determine the columns from the data file,
+                            // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
+                            // from the destination table instead
+                            if ((destination.Options & TableInitializationOptions.Create) == 0 &&
+                                (sdr.Columns == null || sdr.Columns.Count == 0))
                             {
-                                IsIdentity = true,
-                                IsKey = true,
-                            };
+                                sdr.MatchColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
+                            }
 
-                            columns.Insert(0, c);
+                            // Here we need to decide if an auto-generated primary key is required or not.
+                            TableInitializationOptions opts;
+                            var columns = new List<Column>();
+                            bool haskey = false;
 
-                            // Make sure indices are only created afterwards but PK, since it is just an identity column
-                            // is created now.
-                            opts = destination.Options & ~TableInitializationOptions.CreateIndexes;
+                            foreach (var c in sdr.Columns.OrderBy(c => c.ID))
+                            {
+                                columns.Add(c);
+                                haskey |= c.IsKey;
+                            }
+
+                            if (!haskey && destination.Options.HasFlag(TableInitializationOptions.CreatePrimaryKey))
+                            {
+                                // Add an identity column to the table
+                                var c = new Column("__ID", DataTypes.SqlBigInt)
+                                {
+                                    IsIdentity = true,
+                                    IsKey = true,
+                                };
+
+                                columns.Insert(0, c);
+
+                                // Make sure indices are only created afterwards but PK, since it is just an identity column
+                                // is created now.
+                                opts = destination.Options & ~TableInitializationOptions.CreateIndexes;
+                            }
+                            else
+                            {
+                                // Make sure indices and PK are only created afterwards
+                                opts = destination.Options & ~(TableInitializationOptions.CreateIndexes | TableInitializationOptions.CreatePrimaryKey);
+                            }
+
+                            // TODO: make schema operation async
+                            table.Initialize(columns, opts);
+
+                            await ExecuteBulkCopyAsync(sdr, table, result);
+
+                            // Only create PK here if no identity column is created on the fly.
+                            if (haskey &&
+                                destination.Options.HasFlag(TableInitializationOptions.CreatePrimaryKey) &&
+                                table.PrimaryKey != null)
+                            {
+                                table.PrimaryKey.Create();
+                            }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            // Make sure indices and PK are only created afterwards
-                            opts = destination.Options & ~(TableInitializationOptions.CreateIndexes | TableInitializationOptions.CreatePrimaryKey);
+                            HandleException(ex, result);
                         }
 
-                        // TODO: make schema operation async
-                        table.Initialize(columns, opts);
-
-                        await ExecuteBulkCopyAsync(sdr, table, result);
-
-                        // Only create PK here if no identity column is created on the fly.
-                        if (haskey &&
-                            destination.Options.HasFlag(TableInitializationOptions.CreatePrimaryKey) &&
-                            table.PrimaryKey != null)
-                        {
-                            table.PrimaryKey.Create();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        HandleException(ex, result);
+                        
                     }
 
                     result.Elapsed = w.Elapsed;
                     w.Restart();
-
+                    
                     Results.Add(result);
                     resultsetCounter++;
                 }
@@ -276,6 +281,11 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 if (msgobj != null)
                 {
+                    if (!String.IsNullOrWhiteSpace(msgobj.DestinationDatabase))
+                    {
+                        table.DatabaseName = msgobj.DestinationDatabase;
+                    }
+
                     if (!String.IsNullOrWhiteSpace(msgobj.DestinationSchema))
                     {
                         table.SchemaName = msgobj.DestinationSchema;

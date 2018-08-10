@@ -57,6 +57,8 @@ INTO [$into]
         [TestCategory("Query")]
         public void DeclareSetAndSelectVariableTest()
         {
+            var testName = GetTestUniqueName();
+
             var sql = @"
 DECLARE @myvar float = 20
 SET @myvar = 15
@@ -64,8 +66,12 @@ SELECT @myvar = @myvar - 5
 SELECT @myvar INTO [$into]
 ";
 
+            DropUserDatabaseTable(testName + "_0");
             RunQuery(sql);
+
             Assert.AreEqual(1, GetUserDatabaseTableCount(GetTestUniqueName()));
+            Assert.IsTrue(IsUserDatabaseTableExisting(testName + "_0"));
+            Assert.AreEqual(1, GetUserDatabaseTableCount(testName + "_0"));
         }
 
         [TestMethod]
