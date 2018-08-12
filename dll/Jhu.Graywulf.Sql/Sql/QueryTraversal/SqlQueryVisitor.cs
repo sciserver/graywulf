@@ -2671,8 +2671,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                             break;
                     }
                 }
-
-                VisitNode(node);
             }
 
             PopColumnContext();
