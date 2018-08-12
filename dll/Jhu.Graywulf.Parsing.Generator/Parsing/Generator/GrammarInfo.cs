@@ -297,8 +297,8 @@ namespace Jhu.Graywulf.Parsing.Generator
                 var vis = new RuleVisitor();
                 vis.Visit((Expression)rule.GetValue(null));
 
-                if (!vis.IsInheritedRule)
-                {
+                //if (!vis.IsInheritedRule)
+                //{
                     foreach (var dr in vis.ReferencedRules)
                     {
                         if (!ruleDependencies.ContainsKey(dr.Name))
@@ -311,7 +311,7 @@ namespace Jhu.Graywulf.Parsing.Generator
                             ruleDependencies[dr.Name].Add(rule.Name);
                         }
                     }
-                }
+                //}
             }
         }
 
@@ -401,8 +401,12 @@ namespace Jhu.Graywulf.Parsing.Generator
             inheritedGrammar = FindDefiningGrammar(name, false);
             inheritedRule = name;
 
-            var exp = inheritedGrammar.rules[name].GetValue(null) as LambdaExpression;
+            /*var exp = inheritedGrammar.rules[name].GetValue(null) as LambdaExpression;
             var rule = exp.Body;
+
+            return rule;*/
+
+            var rule = inheritedGrammar.GetLocalRuleExpression(name, out var _, out var _, out var _, out var _);
 
             return rule;
         }

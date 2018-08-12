@@ -41,5 +41,15 @@ namespace Jhu.Graywulf.Parsing.Generator
             (
                 BaseRule4
             );
+
+        public static Expression<Rule> NewRule2 = () =>
+            Inherit
+            (
+                AbstractRule,
+                Sequence
+                (
+                    Word, Comma, BaseRule8
+                )
+            );
     }
 }

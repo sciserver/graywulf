@@ -70,6 +70,7 @@
     <Compile Include="Parsing\Generator\GrammarInfoTest.cs" />
     <Compile Include="Parsing\Generator\InheritedGrammar.cs" />
     <Compile Include="Parsing\Generator\ParserGeneratorTest.cs" />
+    <Compile Include="Parsing\Generator\SecondInheritedGrammar.cs" />
     <Compile Include="Parsing\Generator\TestGrammar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

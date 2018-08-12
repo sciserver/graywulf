@@ -105,5 +105,12 @@ namespace Jhu.Graywulf.Parsing.Generator
             var t = p.Execute(code);
         }
 
+        [TestMethod]
+        public void SecondInheritedGrammarTest()
+        {
+            var p = CreateParser(typeof(SecondInheritedGrammar));
+            var code = "one, two,three ,four";
+            var t = p.Execute(code);
+        }
     }
 }

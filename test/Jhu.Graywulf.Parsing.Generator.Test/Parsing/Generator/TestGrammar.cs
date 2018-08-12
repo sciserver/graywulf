@@ -78,6 +78,24 @@ namespace Jhu.Graywulf.Parsing.Generator
                 Word, Comma, Word
             );
 
+        public static Expression<Rule> BaseRule7 = () =>
+            Sequence
+            (
+                Word, Comma, BaseRule8
+            );
+
+        public static Expression<Rule> AbstractRule = () => Abstract();
+
+        public static Expression<Rule> BaseRule8 = () =>
+            Inherit
+            (
+                AbstractRule,
+                Sequence
+                (
+                    Word, Comma, Word
+                )
+            );
+
         public static Expression<Rule> BaseRule10 = () => BaseRule11;
         public static Expression<Rule> BaseRule11 = () => BaseRule1;
 

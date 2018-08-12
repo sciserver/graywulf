@@ -22,8 +22,8 @@ namespace Jhu.Graywulf.Parsing.Generator
         {
             var g = new GrammarInfo(typeof(TestGrammar));
 
-            Assert.AreEqual(17, g.Rules.Count);
-            Assert.AreEqual(14, g.RuleDependencies.Count);
+            Assert.AreEqual(20, g.Rules.Count);
+            Assert.AreEqual(15, g.RuleDependencies.Count);
             Assert.AreEqual("List", g.RuleDependencies["CommentOrWhitespace"].First());
             Assert.AreEqual("BaseRule2", g.RuleDependencies["BaseRule3"].First());
         }
@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Parsing.Generator
         {
             var g1 = new GrammarInfo(typeof(TestGrammar));
 
-            Assert.AreEqual(14, g1.RuleDependencies.Count);
+            Assert.AreEqual(15, g1.RuleDependencies.Count);
 
             Assert.AreEqual(2, g1.RuleDependencies["List"].Count);
             Assert.IsTrue(g1.RuleDependencies["List"].Contains("BaseRule1"));
@@ -56,7 +56,7 @@ namespace Jhu.Graywulf.Parsing.Generator
 
             var g2 = new GrammarInfo(typeof(InheritedGrammar));
 
-            Assert.AreEqual(4, g2.RuleDependencies.Count);
+            Assert.AreEqual(5, g2.RuleDependencies.Count);
 
             Assert.AreEqual(1, g2.RuleDependencies["List"].Count);
             Assert.IsTrue(g2.RuleDependencies["List"].Contains("BaseRule1"));
@@ -83,6 +83,18 @@ namespace Jhu.Graywulf.Parsing.Generator
             Assert.IsTrue(g2.OverriddenRules.Contains("BaseRule20"));
             Assert.IsTrue(g2.OverriddenRules.Contains("BaseRule21"));
             Assert.IsTrue(g2.OverriddenRules.Contains("BaseRule22"));
+        }
+
+        [TestMethod]
+        public void CollectOverriddenRulesTest2()
+        {
+            var g = new GrammarInfo(typeof(SecondInheritedGrammar));
+
+            Assert.AreEqual(2, g.OverriddenRules.Count);
+            Assert.IsTrue(g.OverriddenRules.Contains("BaseRule7"));
+
+            Assert.AreEqual(1, g.Rules.Count);
+            Assert.IsTrue(g.Rules.ContainsKey("BaseRule8"));
         }
 
         [TestMethod]
