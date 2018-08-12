@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Sql.Extensions.Parsing
     public partial class PartitionedTableSource
     {
         private Sql.Parsing.ColumnIdentifier partitioningColumn;
-        private Expression partitioningKeyExpression;
+        private Sql.Parsing.Expression partitioningKeyExpression;
         private Schema.DataType partitioningKeyDataType;
 
         public bool IsPartitioned
@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Sql.Extensions.Parsing
             get { return FindDescendant<TablePartitionClause>() != null; }
         }
 
-        public Expression PartitioningKeyExpression
+        public Sql.Parsing.Expression PartitioningKeyExpression
         {
             get
             {

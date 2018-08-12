@@ -9,8 +9,15 @@ using Jhu.Graywulf.Sql.Extensions.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Extensions.QueryValidation
 {
-    class GraywulfSqlQueryValidatorTest : GraywulfSqlNameResolverTestBase
+    [TestClass]
+    public class GraywulfSqlQueryValidatorTest : GraywulfSqlNameResolverTestBase
     {
+        private SelectStatement ExpressionTestHelper(string query)
+        {
+            var p = new GraywulfSqlParser();
+            return p.Execute<SelectStatement>(query);
+        }
+
         [TestMethod]
         [ExpectedException(typeof(Jhu.Graywulf.Parsing.ParserException))]
         public void SelectUnionQueryTest()

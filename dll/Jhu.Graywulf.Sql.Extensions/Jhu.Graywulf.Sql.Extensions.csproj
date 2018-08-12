@@ -45,7 +45,6 @@
     <Compile Include="Sql\Extensions\NameResolution\Constants.cs" />
     <Compile Include="Sql\Extensions\NameResolution\GraywulfSqlNameResolver.cs" />
     <Compile Include="Sql\Extensions\NameResolution\GraywulfSqlNameResolverOptions.cs" />
-    <Compile Include="Sql\Extensions\Parsing\Expression.cs" />
     <Compile Include="Sql\Extensions\Parsing\GraywulfSqlParser.g.cs" />
     <Compile Include="Sql\Extensions\Parsing\PartitionedTableSource.cs" />
     <Compile Include="Sql\Extensions\Parsing\ServerMessageMagicToken.cs" />
