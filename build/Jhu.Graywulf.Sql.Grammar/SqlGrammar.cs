@@ -1946,7 +1946,7 @@ FOR select_statement
 
         public static Expression<Rule> TableHint = () =>
             Must(
-                Sequence(HintName, May(CommentOrWhitespace), HintArgumentList),
+                Sequence(HintName, May(CommentOrWhitespace), HintArguments),
                 HintName
             );
 
@@ -1973,18 +1973,18 @@ FOR select_statement
 
         public static Expression<Rule> QueryHint = () =>
             Must(
-                Sequence(Identifier, May(CommentOrWhitespace), HintArgumentList),
-                Sequence(Identifier, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), NumericConstant),
-                Sequence(Identifier, CommentOrWhitespace, NumericConstant),
-                QueryHintIdentifierList,
-                Identifier
+                Sequence(HintName, May(CommentOrWhitespace), HintArguments),
+                Sequence(HintName, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), NumericConstant),
+                Sequence(HintName, CommentOrWhitespace, NumericConstant),
+                QueryHintNameList,
+                HintName
             );
 
-        public static Expression<Rule> QueryHintIdentifierList = () =>
+        public static Expression<Rule> QueryHintNameList = () =>
             Sequence
             (
-                Identifier,
-                May(Sequence(CommentOrWhitespace, Identifier))
+                HintName,
+                May(Sequence(CommentOrWhitespace, HintName))
             );
 
         #endregion

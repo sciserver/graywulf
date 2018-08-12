@@ -38,6 +38,7 @@ namespace Jhu.Graywulf.Test
 
         private SchemaManager schemaManager;
         private SqlParser parser;
+        private QueryRendererBase renderer;
         private SqlNameResolver nameResolver;
 
         protected SqlServerDataset IOTestDataset
@@ -94,6 +95,19 @@ namespace Jhu.Graywulf.Test
             }
         }
 
+        protected QueryRendererBase QueryRenderer
+        {
+            get
+            {
+                if (renderer == null)
+                {
+                    renderer = CreateQueryRenderer();
+                }
+
+                return renderer;
+            }
+        }
+
         protected SqlNameResolver NameResolver
         {
             get
@@ -147,7 +161,7 @@ namespace Jhu.Graywulf.Test
             };
         }
 
-        protected QueryRendererBase CreateCodeRenderer()
+        protected QueryRendererBase CreateQueryRenderer()
         {
             return new SqlServerQueryRenderer()
             {
@@ -207,7 +221,7 @@ namespace Jhu.Graywulf.Test
 
         protected string GenerateCode(Jhu.Graywulf.Parsing.Node node)
         {
-            var cg = CreateCodeRenderer();
+            var cg = CreateQueryRenderer();
             var sw = new StringWriter();
             cg.Execute(sw, node);
 

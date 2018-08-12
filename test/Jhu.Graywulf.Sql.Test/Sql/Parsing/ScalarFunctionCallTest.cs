@@ -62,7 +62,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void CreateUdfCallTest()
         {
-            var cg = CreateCodeRenderer();
+            var cg = CreateQueryRenderer();
             var fr = new FunctionReference()
             {
                 SchemaName = "dbo",

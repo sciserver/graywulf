@@ -193,6 +193,39 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             PopAllContext();
         }
 
+        #endregion
+        #region Context management
+
+        protected void PushQueryContext(QueryContext value)
+        {
+            queryContextStack.Push(value);
+        }
+
+        protected QueryContext PopQueryContext()
+        {
+            return queryContextStack.Pop();
+        }
+
+        protected void PushTableContext(TableContext value)
+        {
+            tableContextStack.Push(value);
+        }
+
+        protected TableContext PopTableContext()
+        {
+            return tableContextStack.Pop();
+        }
+
+        protected void PushColumnContext(ColumnContext value)
+        {
+            columnContextStack.Push(value);
+        }
+
+        protected ColumnContext PopColumnContext()
+        {
+            return columnContextStack.Pop();
+        }
+
         private void PushAllContextNone()
         {
             queryContextStack.Push(QueryContext.None);
@@ -210,7 +243,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         #endregion
         #region Common node travelsal and reshuffler dispatch
 
-        private IEnumerable<Token> SelectDirection(TokenList tokens)
+        protected IEnumerable<Token> SelectDirection(TokenList tokens)
         {
             var reshuffler = ExpressionReshuffler;
 
@@ -290,13 +323,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        public virtual void TraverseInlineNode(Token node)
+        protected internal virtual void TraverseInlineNode(Token node)
         {
             // This is an expression inline or predicate inline that needs special handling such
             // as the OVER clause of windowed function calls.
 
             // Turn off expression context
-            queryContextStack.Push(QueryContext & ~QueryContext.Expression & ~QueryContext.LogicalExpression);
+            PushQueryContext(QueryContext & ~QueryContext.Expression & ~QueryContext.LogicalExpression);
             expressionReshufflerStack.Push(null);
 
             VisitNode(node);
@@ -324,7 +357,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     throw new NotImplementedException();
             }
 
-            queryContextStack.Pop();
+            PopQueryContext();
             expressionReshufflerStack.Pop();
         }
 
@@ -452,7 +485,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
                 // Queries and other DML
                 case SelectStatement n:
-                    TraverseSelectStatement(n);
+                    TraverseSelectStatementInternal(n);
                     break;
                 case InsertStatement n:
                     TraverseInsertStatement(n);
@@ -711,7 +744,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraverseCreateTableStatement(CreateTableStatement node)
         {
-            tableContextStack.Push(TableContext | TableContext.Create);
+            PushTableContext(TableContext | TableContext.Create);
 
             foreach (var nn in node.Stack)
             {
@@ -732,12 +765,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             VisitNode(node);
 
-            tableContextStack.Pop();
+            PopTableContext();
         }
 
         private void TraverseDropTableStatement(DropTableStatement node)
         {
-            tableContextStack.Push(TableContext | TableContext.Drop);
+            PushTableContext(TableContext | TableContext.Drop);
 
             foreach (var nn in node.Stack)
             {
@@ -755,12 +788,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             VisitNode(node);
 
-            tableContextStack.Pop();
+            PopTableContext();
         }
 
         private void TraverseTruncateTableStatement(TruncateTableStatement node)
         {
-            tableContextStack.Push(TableContext | TableContext.Truncate);
+            PushTableContext(TableContext | TableContext.Truncate);
 
             foreach (var nn in node.Stack)
             {
@@ -778,12 +811,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             VisitNode(node);
 
-            tableContextStack.Pop();
+            PopTableContext();
         }
 
         private void TraverseCreateIndexStatement(CreateIndexStatement node)
         {
-            tableContextStack.Push(TableContext | TableContext.Alter);
+            PushTableContext(TableContext | TableContext.Alter);
 
             foreach (var nn in node.Stack)
             {
@@ -820,12 +853,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             VisitNode(node);
 
-            tableContextStack.Pop();
+            PopTableContext();
         }
 
         private void TraverseDropIndexStatement(DropIndexStatement node)
         {
-            tableContextStack.Push(TableContext | TableContext.Alter);
+            PushTableContext(TableContext | TableContext.Alter);
 
             foreach (var nn in node.Stack)
             {
@@ -847,14 +880,29 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             VisitNode(node);
 
-            tableContextStack.Pop();
+            PopTableContext();
         }
 
-        private void TraverseSelectStatement(SelectStatement node)
+        private void TraverseSelectStatementInternal(SelectStatement node)
         {
-            queryContextStack.Push(QueryContext.SelectStatement);
+            PushQueryContext(QueryContext.SelectStatement);
             statementStack.Push(node);
 
+            DispatchSelectStatement(node);
+
+            PopQueryContext();
+            statementStack.Pop();
+
+            VisitNode(node);
+        }
+
+        protected virtual void DispatchSelectStatement(SelectStatement node)
+        {
+            TraverseSelectStatement(node);
+        }
+
+        protected void TraverseSelectStatement(SelectStatement node)
+        {
             TraverseQuery(node);
 
             var option = node.FindDescendant<OptionClause>();
@@ -862,16 +910,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             {
                 TraverseOptionClause(option);
             }
-
-            queryContextStack.Pop();
-            statementStack.Pop();
-
-            VisitNode(node);
         }
 
         private void TraverseInsertStatement(InsertStatement node)
         {
-            queryContextStack.Push(QueryContext.InsertStatement);
+            PushQueryContext(QueryContext.InsertStatement);
             statementStack.Push(node);
 
             // Common table expression
@@ -882,7 +925,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 commonTableExpression = cte;
             }
 
-            tableContextStack.Push(TableContext | TableContext.Insert);
+            PushTableContext(TableContext | TableContext.Insert);
 
             foreach (var nn in node.Stack)
             {
@@ -910,7 +953,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 }
             }
 
-            tableContextStack.Pop();
+            PopTableContext();
 
             // Query
             var qe = node.QueryExpression;
@@ -926,12 +969,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 var firstqs = qe.FirstQuerySpecification;
 
                 querySpecificationStack.Push(firstqs);
-                tableContextStack.Push(TableContext | TableContext.OrderBy);
+                PushTableContext(TableContext | TableContext.OrderBy);
 
                 TraverseOrderByClause(orderby);
 
                 querySpecificationStack.Pop();
-                tableContextStack.Pop();
+                PopTableContext();
             }
 
             var option = node.FindDescendant<OptionClause>();
@@ -947,13 +990,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 commonTableExpression = null;
             }
 
-            queryContextStack.Pop();
+            PopQueryContext();
             statementStack.Pop();
         }
 
         private void TraverseInsertColumnList(InsertColumnList node)
         {
-            columnContextStack.Push(ColumnContext | ColumnContext.Insert);
+            PushColumnContext(ColumnContext | ColumnContext.Insert);
 
             foreach (var nn in node.Stack)
             {
@@ -973,7 +1016,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             VisitNode(node);
 
-            columnContextStack.Push(ColumnContext | ColumnContext.Insert);
+            PopColumnContext();
         }
 
         private void TraverseColumnIdentifierList(ColumnIdentifierList node)
@@ -1074,7 +1117,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         private void TraverseDeleteStatement(DeleteStatement node)
         {
             statementStack.Push(node);
-            queryContextStack.Push(QueryContext.DeleteStatement);
+            PushQueryContext(QueryContext.DeleteStatement);
 
             var cte = node.CommonTableExpression;
             if (cte != null)
@@ -1090,7 +1133,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 TraverseFromClause(from);
             }
 
-            tableContextStack.Push(TableContext | TableContext.Delete);
+            PushTableContext(TableContext | TableContext.Delete);
 
             foreach (var nn in node.Stack)
             {
@@ -1105,7 +1148,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 }
             }
 
-            tableContextStack.Pop();
+            PopTableContext();
 
             var where = node.WhereClause;
             if (where != null)
@@ -1120,13 +1163,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 commonTableExpression = null;
             }
 
-            queryContextStack.Pop();
+            PopQueryContext();
             statementStack.Pop();
         }
 
         private void TraverseUpdateStatement(UpdateStatement node)
         {
-            queryContextStack.Push(QueryContext.UpdateStatement);
+            PushQueryContext(QueryContext.UpdateStatement);
             statementStack.Push(node);
 
             // Common table expression
@@ -1144,8 +1187,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
 
             // Target table
-            tableContextStack.Push(TableContext | TableContext.Update);
-            columnContextStack.Push(ColumnContext | ColumnContext.Update);
+            PushTableContext(TableContext | TableContext.Update);
+            PushColumnContext(ColumnContext | ColumnContext.Update);
 
             foreach (var nn in node.Stack)
             {
@@ -1163,8 +1206,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 }
             }
 
-            tableContextStack.Pop();
-            columnContextStack.Pop();
+            PopTableContext();
+            PopColumnContext();
 
             var where = node.WhereClause;
             if (where != null)
@@ -1179,7 +1222,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 commonTableExpression = null;
             }
 
-            queryContextStack.Pop();
+            PopQueryContext();
             statementStack.Pop();
         }
 
@@ -1843,8 +1886,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             // Visit immediate subquries first, then do a bottom-up
             // traversal of the tree by not going deeper than the subqueries.
 
-            queryContextStack.Push(QueryContext | QueryContext.Expression);
-            columnContextStack.Push(ColumnContext | ColumnContext.Expression);
+            PushQueryContext(QueryContext | QueryContext.Expression);
+            PushColumnContext(ColumnContext | ColumnContext.Expression);
 
             if (options.VisitExpressionSubqueries)
             {
@@ -1855,8 +1898,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             TraverseExpressionNode(node);
             DestroyExpressionReshuffler();
 
-            queryContextStack.Pop();
-            columnContextStack.Pop();
+            PopQueryContext();
+            PopColumnContext();
         }
 
         private void TraverseExpressionSubqueries(Node node)
@@ -1879,7 +1922,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             };
         }
 
-        private void TraverseExpressionNode(Node node)
+        private void TraverseExpressionNode(Expression node)
         {
             foreach (var nn in SelectDirection(node.Stack))
             {
@@ -2292,24 +2335,24 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraversePartitionByClause(PartitionByClause node)
         {
-            tableContextStack.Push(TableContext | TableContext.PartitionBy);
-            columnContextStack.Push(ColumnContext | ColumnContext.PartitionBy);
+            PushTableContext(TableContext | TableContext.PartitionBy);
+            PushColumnContext(ColumnContext | ColumnContext.PartitionBy);
 
             VisitNode(node);
             TraverseExpression(node.Argument.Expression);
 
-            tableContextStack.Pop();
-            columnContextStack.Pop();
+            PopTableContext();
+            PopColumnContext();
         }
 
         private void TraverseOrderByClause(OrderByClause node)
         {
-            columnContextStack.Push(ColumnContext | ColumnContext.OrderBy);
+            PushColumnContext(ColumnContext | ColumnContext.OrderBy);
 
             VisitNode(node);
             TraverseOrderByArgumentList(node.ArgumentList);
 
-            columnContextStack.Pop();
+            PopColumnContext();
         }
 
         private void TraverseOrderByArgumentList(OrderByArgumentList node)
@@ -2533,7 +2576,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             // Visit immediate subquries first, then do a bottom-up
             // traversal of the tree by not going deeper than the subqueries.
 
-            queryContextStack.Push(QueryContext | QueryContext.LogicalExpression);
+            PushQueryContext(QueryContext | QueryContext.LogicalExpression);
 
             if (options.VisitPredicateSubqueries)
             {
@@ -2544,7 +2587,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             TraverseLogicalExpressionNode(node);
             DestroyExpressionReshuffler();
 
-            queryContextStack.Pop();
+            PopQueryContext();
         }
 
         private void TraverseLogicalExpressionSubqueries(Node node)
@@ -2596,7 +2639,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         private void TraversePredicate(Predicate node)
         {
-            columnContextStack.Push(ColumnContext | ColumnContext.Predicate);
+            PushColumnContext(ColumnContext | ColumnContext.Predicate);
 
             if (QueryContext.HasFlag(QueryContext.LogicalExpression))
             {
@@ -2628,9 +2671,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                             break;
                     }
                 }
+
+                VisitNode(node);
             }
 
-            columnContextStack.Pop();
+            PopColumnContext();
         }
 
         private void TraverseLogicalExpressionBrackets(LogicalExpressionBrackets node)
@@ -2675,12 +2720,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 var firstqs = qe.FirstQuerySpecification;
 
                 querySpecificationStack.Push(firstqs);
-                tableContextStack.Push(TableContext | TableContext.OrderBy);
+                PushTableContext(TableContext | TableContext.OrderBy);
 
                 TraverseOrderByClause(orderby);
 
                 querySpecificationStack.Pop();
-                tableContextStack.Pop();
+                PopTableContext();
             }
 
             if (cte != null)
@@ -2689,7 +2734,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseCommonTableExpression(CommonTableExpression node)
+        protected void TraverseCommonTableExpression(CommonTableExpression node)
         {
             VisitNode(node, 0);
 
@@ -2713,7 +2758,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             VisitNode(node, 1);
         }
 
-        private void TraverseCommonTableSpecificationList(CommonTableSpecificationList node)
+        protected void TraverseCommonTableSpecificationList(CommonTableSpecificationList node)
         {
             foreach (var nn in node.Stack)
             {
@@ -2732,12 +2777,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseCommonTableSpecification(CommonTableSpecification node)
+        protected void TraverseCommonTableSpecification(CommonTableSpecification node)
         {
             // This needs to happen early otherwise recursive queries won't work
             VisitNode(node, 0);
 
-            queryContextStack.Push(QueryContext.CommonTableExpression);
+            PushQueryContext(QueryContext.CommonTableExpression);
 
             foreach (var nn in node.Stack)
             {
@@ -2758,17 +2803,17 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 }
             }
 
-            queryContextStack.Pop();
+            PopQueryContext();
 
             VisitNode(node, 1);
         }
 
-        private void TraverseColumnAliasBrackets(ColumnAliasBrackets node)
+        protected void TraverseColumnAliasBrackets(ColumnAliasBrackets node)
         {
             throw new NotImplementedException();
         }
 
-        private void TraverseQueryExpression(QueryExpression node, ref int index)
+        protected void TraverseQueryExpression(QueryExpression node, ref int index)
         {
             foreach (var nn in node.Stack)
             {
@@ -2785,14 +2830,14 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         break;
                     case QuerySpecification n:
                         indexStack.Push(index++);
-                        TraverseQuerySpecification(n);
+                        TraverseQuerySpecificationInternal(n);
                         indexStack.Pop();
                         break;
                 }
             }
         }
 
-        private void TraverseQueryExpressionBrackets(QueryExpressionBrackets node, ref int index)
+        protected void TraverseQueryExpressionBrackets(QueryExpressionBrackets node, ref int index)
         {
             foreach (var nn in node.Stack)
             {
@@ -2811,7 +2856,23 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseQuerySpecification(QuerySpecification qs)
+        private void TraverseQuerySpecificationInternal(QuerySpecification qs)
+        {
+            VisitNode(qs, 0);
+            querySpecificationStack.Push(qs);
+
+            DispatchQuerySpecification(qs);
+
+            querySpecificationStack.Pop();
+            VisitNode(qs, 1);
+        }
+
+        protected virtual void DispatchQuerySpecification(QuerySpecification qs)
+        {
+            TraverseQuerySpecification(qs);
+        }
+
+        protected void TraverseQuerySpecification(QuerySpecification qs)
         {
             var into = qs.IntoClause;
             var from = qs.FromClause;
@@ -2819,10 +2880,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             var where = qs.WhereClause;
             var groupby = qs.GroupByClause;
             var having = qs.HavingClause;
-
-            VisitNode(qs, 0);
-
-            querySpecificationStack.Push(qs);
 
             // TODO: make this a dynamic dispatch so it can be extended
             // when the grammar is extended
@@ -2871,16 +2928,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             {
                 TraverseIntoClause(into);
             }
-
-            querySpecificationStack.Pop();
-
-            VisitNode(qs, 1);
         }
 
-        private void TraverseFromClause(FromClause node)
+        protected void TraverseFromClause(FromClause node)
         {
-            tableContextStack.Push(TableContext | TableContext.From);
-            columnContextStack.Push(ColumnContext | ColumnContext.From);
+            PushTableContext(TableContext | TableContext.From);
+            PushColumnContext(ColumnContext | ColumnContext.From);
 
             foreach (var nn in node.Stack)
             {
@@ -2895,11 +2948,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 }
             }
 
-            tableContextStack.Pop();
-            columnContextStack.Pop();
+            PopTableContext();
+            PopColumnContext();
         }
 
-        private void TraverseTableSourceExpression(TableSourceExpression node)
+        protected void TraverseTableSourceExpression(TableSourceExpression node)
         {
             // Traverse all subqueries first
             TraverseSubqueryTableSources(node);
@@ -2911,7 +2964,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             TraverseTableSourceExpressionNode(node, 1);
         }
 
-        private void TraverseSubqueryTableSources(TableSourceExpression node)
+        protected void TraverseSubqueryTableSources(TableSourceExpression node)
         {
             var ts = node.FindDescendant<TableSourceSpecification>();
             var jt = node.FindDescendant<JoinedTable>();
@@ -2929,7 +2982,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseTableSourceExpressionNode(TableSourceExpression node, int pass)
+        protected void TraverseTableSourceExpressionNode(TableSourceExpression node, int pass)
         {
             if (pass == 0)
             {
@@ -2961,7 +3014,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseJoinedTable(JoinedTable node, int pass)
+        protected void TraverseJoinedTable(JoinedTable node, int pass)
         {
             if (pass == 0)
             {
@@ -3000,7 +3053,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseJoinOperator(JoinOperator node)
+        protected void TraverseJoinOperator(JoinOperator node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3013,7 +3066,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseJoinCondition(JoinCondition node)
+        protected void TraverseJoinCondition(JoinCondition node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3023,9 +3076,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         VisitNode(n);
                         break;
                     case LogicalExpression n:
-                        columnContextStack.Push(ColumnContext | ColumnContext.JoinOn);
+                        PushColumnContext(ColumnContext | ColumnContext.JoinOn);
                         TraverseLogicalExpression(n);
-                        columnContextStack.Pop();
+                        PopColumnContext();
                         break;
                 }
             }
@@ -3050,13 +3103,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseFunctionTableSource(FunctionTableSource node)
+        protected void TraverseFunctionTableSource(FunctionTableSource node)
         {
             TraverseTableValuedFunctionCall(node.FunctionCall);
             VisitNode(node);
         }
 
-        private void TraverseSimpleTableSource(SimpleTableSource node)
+        protected void TraverseSimpleTableSource(SimpleTableSource node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3083,23 +3136,23 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             VisitNode(node);
         }
 
-        private void TraverseVariableTableSource(VariableTableSource node)
+        protected void TraverseVariableTableSource(VariableTableSource node)
         {
             VisitNode(node.Variable);
             VisitNode(node);
         }
 
-        private void TraverseSubqueryTableSource(SubqueryTableSource node)
+        protected void TraverseSubqueryTableSource(SubqueryTableSource node)
         {
-            tableContextStack.Push(TableContext | TableContext.Subquery);
+            PushTableContext(TableContext | TableContext.Subquery);
 
             // Subquery has already been traversed!
             VisitNode(node);
 
-            tableContextStack.Pop();
+            PopTableContext();
         }
 
-        private void TraverseTableSampleClause(TableSampleClause node)
+        protected void TraverseTableSampleClause(TableSampleClause node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3121,7 +3174,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseTableHintClause(TableHintClause node)
+        protected void TraverseTableHintClause(TableHintClause node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3143,7 +3196,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseTableHintList(TableHintList node)
+        protected void TraverseTableHintList(TableHintList node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3159,7 +3212,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseTableHint(TableHint node)
+        protected void TraverseTableHint(TableHint node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3175,7 +3228,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseHintArgumentList(HintArgumentList node)
+        protected void TraverseHintArgumentList(HintArgumentList node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3194,7 +3247,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseHintArgument(HintArgument node)
+        protected void TraverseHintArgument(HintArgument node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3207,33 +3260,32 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseSubquery(Subquery sq)
+        protected void TraverseSubquery(Subquery sq)
         {
-            queryContextStack.Push(QueryContext.Subquery);
-            tableContextStack.Push(TableContext.None);
-            columnContextStack.Push(ColumnContext.None);
+            PushQueryContext(QueryContext.Subquery);
+            PushTableContext(TableContext.None);
+            PushColumnContext(ColumnContext.None);
 
             TraverseQuery(sq);
 
-            queryContextStack.Pop();
-            tableContextStack.Pop();
-            columnContextStack.Pop();
+            PopQueryContext();
+            PopTableContext();
+            PopColumnContext();
         }
 
-        private void TraverseSelectList(SelectList node)
+        protected void TraverseSelectList(SelectList node)
         {
-            tableContextStack.Push(TableContext | TableContext.SelectList);
-            columnContextStack.Push(ColumnContext | ColumnContext.SelectList);
+            PushTableContext(TableContext | TableContext.SelectList);
+            PushColumnContext(ColumnContext | ColumnContext.SelectList);
 
             TraverseSelectListNode(node);
-
-            tableContextStack.Pop();
-            columnContextStack.Pop();
-
             VisitNode(node);
+            
+            PopTableContext();
+            PopColumnContext();
         }
 
-        private void TraverseSelectListNode(SelectList node)
+        protected void TraverseSelectListNode(SelectList node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3252,7 +3304,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseColumnExpression(ColumnExpression node)
+        protected void TraverseColumnExpression(ColumnExpression node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3282,7 +3334,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             VisitNode(node);
         }
 
-        private void TraverseStarColumnIdentifier(StarColumnIdentifier node)
+        protected void TraverseStarColumnIdentifier(StarColumnIdentifier node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3303,9 +3355,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             VisitNode(node);
         }
 
-        private void TraverseIntoClause(IntoClause node)
+        protected void TraverseIntoClause(IntoClause node)
         {
-            tableContextStack.Push(TableContext | TableContext.Into);
+            PushTableContext(TableContext | TableContext.Into);
 
             foreach (var nn in node.Stack)
             {
@@ -3320,15 +3372,15 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 }
             }
 
-            tableContextStack.Pop();
-
             VisitNode(node);
+
+            PopTableContext();
         }
 
-        private void TraverseWhereClause(WhereClause node)
+        protected void TraverseWhereClause(WhereClause node)
         {
-            tableContextStack.Push(TableContext | TableContext.Where);
-            columnContextStack.Push(ColumnContext | ColumnContext.Where);
+            PushTableContext(TableContext | TableContext.Where);
+            PushColumnContext(ColumnContext | ColumnContext.Where);
 
             foreach (var nn in node.Stack)
             {
@@ -3343,14 +3395,14 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 }
             }
 
-            tableContextStack.Pop();
-            columnContextStack.Pop();
+            PopTableContext();
+            PopColumnContext();
         }
 
-        private void TraverseGroupByClause(GroupByClause node)
+        protected void TraverseGroupByClause(GroupByClause node)
         {
-            tableContextStack.Push(TableContext | TableContext.GroupBy);
-            columnContextStack.Push(ColumnContext | ColumnContext.GroupBy);
+            PushTableContext(TableContext | TableContext.GroupBy);
+            PushColumnContext(ColumnContext | ColumnContext.GroupBy);
 
             foreach (var nn in node.Stack)
             {
@@ -3365,11 +3417,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 }
             }
 
-            tableContextStack.Pop();
-            columnContextStack.Pop();
+            PopTableContext();
+            PopColumnContext();
         }
 
-        private void TraverseGroupByList(GroupByList node)
+        protected void TraverseGroupByList(GroupByList node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3388,10 +3440,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        private void TraverseHavingClause(HavingClause node)
+        protected void TraverseHavingClause(HavingClause node)
         {
-            tableContextStack.Push(TableContext | TableContext.Having);
-            columnContextStack.Push(ColumnContext | ColumnContext.Having);
+            PushTableContext(TableContext | TableContext.Having);
+            PushColumnContext(ColumnContext | ColumnContext.Having);
 
             foreach (var nn in node.Stack)
             {
@@ -3406,11 +3458,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 }
             }
 
-            tableContextStack.Pop();
-            columnContextStack.Pop();
+            PopTableContext();
+            PopColumnContext();
         }
 
-        private void TraverseTopExpression(TopExpression node)
+        protected void TraverseTopExpression(TopExpression node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3429,9 +3481,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         #endregion
         #region Node visitors
 
-        private void TraverseTargetTableSpecification(TargetTableSpecification node)
+        protected void TraverseTargetTableSpecification(TargetTableSpecification node)
         {
-            tableContextStack.Push(TableContext | TableContext.Target);
+            PushTableContext(TableContext | TableContext.Target);
 
             foreach (var nn in node.Stack)
             {
@@ -3452,7 +3504,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 }
             }
             
-            tableContextStack.Pop();
+            PopTableContext();
 
             VisitNode(node);
         }

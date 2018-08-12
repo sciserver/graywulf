@@ -71,11 +71,35 @@ namespace Jhu.Graywulf.Sql.Extensions.Grammar
             );
 
         // No UNION, EXCEPT etc. are allowed with partitioned queries
+
         public static Expression<Rule> PartitionedQueryExpression = () =>
             Inherit
             (
                 QueryExpression,
-                PartitionedQuerySpecification
+                Sequence
+                (
+                    Must
+                    (
+                        PartitionedQueryExpressionBrackets,
+                        PartitionedQuerySpecification
+                    ),
+                    // Can only be followed by non-partitioned query expressions
+                    May(Sequence(May(CommentOrWhitespace), QueryOperator, May(CommentOrWhitespace), QueryExpression))
+                )
+            );
+
+        public static Expression<Rule> PartitionedQueryExpressionBrackets = () =>
+            Inherit
+            (
+                QueryExpressionBrackets,
+                Sequence
+                (
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    QueryExpression,
+                    May(CommentOrWhitespace),
+                    BracketClose
+                )
             );
 
         public static Expression<Rule> PartitionedQuerySpecification = () =>

@@ -259,6 +259,7 @@
     <Compile Include="Sql\NameResolution\TableReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\VariableReference.cs" />
     <Compile Include="Sql\NameResolution\VariableReferenceEqualityComparer.cs" />
+    <Compile Include="Sql\Parsing\HintArgument.cs" />
     <Compile Include="Sql\Parsing\BetweenPredicate.cs" />
     <Compile Include="Sql\Parsing\BinaryOperator.cs" />
     <Compile Include="Sql\Parsing\ColumnNullSpecification.cs" />

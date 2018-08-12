@@ -71,7 +71,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void CreateTableStarTest()
         {
-            var cg = CreateCodeRenderer();
+            var cg = CreateQueryRenderer();
             var tr = new NameResolution.TableReference()
             {
                 TableName = "test"

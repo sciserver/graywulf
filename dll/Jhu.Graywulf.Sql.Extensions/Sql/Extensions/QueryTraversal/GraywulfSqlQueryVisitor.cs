@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.QueryTraversal;
 using Jhu.Graywulf.Sql.Extensions.Parsing;
@@ -52,10 +53,53 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryTraversal
             }
         }
 
-        private void TraversePartitionedTableSource(PartitionedTableSource node)
+        protected void TraversePartitionedTableSource(PartitionedTableSource node)
         {
-            VisitNode(node.TableOrViewIdentifier);
-            TraverseExpression(node.PartitioningKeyExpression);
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case TableOrViewIdentifier n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                    case TableAlias n:
+                        VisitNode(n);
+                        break;
+                    case TableSampleClause n:
+                        TraverseTableSampleClause(n);
+                        break;
+                    case TableHintClause n:
+                        TraverseTableHintClause(n);
+                        break;
+                    case TablePartitionClause n:
+                        TraverseTablePartitionClause(n);
+                        break;
+                }
+            }
+
+            VisitNode(node);
+        }
+
+        protected void TraverseTablePartitionClause(TablePartitionClause node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case Literal n:
+                        VisitNode(n);
+                        break;
+                    case ColumnIdentifier n:
+                        VisitNode(n);
+                        VisitReference(n);
+                        break;
+                }
+            }
+
             VisitNode(node);
         }
     }

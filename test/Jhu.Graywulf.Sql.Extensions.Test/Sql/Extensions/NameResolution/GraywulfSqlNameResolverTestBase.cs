@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
         {
             return new GraywulfSqlNameResolver()
             {
-                SchemaManager = CreateSchemaManager(),
+                SchemaManager = SchemaManager,
                 Options = new GraywulfSqlNameResolverOptions()
                 {
                     DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName,

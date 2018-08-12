@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.Sql.Parsing
         [TestMethod]
         public void CreateSystemFunctionCallTest()
         {
-            var cg = CreateCodeRenderer();
+            var cg = CreateQueryRenderer();
             var fun = SystemFunctionCall.Create("SIN", Expression.CreateNumber("1.1"));
             Assert.AreEqual("SIN(1.1)", cg.Execute(fun));
 

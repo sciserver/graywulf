@@ -10,7 +10,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.QueryTraversal
 {
-    class TestVisitorSink : SqlQueryVisitorSink
+    public class TestVisitorSink : SqlQueryVisitorSink
     {
         private SqlQueryVisitor visitor;
         private StringWriter w;

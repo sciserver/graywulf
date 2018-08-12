@@ -7,14 +7,16 @@ namespace Jhu.Graywulf.Sql.Parsing
 {
     public partial class TableHint
     {
-        public Identifier Identifier
+        public HintName HintName
         {
-            get { return FindDescendant<Identifier>(); }
+            get { return FindDescendant<HintName>(); }
         }
 
         public Expression[] GetArguments()
         {
-            return EnumerateDescendants<Argument>()
+            return FindDescendant<HintArguments>()?
+                .FindDescendant<HintArgumentList>()?
+                .EnumerateDescendants<HintArgument>()
                        .Select(a => (Expression)a.Expression)
                        .ToArray();
         }

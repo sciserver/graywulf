@@ -135,7 +135,6 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
 
         protected override void OnSubstituteFunctionDefaults(TableReference tr)
         {
-
             SubstituteDefaults(tr, SchemaManager, Options.DefaultFunctionDatasetName);
         }
 
