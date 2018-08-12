@@ -3,17 +3,17 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Sql.Extensions.Parsing;
 
 namespace Jhu.Graywulf.Sql.Extensions.Parsing
 {
     [TestClass]
     public class PartitionedSelectStatementTest
     {
-        private PartitionedSelectStatement ExpressionTestHelper(string query)
+        private SelectStatement ExpressionTestHelper(string query)
         {
             var p = new GraywulfSqlParser();
-            return p.Execute<PartitionedSelectStatement>(query);
+            return p.Execute<SelectStatement>(query);
         }
 
         [TestMethod]
@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Sql.Extensions.Parsing
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableOrViewIdentifier>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<Sql.Parsing.TableOrViewIdentifier>().Value);
         }
 
         [TestMethod]
@@ -33,37 +33,8 @@ namespace Jhu.Graywulf.Sql.Extensions.Parsing
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
             Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableOrViewIdentifier>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<Sql.Parsing.TableOrViewIdentifier>().Value);
             Assert.AreEqual("a", exp.FindDescendantRecursive<OrderByClause>().FindDescendantRecursive<Operand>().Value);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(Jhu.Graywulf.Parsing.ParserException))]
-        public void SelectUnionQueryTest()
-        {
-            var sql =
-@"SELECT a FROM table1 PARTITION BY ID
-UNION
-SELECT b FROM table2";
-
-            var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("UNION", exp.FindDescendantRecursive<QueryOperator>().Value);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(Jhu.Graywulf.Parsing.ParserException))]
-        public void SelectUnionQueryOrderByTest()
-        {
-            var sql =
-@"SELECT a FROM table1 PARTITION BY ID
-UNION
-SELECT b FROM table2
-ORDER BY 1";
-
-            var exp = ExpressionTestHelper(sql);
-            Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("UNION", exp.FindDescendantRecursive<QueryOperator>().Value);
         }
 
         [TestMethod]
@@ -72,7 +43,7 @@ ORDER BY 1";
             var sql = "SELECT DISTINCT a FROM table1 PARTITION BY ID";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableOrViewIdentifier>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<Sql.Parsing.TableOrViewIdentifier>().Value);
         }
 
         [TestMethod]
@@ -81,8 +52,8 @@ ORDER BY 1";
             var sql = "SELECT TOP 10 a FROM table1 PARTITION BY ID";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("10", exp.FindDescendantRecursive<TopExpression>().FindDescendantRecursive<NumericConstant>().Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<TableOrViewIdentifier>().Value);
+            Assert.AreEqual("10", exp.FindDescendantRecursive<TopExpression>().FindDescendantRecursive<Sql.Parsing.NumericConstant>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<Sql.Parsing.TableOrViewIdentifier>().Value);
         }
 
         [TestMethod]
@@ -101,7 +72,7 @@ ORDER BY 1";
             var sql = "SELECT a, b, c, d INTO table1 FROM table2 PARTITION BY ID";
             var exp = ExpressionTestHelper(sql);
             Assert.AreEqual(sql, exp.Value);
-            Assert.AreEqual("table1", exp.FindDescendantRecursive<IntoClause>().FindDescendantRecursive<TableOrViewIdentifier>().Value);
+            Assert.AreEqual("table1", exp.FindDescendantRecursive<IntoClause>().FindDescendantRecursive<Sql.Parsing.TableOrViewIdentifier>().Value);
         }
         
         [TestMethod]

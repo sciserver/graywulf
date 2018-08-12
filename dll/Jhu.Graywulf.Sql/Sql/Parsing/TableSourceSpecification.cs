@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Sql.Parsing
     {
         public virtual TableSource SpecificTableSource
         {
-            get { return (TableSource)Stack.First; }
+            get { return FindDescendant<TableSource>(); }
         }
 
         public DatabaseObjectReference DatabaseObjectReference

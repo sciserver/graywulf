@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.NameResolution;
 
@@ -12,7 +11,7 @@ namespace Jhu.Graywulf.Sql.Extensions.Parsing
 {
     public partial class PartitionedTableSource
     {
-        private ColumnIdentifier partitioningColumn;
+        private Sql.Parsing.ColumnIdentifier partitioningColumn;
         private Expression partitioningKeyExpression;
         private Schema.DataType partitioningKeyDataType;
 
@@ -81,7 +80,7 @@ namespace Jhu.Graywulf.Sql.Extensions.Parsing
 
             if (tpc != null)
             {
-                var ci = tpc.FindDescendant<ColumnIdentifier>();
+                var ci = tpc.FindDescendant<Sql.Parsing.ColumnIdentifier>();
                 partitioningColumn = ci;
                 partitioningKeyExpression = Expression.Create(ci);
                 partitioningKeyDataType = ci.ColumnReference.DataTypeReference?.DataType;

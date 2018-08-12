@@ -9,6 +9,8 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
 {
     public abstract class GraywulfSqlNameResolverTestBase : Parsing.ParsingTestBase
     {
+        // TODO: move this one namespace up
+
         protected override SqlNameResolver CreateNameResolver()
         {
             return new GraywulfSqlNameResolver()

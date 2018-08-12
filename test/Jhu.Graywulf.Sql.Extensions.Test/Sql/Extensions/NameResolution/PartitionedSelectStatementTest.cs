@@ -3,7 +3,6 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.Extensions.Parsing;
 
 namespace Jhu.Graywulf.Sql.Extensions.NameResolution
@@ -17,7 +16,7 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
             var sql = "SELECT * FROM Author PARTITION BY ID";
             var gt = "SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] PARTITION BY [ID]";
 
-            var exp = ParseAndResolveNames<PartitionedSelectStatement>(sql);
+            var exp = ParseAndResolveNames<SelectStatement>(sql);
             var res = GenerateCode(exp);
             
             Assert.AreEqual(gt, res);
@@ -32,7 +31,7 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
             var sql = "SELECT * FROM Author PARTITION BY Author.ID";
             var gt = "SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] PARTITION BY [Author].[ID]";
 
-            var exp = ParseAndResolveNames<PartitionedSelectStatement>(sql);
+            var exp = ParseAndResolveNames<SelectStatement>(sql);
             var res = GenerateCode(exp);
 
             Assert.AreEqual(gt, res);
@@ -47,7 +46,7 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
             var sql = "SELECT * FROM Author a PARTITION BY ID";
             var gt = "SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] [a] PARTITION BY [ID]";
 
-            var exp = ParseAndResolveNames<PartitionedSelectStatement>(sql);
+            var exp = ParseAndResolveNames<SelectStatement>(sql);
             var res = GenerateCode(exp);
 
             Assert.AreEqual(gt, res);
@@ -62,7 +61,7 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
             var sql = "SELECT * FROM Author a PARTITION BY a.ID";
             var gt = "SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] [a] PARTITION BY [a].[ID]";
 
-            var exp = ParseAndResolveNames<PartitionedSelectStatement>(sql);
+            var exp = ParseAndResolveNames<SelectStatement>(sql);
             var res = GenerateCode(exp);
 
             Assert.AreEqual(gt, res);

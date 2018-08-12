@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Jhu.Graywulf.Parsing;
-using Jhu.Graywulf.Sql.Extensions.Parsing;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.QueryTraversal;
@@ -107,14 +106,14 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
             }
         }
 
-        protected virtual void Accept(PartitionedQuerySpecification qs)
+        protected virtual void Accept(Extensions.Parsing.PartitionedQuerySpecification qs)
         {
             if (Visitor.Pass == 1)
             {
                 if (Options.AppendPartitioningCondition && Visitor.QuerySpecificationDepth == 0)
                 {
                     // Check if it is a partitioned query and append partitioning conditions, if necessary
-                    var ts = qs.FirstTableSource as PartitionedTableSource;
+                    var ts = qs.FirstTableSource as Extensions.Parsing.PartitionedTableSource;
 
                     if (ts != null)
                     {
@@ -129,12 +128,12 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
 
                 if (Options.RemovePartitioningClause)
                 {
-                    var ts = qs.FirstTableSource as PartitionedTableSource;
+                    var ts = qs.FirstTableSource as Extensions.Parsing.PartitionedTableSource;
 
                     if (ts != null)
                     {
                         // Strip off PARTITION BY clause
-                        var pc = ts.FindDescendant<TablePartitionClause>();
+                        var pc = ts.FindDescendant<Extensions.Parsing.TablePartitionClause>();
 
                         if (pc != null)
                         {
@@ -166,7 +165,7 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
 
             var selectStatement = Visitor.CurrentStatement;
             var parent = selectStatement.FindAscendant<Jhu.Graywulf.Sql.Parsing.StatementBlock>();
-            var magic = new ServerMessageMagicToken()
+            var magic = new Extensions.Parsing.ServerMessageMagicToken()
             {
                 DestinationTable = into.TargetTable.TableOrViewIdentifier.TableReference
             };
@@ -341,7 +340,7 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
         #endregion
         #region Query partitioning
 
-        protected virtual void AppendPartitioningConditions(QuerySpecification qs, PartitionedTableSource ts)
+        protected virtual void AppendPartitioningConditions(QuerySpecification qs, Extensions.Parsing.PartitionedTableSource ts)
         {
             var sc = GetPartitioningConditions(ts.PartitioningKeyExpression);
             if (sc != null)

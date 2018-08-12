@@ -15,90 +15,18 @@ namespace Jhu.Graywulf.Sql.Extensions.Grammar
         RootToken = "Jhu.Graywulf.Sql.Extensions.Parsing.StatementBlock")]
     public class GraywulfSqlGrammar : Jhu.Graywulf.Sql.Grammar.SqlGrammar
     {
-        public static new Expression<Rule> AnyStatement = () =>
+        public static new Expression<Rule> QueryExpression = () =>
             Override
             (
-                Must
-                (
-                    Label,
-                    GotoStatement,
-                    BeginEndStatement,
-                    WhileStatement,
-                    BreakStatement,
-                    ContinueStatement,
-                    ReturnStatement,
-                    IfStatement,
-                    TryCatchStatement,
-                    ThrowStatement,
-
-                    DeclareCursorStatement,
-                    SetCursorStatement,
-                    CursorOperationStatement,
-                    FetchStatement,
-
-                    DeclareVariableStatement,
-                    SetVariableStatement,
-
-                    DeclareTableStatement,
-
-                    CreateTableStatement,
-                    DropTableStatement,
-                    TruncateTableStatement,
-
-                    CreateIndexStatement,
-                    DropIndexStatement,
-
-                    PartitionedSelectStatement,      //
-
-                    SelectStatement,
-                    InsertStatement,
-                    UpdateStatement,
-                    DeleteStatement
-                )
-            );
-
-        public static Expression<Rule> PartitionedSelectStatement = () =>
-            Inherit
-            (
-                SelectStatement,
-                Sequence
-                (
-                    May(Sequence(CommonTableExpression, May(CommentOrWhitespace))),
-                    PartitionedQueryExpression,
-                    May(Sequence(May(CommentOrWhitespace), OrderByClause)),
-                    May(Sequence(May(CommentOrWhitespace), OptionClause))
-                )
-            );
-
-        // No UNION, EXCEPT etc. are allowed with partitioned queries
-
-        public static Expression<Rule> PartitionedQueryExpression = () =>
-            Inherit
-            (
-                QueryExpression,
                 Sequence
                 (
                     Must
                     (
-                        PartitionedQueryExpressionBrackets,
-                        PartitionedQuerySpecification
+                        QueryExpressionBrackets,
+                        PartitionedQuerySpecification,
+                        QuerySpecification
                     ),
-                    // Can only be followed by non-partitioned query expressions
                     May(Sequence(May(CommentOrWhitespace), QueryOperator, May(CommentOrWhitespace), QueryExpression))
-                )
-            );
-
-        public static Expression<Rule> PartitionedQueryExpressionBrackets = () =>
-            Inherit
-            (
-                QueryExpressionBrackets,
-                Sequence
-                (
-                    BracketOpen,
-                    May(CommentOrWhitespace),
-                    QueryExpression,
-                    May(CommentOrWhitespace),
-                    BracketClose
                 )
             );
 

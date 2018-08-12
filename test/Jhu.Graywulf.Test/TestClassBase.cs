@@ -157,7 +157,7 @@ namespace Jhu.Graywulf.Test
             return new SqlNameResolver()
             {
                 Dataset = CreateTestDataset(),
-                Options = new SqlNameResolverOptions()
+                Options = new SqlNameResolverOptions(),
             };
         }
 

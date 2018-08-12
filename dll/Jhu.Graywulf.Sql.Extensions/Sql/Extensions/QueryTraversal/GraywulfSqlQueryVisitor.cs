@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryTraversal
                     case TableSampleClause n:
                         TraverseTableSampleClause(n);
                         break;
-                    case TableHintClause n:
+                    case Sql.Parsing.TableHintClause n:
                         TraverseTableHintClause(n);
                         break;
                     case TablePartitionClause n:
