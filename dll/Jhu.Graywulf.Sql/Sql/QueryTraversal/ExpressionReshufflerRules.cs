@@ -7,7 +7,7 @@ using Jhu.Graywulf.Parsing;
 
 namespace Jhu.Graywulf.Sql.QueryTraversal
 {
-    abstract class ExpressionReshufflerRules
+    public abstract class ExpressionReshufflerRules
     {
         private ExpressionReshuffler reshuffler;
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Sql.QueryTraversal;
 using Jhu.Graywulf.Sql.QueryGeneration.SqlServer;
 
 namespace Jhu.Graywulf.Sql.NameResolution

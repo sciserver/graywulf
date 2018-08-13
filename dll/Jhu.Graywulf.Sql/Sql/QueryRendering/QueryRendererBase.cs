@@ -7,6 +7,7 @@ using System.IO;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Parsing;
+using Jhu.Graywulf.Sql.QueryTraversal;
 using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.QueryRendering

@@ -226,18 +226,48 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             return columnContextStack.Pop();
         }
 
-        private void PushAllContextNone()
+        protected void PushAllContextNone()
         {
             queryContextStack.Push(QueryContext.None);
             tableContextStack.Push(TableContext.None);
             columnContextStack.Push(ColumnContext.None);
         }
 
-        private void PopAllContext()
+        protected void PopAllContext()
         {
             queryContextStack.Pop();
             tableContextStack.Pop();
             columnContextStack.Pop();
+        }
+
+        protected void PushExpressionReshuffler(ExpressionTraversalMethod method, ExpressionReshufflerRules rules)
+        {
+            switch (method)
+            {
+                case ExpressionTraversalMethod.Infix:
+                    expressionReshufflerStack.Push(null);
+                    break;
+                case ExpressionTraversalMethod.Postfix:
+                case ExpressionTraversalMethod.Prefix:
+                    expressionReshufflerStack.Push(
+                        new ExpressionReshuffler(
+                            this,
+                            sink,
+                            method,
+                            rules));
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        protected void PopExpressionReshuffler()
+        {
+            var reshuffler = expressionReshufflerStack.Pop();
+            if (reshuffler != null)
+            {
+                reshuffler.Flush();
+            }
         }
 
         #endregion
@@ -323,17 +353,24 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        protected internal virtual void TraverseInlineNode(Token node)
+        internal void TraverseInlineNode(Token node)
         {
             // This is an expression inline or predicate inline that needs special handling such
             // as the OVER clause of windowed function calls.
 
             // Turn off expression context
-            PushQueryContext(QueryContext & ~QueryContext.Expression & ~QueryContext.LogicalExpression);
+            PushQueryContext(QueryContext & ~QueryContext.AnyExpression);
             expressionReshufflerStack.Push(null);
 
             VisitNode(node);
+            DispatchInlineNode(node);
 
+            PopQueryContext();
+            expressionReshufflerStack.Pop();
+        }
+
+        protected virtual void DispatchInlineNode(Token node)
+        {
             switch (node)
             {
                 case OverClause n:
@@ -356,9 +393,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 default:
                     throw new NotImplementedException();
             }
-
-            PopQueryContext();
-            expressionReshufflerStack.Pop();
         }
 
         #endregion
@@ -1854,33 +1888,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         #endregion
         #region Expressions
 
-        private void CreateExpressionReshuffler()
-        {
-            switch (options.ExpressionTraversal)
-            {
-                case ExpressionTraversalMethod.Infix:
-                    expressionReshufflerStack.Push(null);
-                    break;
-                case ExpressionTraversalMethod.Postfix:
-                    expressionReshufflerStack.Push(new ExpressionReshuffler(this, sink, ExpressionTraversalMethod.Postfix, new ArithmeticExpressionRules()));
-                    break;
-                case ExpressionTraversalMethod.Prefix:
-                    expressionReshufflerStack.Push(new ExpressionReshuffler(this, sink, ExpressionTraversalMethod.Prefix, new ArithmeticExpressionRules()));
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        private void DestroyExpressionReshuffler()
-        {
-            var reshuffler = expressionReshufflerStack.Pop();
-            if (reshuffler != null)
-            {
-                reshuffler.Flush();
-            }
-        }
-
         protected void TraverseExpression(Expression node)
         {
             // Visit immediate subquries first, then do a bottom-up
@@ -1894,9 +1901,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 TraverseExpressionSubqueries(node);
             }
 
-            CreateExpressionReshuffler();
+            PushExpressionReshuffler(options.ExpressionTraversal, new ArithmeticExpressionRules());
             TraverseExpressionNode(node);
-            DestroyExpressionReshuffler();
+            PopExpressionReshuffler();
 
             PopQueryContext();
             PopColumnContext();
@@ -2544,33 +2551,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         #endregion
         #region Boolean expression traversal
 
-        private void CreateLogicalExpressionReshuffler()
-        {
-            switch (options.LogicalExpressionTraversal)
-            {
-                case ExpressionTraversalMethod.Infix:
-                    expressionReshufflerStack.Push(null);
-                    break;
-                case ExpressionTraversalMethod.Postfix:
-                    expressionReshufflerStack.Push(new ExpressionReshuffler(this, sink, ExpressionTraversalMethod.Postfix, new LogicalExpressionRules()));
-                    break;
-                case ExpressionTraversalMethod.Prefix:
-                    expressionReshufflerStack.Push(new ExpressionReshuffler(this, sink, ExpressionTraversalMethod.Prefix, new LogicalExpressionRules()));
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        private void DestroyLogicalExpressionReshuffler()
-        {
-            var reshuffler = expressionReshufflerStack.Pop();
-            if (reshuffler != null)
-            {
-                reshuffler.Flush();
-            }
-        }
-
         protected void TraverseLogicalExpression(LogicalExpression node)
         {
             // Visit immediate subquries first, then do a bottom-up
@@ -2583,9 +2563,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 TraverseLogicalExpressionSubqueries(node);
             }
 
-            CreateLogicalExpressionReshuffler();
+            PushExpressionReshuffler(options.LogicalExpressionTraversal, new LogicalExpressionRules());
             TraverseLogicalExpressionNode(node);
-            DestroyExpressionReshuffler();
+            PopExpressionReshuffler();
 
             PopQueryContext();
         }
@@ -3101,13 +3081,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             }
         }
 
-        protected void TraverseFunctionTableSource(FunctionTableSource node)
+        protected virtual void TraverseFunctionTableSource(FunctionTableSource node)
         {
             TraverseTableValuedFunctionCall(node.FunctionCall);
             VisitNode(node);
         }
 
-        protected void TraverseSimpleTableSource(SimpleTableSource node)
+        protected virtual void TraverseSimpleTableSource(SimpleTableSource node)
         {
             foreach (var nn in node.Stack)
             {
@@ -3134,13 +3114,13 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             VisitNode(node);
         }
 
-        protected void TraverseVariableTableSource(VariableTableSource node)
+        protected virtual void TraverseVariableTableSource(VariableTableSource node)
         {
             VisitNode(node.Variable);
             VisitNode(node);
         }
 
-        protected void TraverseSubqueryTableSource(SubqueryTableSource node)
+        protected virtual void TraverseSubqueryTableSource(SubqueryTableSource node)
         {
             PushTableContext(TableContext | TableContext.Subquery);
 
@@ -3203,6 +3183,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     case TableHint n:
                         TraverseTableHint(n);
                         break;
+                    case Comma n:
+                        VisitNode(n);
+                        break;
                     case TableHintList n:
                         TraverseTableHintList(n);
                         break;
@@ -3217,6 +3200,25 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                 switch (nn)
                 {
                     case HintName n:
+                        VisitNode(n);
+                        break;
+                    case HintArguments n:
+                        TraverseHintArguments(n);
+                        break;
+                }
+            }
+        }
+
+        protected void TraverseHintArguments(HintArguments node)
+        {
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
+                    case BracketOpen n:
+                        VisitNode(n);
+                        break;
+                    case BracketClose n:
                         VisitNode(n);
                         break;
                     case HintArgumentList n:
@@ -3278,7 +3280,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
             TraverseSelectListNode(node);
             VisitNode(node);
-            
+
             PopTableContext();
             PopColumnContext();
         }
@@ -3501,7 +3503,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         break;
                 }
             }
-            
+
             PopTableContext();
 
             VisitNode(node);

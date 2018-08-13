@@ -12,10 +12,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 {
     public class TestVisitorSink : SqlQueryVisitorSink
     {
-        private SqlQueryVisitor visitor;
-        private StringWriter w;
+        protected SqlQueryVisitor visitor;
+        protected StringWriter w;
 
-        public string Execute(StatementBlock node)
+        public TestVisitorSink()
         {
             visitor = new SqlQueryVisitor(this)
             {
@@ -29,6 +29,10 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     VisitSymbols = true,
                 }
             };
+        }
+        
+        public string Execute(StatementBlock node)
+        {
             using (w = new StringWriter())
             {
                 visitor.Execute(node);
@@ -38,17 +42,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         public string Execute(Expression node, ExpressionTraversalMethod direction)
         {
-            visitor = new SqlQueryVisitor(this)
-            {
-                Options = new SqlQueryVisitorOptions()
-                {
-                    ExpressionTraversal = direction,
-                    VisitExpressionSubqueries = false,
-                    VisitExpressionPredicates = false,
-                    VisitLiterals = true,
-                    VisitSymbols = true,
-                }
-            };
+            visitor.Options.ExpressionTraversal = direction;
+
             using (w = new StringWriter())
             {
                 visitor.Execute(node);
@@ -58,17 +53,8 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         public string Execute(LogicalExpression node, ExpressionTraversalMethod direction)
         {
-            visitor = new SqlQueryVisitor(this)
-            {
-                Options = new SqlQueryVisitorOptions()
-                {
-                    LogicalExpressionTraversal = direction,
-                    VisitPredicateSubqueries = false,
-                    VisitPredicateExpressions = false,
-                    VisitLiterals = true,
-                    VisitSymbols = true,
-                }
-            };
+            visitor.Options.LogicalExpressionTraversal = direction;
+
             using (w = new StringWriter())
             {
                 visitor.Execute(node);
@@ -78,18 +64,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         public string Execute(Expression node, ExpressionTraversalMethod expressionTraversal, ExpressionTraversalMethod logicalExpressionTraversal)
         {
-            visitor = new SqlQueryVisitor(this)
-            {
-                Options = new SqlQueryVisitorOptions()
-                {
-                    ExpressionTraversal = expressionTraversal,
-                    LogicalExpressionTraversal = logicalExpressionTraversal,
-                    VisitPredicateSubqueries = false,
-                    VisitExpressionSubqueries = false,
-                    VisitLiterals = true,
-                    VisitSymbols = true,
-                }
-            };
+            visitor.Options.ExpressionTraversal = expressionTraversal;
+            visitor.Options.LogicalExpressionTraversal = logicalExpressionTraversal;
+
             using (w = new StringWriter())
             {
                 visitor.Execute(node);
@@ -99,18 +76,9 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
 
         public string Execute(LogicalExpression node, ExpressionTraversalMethod expressionTraversal, ExpressionTraversalMethod logicalExpressionTraversal)
         {
-            visitor = new SqlQueryVisitor(this)
-            {
-                Options = new SqlQueryVisitorOptions()
-                {
-                    ExpressionTraversal = expressionTraversal,
-                    LogicalExpressionTraversal = logicalExpressionTraversal,
-                    VisitPredicateSubqueries = false,
-                    VisitExpressionSubqueries = false,
-                    VisitLiterals = true,
-                    VisitSymbols = true,
-                }
-            };
+            visitor.Options.ExpressionTraversal = expressionTraversal;
+            visitor.Options.LogicalExpressionTraversal = logicalExpressionTraversal;
+
             using (w = new StringWriter())
             {
                 visitor.Execute(node);
@@ -154,7 +122,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             Write(node);
         }
-        
+
         public virtual void Accept(Operator node)
         {
             Write(node);
@@ -210,6 +178,11 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
             Write(node);
         }
 
+        public virtual void Accept(TableAlias node)
+        {
+            Write(node);
+        }
+
         public virtual void Accept(IndexName node)
         {
             Write(node);
@@ -219,12 +192,12 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
         {
             Write(node);
         }
-        
+
         public virtual void Accept(QueryOperator node)
         {
             Write(node);
         }
-        
+
         public virtual void Accept(DataTypeIdentifier node)
         {
             Write(node);

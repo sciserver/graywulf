@@ -8,7 +8,7 @@ using Jhu.Graywulf.Sql.Parsing;
 
 namespace Jhu.Graywulf.Sql.QueryTraversal
 {
-    class ExpressionReshuffler
+    public class ExpressionReshuffler
     {
         private SqlQueryVisitor visitor;
         private SqlQueryVisitorSink sink;

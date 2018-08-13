@@ -8,5 +8,13 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryTraversal
 {
     public class GraywulfSqlQueryVisitorOptions : Jhu.Graywulf.Sql.QueryTraversal.SqlQueryVisitorOptions
     {
+        public GraywulfSqlQueryVisitorOptions()
+        {
+        }
+
+        public GraywulfSqlQueryVisitorOptions(GraywulfSqlQueryVisitorOptions old)
+            : base(old)
+        {
+        }
     }
 }

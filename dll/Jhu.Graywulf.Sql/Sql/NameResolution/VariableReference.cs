@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Schema;
+using Jhu.Graywulf.Sql.QueryTraversal;
 
 namespace Jhu.Graywulf.Sql.NameResolution
 {

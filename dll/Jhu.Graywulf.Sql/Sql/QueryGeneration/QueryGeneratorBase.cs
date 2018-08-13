@@ -8,6 +8,7 @@ using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
 using Jhu.Graywulf.Sql.LogicalExpressions;
+using Jhu.Graywulf.Sql.QueryTraversal;
 using Jhu.Graywulf.Sql.QueryRendering;
 
 namespace Jhu.Graywulf.Sql.QueryGeneration

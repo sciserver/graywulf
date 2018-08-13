@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
+using Jhu.Graywulf.Sql.QueryTraversal;
 using Jhu.Graywulf.Sql.QueryGeneration;
 using Jhu.Graywulf.Sql.QueryGeneration.SqlServer;
 

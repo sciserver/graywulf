@@ -32,7 +32,7 @@ UNION ALL
 SELECT DISTINCT ID, Data FROM Tab2
 ";
 
-            var gt = "FROM Tab1 AS WITH ( TABLOCKX ) INNER LOOP JOIN Tab2 WITH ( TABLOCK ) ON t . ID = t2 . ID WHERE ID IN ( 1 , 2 , 4 ) GROUP BY ID , Data HAVING AVG ( Data2 ) > 10 SELECT TOP 10 PERCENT ID AS Col1 , Col2 = Data , AVG ( Data2 ) INTO outtable UNION ALL FROM Tab2 SELECT DISTINCT ID , Data ";
+            var gt = "FROM Tab1 AS t WITH ( TABLOCKX ) INNER LOOP JOIN Tab2 t2 WITH ( TABLOCK ) ON t . ID = t2 . ID WHERE ID IN ( 1 , 2 , 4 ) GROUP BY ID , Data HAVING AVG ( Data2 ) > 10 SELECT TOP 10 PERCENT ID AS Col1 , Col2 = Data , AVG ( Data2 ) INTO outtable UNION ALL FROM Tab2 SELECT DISTINCT ID , Data ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
@@ -94,7 +94,7 @@ UNION ALL
 SELECT DISTINCT ID, Data FROM Tab2
 ";
 
-            var gt = "INSERT newtable FROM Tab1 AS WITH ( TABLOCKX ) INNER LOOP JOIN Tab2 WITH ( TABLOCK ) ON t . ID = t2 . ID WHERE ID IN ( 1 , 2 , 4 ) GROUP BY ID , Data HAVING AVG ( Data2 ) > 10 SELECT TOP 10 PERCENT ID AS Col1 , Col2 = Data , AVG ( Data2 ) UNION ALL FROM Tab2 SELECT DISTINCT ID , Data ";
+            var gt = "INSERT newtable FROM Tab1 AS t WITH ( TABLOCKX ) INNER LOOP JOIN Tab2 t2 WITH ( TABLOCK ) ON t . ID = t2 . ID WHERE ID IN ( 1 , 2 , 4 ) GROUP BY ID , Data HAVING AVG ( Data2 ) > 10 SELECT TOP 10 PERCENT ID AS Col1 , Col2 = Data , AVG ( Data2 ) UNION ALL FROM Tab2 SELECT DISTINCT ID , Data ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
@@ -119,7 +119,7 @@ FROM Tab1 AS t WITH(TABLOCKX)
 INNER LOOP JOIN Tab2 t2 WITH(TABLOCK) ON t.ID = t2.ID
 WHERE ID IN (1, 2, 4)";
 
-            var gt = "FROM Tab1 AS WITH ( TABLOCKX ) INNER LOOP JOIN Tab2 WITH ( TABLOCK ) ON t . ID = t2 . ID DELETE newtable WHERE ID IN ( 1 , 2 , 4 ) ";
+            var gt = "FROM Tab1 AS t WITH ( TABLOCKX ) INNER LOOP JOIN Tab2 t2 WITH ( TABLOCK ) ON t . ID = t2 . ID DELETE newtable WHERE ID IN ( 1 , 2 , 4 ) ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);
@@ -149,7 +149,7 @@ SET col1 = 1,
 FROM mytable a INNER JOIN othertable b ON a.ID = b.ID
 WHERE a.Data > 5";
 
-            var gt = "FROM mytable INNER JOIN othertable ON a . ID = b . ID UPDATE mytable SET col1 = 1 , col2 = 2 WHERE a . Data > 5 ";
+            var gt = "FROM mytable a INNER JOIN othertable b ON a . ID = b . ID UPDATE mytable SET col1 = 1 , col2 = 2 WHERE a . Data > 5 ";
 
             var res = Execute(sql);
             Assert.AreEqual(gt, res);

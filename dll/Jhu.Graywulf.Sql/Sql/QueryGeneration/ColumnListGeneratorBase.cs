@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.NameResolution;
+using Jhu.Graywulf.Sql.QueryTraversal;
 using Jhu.Graywulf.Sql.QueryRendering;
 
 namespace Jhu.Graywulf.Sql.QueryGeneration

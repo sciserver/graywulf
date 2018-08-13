@@ -223,7 +223,6 @@
     <Compile Include="Sql\NameResolution\DatabaseObjectReferenceEqualityComparer.cs" />
     <Compile Include="Sql\NameResolution\DataTypeReference.cs" />
     <Compile Include="Sql\NameResolution\DataTypeReferenceEqualityComparer.cs" />
-    <Compile Include="Sql\NameResolution\Enum.cs" />
     <Compile Include="Sql\NameResolution\ExceptionMessages.Designer.cs">
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
       <DesignTime>True</DesignTime>
@@ -431,14 +430,18 @@
     <Compile Include="Sql\QueryRendering\SqlServer\SqlServerQueryRenderer.cs" />
     <Compile Include="Sql\QueryRewriting\QueryRewriterBase.cs" />
     <Compile Include="Sql\QueryRewriting\SqlServer\SqlServerQueryRewriter.cs" />
+    <Compile Include="Sql\QueryTraversal\ColumnContext.cs" />
     <Compile Include="Sql\QueryTraversal\LogicalExpressionRules.cs" />
     <Compile Include="Sql\QueryTraversal\Enum.cs" />
     <Compile Include="Sql\QueryTraversal\ArithmeticExpressionRules.cs" />
     <Compile Include="Sql\QueryTraversal\ExpressionReshufflerRules.cs" />
     <Compile Include="Sql\QueryTraversal\ExpressionReshuffler.cs" />
+    <Compile Include="Sql\QueryTraversal\QueryContext.cs" />
     <Compile Include="Sql\QueryTraversal\SqlQueryVisitor.cs" />
     <Compile Include="Sql\QueryTraversal\SqlQueryVisitorOptions.cs" />
     <Compile Include="Sql\QueryTraversal\SqlQueryVisitorSink.cs" />
+    <Compile Include="Sql\QueryTraversal\TableContext.cs" />
+    <Compile Include="Sql\QueryTraversal\VariableContext.cs" />
     <Compile Include="Sql\Schema\Column.cs" />
     <Compile Include="Sql\Schema\Constants.cs" />
     <Compile Include="Sql\Schema\Constraint.cs" />
