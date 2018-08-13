@@ -15,11 +15,6 @@ namespace Jhu.Graywulf.Sql.Extensions.Parsing
         private Sql.Parsing.Expression partitioningKeyExpression;
         private Schema.DataType partitioningKeyDataType;
 
-        public bool IsPartitioned
-        {
-            get { return FindDescendant<TablePartitionClause>() != null; }
-        }
-
         public Sql.Parsing.Expression PartitioningKeyExpression
         {
             get
