@@ -152,7 +152,7 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
             {
                 // Partitioning is always done on the table specified right after the FROM keyword
                 // TODO: what if more than one QS?
-                var qs = QueryDetails.ParsingTree.FindDescendantRecursive<QueryExpression>().EnumerateQuerySpecifications().FirstOrDefault();
+                var qs = QueryDetails.ParsingTree.FindDescendantRecursive<Parsing.QueryExpression>().FirstQuerySpecification;
                 var ts = (PartitionedTableSource)qs.FirstTableSource;
 
                 // TODO: modify this when expression output type functions are implemented

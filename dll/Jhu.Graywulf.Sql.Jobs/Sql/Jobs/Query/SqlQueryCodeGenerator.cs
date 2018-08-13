@@ -9,6 +9,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Parsing;
 using Jhu.Graywulf.Sql.Parsing;
 using Jhu.Graywulf.Sql.NameResolution;
+using Jhu.Graywulf.Sql.QueryTraversal;
 using Jhu.Graywulf.Sql.QueryGeneration.SqlServer;
 using Jhu.Graywulf.Sql.Schema;
 using Jhu.Graywulf.Sql.Schema.SqlServer;

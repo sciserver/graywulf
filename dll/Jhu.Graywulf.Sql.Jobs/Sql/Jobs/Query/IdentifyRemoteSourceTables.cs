@@ -7,6 +7,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.Sql.NameResolution;
+using Jhu.Graywulf.Sql.QueryTraversal;
 
 namespace Jhu.Graywulf.Sql.Jobs.Query
 {
