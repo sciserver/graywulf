@@ -82,6 +82,8 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\SmartCommandTest.cs" />
+    <Compile Include="Data\SmartDataReaderTest.cs" />
     <Compile Include="Format\BulkInsertTest.cs" />
     <Compile Include="Format\DelimitedTextDataFileTest.cs" />
     <Compile Include="Format\FileFormatFactoryTest.cs" />

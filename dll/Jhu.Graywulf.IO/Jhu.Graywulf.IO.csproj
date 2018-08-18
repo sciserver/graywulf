@@ -72,6 +72,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\ISmartCommand.cs" />
+    <Compile Include="Data\ISmartDataReader.cs" />
+    <Compile Include="Data\SmartCommand.cs" />
+    <Compile Include="Data\SmartDataReader.cs" />
+    <Compile Include="Data\TypeMapping.cs" />
     <Compile Include="Format\Constants.cs" />
     <Compile Include="Format\FormatConfiguration.cs" />
     <Compile Include="Format\NullStyles.cs" />
