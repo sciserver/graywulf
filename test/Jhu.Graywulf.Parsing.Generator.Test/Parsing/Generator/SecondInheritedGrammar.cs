@@ -21,5 +21,10 @@ namespace Jhu.Graywulf.Parsing.Generator
                     Word, Comma, Word, Comma, Word
                 )
             );
+
+        // This should inherit from the overriden rule and not from the one
+        // in the base grammar
+
+        public static Expression<Rule> InheritedRule7 = () => Inherit(BaseRule7);
     }
 }

@@ -173,7 +173,8 @@ namespace Jhu.Graywulf.Parsing.Generator
         /// <returns></returns>
         public GrammarInfo FindDefiningGrammar(string name, bool includeCurrent)
         {
-            if (includeCurrent && allRules.ContainsKey(name))
+            if (includeCurrent && 
+                (allRules.ContainsKey(name) || overriddenRules.Contains(name)))
             {
                 return this;
             }

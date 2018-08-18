@@ -93,7 +93,8 @@ namespace Jhu.Graywulf.Parsing.Generator
             Assert.AreEqual(2, g.OverriddenRules.Count);
             Assert.IsTrue(g.OverriddenRules.Contains("BaseRule7"));
 
-            Assert.AreEqual(1, g.Rules.Count);
+            Assert.AreEqual(2, g.Rules.Count);
+            Assert.IsTrue(g.Rules.ContainsKey("InheritedRule7"));
             Assert.IsTrue(g.Rules.ContainsKey("BaseRule8"));
         }
 
