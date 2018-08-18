@@ -105,6 +105,13 @@ namespace Jhu.Graywulf.Parsing
             this.Parent.Stack.Replace(this, other);
         }
 
+        public T ReplaceWith<T>(T other)
+            where T : Token
+        {
+            this.Parent.Stack.Replace(this, other);
+            return other;
+        }
+
         public void Remove()
         {
             this.Parent.Stack.Remove(this);

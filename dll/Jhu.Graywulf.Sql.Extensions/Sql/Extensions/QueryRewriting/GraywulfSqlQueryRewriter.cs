@@ -113,7 +113,7 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
                 if (Options.AppendPartitioningCondition && Visitor.QuerySpecificationDepth == 0)
                 {
                     // Check if it is a partitioned query and append partitioning conditions, if necessary
-                    var ts = qs.FirstTableSource as Extensions.Parsing.PartitionedTableSource;
+                    var ts = qs.FirstTableSource.Parent as Extensions.Parsing.PartitionedTableSourceSpecification;
 
                     if (ts != null)
                     {
@@ -128,7 +128,7 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
 
                 if (Options.RemovePartitioningClause)
                 {
-                    var ts = qs.FirstTableSource as Extensions.Parsing.PartitionedTableSource;
+                    var ts = qs.FirstTableSource.Parent as Extensions.Parsing.PartitionedTableSourceSpecification;
 
                     if (ts != null)
                     {
@@ -340,7 +340,7 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryRewriting
         #endregion
         #region Query partitioning
 
-        protected virtual void AppendPartitioningConditions(QuerySpecification qs, Extensions.Parsing.PartitionedTableSource ts)
+        protected virtual void AppendPartitioningConditions(QuerySpecification qs, Extensions.Parsing.PartitionedTableSourceSpecification ts)
         {
             var sc = GetPartitioningConditions(ts.PartitioningKeyExpression);
             if (sc != null)

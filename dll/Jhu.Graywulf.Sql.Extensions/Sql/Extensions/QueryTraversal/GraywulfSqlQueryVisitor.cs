@@ -39,49 +39,34 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryTraversal
         }
 
         #endregion
-        
-        protected override void DispatchTableSource(TableSource node)
+
+        protected override void DispatchTableSourceSpecification(Sql.Parsing.TableSourceSpecification node)
         {
             switch (node)
             {
-                case PartitionedTableSource n:
-                    TraversePartitionedTableSource(n);
+                case PartitionedTableSourceSpecification n:
+                    TraversePartitionedTableSourceSpecification(n);
                     break;
                 default:
-                    base.DispatchTableSource(node);
+                    base.DispatchTableSourceSpecification(node);
                     break;
             }
         }
 
-        protected void TraversePartitionedTableSource(PartitionedTableSource node)
+        private void TraversePartitionedTableSourceSpecification(PartitionedTableSourceSpecification node)
         {
             foreach (var nn in node.Stack)
             {
                 switch (nn)
                 {
-                    case Literal n:
-                        VisitNode(n);
-                        break;
-                    case TableOrViewIdentifier n:
-                        VisitNode(n);
-                        VisitReference(n);
-                        break;
-                    case TableAlias n:
-                        VisitNode(n);
-                        break;
-                    case TableSampleClause n:
-                        TraverseTableSampleClause(n);
-                        break;
-                    case Sql.Parsing.TableHintClause n:
-                        TraverseTableHintClause(n);
+                    case TableSource n:
+                        DispatchTableSource(n);
                         break;
                     case TablePartitionClause n:
                         TraverseTablePartitionClause(n);
                         break;
                 }
             }
-
-            VisitNode(node);
         }
 
         protected void TraverseTablePartitionClause(TablePartitionClause node)

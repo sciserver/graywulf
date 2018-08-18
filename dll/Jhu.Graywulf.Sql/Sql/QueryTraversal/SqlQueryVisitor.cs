@@ -2969,8 +2969,7 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                     switch (nn)
                     {
                         case TableSourceSpecification ts:
-                            DispatchTableSource(ts.SpecificTableSource);
-                            VisitNode(ts);
+                            DispatchTableSourceSpecification(ts);
                             break;
                         case JoinedTable n:
                             TraverseJoinedTable(n, pass);
@@ -3060,6 +3059,17 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         break;
                 }
             }
+        }
+
+        protected virtual void DispatchTableSourceSpecification(TableSourceSpecification node)
+        {
+            TraverseTableSourceSpecification(node);
+        }
+
+        private void TraverseTableSourceSpecification(TableSourceSpecification node)
+        {
+            DispatchTableSource(node.SpecificTableSource);
+            VisitNode(node);
         }
 
         protected virtual void DispatchTableSource(TableSource node)

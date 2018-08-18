@@ -9,7 +9,7 @@ using Jhu.Graywulf.Sql.NameResolution;
 
 namespace Jhu.Graywulf.Sql.Extensions.Parsing
 {
-    public partial class PartitionedTableSource
+    public partial class PartitionedTableSourceSpecification
     {
         private Sql.Parsing.ColumnIdentifier partitioningColumn;
         private Sql.Parsing.Expression partitioningKeyExpression;

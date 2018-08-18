@@ -1411,7 +1411,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
         }
 
-        private void CollectSourceTableReference(TableReference tr)
+        protected void CollectSourceTableReference(TableReference tr)
         {
             var stp = Visitor.CurrentQuerySpecification as ISourceTableProvider ??
                       Visitor.CurrentStatement as ISourceTableProvider;
@@ -1423,7 +1423,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             }
 
             // If it is a table, save to the global store also, and generate unique name
-            if (tr.DatabaseObject is TableOrView)
+            if (!tr.IsComputed && tr.DatabaseObject is TableOrView)
             {
                 // Collect in the global store
                 var uniquekey = tr.DatabaseObject.UniqueKey;

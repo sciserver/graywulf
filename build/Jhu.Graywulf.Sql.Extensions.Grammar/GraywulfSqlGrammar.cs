@@ -76,23 +76,14 @@ namespace Jhu.Graywulf.Sql.Extensions.Grammar
             Inherit
             (
                 TableSourceSpecification,
-                PartitionedTableSource
-            );
-
-        public static Expression<Rule> PartitionedTableSource = () =>
-            Inherit
-            (
-                SimpleTableSource,
                 Sequence
                 (
-                    TableOrViewIdentifier,
-                    May(Sequence(May(CommentOrWhitespace), May(Sequence(Keyword("AS"), May(CommentOrWhitespace))), TableAlias)),   // Optional
-                    May(Sequence(May(CommentOrWhitespace), TableSampleClause)),
-                    May(Sequence(May(CommentOrWhitespace), TableHintClause)),
-                    May(CommentOrWhitespace), TablePartitionClause
+                    SimpleTableSource,
+                    May(CommentOrWhitespace),
+                    TablePartitionClause
                 )
             );
-
+        
         public static Expression<Rule> TablePartitionClause = () =>
             Sequence
             (

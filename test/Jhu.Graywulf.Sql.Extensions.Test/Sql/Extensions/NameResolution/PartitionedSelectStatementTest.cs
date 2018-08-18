@@ -21,8 +21,8 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
             
             Assert.AreEqual(gt, res);
             Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().Value);
-            Assert.AreEqual("Author", exp.FindDescendantRecursive<PartitionedTableSource>().TableReference.DatabaseObjectName);
-            Assert.AreEqual("ID", exp.FindDescendantRecursive<PartitionedTableSource>().PartitioningKeyExpression.Value);
+            Assert.AreEqual("Author", exp.FindDescendantRecursive<PartitionedTableSourceSpecification>().TableReference.DatabaseObjectName);
+            Assert.AreEqual("ID", exp.FindDescendantRecursive<PartitionedTableSourceSpecification>().PartitioningKeyExpression.Value);
         }
 
         [TestMethod]
@@ -36,8 +36,8 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
 
             Assert.AreEqual(gt, res);
             Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().Value);
-            Assert.AreEqual("Author", exp.FindDescendantRecursive<PartitionedTableSource>().TableReference.DatabaseObjectName);
-            Assert.AreEqual("Author.ID", exp.FindDescendantRecursive<PartitionedTableSource>().PartitioningKeyExpression.Value);
+            Assert.AreEqual("Author", exp.FindDescendantRecursive<PartitionedTableSourceSpecification>().TableReference.DatabaseObjectName);
+            Assert.AreEqual("Author.ID", exp.FindDescendantRecursive<PartitionedTableSourceSpecification>().PartitioningKeyExpression.Value);
         }
 
         [TestMethod]
@@ -51,8 +51,8 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
 
             Assert.AreEqual(gt, res);
             Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().Value);
-            Assert.AreEqual("Author", exp.FindDescendantRecursive<PartitionedTableSource>().TableReference.DatabaseObjectName);
-            Assert.AreEqual("ID", exp.FindDescendantRecursive<PartitionedTableSource>().PartitioningKeyExpression.Value);
+            Assert.AreEqual("Author", exp.FindDescendantRecursive<PartitionedTableSourceSpecification>().TableReference.DatabaseObjectName);
+            Assert.AreEqual("ID", exp.FindDescendantRecursive<PartitionedTableSourceSpecification>().PartitioningKeyExpression.Value);
         }
         
         [TestMethod]
@@ -66,8 +66,8 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
 
             Assert.AreEqual(gt, res);
             Assert.AreEqual("*", exp.FindDescendantRecursive<SelectList>().Value);
-            Assert.AreEqual("Author", exp.FindDescendantRecursive<PartitionedTableSource>().TableReference.DatabaseObjectName);
-            Assert.AreEqual("a.ID", exp.FindDescendantRecursive<PartitionedTableSource>().PartitioningKeyExpression.Value);
+            Assert.AreEqual("Author", exp.FindDescendantRecursive<PartitionedTableSourceSpecification>().TableReference.DatabaseObjectName);
+            Assert.AreEqual("a.ID", exp.FindDescendantRecursive<PartitionedTableSourceSpecification>().PartitioningKeyExpression.Value);
         }
 
         /*

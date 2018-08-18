@@ -153,14 +153,15 @@ namespace Jhu.Graywulf.Sql.Jobs.Query
                 // Partitioning is always done on the table specified right after the FROM keyword
                 // TODO: what if more than one QS?
                 var qs = QueryDetails.ParsingTree.FindDescendantRecursive<Parsing.QueryExpression>().FirstQuerySpecification;
-                var ts = (PartitionedTableSource)qs.FirstTableSource;
+                var ts = qs.FirstTableSource;
+                var pts = (PartitionedTableSourceSpecification)ts.Parent;
 
                 // TODO: modify this when expression output type functions are implemented
                 // and figure out data type directly from expression
                 var stat = new TableStatistics(ts)
                 {
-                    KeyColumn = ts.PartitioningKeyExpression,
-                    KeyColumnDataType = ts.PartitioningKeyDataType,
+                    KeyColumn = pts.PartitioningKeyExpression,
+                    KeyColumnDataType = pts.PartitioningKeyDataType,
                 };
 
                 TableStatistics.Add(ts.UniqueKey, stat);
