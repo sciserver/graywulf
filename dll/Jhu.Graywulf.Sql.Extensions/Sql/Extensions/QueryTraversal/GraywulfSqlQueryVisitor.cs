@@ -71,6 +71,8 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryTraversal
 
         protected void TraverseTablePartitionClause(TablePartitionClause node)
         {
+            PushTableContext(TableContext & ~TableContext.From);
+
             foreach (var nn in node.Stack)
             {
                 switch (nn)
@@ -86,6 +88,8 @@ namespace Jhu.Graywulf.Sql.Extensions.QueryTraversal
             }
 
             VisitNode(node);
+
+            PopTableContext();
         }
     }
 }

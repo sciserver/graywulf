@@ -631,9 +631,22 @@ namespace Jhu.Graywulf.Sql.NameResolution
                         sourceTables = stp?.SourceTableReferences.Values;
                     }
                 }
+                else if (!cr.TableReference.IsResolved)
+                {
+                    var ntr = ResolveTableReference(cr.TableReference, null);
+
+                    if (ntr == null)
+                    {
+                        ncr = null;
+                    }
+                    else
+                    {
+                        ncr = ResolveColumnReference(cr, ntr, ref matches);
+                    }
+                }
                 else
                 {
-                    // This has a table reference already so only check
+                    // This has a resolved table reference already so only check
                     // columns of that particular table
                     ncr = ResolveColumnReference(cr, cr.TableReference, ref matches);
                 }
@@ -668,7 +681,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
         /// </summary>
         /// <param name="qs"></param>
         /// <param name="tr"></param>
-        private TableReference ResolveColumnTableReference(ISourceTableProvider resolvedSourceTables, TableReference tr)
+        private TableReference ResolveTableReference(ISourceTableProvider resolvedSourceTables, TableReference tr)
         {
             // Try to resolve the table alias part of a table reference
             // If and alias or table name is specified, this can be done based on
@@ -902,7 +915,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
                     // Case 6: Table reference in from of SELECT ....*
                     // Source table (table.* and table.columnname syntax only)
                     SubstituteSourceTableDefaults(sourceTableCollection, tr, false);
-                    ntr = ResolveColumnTableReference(sourceTableCollection, tr);
+                    ntr = ResolveTableReference(sourceTableCollection, tr);
                 }
 
                 return ntr;

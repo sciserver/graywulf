@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
         public void ResolvePartitioningKeyTest1()
         {
             var sql = "SELECT * FROM Author PARTITION BY ID";
-            var gt = "SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] PARTITION BY [ID]";
+            var gt = "SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] PARTITION BY [Graywulf_Schema_Test].[dbo].[Author].[ID]";
 
             var exp = ParseAndResolveNames<SelectStatement>(sql);
             var res = GenerateCode(exp);
@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
         public void ResolvePartitioningKeyTest2()
         {
             var sql = "SELECT * FROM Author PARTITION BY Author.ID";
-            var gt = "SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] PARTITION BY [Author].[ID]";
+            var gt = "SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] PARTITION BY [Graywulf_Schema_Test].[dbo].[Author].[ID]";
 
             var exp = ParseAndResolveNames<SelectStatement>(sql);
             var res = GenerateCode(exp);
@@ -44,7 +44,7 @@ namespace Jhu.Graywulf.Sql.Extensions.NameResolution
         public void ResolvePartitioningKeyWithAliasTest1()
         {
             var sql = "SELECT * FROM Author a PARTITION BY ID";
-            var gt = "SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] [a] PARTITION BY [ID]";
+            var gt = "SELECT * FROM [Graywulf_Schema_Test].[dbo].[Author] [a] PARTITION BY [a].[ID]";
 
             var exp = ParseAndResolveNames<SelectStatement>(sql);
             var res = GenerateCode(exp);

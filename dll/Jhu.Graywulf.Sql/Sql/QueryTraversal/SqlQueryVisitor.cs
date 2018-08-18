@@ -973,6 +973,15 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         // Target table
                         TraverseTargetTableSpecification(node.TargetTable);
                         break;
+                }
+            }
+
+            PopTableContext();
+
+            foreach (var nn in node.Stack)
+            {
+                switch (nn)
+                {
                     case InsertColumnList n:
                         // Target column list, must be traversed before any table resolution to
                         // make sure these all reference the target table
@@ -986,8 +995,6 @@ namespace Jhu.Graywulf.Sql.QueryTraversal
                         break;
                 }
             }
-
-            PopTableContext();
 
             // Query
             var qe = node.QueryExpression;
