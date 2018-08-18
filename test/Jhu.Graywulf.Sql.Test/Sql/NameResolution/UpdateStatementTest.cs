@@ -11,12 +11,11 @@ namespace Jhu.Graywulf.Sql.NameResolution
     public class UpdateStatementTest : SqlNameResolverTestBase
     {
         // TODO: 
-        // -- update table variable
         // -- update CTE?
         // -- UPDATE a SET ... FROM table AS a
 
         [TestMethod]
-        public void SimplUpdateTest()
+        public void SimpleUpdateTest()
         {
             var sql = "UPDATE Author SET Name = 'new_name'";
 
@@ -29,6 +28,38 @@ namespace Jhu.Graywulf.Sql.NameResolution
             Assert.AreEqual(1, ts.Length);
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
+        }
+
+        [TestMethod]
+        public void UpdateWithQualifiedColumnNameTest()
+        {
+            var sql = "UPDATE Author SET Author.Name = 'new_name'";
+
+            var ds = ParseAndResolveNames<UpdateStatement>(sql);
+
+            var res = GenerateCode(ds);
+            Assert.AreEqual("UPDATE [Graywulf_Schema_Test].[dbo].[Author] SET [Graywulf_Schema_Test].[dbo].[Author].[Name] = 'new_name'", res);
+
+            var ts = ds.SourceTableReferences.Values.ToArray();
+            Assert.AreEqual(1, ts.Length);
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
+        }
+
+        [TestMethod]
+        public void UpdateWithAliasedColumnNameTest()
+        {
+            var sql = "UPDATE a SET a.Name = 'new_name' FROM Author a";
+
+            var ds = ParseAndResolveNames<UpdateStatement>(sql);
+
+            var res = GenerateCode(ds);
+            Assert.AreEqual("UPDATE [a] SET [a].[Name] = 'new_name' FROM [Graywulf_Schema_Test].[dbo].[Author] [a]", res);
+
+            var ts = ds.SourceTableReferences.Values.ToArray();
+            Assert.AreEqual(1, ts.Length);
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual("a", ts[0].Alias);
         }
 
         [TestMethod]

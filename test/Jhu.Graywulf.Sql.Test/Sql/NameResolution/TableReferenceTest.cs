@@ -101,7 +101,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             var tr4 = new TableReference(tr3);
 
             Assert.IsFalse(tr1.TryMatch(tr2));
-            Assert.IsFalse(tr2.TryMatch(tr1));
+            Assert.IsTrue(tr2.TryMatch(tr1));
             Assert.IsFalse(tr2.TryMatch(tr3));
             Assert.IsTrue(tr3.TryMatch(tr4));
         }

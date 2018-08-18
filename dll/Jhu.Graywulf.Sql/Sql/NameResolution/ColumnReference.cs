@@ -411,7 +411,7 @@ namespace Jhu.Graywulf.Sql.NameResolution
             {
                 // Now both have the table reference set, make sure they are equal
                 if (tableReference.TryMatch(tr) &&
-                CompareByColumnName(columnName, other.columnName, other.columnAlias))
+                    CompareByColumnName(columnName, other.columnName, other.columnAlias))
                 {
                     return true;
                 }

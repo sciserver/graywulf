@@ -60,6 +60,34 @@ VALUES (1, 'test')";
         }
 
         [TestMethod]
+        public void InsertWithQualifiedColumnNamesTest()
+        {
+            var sql =
+@"INSERT Author
+(Author.ID, Author.Name)
+VALUES (1, 'test')";
+
+            var gt =
+@"INSERT [Graywulf_Schema_Test].[dbo].[Author]
+([Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_Test].[dbo].[Author].[Name])
+VALUES (1, 'test')";
+
+            var ds = ParseAndResolveNames<InsertStatement>(sql);
+            var res = GenerateCode(ds);
+            Assert.AreEqual(gt, res);
+
+            var ts = ds.SourceTableReferences.Values.ToArray();
+            Assert.AreEqual(1, ts.Length);
+            Assert.AreEqual("Author", ts[0].DatabaseObjectName);
+            Assert.AreEqual(null, ts[0].Alias);
+
+            var cn = ds.ColumnList.EnumerateDescendants<ColumnIdentifier>().ToArray();
+            Assert.AreEqual(2, cn.Length);
+            Assert.AreEqual("ID", cn[0].ColumnReference.ColumnName);
+            Assert.AreEqual("Name", cn[1].ColumnReference.ColumnName);
+        }
+
+        [TestMethod]
         public void InsertWithColumnNamesAndSubQueryValuesTest()
         {
             var sql =

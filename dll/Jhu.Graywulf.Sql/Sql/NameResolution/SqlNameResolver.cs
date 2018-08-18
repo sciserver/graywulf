@@ -635,9 +635,6 @@ namespace Jhu.Graywulf.Sql.NameResolution
                 {
                     // This has a table reference already so only check
                     // columns of that particular table
-
-                    // TODO: this might never be hit but it doesn't do any harm for now
-
                     ncr = ResolveColumnReference(cr, cr.TableReference, ref matches);
                 }
             }

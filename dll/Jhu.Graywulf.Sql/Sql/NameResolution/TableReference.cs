@@ -96,7 +96,16 @@ namespace Jhu.Graywulf.Sql.NameResolution
         {
             get
             {
-                return (alias != null || DatabaseObjectName != null) && DatasetName == null && DatabaseName == null && VariableName == null;
+                var maybe = (alias != null || DatabaseObjectName != null) && DatasetName == null && DatabaseName == null && VariableName == null;
+
+                if (DatabaseObject != null)
+                {
+                    return maybe && SchemaManager.Comparer.Compare(this.DatabaseObjectName, DatabaseObject.ObjectName) != 0;
+                }
+                else
+                {
+                    return maybe;
+                }
             }
         }
 
@@ -540,8 +549,12 @@ namespace Jhu.Graywulf.Sql.NameResolution
             res = res && (this.SchemaName == null || other.SchemaName == null ||
                     SchemaManager.Comparer.Compare(this.SchemaName, other.SchemaName) == 0);
 
-            res = res && (this.DatabaseObjectName == null || other.DatabaseObjectName == null ||
-                    SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.DatabaseObjectName) == 0);
+            res = res && this.IsUndefined || other.IsUndefined || 
+                    this.DatabaseObjectName == null || other.DatabaseObjectName == null ||
+                    this.IsPossiblyAlias && other.IsPossiblyAlias && this.alias != null && other.alias != null && SchemaManager.Comparer.Compare(this.alias, other.alias) == 0 ||
+                    this.IsPossiblyAlias && other.alias != null && SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.Alias) == 0 ||
+                    //other.IsPossiblyAlias && this.alias != null && SchemaManager.Comparer.Compare(this.Alias, other.DatabaseObjectName) == 0 ||
+                    SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.DatabaseObjectName) == 0;
 
             // When resolving columns, a table reference of a column may match any table or alias
             // if no alias, nor table name is specified but
@@ -552,7 +565,8 @@ namespace Jhu.Graywulf.Sql.NameResolution
 
             res = res &&
                 (this.IsUndefined || other.IsUndefined ||
-                 this.alias == null && other.alias == null ||
+                 this.IsPossiblyAlias && other.alias != null && SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.Alias) == 0 ||
+                 other.alias == null ||
                  this.alias != null && other.alias != null && SchemaManager.Comparer.Compare(this.alias, other.alias) == 0);
 
             return res;
